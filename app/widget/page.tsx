@@ -71,7 +71,7 @@ export default function WidgetPage() {
     const text = input.trim();
     if (!text || loading) return;
 
-    const next = [...msgs, { role: "user", content: text }];
+    const next: Msg[] = [...msgs, { role: "user", content: text }];
     setMsgs(next);
     setInput("");
     setLoading(true);
@@ -84,11 +84,15 @@ export default function WidgetPage() {
       });
 
       const data = await res.json();
-      setMsgs([...next, { role: "assistant", content: data?.reply || "Okay." }]);
+      const assistantMsg: Msg = { role: "assistant", content: data?.reply || "Okay." };
+      setMsgs([...next, assistantMsg]);
     } catch {
       setMsgs([
         ...next,
-        { role: "assistant", content: "Kurz ein technisches Problem — versuch’s nochmal." },
+        {
+          role: "assistant",
+          content: "Kurz ein technisches Problem — versuch’s nochmal.",
+        } as Msg,
       ]);
     } finally {
       setLoading(false);
