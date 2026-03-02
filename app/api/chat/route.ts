@@ -31,6 +31,18 @@ function tenantFromReferer(req: NextRequest): string | null {
   }
 }
 
+// Stilregeln nur für Schettlers Tenant
+const SCHETTLERS_STYLE_PREFIX = `
+STIL (SCHE TTLERs):
+- Du sprichst als Mitarbeiter von uns (wir/bei uns/unsere), nicht neutral.
+- Standardantwort: 1–2 Sätze, klar und sicher.
+- Emojis: nutze 0–1 passendes Emoji pro Antwort (nicht jedes Mal, aber regelmäßig).
+- Preisfragen ("zu teuer"): ruhig erklären (Ergiebigkeit / Preis pro Anwendung / Probepackung), nicht defensiv.
+- Kein Shop-Spam: nur auf Kaufen/Bestellen verweisen, wenn nach Preis/Bestellung/Versand/Verfügbarkeit/wo kaufen gefragt wird.
+- Keine Heilversprechen/Diagnosen; bei starken Beschwerden: Zahnarzt-Hinweis.
+
+`;
+
 export async function POST(req: NextRequest) {
   try {
     const body = (await req.json()) as ChatBody;
@@ -49,7 +61,13 @@ export async function POST(req: NextRequest) {
     const knowledgeText = await loadTenantKnowledge(tenant.id);
 
     // Systemprompt bauen (Knowledge nur 1x einfügen)
-    const systemPrompt = buildSystemPrompt(tenant, knowledgeText);
+    const baseSystemPrompt = buildSystemPrompt(tenant, knowledgeText);
+
+    // Nur für Schettlers: Style-Prefix davor, sonst alles unverändert
+    const systemPrompt =
+      tenant.id === "zahnputzpulver"
+        ? `${SCHETTLERS_STYLE_PREFIX}${baseSystemPrompt}`
+        : baseSystemPrompt;
 
     const history = (body.messages || []).slice(-10);
 

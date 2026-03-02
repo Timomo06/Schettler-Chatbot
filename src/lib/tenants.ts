@@ -124,10 +124,7 @@ export const TENANTS: Record<TenantId, TenantConfig> = {
     },
 
     websiteUrl: "https://DEIN-SHOP.de",
-    primaryCta: {
-      label: "Zum Produkt",
-      url: "https://DEIN-SHOP.de/products/zahnputzpulver",
-    },
+    // primaryCta entfernt, damit der Button "Zum Produkt" im Widget nicht mehr erscheint
 
     fallbackContact: {
       label: "Support",

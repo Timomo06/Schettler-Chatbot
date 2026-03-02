@@ -110,7 +110,7 @@ export default function WidgetPage() {
 
   // Globales Logo (für alle Tenants gleich)
   // Wenn deine Datei NICHT in /public/brand liegt, ändere auf "/BtAI%20Logo.png"
-  const GLOBAL_LOGO_SRC = "/brand/BtAI%20Logo.png";
+  const GLOBAL_LOGO_SRC = "/brand/btai-logo.png";
 
   // Wenn noch nicht gemounted: nichts rendern -> verhindert Hydration-Error komplett
   if (!mounted) return null;
@@ -417,12 +417,14 @@ export default function WidgetPage() {
                   style={{
                     display: "flex",
                     alignItems: "center",
-                    padding: "8px 12px",
-                    borderRadius: 14,
-                    border: "1px solid rgba(255,255,255,0.14)",
-                    background: "rgba(255,255,255,0.07)",
-                    backdropFilter: "blur(10px)",
-                    WebkitBackdropFilter: "blur(10px)",
+                    justifyContent: "center",
+                    height: 64,
+                    padding: "10px 18px",
+                    borderRadius: 16,
+                    border: "1px solid rgba(255,255,255,0.18)",
+                    background: "rgba(0,0,0,0.35)",
+                    backdropFilter: "blur(12px)",
+                    WebkitBackdropFilter: "blur(12px)",
                   }}
                   title="Powered"
                 >
@@ -430,10 +432,15 @@ export default function WidgetPage() {
                     src={GLOBAL_LOGO_SRC}
                     alt="Logo"
                     height={22}
-                    style={{ display: "block", maxHeight: 22, width: "auto" }}
+                    style={{
+                      height: 52,
+                      width: "auto",
+                      display: "block",
+                      objectFit: "contain",
+                      filter: "drop-shadow(0 3px 10px rgba(0,0,0,0.8))",
+                    }}
                   />
                 </div>
-
                 {cfg.primaryCta?.url && (
                   <a
                     href={cfg.primaryCta.url}

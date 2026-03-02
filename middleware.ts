@@ -2,24 +2,25 @@ import { NextRequest, NextResponse } from "next/server";
 
 const hostTenantMap: Record<string, string> = {
   "zahnputzpulver.de": "zahnputzpulver",
-  "www.zahnputzpulver.de": "zahnputzpulver",
+  "www.zahnputzpulzver.de": "zahnputzpulver",
   "btdesigns.de": "btdesigns",
   "www.btdesigns.de": "btdesigns",
   "localhost:3000": "demo",
 };
 
-function mapHostToTenant(hostname: string | null): string {
-  if (!hostname) return "demo";
-  return hostTenantMap[hostname.toLowerCase()] ?? "demo";
-}
-
 export function middleware(req: NextRequest) {
-  const tenant = mapHostToTenant(req.headers.get("host"));
+  const host = (req.headers.get("host") || "").toLowerCase();
+  const tenant = hostTenantMap[host] ?? "demo";
+
   const url = req.nextUrl.clone();
 
-  url.searchParams.set("tenant", tenant);
+  // nur setzen, wenn noch nicht vorhanden (sonst unnötige rewrites)
+  if (!url.searchParams.get("tenant")) {
+    url.searchParams.set("tenant", tenant);
+    return NextResponse.rewrite(url);
+  }
 
-  return NextResponse.rewrite(url);
+  return NextResponse.next();
 }
 
 export const config = {
