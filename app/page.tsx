@@ -392,8 +392,7 @@ export default function WidgetPage() {
                     }`,
                     flex: "0 0 auto",
                   }}
-                />
-                <div style={{ lineHeight: 1.2 }}>
+            <div style={{ lineHeight: 1.2 }}>
                   <div
                     style={{
                       fontSize: 18,
