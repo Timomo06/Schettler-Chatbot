@@ -437,7 +437,7 @@ export default function WidgetPage() {
                       width: "auto",
                       display: "block",
                       objectFit: "contain",
-                      filter: "drop-shadow(0 3px 10px rgba(0,0,0,0.8))",
+                      filter: "drop-shadow(0 3px 10pxrgba(0,0,0,0.8))",
                     }}
                   />
                 </div>
