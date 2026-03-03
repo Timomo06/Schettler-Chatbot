@@ -18,6 +18,10 @@ type ChatBody = {
   messages: Array<{ role: "user" | "assistant"; content: string }>;
 };
 
+function stripMarkdown(text: string): string {
+  return text.replace(/\*\*/g, "").replace(/__/g, "");
+}
+
 function tenantFromReferer(req: NextRequest): string | null {
   const ref = req.headers.get("referer");
   if (!ref) return null;
@@ -82,7 +86,9 @@ export async function POST(req: NextRequest) {
       completion.choices[0]?.message?.content ??
       "Entschuldige, darauf kann ich gerade nicht antworten.";
 
-    return NextResponse.json({ ok: true, reply });
+    const cleanReply = stripMarkdown(reply);
+
+    return NextResponse.json({ ok: true, reply: cleanReply });
   } catch (err) {
     console.error("Chat API Error:", err);
 
