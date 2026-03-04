@@ -114,7 +114,7 @@ export const TENANTS: Record<TenantId, TenantConfig> = {
   },
 
   zahnputzpulver: {
-    id: "schettlers",
+    id: "zahnputzpulver",
     brandName: "Schettlers",
     assistantName: "Zahni",
     language: "de",
