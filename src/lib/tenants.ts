@@ -114,8 +114,8 @@ export const TENANTS: Record<TenantId, TenantConfig> = {
   },
 
   zahnputzpulver: {
-    id: "zahnputzpulver",
-    brandName: "Zahnputzpulver-Shop",
+    id: "schettlers",
+    brandName: "Schettlers",
     assistantName: "Zahni",
     language: "de",
 
@@ -123,25 +123,25 @@ export const TENANTS: Record<TenantId, TenantConfig> = {
       files: ["knowledge.md"],
     },
 
-    websiteUrl: "https://DEIN-SHOP.de",
+    websiteUrl: "https://www.zahnputzpulver.de/?srsltid=AfmBOooeohb0pS2QK6pGBQu15asRHTeelJ-91oJQhvclnOJ2O5EX0O9X",
     // primaryCta entfernt, damit der Button "Zum Produkt" im Widget nicht mehr erscheint
 
     fallbackContact: {
       label: "Support",
-      value: "support@DEIN-SHOP.de",
+      value: "post@zahnputzpulver.de",
     },
 
     companyInfo: {
-      address: "Shopstraße 5, 54321 Handelsstadt",
-      phone: "+49 987 654321",
-      email: "support@DEIN-SHOP.de",
+      address: "Handelsstraße 3, 19061 Schwerin",
+      phone: "0385-53998253",
+      email: "post@zahnputzpulver.de",
     },
 
     contacts: [
       {
         name: "Service Team",
         role: "Kundenservice",
-        email: "support@DEIN-SHOP.de",
+        email: "post@zahnputzpulver.de",  
       },
     ],
 
