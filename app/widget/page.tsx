@@ -30,7 +30,7 @@ export default function WidgetPage() {
 
   const [open, setOpen] = useState(false);
 
-  // Messages erst NACH mount initialisieren (sonst wieder Mismatch über cfg.assistantName)
+  // Messages erst NACH mount initialisieren
   const [msgs, setMsgs] = useState<Msg[]>([]);
   useEffect(() => {
     if (!mounted) return;
@@ -56,7 +56,7 @@ export default function WidgetPage() {
     return () => clearTimeout(t);
   }, []);
 
-  // Unregelmäßiges Bounce, wenn Chat geschlossen ist (wie Dock-Icons)
+  // Unregelmäßiges Bounce, wenn Chat geschlossen ist
   useEffect(() => {
     if (open) return;
 
@@ -81,7 +81,7 @@ export default function WidgetPage() {
 
     const size = open
       ? { type: "bt-chat-resize", width: 390, height: 700 }
-      : { type: "bt-chat-resize", width: 76, height: 76 };
+      : { type: "bt-chat-resize", width: 96, height: 96 };
 
     window.parent.postMessage(size, "*");
   }, [open, isEmbedded]);
@@ -130,11 +130,11 @@ export default function WidgetPage() {
   // Globales Logo (für alle Tenants gleich)
   const GLOBAL_LOGO_SRC = "/brand/btai-logo.png";
 
-  // Wenn noch nicht gemounted: nichts rendern -> verhindert Hydration-Error komplett
   if (!mounted) return null;
 
-  const launcherOffset = isEmbedded ? 10 : 18;
-  const panelOffsetBottom = launcherOffset + 80;
+  const launcherOffset = isEmbedded ? 12 : 18;
+  const panelOffsetBottom = launcherOffset + 86;
+
   const wrapperBackground = isEmbedded
     ? "transparent"
     : `
@@ -153,26 +153,26 @@ export default function WidgetPage() {
         setShowBadge(false);
       }}
       style={{
-        width: 64,
-        height: 64,
+        width: 66,
+        height: 66,
         borderRadius: 999,
         border: open
-          ? "1px solid rgba(255,255,255,0.30)"
-          : "1px solid rgba(117,255,193,0.30)",
+          ? "1px solid rgba(117,255,193,0.34)"
+          : "1px solid rgba(117,255,193,0.56)",
         background: open
           ? `
-              radial-gradient(140px 80px at 35% 25%, rgba(255,255,255,0.24) 0%, transparent 65%),
-              linear-gradient(180deg, rgba(255,255,255,0.24), rgba(255,255,255,0.10))
+              radial-gradient(150px 96px at 35% 25%, rgba(46,229,157,0.34) 0%, transparent 65%),
+              linear-gradient(180deg, rgba(255,255,255,0.28), rgba(46,229,157,0.16))
             `
           : `
-              radial-gradient(140px 90px at 35% 25%, rgba(46,229,157,0.32) 0%, transparent 65%),
-              linear-gradient(180deg, rgba(255,255,255,0.22), rgba(255,255,255,0.10))
+              radial-gradient(150px 96px at 35% 25%, rgba(46,229,157,0.70) 0%, transparent 65%),
+              linear-gradient(180deg, rgba(255,255,255,0.30), rgba(46,229,157,0.24))
             `,
-        backdropFilter: "blur(18px) saturate(160%)",
-        WebkitBackdropFilter: "blur(18px) saturate(160%)",
+        backdropFilter: "blur(18px) saturate(175%)",
+        WebkitBackdropFilter: "blur(18px) saturate(175%)",
         boxShadow: open
-          ? "0 18px 52px rgba(0,0,0,0.28), 0 0 0 1px rgba(255,255,255,0.08) inset"
-          : "0 18px 52px rgba(0,0,0,0.28), 0 0 0 1px rgba(46,229,157,0.14) inset",
+          ? "0 18px 52px rgba(0,0,0,0.26), 0 0 0 1px rgba(46,229,157,0.20) inset, 0 0 26px rgba(46,229,157,0.16)"
+          : "0 18px 52px rgba(0,0,0,0.24), 0 0 0 1px rgba(46,229,157,0.32) inset, 0 0 40px rgba(46,229,157,0.28)",
         cursor: "pointer",
         color: "#ffffff",
         display: "grid",
@@ -182,9 +182,23 @@ export default function WidgetPage() {
       title={`${cfg.brandName} Chat`}
     >
       {open ? (
-        <span style={{ fontSize: 20, lineHeight: "20px" }}>×</span>
+        <span
+          style={{
+            fontSize: 20,
+            lineHeight: "20px",
+            textShadow: "0 0 12px rgba(46,229,157,0.20)",
+          }}
+        >
+          ×
+        </span>
       ) : (
-        <MessageCircle size={28} strokeWidth={2.5} />
+        <MessageCircle
+          size={28}
+          strokeWidth={2.5}
+          style={{
+            filter: "drop-shadow(0 0 10px rgba(46,229,157,0.16))",
+          }}
+        />
       )}
     </button>
   );
@@ -205,9 +219,9 @@ export default function WidgetPage() {
         }
 
         @keyframes bt-pulse {
-          0% { transform: scale(1); opacity: .85; }
-          70% { transform: scale(1.25); opacity: 0; }
-          100% { transform: scale(1.25); opacity: 0; }
+          0% { transform: scale(1); opacity: .9; }
+          70% { transform: scale(1.26); opacity: 0; }
+          100% { transform: scale(1.26); opacity: 0; }
         }
 
         @keyframes bt-dock-bounce {
@@ -223,10 +237,12 @@ export default function WidgetPage() {
           0% { opacity: 0; transform: translateY(6px) scale(.98); }
           100% { opacity: 1; transform: translateY(0) scale(1); }
         }
+
         @keyframes bt-badge-out {
           0% { opacity: 1; transform: translateY(0) scale(1); }
           100% { opacity: 0; transform: translateY(6px) scale(.98); }
         }
+
         @keyframes bt-liquid {
           0% { transform: translate3d(-6%, -4%, 0) scale(1); opacity: .36; }
           50% { transform: translate3d(6%, 3%, 0) scale(1.03); opacity: .48; }
@@ -239,31 +255,36 @@ export default function WidgetPage() {
           will-change: transform;
           transform: translateZ(0);
         }
+
         .bt-launcher::before {
           content: "";
           position: absolute;
-          inset: -10px;
+          inset: -12px;
           border-radius: 999px;
-          background: radial-gradient(circle, rgba(46,229,157,0.18) 0%, rgba(46,229,157,0.07) 42%, transparent 72%);
-          filter: blur(2px);
-          opacity: 0.9;
+          background: radial-gradient(circle, rgba(46,229,157,0.36) 0%, rgba(46,229,157,0.13) 42%, transparent 72%);
+          filter: blur(3px);
+          opacity: 1;
           pointer-events: none;
         }
+
         .bt-launcher::after {
           content: "";
           position: absolute;
-          inset: -14px;
+          inset: -16px;
           border-radius: 999px;
-          border: 1px solid rgba(46,229,157,0.18);
+          border: 1px solid rgba(46,229,157,0.32);
           animation: bt-pulse 2.4s ease-out infinite;
           pointer-events: none;
         }
-        .bt-bouncing { animation: bt-dock-bounce 920ms cubic-bezier(.2,.9,.2,1) 1; }
+
+        .bt-bouncing {
+          animation: bt-dock-bounce 920ms cubic-bezier(.2,.9,.2,1) 1;
+        }
 
         .bt-badge {
           position: absolute;
-          right: 72px;
-          bottom: 10px;
+          right: 74px;
+          bottom: 12px;
           display: inline-flex;
           align-items: center;
           gap: 8px;
@@ -280,14 +301,18 @@ export default function WidgetPage() {
           pointer-events: none;
           animation: bt-badge-in 260ms ease-out;
         }
+
         .bt-badge-dot {
           width: 8px;
           height: 8px;
           border-radius: 999px;
           background: ${theme.accent};
-          box-shadow: 0 0 0 6px rgba(46,229,157,0.14);
+          box-shadow: 0 0 0 6px rgba(46,229,157,0.16);
         }
-        .bt-badge-hide { animation: bt-badge-out 240ms ease-in forwards; }
+
+        .bt-badge-hide {
+          animation: bt-badge-out 240ms ease-in forwards;
+        }
 
         .bt-panel {
           border-radius: ${panelRadius}px;
@@ -296,7 +321,10 @@ export default function WidgetPage() {
           -webkit-mask-image: -webkit-radial-gradient(white, black);
           isolation: isolate;
         }
-        .bt-panel-layer { border-radius: ${panelRadius}px; }
+
+        .bt-panel-layer {
+          border-radius: ${panelRadius}px;
+        }
 
         @media (prefers-reduced-motion: reduce) {
           .bt-bouncing { animation: none !important; }
@@ -311,15 +339,31 @@ export default function WidgetPage() {
             position: "fixed",
             right: launcherOffset,
             bottom: launcherOffset,
+            width: 96,
+            height: 96,
+            display: "grid",
+            placeItems: "center",
             zIndex: 999999,
+            background: "transparent",
           }}
         >
           {launcherButton}
         </div>
       ) : (
         <>
-          {/* Floating Launcher + Badge */}
-          <div style={{ position: "fixed", right: launcherOffset, bottom: launcherOffset, zIndex: 999999 }}>
+          <div
+            style={{
+              position: "fixed",
+              right: launcherOffset,
+              bottom: launcherOffset,
+              width: 96,
+              height: 96,
+              display: "grid",
+              placeItems: "center",
+              zIndex: 999999,
+              background: "transparent",
+            }}
+          >
             {!open && showBadge && !isEmbedded && (
               <div className={`bt-badge ${!showBadge ? "bt-badge-hide" : ""}`}>
                 <span className="bt-badge-dot" />
@@ -330,7 +374,6 @@ export default function WidgetPage() {
             {launcherButton}
           </div>
 
-          {/* Panel */}
           {open && (
             <div
               className="bt-panel"
@@ -355,7 +398,6 @@ export default function WidgetPage() {
                 zIndex: 999999,
               }}
             >
-              {/* Liquid layer */}
               <div
                 className="bt-panel-layer bt-panel-liquid"
                 style={{
@@ -374,7 +416,6 @@ export default function WidgetPage() {
                 }}
               />
 
-              {/* Glass shine */}
               <div
                 className="bt-panel-layer"
                 style={{
@@ -388,7 +429,6 @@ export default function WidgetPage() {
                 }}
               />
 
-              {/* Accent top line */}
               <div
                 className="bt-panel-layer"
                 style={{
@@ -403,7 +443,6 @@ export default function WidgetPage() {
                 }}
               />
 
-              {/* Layout */}
               <div
                 style={{
                   position: "relative",
@@ -413,7 +452,6 @@ export default function WidgetPage() {
                   minHeight: 0,
                 }}
               >
-                {/* HEADER */}
                 <div
                   style={{
                     padding: "20px 16px 18px",
@@ -463,7 +501,6 @@ export default function WidgetPage() {
                   </div>
 
                   <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-                    {/* Globales Logo */}
                     <div
                       style={{
                         display: "flex",
@@ -525,7 +562,8 @@ export default function WidgetPage() {
                         padding: "10px 11px",
                         borderRadius: 12,
                         border: "1px solid rgba(255,255,255,0.24)",
-                        background: "linear-gradient(180deg, rgba(255,255,255,0.72), rgba(255,255,255,0.50))",
+                        background:
+                          "linear-gradient(180deg, rgba(255,255,255,0.72), rgba(255,255,255,0.50))",
                         color: "#163126",
                         cursor: "pointer",
                         whiteSpace: "nowrap",
@@ -538,7 +576,6 @@ export default function WidgetPage() {
                   </div>
                 </div>
 
-                {/* Messages */}
                 <div
                   ref={listRef}
                   style={{
@@ -615,7 +652,6 @@ export default function WidgetPage() {
                   )}
                 </div>
 
-                {/* Composer */}
                 <div
                   style={{
                     padding: 16,
@@ -644,7 +680,8 @@ export default function WidgetPage() {
                       padding: "0 14px",
                       borderRadius: 16,
                       border: "1px solid rgba(22,49,38,0.12)",
-                      background: "linear-gradient(180deg, rgba(255,255,255,0.84), rgba(255,255,255,0.72))",
+                      background:
+                        "linear-gradient(180deg, rgba(255,255,255,0.84), rgba(255,255,255,0.72))",
                       backdropFilter: "blur(16px) saturate(145%)",
                       WebkitBackdropFilter: "blur(16px) saturate(145%)",
                       boxShadow:
