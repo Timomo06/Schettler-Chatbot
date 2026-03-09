@@ -3,6 +3,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { getTenant } from "@/lib/tenants";
+import { MessageCircle } from "lucide-react";
 
 type Msg = { role: "user" | "assistant"; content: string };
 
@@ -12,15 +13,21 @@ export default function WidgetPage() {
   const [tenantId, setTenantId] = useState("demo");
 
   useEffect(() => {
-    setMounted(true);
-    const t = new URLSearchParams(window.location.search).get("tenant") || "demo";
-    setTenantId(t);
-  }, []);
+  setMounted(true);
+
+  const params = new URLSearchParams(window.location.search);
+
+  const t = params.get("tenant") || "demo";
+  const embedded = params.get("embed") === "1";
+
+  setTenantId(t);
+  setIsEmbedded(embedded);
+}, []);
 
   const cfg = useMemo(() => getTenant(tenantId), [tenantId]);
   const theme = cfg.theme;
 
-  const [open, setOpen] = useState(true);
+  const [open, setOpen] = useState(false);
 
   // Messages erst NACH mount initialisieren (sonst wieder Mismatch über cfg.assistantName)
   const [msgs, setMsgs] = useState<Msg[]>([]);
@@ -35,6 +42,7 @@ export default function WidgetPage() {
   // Launcher attention (dock-like bounce) + badge
   const [attention, setAttention] = useState(false);
   const [showBadge, setShowBadge] = useState(true);
+  const [isEmbedded, setIsEmbedded] = useState(false);
 
   const listRef = useRef<HTMLDivElement | null>(null);
 
@@ -67,7 +75,17 @@ export default function WidgetPage() {
     };
   }, [open]);
 
-  async function send() {
+useEffect(() => {
+  if (!isEmbedded) return;
+
+  const size = open
+    ? { type: "bt-chat-resize", width: 390, height: 700 }
+    : { type: "bt-chat-resize", width: 76, height: 76 };
+
+  window.parent.postMessage(size, "*");
+}, [open, isEmbedded]);
+
+async function send() {
     const text = input.trim();
     if (!text || loading) return;
 
@@ -271,13 +289,7 @@ export default function WidgetPage() {
           {open ? (
             <span style={{ fontSize: 20, lineHeight: "20px" }}>×</span>
           ) : (
-            <img
-              src={cfg.assets.launcherIcon}
-              alt={`${cfg.brandName} Chat`}
-              width={28}
-              height={28}
-              style={{ display: "block" }}
-            />
+           <MessageCircle size={28} strokeWidth={2.5} />
           )}
         </button>
       </div>
