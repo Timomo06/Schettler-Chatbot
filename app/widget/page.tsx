@@ -128,7 +128,6 @@ export default function WidgetPage() {
   const panelRadius = 28;
 
   // Globales Logo (für alle Tenants gleich)
-  // Wenn deine Datei NICHT in /public/brand liegt, ändere auf "/BtAI%20Logo.png"
   const GLOBAL_LOGO_SRC = "/brand/btai-logo.png";
 
   // Wenn noch nicht gemounted: nichts rendern -> verhindert Hydration-Error komplett
@@ -139,12 +138,12 @@ export default function WidgetPage() {
   const wrapperBackground = isEmbedded
     ? "transparent"
     : `
-          radial-gradient(1200px 900px at 70% 12%, ${theme.accent}38 0%, transparent 60%),
-          radial-gradient(900px 700px at 12% 78%, ${theme.accent}22 0%, transparent 62%),
-          radial-gradient(700px 520px at 55% 55%, rgba(255,255,255,0.05) 0%, transparent 72%),
-          linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)),
-          ${theme.bg}
-        `;
+        radial-gradient(1200px 900px at 70% 12%, ${theme.accent}18 0%, transparent 60%),
+        radial-gradient(900px 700px at 12% 78%, ${theme.accent}10 0%, transparent 62%),
+        radial-gradient(700px 520px at 55% 55%, rgba(255,255,255,0.04) 0%, transparent 72%),
+        linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)),
+        ${theme.bg}
+      `;
 
   const launcherButton = (
     <button
@@ -157,14 +156,23 @@ export default function WidgetPage() {
         width: 64,
         height: 64,
         borderRadius: 999,
-        border: "1px solid rgba(255,255,255,0.28)",
-        background: `
-          radial-gradient(140px 80px at 35% 25%, ${theme.accent}50 0%, transparent 65%),
-          linear-gradient(180deg, rgba(255,255,255,0.24), rgba(255,255,255,0.10))
-        `,
+        border: open
+          ? "1px solid rgba(255,255,255,0.30)"
+          : "1px solid rgba(117,255,193,0.30)",
+        background: open
+          ? `
+              radial-gradient(140px 80px at 35% 25%, rgba(255,255,255,0.24) 0%, transparent 65%),
+              linear-gradient(180deg, rgba(255,255,255,0.24), rgba(255,255,255,0.10))
+            `
+          : `
+              radial-gradient(140px 90px at 35% 25%, rgba(46,229,157,0.32) 0%, transparent 65%),
+              linear-gradient(180deg, rgba(255,255,255,0.22), rgba(255,255,255,0.10))
+            `,
         backdropFilter: "blur(18px) saturate(160%)",
         WebkitBackdropFilter: "blur(18px) saturate(160%)",
-        boxShadow: `0 18px 52px rgba(0,0,0,0.28), 0 0 0 1px ${theme.accent}20 inset`,
+        boxShadow: open
+          ? "0 18px 52px rgba(0,0,0,0.28), 0 0 0 1px rgba(255,255,255,0.08) inset"
+          : "0 18px 52px rgba(0,0,0,0.28), 0 0 0 1px rgba(46,229,157,0.14) inset",
         cursor: "pointer",
         color: "#ffffff",
         display: "grid",
@@ -220,9 +228,9 @@ export default function WidgetPage() {
           100% { opacity: 0; transform: translateY(6px) scale(.98); }
         }
         @keyframes bt-liquid {
-          0% { transform: translate3d(-6%, -4%, 0) scale(1); opacity: .50; }
-          50% { transform: translate3d(6%, 3%, 0) scale(1.03); opacity: .62; }
-          100% { transform: translate3d(-6%, -4%, 0) scale(1); opacity: .50; }
+          0% { transform: translate3d(-6%, -4%, 0) scale(1); opacity: .36; }
+          50% { transform: translate3d(6%, 3%, 0) scale(1.03); opacity: .48; }
+          100% { transform: translate3d(-6%, -4%, 0) scale(1); opacity: .36; }
         }
 
         .bt-launcher {
@@ -236,7 +244,7 @@ export default function WidgetPage() {
           position: absolute;
           inset: -10px;
           border-radius: 999px;
-          background: radial-gradient(circle, ${theme.accent}28 0%, ${theme.accent}10 42%, transparent 72%);
+          background: radial-gradient(circle, rgba(46,229,157,0.18) 0%, rgba(46,229,157,0.07) 42%, transparent 72%);
           filter: blur(2px);
           opacity: 0.9;
           pointer-events: none;
@@ -246,7 +254,7 @@ export default function WidgetPage() {
           position: absolute;
           inset: -14px;
           border-radius: 999px;
-          border: 1px solid ${theme.accent}30;
+          border: 1px solid rgba(46,229,157,0.18);
           animation: bt-pulse 2.4s ease-out infinite;
           pointer-events: none;
         }
@@ -277,7 +285,7 @@ export default function WidgetPage() {
           height: 8px;
           border-radius: 999px;
           background: ${theme.accent};
-          box-shadow: 0 0 0 6px ${theme.accent}22;
+          box-shadow: 0 0 0 6px rgba(46,229,157,0.14);
         }
         .bt-badge-hide { animation: bt-badge-out 240ms ease-in forwards; }
 
@@ -334,15 +342,16 @@ export default function WidgetPage() {
                 maxWidth: "calc(100vw - 36px)",
                 height: panelH,
                 maxHeight: "calc(100vh - 150px)",
-                border: "1px solid rgba(255,255,255,0.26)",
+                border: "1px solid rgba(255,255,255,0.46)",
                 background: `
-                  radial-gradient(900px 480px at 18% -10%, ${theme.accent}55 0%, transparent 62%),
-                  radial-gradient(700px 460px at 95% 10%, rgba(255,255,255,0.10) 0%, transparent 55%),
-                  linear-gradient(180deg, rgba(255,255,255,0.78), rgba(255,255,255,0.58))
+                  radial-gradient(900px 480px at 18% -10%, ${theme.accent}20 0%, transparent 62%),
+                  radial-gradient(700px 460px at 95% 10%, rgba(255,255,255,0.12) 0%, transparent 55%),
+                  linear-gradient(180deg, rgba(255,255,255,0.82), rgba(255,255,255,0.68))
                 `,
-                backdropFilter: "blur(28px) saturate(155%)",
-                WebkitBackdropFilter: "blur(28px) saturate(155%)",
-                boxShadow: "0 30px 120px rgba(0,0,0,0.22)",
+                backdropFilter: "blur(28px) saturate(150%)",
+                WebkitBackdropFilter: "blur(28px) saturate(150%)",
+                boxShadow:
+                  "0 30px 120px rgba(0,0,0,0.22), 0 0 0 1px rgba(255,255,255,0.12) inset",
                 zIndex: 999999,
               }}
             >
@@ -356,12 +365,12 @@ export default function WidgetPage() {
                   filter: "blur(24px)",
                   animation: "bt-liquid 8.5s ease-in-out infinite",
                   background: `
-                    radial-gradient(520px 220px at 18% 12%, ${theme.accent}55 0%, transparent 72%),
-                    radial-gradient(520px 240px at 80% 20%, ${theme.accent}32 0%, transparent 75%),
-                    radial-gradient(520px 320px at 42% 78%, rgba(255,255,255,0.10) 0%, transparent 70%)
+                    radial-gradient(520px 220px at 18% 12%, ${theme.accent}18 0%, transparent 72%),
+                    radial-gradient(520px 240px at 80% 20%, rgba(255,255,255,0.10) 0%, transparent 75%),
+                    radial-gradient(520px 320px at 42% 78%, rgba(255,255,255,0.08) 0%, transparent 70%)
                   `,
                   mixBlendMode: "screen",
-                  opacity: 0.42,
+                  opacity: 0.30,
                 }}
               />
 
@@ -373,8 +382,8 @@ export default function WidgetPage() {
                   inset: 0,
                   pointerEvents: "none",
                   background:
-                    "linear-gradient(120deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.04) 34%, rgba(255,255,255,0.10) 70%, rgba(255,255,255,0.02) 100%)",
-                  opacity: 0.22,
+                    "linear-gradient(120deg, rgba(255,255,255,0.16) 0%, rgba(255,255,255,0.04) 34%, rgba(255,255,255,0.08) 70%, rgba(255,255,255,0.02) 100%)",
+                  opacity: 0.20,
                   mixBlendMode: "screen",
                 }}
               />
@@ -388,8 +397,8 @@ export default function WidgetPage() {
                   left: 0,
                   right: 0,
                   height: 3,
-                  background: `linear-gradient(90deg, transparent, ${theme.accent}, transparent)`,
-                  opacity: 0.7,
+                  background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.78), transparent)",
+                  opacity: 0.9,
                   pointerEvents: "none",
                 }}
               />
@@ -408,7 +417,7 @@ export default function WidgetPage() {
                 <div
                   style={{
                     padding: "20px 16px 18px",
-                    borderBottom: "1px solid rgba(22,49,38,0.10)",
+                    borderBottom: "1px solid rgba(22,49,38,0.12)",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "space-between",
@@ -416,9 +425,10 @@ export default function WidgetPage() {
                     minHeight: 92,
                     flex: "0 0 auto",
                     background: `
-                      radial-gradient(520px 180px at 18% 0%, ${theme.accent}32 0%, transparent 72%),
-                      linear-gradient(180deg, rgba(255,255,255,0.20), rgba(255,255,255,0.08))
+                      radial-gradient(520px 180px at 18% 0%, ${theme.accent}14 0%, transparent 72%),
+                      linear-gradient(180deg, rgba(255,255,255,0.34), rgba(255,255,255,0.14))
                     `,
+                    boxShadow: "0 1px 0 rgba(255,255,255,0.22) inset",
                   }}
                 >
                   <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
@@ -429,7 +439,7 @@ export default function WidgetPage() {
                         borderRadius: 999,
                         background: loading ? "#f5c542" : "#2ee59d",
                         boxShadow: `0 0 0 7px ${
-                          loading ? "rgba(245,197,66,0.16)" : "rgba(46,229,157,0.16)"
+                          loading ? "rgba(245,197,66,0.14)" : "rgba(46,229,157,0.12)"
                         }`,
                         flex: "0 0 auto",
                       }}
@@ -446,7 +456,7 @@ export default function WidgetPage() {
                       >
                         {cfg.brandName} – {cfg.assistantName}
                       </div>
-                      <div style={{ fontSize: 13, opacity: 0.9, marginTop: 2, color: "#2d5a49" }}>
+                      <div style={{ fontSize: 13, opacity: 0.9, marginTop: 2, color: "#355f52" }}>
                         {loading ? "Tippt…" : "Online verfügbar"}
                       </div>
                     </div>
@@ -462,10 +472,13 @@ export default function WidgetPage() {
                         height: 64,
                         padding: "10px 18px",
                         borderRadius: 16,
-                        border: "1px solid rgba(255,255,255,0.22)",
-                        background: "rgba(30,40,34,0.30)",
-                        backdropFilter: "blur(12px)",
-                        WebkitBackdropFilter: "blur(12px)",
+                        border: "1px solid rgba(255,255,255,0.42)",
+                        background:
+                          "linear-gradient(180deg, rgba(255,255,255,0.62), rgba(255,255,255,0.36))",
+                        backdropFilter: "blur(14px) saturate(145%)",
+                        WebkitBackdropFilter: "blur(14px) saturate(145%)",
+                        boxShadow:
+                          "0 10px 30px rgba(0,0,0,0.10), inset 0 1px 0 rgba(255,255,255,0.42)",
                       }}
                       title="Powered"
                     >
@@ -478,10 +491,11 @@ export default function WidgetPage() {
                           width: "auto",
                           display: "block",
                           objectFit: "contain",
-                          filter: "drop-shadow(0 3px 10px rgba(0,0,0,0.35))",
+                          filter: "drop-shadow(0 2px 6px rgba(0,0,0,0.12))",
                         }}
                       />
                     </div>
+
                     {cfg.primaryCta?.url && (
                       <a
                         href={cfg.primaryCta.url}
@@ -491,12 +505,12 @@ export default function WidgetPage() {
                           fontSize: 12,
                           padding: "10px 11px",
                           borderRadius: 12,
-                          border: "1px solid rgba(255,255,255,0.18)",
-                          background: `linear-gradient(180deg, ${theme.accent}D9, ${theme.accent}88)`,
+                          border: "1px solid rgba(255,255,255,0.24)",
+                          background: `linear-gradient(180deg, ${theme.accent}D6, ${theme.accent}92)`,
                           color: "#ffffff",
                           textDecoration: "none",
                           whiteSpace: "nowrap",
-                          boxShadow: "inset 0 1px 0 rgba(255,255,255,0.10)",
+                          boxShadow: "inset 0 1px 0 rgba(255,255,255,0.12)",
                         }}
                         title={cfg.primaryCta.label}
                       >
@@ -510,11 +524,12 @@ export default function WidgetPage() {
                         fontSize: 12,
                         padding: "10px 11px",
                         borderRadius: 12,
-                        border: "1px solid rgba(255,255,255,0.18)",
-                        background: "rgba(255,255,255,0.55)",
+                        border: "1px solid rgba(255,255,255,0.24)",
+                        background: "linear-gradient(180deg, rgba(255,255,255,0.72), rgba(255,255,255,0.50))",
                         color: "#163126",
                         cursor: "pointer",
                         whiteSpace: "nowrap",
+                        boxShadow: "inset 0 1px 0 rgba(255,255,255,0.22)",
                       }}
                       title="Chat neu starten"
                     >
@@ -534,6 +549,10 @@ export default function WidgetPage() {
                     display: "flex",
                     flexDirection: "column",
                     gap: 12,
+                    background:
+                      "linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03))",
+                    boxShadow:
+                      "inset 0 1px 0 rgba(255,255,255,0.10), inset 0 -1px 0 rgba(22,49,38,0.04)",
                   }}
                 >
                   {msgs.map((m, i) => {
@@ -555,15 +574,15 @@ export default function WidgetPage() {
                             fontSize: 15,
                             border: isUser
                               ? "1px solid rgba(255,255,255,0.18)"
-                              : "1px solid rgba(22,49,38,0.08)",
+                              : "1px solid rgba(22,49,38,0.10)",
                             background: isUser
-                              ? `linear-gradient(180deg, ${theme.accent}D9, ${theme.accent}99)`
-                              : `linear-gradient(180deg, rgba(255,255,255,0.82), rgba(255,255,255,0.68))`,
+                              ? `linear-gradient(180deg, ${theme.accent}D8, ${theme.accent}A2)`
+                              : "linear-gradient(180deg, rgba(255,255,255,0.88), rgba(255,255,255,0.74))",
                             boxShadow: isUser
-                              ? `0 12px 30px rgba(0,0,0,0.16), 0 0 0 1px ${theme.accent}14 inset`
-                              : "0 8px 22px rgba(0,0,0,0.08)",
-                            backdropFilter: "blur(12px) saturate(145%)",
-                            WebkitBackdropFilter: "blur(12px) saturate(145%)",
+                              ? `0 12px 30px rgba(0,0,0,0.14), 0 0 0 1px ${theme.accent}10 inset`
+                              : "0 10px 24px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.22)",
+                            backdropFilter: "blur(12px) saturate(140%)",
+                            WebkitBackdropFilter: "blur(12px) saturate(140%)",
                             color: isUser ? "#ffffff" : "#163126",
                           }}
                         >
@@ -579,14 +598,15 @@ export default function WidgetPage() {
                         style={{
                           padding: "12px 14px",
                           borderRadius: 16,
-                          border: "1px solid rgba(22,49,38,0.08)",
+                          border: "1px solid rgba(22,49,38,0.10)",
                           background:
-                            "linear-gradient(180deg, rgba(255,255,255,0.82), rgba(255,255,255,0.68))",
+                            "linear-gradient(180deg, rgba(255,255,255,0.88), rgba(255,255,255,0.74))",
                           fontSize: 15,
                           opacity: 0.88,
                           backdropFilter: "blur(12px) saturate(145%)",
                           WebkitBackdropFilter: "blur(12px) saturate(145%)",
                           color: "#163126",
+                          boxShadow: "0 10px 24px rgba(0,0,0,0.08)",
                         }}
                       >
                         <span style={{ letterSpacing: 3 }}>•••</span>
@@ -600,12 +620,14 @@ export default function WidgetPage() {
                   style={{
                     padding: 16,
                     paddingBottom: "calc(16px + env(safe-area-inset-bottom))",
-                    borderTop: "1px solid rgba(22,49,38,0.08)",
+                    borderTop: "1px solid rgba(22,49,38,0.12)",
                     display: "flex",
                     gap: 10,
                     alignItems: "center",
                     background:
-                      "linear-gradient(180deg, rgba(255,255,255,0.10), rgba(255,255,255,0.04))",
+                      "linear-gradient(180deg, rgba(255,255,255,0.22), rgba(255,255,255,0.12))",
+                    boxShadow:
+                      "0 -1px 0 rgba(255,255,255,0.26) inset, 0 -12px 30px rgba(255,255,255,0.10)",
                     flex: "0 0 auto",
                   }}
                 >
@@ -621,11 +643,12 @@ export default function WidgetPage() {
                       height: 50,
                       padding: "0 14px",
                       borderRadius: 16,
-                      border: "1px solid rgba(255,255,255,0.24)",
-                      background: "rgba(255,255,255,0.72)",
-                      backdropFilter: "blur(14px) saturate(150%)",
-                      WebkitBackdropFilter: "blur(14px) saturate(150%)",
-                      boxShadow: "inset 0 1px 0 rgba(255,255,255,0.12)",
+                      border: "1px solid rgba(22,49,38,0.12)",
+                      background: "linear-gradient(180deg, rgba(255,255,255,0.84), rgba(255,255,255,0.72))",
+                      backdropFilter: "blur(16px) saturate(145%)",
+                      WebkitBackdropFilter: "blur(16px) saturate(145%)",
+                      boxShadow:
+                        "inset 0 1px 0 rgba(255,255,255,0.22), 0 1px 0 rgba(255,255,255,0.18)",
                       color: "#163126",
                       outline: "none",
                       caretColor: "#163126",
@@ -639,15 +662,15 @@ export default function WidgetPage() {
                       height: 50,
                       padding: "0 18px",
                       borderRadius: 16,
-                      border: "1px solid rgba(255,255,255,0.16)",
+                      border: "1px solid rgba(255,255,255,0.18)",
                       background: input.trim()
-                        ? `linear-gradient(180deg, ${theme.accent}ff, ${theme.accent}55)`
-                        : "rgba(255,255,255,0.22)",
+                        ? `linear-gradient(180deg, ${theme.accent}F0, ${theme.accent}A8)`
+                        : "rgba(255,255,255,0.26)",
                       color: input.trim() ? "#ffffff" : "#5c7a6d",
                       cursor: input.trim() && !loading ? "pointer" : "not-allowed",
                       opacity: loading ? 0.72 : 1,
                       boxShadow: input.trim()
-                        ? `0 18px 46px rgba(0,0,0,0.16), 0 0 0 1px ${theme.accent}18 inset`
+                        ? `0 16px 40px rgba(0,0,0,0.14), 0 0 0 1px ${theme.accent}12 inset`
                         : "none",
                     }}
                   >
