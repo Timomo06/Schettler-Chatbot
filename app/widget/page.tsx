@@ -8,7 +8,6 @@ import { MessageCircle } from "lucide-react";
 type Msg = { role: "user" | "assistant"; content: string };
 
 export default function WidgetPage() {
-  // --- Hydration fix: Tenant erst im Client bestimmen ---
   const [mounted, setMounted] = useState(false);
   const [tenantId, setTenantId] = useState("demo");
   const [isEmbedded, setIsEmbedded] = useState(false);
@@ -17,7 +16,6 @@ export default function WidgetPage() {
     setMounted(true);
 
     const params = new URLSearchParams(window.location.search);
-
     const t = params.get("tenant") || "demo";
     const embedded = params.get("embed") === "1";
 
@@ -29,23 +27,19 @@ export default function WidgetPage() {
   const theme = cfg.theme;
 
   const [open, setOpen] = useState(false);
-
-  // Messages erst NACH mount initialisieren
   const [msgs, setMsgs] = useState<Msg[]>([]);
+  const [input, setInput] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [attention, setAttention] = useState(false);
+  const [showBadge, setShowBadge] = useState(true);
+
+  const isEmbedClosed = isEmbedded && !open;
+  const listRef = useRef<HTMLDivElement | null>(null);
+
   useEffect(() => {
     if (!mounted) return;
     setMsgs([{ role: "assistant", content: `Hi — ich bin ${cfg.assistantName}. Worum geht’s?` }]);
   }, [mounted, cfg.assistantName]);
-
-  const [input, setInput] = useState("");
-  const [loading, setLoading] = useState(false);
-
-  // Launcher attention (dock-like bounce) + badge
-  const [attention, setAttention] = useState(false);
-  const [showBadge, setShowBadge] = useState(true);
-  const isEmbedClosed = isEmbedded && !open;
-
-  const listRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     listRef.current?.scrollTo({ top: listRef.current.scrollHeight, behavior: "smooth" });
@@ -56,11 +50,11 @@ export default function WidgetPage() {
     return () => clearTimeout(t);
   }, []);
 
-  // Unregelmäßiges Bounce, wenn Chat geschlossen ist
   useEffect(() => {
     if (open) return;
 
     let t: ReturnType<typeof setTimeout> | null = null;
+
     const schedule = () => {
       const nextInMs = 5500 + Math.floor(Math.random() * 9000);
       t = setTimeout(() => {
@@ -71,6 +65,7 @@ export default function WidgetPage() {
     };
 
     schedule();
+
     return () => {
       if (t) clearTimeout(t);
     };
@@ -126,8 +121,6 @@ export default function WidgetPage() {
   const panelW = 520;
   const panelH = 720;
   const panelRadius = 28;
-
-  // Globales Logo (für alle Tenants gleich)
   const GLOBAL_LOGO_SRC = "/brand/btai-logo.png";
 
   if (!mounted) return null;
@@ -165,18 +158,24 @@ export default function WidgetPage() {
               linear-gradient(180deg, rgba(255,255,255,0.28), rgba(46,229,157,0.16))
             `
           : `
-              radial-gradient(150px 96px at 35% 25%, rgba(46,229,157,0.70) 0%, transparent 65%),
-              linear-gradient(180deg, rgba(255,255,255,0.30), rgba(46,229,157,0.24))
+              radial-gradient(150px 96px at 35% 25%, rgba(46,229,157,0.72) 0%, transparent 65%),
+              linear-gradient(180deg, rgba(255,255,255,0.30), rgba(46,229,157,0.26))
             `,
         backdropFilter: "blur(18px) saturate(175%)",
         WebkitBackdropFilter: "blur(18px) saturate(175%)",
         boxShadow: open
-          ? "0 18px 52px rgba(0,0,0,0.26), 0 0 0 1px rgba(46,229,157,0.20) inset, 0 0 26px rgba(46,229,157,0.16)"
-          : "0 18px 52px rgba(0,0,0,0.24), 0 0 0 1px rgba(46,229,157,0.32) inset, 0 0 40px rgba(46,229,157,0.28)",
+          ? "0 18px 52px rgba(0,0,0,0.22), 0 0 0 1px rgba(46,229,157,0.20) inset, 0 0 26px rgba(46,229,157,0.16)"
+          : "0 18px 52px rgba(0,0,0,0.20), 0 0 0 1px rgba(46,229,157,0.34) inset, 0 0 42px rgba(46,229,157,0.30)",
         cursor: "pointer",
         color: "#ffffff",
         display: "grid",
         placeItems: "center",
+        position: "relative",
+        zIndex: 2,
+        pointerEvents: "auto",
+        outline: "none",
+        appearance: "none",
+        WebkitAppearance: "none",
       }}
       aria-label="Chat öffnen"
       title={`${cfg.brandName} Chat`}
@@ -206,16 +205,29 @@ export default function WidgetPage() {
   return (
     <div
       style={{
-        minHeight: isEmbedded ? "auto" : "100vh",
+        minHeight: isEmbedded ? 96 : "100vh",
+        width: isEmbedded && !open ? 96 : undefined,
+        height: isEmbedded && !open ? 96 : undefined,
         background: wrapperBackground,
         color: "#163126",
         fontFamily:
           "ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial",
+        overflow: "visible",
+        pointerEvents: isEmbedClosed ? "none" : "auto",
       }}
     >
       <style>{`
         html, body {
           background: transparent !important;
+          margin: 0 !important;
+          padding: 0 !important;
+          overflow: visible !important;
+        }
+
+        body::before,
+        body::after {
+          display: none !important;
+          content: none !important;
         }
 
         @keyframes bt-pulse {
@@ -254,6 +266,7 @@ export default function WidgetPage() {
           overflow: visible;
           will-change: transform;
           transform: translateZ(0);
+          background-clip: padding-box;
         }
 
         .bt-launcher::before {
@@ -345,6 +358,9 @@ export default function WidgetPage() {
             placeItems: "center",
             zIndex: 999999,
             background: "transparent",
+            boxShadow: "none",
+            overflow: "visible",
+            pointerEvents: "none",
           }}
         >
           {launcherButton}
@@ -362,6 +378,9 @@ export default function WidgetPage() {
               placeItems: "center",
               zIndex: 999999,
               background: "transparent",
+              boxShadow: "none",
+              overflow: "visible",
+              pointerEvents: "none",
             }}
           >
             {!open && showBadge && !isEmbedded && (
