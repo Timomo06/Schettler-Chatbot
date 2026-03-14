@@ -96,25 +96,46 @@ export async function POST(req: NextRequest) {
 
     const cleanReply = stripMarkdown(reply);
 
-    const { error } = await supabase.from("chat_logs").insert({
+    const payload = {
       tenant: tenant.id,
       session_id: sessionId,
       user_message: lastUserMessage,
       assistant_message: cleanReply,
-    });
+    };
+
+    console.log("SUPABASE INSERT PAYLOAD:", payload);
+
+    const { data, error } = await supabase
+      .from("chat_logs")
+      .insert(payload)
+      .select();
 
     if (error) {
-      console.error("SUPABASE INSERT ERROR:", error);
-    } else {
-      console.log("CHAT SAVED");
+      console.error("SUPABASE INSERT ERROR FULL:", JSON.stringify(error, null, 2));
+
+      return NextResponse.json(
+        {
+          ok: false,
+          reply: cleanReply,
+          debug: {
+            message: error.message,
+            details: error.details,
+            hint: error.hint,
+            code: error.code,
+          },
+        },
+        { status: 500 }
+      );
     }
+
+    console.log("SUPABASE INSERT SUCCESS:", data);
 
     return NextResponse.json({
       ok: true,
       reply: cleanReply,
       sessionId,
     });
-  } catch (err) {
+  } catch (err: any) {
     console.error("Chat API Error:", err);
 
     return NextResponse.json(
@@ -122,6 +143,7 @@ export async function POST(req: NextRequest) {
         ok: false,
         reply:
           "Es gab kurz ein technisches Problem. Bitte stell deine Frage noch einmal.",
+        debug: err?.message || String(err),
       },
       { status: 500 }
     );
