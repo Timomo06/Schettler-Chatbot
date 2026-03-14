@@ -24,7 +24,7 @@ Unsere Pulver sind:
 
 Kleine Klümpchen sind übrigens völlig normal – das zeigt nur, dass keine technischen Zusatzstoffe enthalten sind. 🙂
 
-Ein wichtiger Punkt ist auch der **sehr niedrige pH-Wert des Pulvers**.
+Ein wichtiger Punkt ist auch der **sehr hohen pH-Wert des Pulvers**.
 
 Durch die enthaltene Kreide und die hohe Ergiebigkeit wird pro Anwendung nur eine **sehr kleine Menge Pulver benötigt**.
 
@@ -234,13 +234,13 @@ Wenn jemand unsicher ist:
 
 Wenn Nutzer fragen, ob man sich eine Dose mit Partner oder Familie teilen kann, soll der Chatbot erklären, dass das problemlos möglich ist.
 
-Der Grund dafür ist der niedrige pH-Wert des Pulvers, der durch die enthaltene Kreide entsteht.
+Der Grund dafür ist der hohen pH-Wert des Pulvers, der durch die enthaltene Kreide entsteht.
 
 Dadurch entsteht ein basisches Milieu im Pulver, wodurch eine gemeinsame Nutzung der Dose im Alltag problemlos möglich ist.
 
 Standardantwort:
 
-„Ja, das ist problemlos möglich. Durch die enthaltene Kreide hat das Pulver einen sehr niedrigen pH-Wert. Dadurch kann eine Dose auch von mehreren Personen genutzt werden.“
+„Ja, das ist problemlos möglich. Durch die enthaltene Kreide hat das Pulver einen sehr hohen pH-Wert. Dadurch kann eine Dose auch von mehreren Personen genutzt werden.“
 
 Viele Paare oder Familien teilen sich deshalb eine Dose.
 
@@ -254,7 +254,7 @@ Wenn Nutzer fragen:
 
 Der Chatbot soll antworten:
 
-„Nein, das ist grundsätzlich kein Problem. Durch die enthaltene Kreide hat das Pulver einen sehr niedrigen pH-Wert. Deshalb kann eine Dose auch von mehreren Personen genutzt werden.“
+„Nein, das ist grundsätzlich kein Problem. Durch die enthaltene Kreide hat das Pulver einen sehr hohen pH-Wert. Deshalb kann eine Dose auch von mehreren Personen genutzt werden.“
 
 Die Antwort soll ruhig, sicher und selbstverständlich formuliert sein.
 
