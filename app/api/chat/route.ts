@@ -1,12 +1,11 @@
-// app/api/chat/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import OpenAI from "openai";
+import { createClient } from "@supabase/supabase-js";
 
 import { getTenant } from "@/lib/tenants";
 import { buildSystemPrompt } from "@/lib/prompt";
 import { loadTenantKnowledge } from "@/lib/loadTenantKnowledge";
 import { getTenantFromPath } from "@/lib/getTenant";
-import { supabaseAdmin } from "@/lib/supabase-admin";
 
 export const runtime = "nodejs";
 
@@ -14,9 +13,13 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!
+);
+
 type ChatBody = {
   tenant?: string;
-  sessionId?: string;
   messages: Array<{ role: "user" | "assistant"; content: string }>;
 };
 
@@ -36,18 +39,6 @@ function tenantFromReferer(req: NextRequest): string | null {
   }
 }
 
-// Stilregeln nur für Schettlers Tenant
-const SCHETTLERS_STYLE_PREFIX = `
-STIL (SCHE TTLERs):
-- Du sprichst als Mitarbeiter von uns (wir/bei uns/unsere), nicht neutral.
-- Standardantwort: 1–2 Sätze, klar und sicher.
-- Emojis: nutze 0–1 passendes Emoji pro Antwort (nicht jedes Mal, aber regelmäßig).
-- Preisfragen ("zu teuer"): ruhig erklären (Ergiebigkeit / Preis pro Anwendung / Probepackung), nicht defensiv.
-- Kein Shop-Spam: nur auf Kaufen/Bestellen verweisen, wenn nach Preis/Bestellung/Versand/Verfügbarkeit/wo kaufen gefragt wird.
-- Keine Heilversprechen/Diagnosen; bei starken Beschwerden: Zahnarzt-Hinweis.
-
-`;
-
 export async function POST(req: NextRequest) {
   try {
     const body = (await req.json()) as ChatBody;
@@ -63,12 +54,7 @@ export async function POST(req: NextRequest) {
 
     const knowledgeText = await loadTenantKnowledge(tenant.id);
 
-    const baseSystemPrompt = buildSystemPrompt(tenant, knowledgeText);
-
-    const systemPrompt =
-      tenant.id === "zahnputzpulver"
-        ? `${SCHETTLERS_STYLE_PREFIX}${baseSystemPrompt}`
-        : baseSystemPrompt;
+    const systemPrompt = buildSystemPrompt(tenant, knowledgeText);
 
     const history = (body.messages || []).slice(-10);
 
@@ -85,24 +71,27 @@ export async function POST(req: NextRequest) {
 
     const cleanReply = stripMarkdown(reply);
 
-    // Letzte User Nachricht herausfinden
     const lastUserMessage =
-      [...(body.messages || [])].reverse().find((m) => m.role === "user")
-        ?.content || "";
+      history.reverse().find((m) => m.role === "user")?.content || "";
 
-    // CHAT LOG in Supabase speichern
-    try {
-      await supabaseAdmin.from("chat_logs").insert({
-        tenant: tenant.id,
-        session_id: body.sessionId ?? null,
-        user_message: lastUserMessage,
-        assistant_message: cleanReply,
-      });
-    } catch (logError) {
-      console.error("Supabase Log Error:", logError);
+    // CHAT SPEICHERN
+    const { error } = await supabase.from("chat_logs").insert({
+      tenant: tenant.id,
+      session_id: crypto.randomUUID(),
+      user_message: lastUserMessage,
+      assistant_message: cleanReply,
+    });
+
+    if (error) {
+      console.error("SUPABASE INSERT ERROR:", error);
+    } else {
+      console.log("CHAT SAVED");
     }
 
-    return NextResponse.json({ ok: true, reply: cleanReply });
+    return NextResponse.json({
+      ok: true,
+      reply: cleanReply,
+    });
   } catch (err) {
     console.error("Chat API Error:", err);
 
