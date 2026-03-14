@@ -6,6 +6,7 @@ import { getTenant } from "@/lib/tenants";
 import { buildSystemPrompt } from "@/lib/prompt";
 import { loadTenantKnowledge } from "@/lib/loadTenantKnowledge";
 import { getTenantFromPath } from "@/lib/getTenant";
+import { supabaseAdmin } from "@/lib/supabase-admin";
 
 export const runtime = "nodejs";
 
@@ -15,6 +16,7 @@ const openai = new OpenAI({
 
 type ChatBody = {
   tenant?: string;
+  sessionId?: string;
   messages: Array<{ role: "user" | "assistant"; content: string }>;
 };
 
@@ -28,7 +30,6 @@ function tenantFromReferer(req: NextRequest): string | null {
 
   try {
     const url = new URL(ref);
-    // z.B. /demo oder /demo/xyz
     return getTenantFromPath(url.pathname);
   } catch {
     return null;
@@ -51,8 +52,6 @@ export async function POST(req: NextRequest) {
   try {
     const body = (await req.json()) as ChatBody;
 
-    // WICHTIG: req.nextUrl.pathname ist hier "/api/chat" → darüber kann man keinen Tenant erkennen.
-    // Daher: tenant aus Body/Query/Header/Referer ermitteln.
     const tenantParam =
       body.tenant ||
       req.nextUrl.searchParams.get("tenant") ||
@@ -64,10 +63,8 @@ export async function POST(req: NextRequest) {
 
     const knowledgeText = await loadTenantKnowledge(tenant.id);
 
-    // Systemprompt bauen (Knowledge nur 1x einfügen)
     const baseSystemPrompt = buildSystemPrompt(tenant, knowledgeText);
 
-    // Nur für Schettlers: Style-Prefix davor, sonst alles unverändert
     const systemPrompt =
       tenant.id === "zahnputzpulver"
         ? `${SCHETTLERS_STYLE_PREFIX}${baseSystemPrompt}`
@@ -87,6 +84,23 @@ export async function POST(req: NextRequest) {
       "Entschuldige, darauf kann ich gerade nicht antworten.";
 
     const cleanReply = stripMarkdown(reply);
+
+    // Letzte User Nachricht herausfinden
+    const lastUserMessage =
+      [...(body.messages || [])].reverse().find((m) => m.role === "user")
+        ?.content || "";
+
+    // CHAT LOG in Supabase speichern
+    try {
+      await supabaseAdmin.from("chat_logs").insert({
+        tenant: tenant.id,
+        session_id: body.sessionId ?? null,
+        user_message: lastUserMessage,
+        assistant_message: cleanReply,
+      });
+    } catch (logError) {
+      console.error("Supabase Log Error:", logError);
+    }
 
     return NextResponse.json({ ok: true, reply: cleanReply });
   } catch (err) {
