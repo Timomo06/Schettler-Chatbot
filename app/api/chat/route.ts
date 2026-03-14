@@ -18,9 +18,15 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
 
+type ChatMessage = {
+  role: "user" | "assistant";
+  content: string;
+};
+
 type ChatBody = {
   tenant?: string;
-  messages: Array<{ role: "user" | "assistant"; content: string }>;
+  sessionId?: string;
+  messages: ChatMessage[];
 };
 
 function stripMarkdown(text: string): string {
@@ -51,33 +57,48 @@ export async function POST(req: NextRequest) {
       "demo";
 
     const tenant = getTenant(tenantParam);
-
     const knowledgeText = await loadTenantKnowledge(tenant.id);
-
     const systemPrompt = buildSystemPrompt(tenant, knowledgeText);
 
-    const history = (body.messages || []).slice(-10);
+    const history = Array.isArray(body.messages) ? body.messages.slice(-10) : [];
+
+    const lastUserMessage =
+      [...history].reverse().find((m) => m.role === "user")?.content?.trim() || "";
+
+    if (!lastUserMessage) {
+      return NextResponse.json(
+        {
+          ok: false,
+          reply: "Es wurde keine gültige Nachricht übergeben.",
+        },
+        { status: 400 }
+      );
+    }
+
+    const sessionId = body.sessionId || crypto.randomUUID();
 
     const completion = await openai.chat.completions.create({
       model: "gpt-4o-mini",
       max_tokens: 400,
       temperature: 0.4,
-      messages: [{ role: "system", content: systemPrompt }, ...history],
+      messages: [
+        { role: "system", content: systemPrompt },
+        ...history.map((m) => ({
+          role: m.role,
+          content: m.content,
+        })),
+      ],
     });
 
     const reply =
-      completion.choices[0]?.message?.content ??
+      completion.choices[0]?.message?.content?.trim() ||
       "Entschuldige, darauf kann ich gerade nicht antworten.";
 
     const cleanReply = stripMarkdown(reply);
 
-    const lastUserMessage =
-      history.reverse().find((m) => m.role === "user")?.content || "";
-
-    // CHAT SPEICHERN
     const { error } = await supabase.from("chat_logs").insert({
       tenant: tenant.id,
-      session_id: crypto.randomUUID(),
+      session_id: sessionId,
       user_message: lastUserMessage,
       assistant_message: cleanReply,
     });
@@ -91,14 +112,18 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({
       ok: true,
       reply: cleanReply,
+      sessionId,
     });
   } catch (err) {
     console.error("Chat API Error:", err);
 
-    return NextResponse.json({
-      ok: false,
-      reply:
-        "Es gab kurz ein technisches Problem. Bitte stell deine Frage noch einmal.",
-    });
+    return NextResponse.json(
+      {
+        ok: false,
+        reply:
+          "Es gab kurz ein technisches Problem. Bitte stell deine Frage noch einmal.",
+      },
+      { status: 500 }
+    );
   }
 }
