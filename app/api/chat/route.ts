@@ -13,15 +13,34 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!,
-  {
-    auth: {
-      persistSession: false,
-    },
-  }
-);
+const supabaseUrlRaw = process.env.SUPABASE_URL;
+const supabaseUrl = supabaseUrlRaw?.trim();
+const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY?.trim();
+
+function toCharCodes(value?: string | null) {
+  if (!value) return [];
+  return Array.from(value).map((char) => char.charCodeAt(0));
+}
+
+console.log("SUPABASE_URL RAW:", JSON.stringify(supabaseUrlRaw));
+console.log("SUPABASE_URL TRIMMED:", JSON.stringify(supabaseUrl));
+console.log("SUPABASE_URL LENGTH:", supabaseUrl?.length);
+console.log("SUPABASE_URL CHAR CODES:", toCharCodes(supabaseUrl));
+console.log("HAS SERVICE ROLE:", !!supabaseServiceRoleKey);
+
+if (!supabaseUrl) {
+  throw new Error("SUPABASE_URL fehlt");
+}
+
+if (!supabaseServiceRoleKey) {
+  throw new Error("SUPABASE_SERVICE_ROLE_KEY fehlt");
+}
+
+const supabase = createClient(supabaseUrl, supabaseServiceRoleKey, {
+  auth: {
+    persistSession: false,
+  },
+});
 
 type ChatMessage = {
   role: "user" | "assistant";
