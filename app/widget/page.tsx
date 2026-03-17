@@ -525,8 +525,9 @@ export default function WidgetPage() {
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",
+                        width: 64,
                         height: 64,
-                        padding: "10px 18px",
+                        padding: "6px",
                         borderRadius: 16,
                         border: "1px solid rgba(255,255,255,0.42)",
                         background:
@@ -535,21 +536,25 @@ export default function WidgetPage() {
                         WebkitBackdropFilter: "blur(14px) saturate(145%)",
                         boxShadow:
                           "0 10px 30px rgba(0,0,0,0.10), inset 0 1px 0 rgba(255,255,255,0.42)",
+                        overflow: "hidden",
+                        flex: "0 0 auto",
                       }}
                       title="Powered"
                     >
-                     <img
-                       src={GLOBAL_LOGO_SRC}
-                      alt="Logo"
-                      style={{
-                      height: "80%",
-                      width: "80%",
-                      objectFit: "contain",
-                      display: "block",
-                      margin: "auto",
-                  }}
-                />
-                 
+                      <img
+                        src={GLOBAL_LOGO_SRC}
+                        alt="Logo"
+                        style={{
+                          height: "100%",
+                          width: "100%",
+                          objectFit: "contain",
+                          display: "block",
+                          margin: "auto",
+                          transform: "scale(1.28)",
+                          transformOrigin: "center",
+                          filter: "drop-shadow(0 2px 6px rgba(0,0,0,0.10))",
+                        }}
+                      />
                     </div>
 
                     {cfg.primaryCta?.url && (
