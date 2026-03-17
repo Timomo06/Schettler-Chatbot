@@ -540,15 +540,16 @@ export default function WidgetPage() {
                     >
                      <img
                        src={GLOBAL_LOGO_SRC}
-                       alt="Logo"
-                       style={{
-                       height: 64,
-                       width: "auto",
-                       display: "block",
-                       objectFit: "contain",
-                       filter: "drop-shadow(0 2px 6px rgba(0,0,0,0.12))",
-                     }}
-                  />
+                      alt="Logo"
+                      style={{
+                      height: "80%",
+                      width: "80%",
+                      objectFit: "contain",
+                      display: "block",
+                      margin: "auto",
+                  }}
+                />
+                 
                     </div>
 
                     {cfg.primaryCta?.url && (
