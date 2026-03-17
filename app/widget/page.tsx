@@ -527,7 +527,7 @@ export default function WidgetPage() {
                         justifyContent: "center",
                         width: 64,
                         height: 64,
-                        padding: "6px",
+                        padding: "8px",
                         borderRadius: 16,
                         border: "1px solid rgba(255,255,255,0.42)",
                         background:
@@ -550,7 +550,7 @@ export default function WidgetPage() {
                           objectFit: "contain",
                           display: "block",
                           margin: "auto",
-                          transform: "scale(1.06)",
+                          transform: "scale(1.04)",
                           transformOrigin: "center",
                           filter: "drop-shadow(0 2px 6px rgba(0,0,0,0.10))",
                         }}
