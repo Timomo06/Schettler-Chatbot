@@ -13,7 +13,7 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
-const supabaseUrlRaw = process.env.SUPABASE_URL;
+const supabaseUrlRaw = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseUrl = supabaseUrlRaw?.trim();
 const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY?.trim();
 
@@ -22,14 +22,14 @@ function toCharCodes(value?: string | null) {
   return Array.from(value).map((char) => char.charCodeAt(0));
 }
 
-console.log("SUPABASE_URL RAW:", JSON.stringify(supabaseUrlRaw));
-console.log("SUPABASE_URL TRIMMED:", JSON.stringify(supabaseUrl));
-console.log("SUPABASE_URL LENGTH:", supabaseUrl?.length);
-console.log("SUPABASE_URL CHAR CODES:", toCharCodes(supabaseUrl));
+console.log("NEXT_PUBLIC_SUPABASE_URL RAW:", JSON.stringify(supabaseUrlRaw));
+console.log("NEXT_PUBLIC_SUPABASE_URL TRIMMED:", JSON.stringify(supabaseUrl));
+console.log("NEXT_PUBLIC_SUPABASE_URL LENGTH:", supabaseUrl?.length);
+console.log("NEXT_PUBLIC_SUPABASE_URL CHAR CODES:", toCharCodes(supabaseUrl));
 console.log("HAS SERVICE ROLE:", !!supabaseServiceRoleKey);
 
 if (!supabaseUrl) {
-  throw new Error("SUPABASE_URL fehlt");
+  throw new Error("NEXT_PUBLIC_SUPABASE_URL fehlt");
 }
 
 if (!supabaseServiceRoleKey) {
