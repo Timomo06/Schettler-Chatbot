@@ -538,18 +538,17 @@ export default function WidgetPage() {
                       }}
                       title="Powered"
                     >
-                      <img
-                        src={GLOBAL_LOGO_SRC}
-                        alt="Logo"
-                        height={22}
-                        style={{
-                          height: 52,
-                          width: "auto",
-                          display: "block",
-                          objectFit: "contain",
-                          filter: "drop-shadow(0 2px 6px rgba(0,0,0,0.12))",
-                        }}
-                      />
+                     <img
+                       src={GLOBAL_LOGO_SRC}
+                       alt="Logo"
+                       style={{
+                       height: 64,
+                       width: "auto",
+                       display: "block",
+                       objectFit: "contain",
+                       filter: "drop-shadow(0 2px 6px rgba(0,0,0,0.12))",
+                     }}
+                  />
                     </div>
 
                     {cfg.primaryCta?.url && (
