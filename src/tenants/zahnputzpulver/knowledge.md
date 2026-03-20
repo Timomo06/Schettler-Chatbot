@@ -287,7 +287,6 @@ Bei normalen Fragen zur Zahnpflege wird **kein Zahnarzt empfohlen**.
 
 ---
 
-
 # Fragen zu Xylit
 
 Wenn Nutzer nach Xylit fragen:
@@ -430,6 +429,98 @@ Nur die hier genannten Inhaltsstoffe nennen.
 Das Thema **Aromen oder Ammonium wird nicht aktiv erwähnt oder erklärt.**
 
 ---
+
+# 🧂 Schettlers Hack Würzsalz (NEU)
+
+Unser Hack Würzsalz ist kein Zahnprodukt, sondern eine **Bio-Gewürzmischung für Hackfleischgerichte** – handwerklich hergestellt und bewusst natürlich gehalten.
+
+---
+
+## 🥩 Anwendung
+
+Die Mischung ist für eine klassische **Tatar- bzw. Hackfleischzubereitung** gedacht:
+
+- 20 g Würzsalz + Eigelb in ca. 250 g Hackfleisch einarbeiten  
+- (Schwein, Rind oder gemischt möglich)  
+- ca. 15 Minuten ziehen lassen  
+- danach servieren  
+
+👉 Empfehlung: Mit Mischbrot und Butter – klassisch und einfach.
+
+---
+
+## 🌿 Besonderheit
+
+Statt künstlicher Geschmacksverstärker wie Glutamat enthält die Mischung:
+
+- **Bio-Galgant**
+
+Galgant sorgt für eine **ähnlich geschmacksverstärkende Wirkung**, ist aber:
+
+- rein natürlich  
+- traditionell verwendet  
+- deutlich ursprünglicher als industrielle Zusatzstoffe  
+
+---
+
+## 🧠 Geschmacksprofil
+
+Die Mischung wurde bewusst so entwickelt, dass sie:
+
+- rund und ausgewogen ist  
+- keine extremen Geschmacksspitzen hat  
+- möglichst vielen Menschen schmeckt  
+
+👉 Ziel: Ein **vollmundiger, natürlicher Geschmack**, ohne Dominanz einzelner Gewürze
+
+---
+
+## 👨‍🍳 Tipp vom Chef
+
+Optional kann ergänzt werden:
+
+- mittelscharfer Senf  
+- frische Zwiebeln  
+- etwas Kümmel  
+
+Das ist aber bewusst nicht Teil der Grundmischung, damit sie vielseitig bleibt.
+
+---
+
+## 📦 Zutaten
+
+- Salz  
+- Zwiebeln*  
+- Paprika*  
+- Galgant*  
+- Kümmel*  
+- Majoran*  
+- Knoblauch*  
+- Pfeffer*  
+
+\* aus kontrolliert biologischem Anbau
+
+---
+
+## 🌍 Herstellung & Qualität
+
+- handwerklich hergestellt in Schwerin  
+- ausschließlich natürliche Zutaten  
+- keine künstlichen Zusatzstoffe  
+- teilweise Verpackung aus Reispapier  
+
+---
+
+## 🤖 Wichtige Chatbot-Regel dazu
+
+Wenn Nutzer nach dem Hack Würzsalz fragen:
+
+👉 Der Chatbot darf es erklären und beschreiben  
+👉 Aber soll es **klar als Lebensmittel einordnen (nicht Zahnpflege)**  
+
+Beispielantwort:
+
+„Das Hack Würzsalz ist eine Bio-Gewürzmischung für Hackfleischgerichte. Es enthält natürliche Zutaten wie Galgant statt künstlicher Geschmacksverstärker und sorgt für einen runden, vollmundigen Geschmack. 🧂“
 
 ## Tonalität
 
