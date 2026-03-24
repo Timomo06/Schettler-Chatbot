@@ -7,6 +7,24 @@ import { MessageCircle } from "lucide-react";
 
 type Msg = { role: "user" | "assistant"; content: string };
 
+function hexToRgb(hex: string) {
+  const clean = hex.replace("#", "");
+  const full =
+    clean.length === 3
+      ? clean
+          .split("")
+          .map((c) => c + c)
+          .join("")
+      : clean;
+
+  const num = parseInt(full, 16);
+  const r = (num >> 16) & 255;
+  const g = (num >> 8) & 255;
+  const b = num & 255;
+
+  return `${r}, ${g}, ${b}`;
+}
+
 export default function WidgetPage() {
   const [mounted, setMounted] = useState(false);
   const [tenantId, setTenantId] = useState("demo");
@@ -25,6 +43,7 @@ export default function WidgetPage() {
 
   const cfg = useMemo(() => getTenant(tenantId), [tenantId]);
   const theme = cfg.theme;
+  const accentRgb = useMemo(() => hexToRgb(theme.accent), [theme.accent]);
 
   const [open, setOpen] = useState(false);
   const [msgs, setMsgs] = useState<Msg[]>([]);
@@ -150,22 +169,22 @@ export default function WidgetPage() {
         height: 66,
         borderRadius: 999,
         border: open
-          ? "1px solid rgba(117,255,193,0.34)"
-          : "1px solid rgba(117,255,193,0.56)",
+          ? `1px solid rgba(${accentRgb}, 0.34)`
+          : `1px solid rgba(${accentRgb}, 0.56)`,
         background: open
           ? `
-              radial-gradient(150px 96px at 35% 25%, rgba(46,229,157,0.34) 0%, transparent 65%),
-              linear-gradient(180deg, rgba(255,255,255,0.28), rgba(46,229,157,0.16))
+              radial-gradient(150px 96px at 35% 25%, rgba(${accentRgb}, 0.34) 0%, transparent 65%),
+              linear-gradient(180deg, rgba(255,255,255,0.28), rgba(${accentRgb}, 0.16))
             `
           : `
-              radial-gradient(150px 96px at 35% 25%, rgba(46,229,157,0.72) 0%, transparent 65%),
-              linear-gradient(180deg, rgba(255,255,255,0.30), rgba(46,229,157,0.26))
+              radial-gradient(150px 96px at 35% 25%, rgba(${accentRgb}, 0.72) 0%, transparent 65%),
+              linear-gradient(180deg, rgba(255,255,255,0.30), rgba(${accentRgb}, 0.26))
             `,
         backdropFilter: "blur(18px) saturate(175%)",
         WebkitBackdropFilter: "blur(18px) saturate(175%)",
         boxShadow: open
-          ? "0 18px 52px rgba(0,0,0,0.22), 0 0 0 1px rgba(46,229,157,0.20) inset, 0 0 26px rgba(46,229,157,0.16)"
-          : "0 18px 52px rgba(0,0,0,0.20), 0 0 0 1px rgba(46,229,157,0.34) inset, 0 0 42px rgba(46,229,157,0.30)",
+          ? `0 18px 52px rgba(0,0,0,0.22), 0 0 0 1px rgba(${accentRgb}, 0.20) inset, 0 0 26px rgba(${accentRgb}, 0.16)`
+          : `0 18px 52px rgba(0,0,0,0.20), 0 0 0 1px rgba(${accentRgb}, 0.34) inset, 0 0 42px rgba(${accentRgb}, 0.30)`,
         cursor: "pointer",
         color: "#ffffff",
         display: "grid",
@@ -185,7 +204,7 @@ export default function WidgetPage() {
           style={{
             fontSize: 20,
             lineHeight: "20px",
-            textShadow: "0 0 12px rgba(46,229,157,0.20)",
+            textShadow: `0 0 12px rgba(${accentRgb}, 0.20)`,
           }}
         >
           ×
@@ -195,7 +214,7 @@ export default function WidgetPage() {
           size={28}
           strokeWidth={2.5}
           style={{
-            filter: "drop-shadow(0 0 10px rgba(46,229,157,0.16))",
+            filter: `drop-shadow(0 0 10px rgba(${accentRgb}, 0.16))`,
           }}
         />
       )}
@@ -274,7 +293,7 @@ export default function WidgetPage() {
           position: absolute;
           inset: -12px;
           border-radius: 999px;
-          background: radial-gradient(circle, rgba(46,229,157,0.36) 0%, rgba(46,229,157,0.13) 42%, transparent 72%);
+          background: radial-gradient(circle, rgba(${accentRgb}, 0.36) 0%, rgba(${accentRgb}, 0.13) 42%, transparent 72%);
           filter: blur(3px);
           opacity: 1;
           pointer-events: none;
@@ -285,7 +304,7 @@ export default function WidgetPage() {
           position: absolute;
           inset: -16px;
           border-radius: 999px;
-          border: 1px solid rgba(46,229,157,0.32);
+          border: 1px solid rgba(${accentRgb}, 0.32);
           animation: bt-pulse 2.4s ease-out infinite;
           pointer-events: none;
         }
@@ -320,7 +339,7 @@ export default function WidgetPage() {
           height: 8px;
           border-radius: 999px;
           background: ${theme.accent};
-          box-shadow: 0 0 0 6px rgba(46,229,157,0.16);
+          box-shadow: 0 0 0 6px rgba(${accentRgb}, 0.16);
         }
 
         .bt-badge-hide {
@@ -494,9 +513,9 @@ export default function WidgetPage() {
                         width: 12,
                         height: 12,
                         borderRadius: 999,
-                        background: loading ? "#f5c542" : "#2ee59d",
+                        background: loading ? "#f5c542" : theme.accent,
                         boxShadow: `0 0 0 7px ${
-                          loading ? "rgba(245,197,66,0.14)" : "rgba(46,229,157,0.12)"
+                          loading ? "rgba(245,197,66,0.14)" : `rgba(${accentRgb}, 0.12)`
                         }`,
                         flex: "0 0 auto",
                       }}

@@ -1,4 +1,4 @@
-export type TenantId = "demo" | "zahnputzpulver" | "btdesigns";
+export type TenantId = "demo" | "zahnputzpulver" | "btdesigns" | "bauteam";
 
 export type ThemeConfig = {
   accent: string;
@@ -124,7 +124,6 @@ export const TENANTS: Record<TenantId, TenantConfig> = {
     },
 
     websiteUrl: "https://www.zahnputzpulver.de/?srsltid=AfmBOooeohb0pS2QK6pGBQu15asRHTeelJ-91oJQhvclnOJ2O5EX0O9X",
-    // primaryCta entfernt, damit der Button "Zum Produkt" im Widget nicht mehr erscheint
 
     fallbackContact: {
       label: "Support",
@@ -141,7 +140,7 @@ export const TENANTS: Record<TenantId, TenantConfig> = {
       {
         name: "Service Team",
         role: "Kundenservice",
-        email: "post@zahnputzpulver.de",  
+        email: "post@zahnputzpulver.de",
       },
     ],
 
@@ -214,6 +213,56 @@ export const TENANTS: Record<TenantId, TenantConfig> = {
 
     assets: {
       launcherIcon: "/tenants/btdesigns/icon.png",
+    },
+  },
+
+  bauteam: {
+    id: "bauteam",
+    brandName: "BauTeam",
+    assistantName: "BauBot Praktikus",
+    language: "de",
+
+    knowledge: {
+      files: ["knowledge.md"],
+    },
+
+    websiteUrl: "https://praktikus-bau.de",
+
+    fallbackContact: {
+      label: "Kontakt",
+      value: "info@praktikus-bau.de",
+    },
+
+    companyInfo: {
+      address: "Deutschland",
+      phone: "+49",
+      email: "info@praktikus-bau.de",
+      openingHours: "Nach Vereinbarung",
+    },
+
+    contacts: [
+      {
+        name: "BauTeam Praktikus",
+        role: "Beratung",
+        email: "info@praktikus-bau.de",
+      },
+    ],
+
+    rules: {
+      noMedicalClaims: true,
+      noInventingPrices: true,
+      noGuarantees: true,
+    },
+
+    theme: {
+  accent: "#e53935",
+  bg: "#120808",
+  glass: "rgba(229,57,53,0.15)",
+  text: "#fff1f1",
+},
+
+    assets: {
+      launcherIcon: "/favicon.ico",
     },
   },
 };
