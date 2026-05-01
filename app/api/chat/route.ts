@@ -132,7 +132,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    if (messages.length > 10) {
+    if (messages.length > 50) {
       return NextResponse.json(
         { ok: false, reply: "Zu viele Nachrichten im Verlauf." },
         { status: 400, headers: corsHeaders(origin) }
