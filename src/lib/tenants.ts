@@ -1,4 +1,4 @@
-export type TenantId = "demo" | "zahnputzpulver" | "btdesigns" | "bauteam";
+export type TenantId = "demo" | "zahnputzpulver" | "btdesigns" | "bauteam" | "willi";
 
 export type ThemeConfig = {
   accent: string;
@@ -255,11 +255,64 @@ export const TENANTS: Record<TenantId, TenantConfig> = {
     },
 
     theme: {
-  accent: "#e53935",
-  bg: "#120808",
-  glass: "rgba(229,57,53,0.15)",
-  text: "#fff1f1",
-},
+      accent: "#e53935",
+      bg: "#120808",
+      glass: "rgba(229,57,53,0.15)",
+      text: "#fff1f1",
+    },
+
+    assets: {
+      launcherIcon: "/favicon.ico",
+    },
+  },
+
+  willi: {
+    id: "willi",
+    brandName: "Willi Official",
+    assistantName: "Willi Assistant",
+    language: "de",
+
+    knowledge: {
+      files: ["knowledge.md"],
+    },
+
+    websiteUrl: "https://willi-official.de",
+    primaryCta: {
+      label: "Anfrage stellen",
+      url: "https://willi-official.de",
+    },
+
+    fallbackContact: {
+      label: "Booking-Anfrage",
+      value: "Über das Kontaktformular auf willi-official.de",
+    },
+
+    companyInfo: {
+      address: "Deutschland",
+      email: "Über das Kontaktformular auf willi-official.de",
+      openingHours: "Nach Vereinbarung",
+    },
+
+    contacts: [
+      {
+        name: "Willi",
+        role: "Musiker / Booking",
+        email: "Über das Kontaktformular auf willi-official.de",
+      },
+    ],
+
+    rules: {
+      noMedicalClaims: true,
+      noInventingPrices: true,
+      noGuarantees: true,
+    },
+
+    theme: {
+      accent: "#c9a66b",
+      bg: "#0f0d0a",
+      glass: "rgba(201,166,107,0.14)",
+      text: "#fff7e8",
+    },
 
     assets: {
       launcherIcon: "/favicon.ico",
