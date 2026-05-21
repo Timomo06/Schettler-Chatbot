@@ -15,14 +15,21 @@ const allowedOrigins = [
   "https://btdesigns.de",
   "https://www.btdesigns.de",
   "https://schettlers-chatbot-lca3.vercel.app",
+  "http://localhost:3000",
 ];
 
-const redis = Redis.fromEnv();
+const hasUpstash =
+  !!process.env.UPSTASH_REDIS_REST_URL &&
+  !!process.env.UPSTASH_REDIS_REST_TOKEN;
 
-const ratelimit = new Ratelimit({
-  redis,
-  limiter: Ratelimit.slidingWindow(20, "1 m"),
-});
+const redis = hasUpstash ? Redis.fromEnv() : null;
+
+const ratelimit = redis
+  ? new Ratelimit({
+      redis,
+      limiter: Ratelimit.slidingWindow(20, "1 m"),
+    })
+  : null;
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -31,18 +38,11 @@ const openai = new OpenAI({
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim();
 const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY?.trim();
 
-if (!supabaseUrl) {
-  throw new Error("NEXT_PUBLIC_SUPABASE_URL fehlt");
-}
-
-if (!supabaseServiceRoleKey) {
-  throw new Error("SUPABASE_SERVICE_ROLE_KEY fehlt");
-}
+if (!supabaseUrl) throw new Error("NEXT_PUBLIC_SUPABASE_URL fehlt");
+if (!supabaseServiceRoleKey) throw new Error("SUPABASE_SERVICE_ROLE_KEY fehlt");
 
 const supabase = createClient(supabaseUrl, supabaseServiceRoleKey, {
-  auth: {
-    persistSession: false,
-  },
+  auth: { persistSession: false },
 });
 
 type ChatMessage = {
@@ -54,6 +54,18 @@ type ChatBody = {
   tenant?: string;
   sessionId?: string;
   messages?: ChatMessage[];
+};
+
+type BookingExtraction = {
+  bookingIntent: boolean;
+  confirmed: boolean;
+  name: string | null;
+  email: string | null;
+  phone: string | null;
+  topic: string | null;
+  start: string | null;
+  end: string | null;
+  missing: string[];
 };
 
 function stripMarkdown(text: string): string {
@@ -89,6 +101,86 @@ function corsHeaders(origin: string) {
   };
 }
 
+async function extractBookingData(
+  history: ChatMessage[]
+): Promise<BookingExtraction> {
+  const today = new Date().toISOString().slice(0, 10);
+
+  const completion = await openai.chat.completions.create({
+    model: "gpt-4o-mini",
+    temperature: 0,
+    response_format: { type: "json_object" },
+    messages: [
+      {
+        role: "system",
+        content: `
+Du extrahierst Terminbuchungsdaten aus einem deutschen Chatverlauf.
+
+Heute ist ${today}.
+Zeitzone ist Europe/Berlin.
+
+Antworte ausschließlich als JSON mit diesem Schema:
+{
+  "bookingIntent": boolean,
+  "confirmed": boolean,
+  "name": string | null,
+  "email": string | null,
+  "phone": string | null,
+  "topic": string | null,
+  "start": string | null,
+  "end": string | null,
+  "missing": string[]
+}
+
+Regeln:
+- bookingIntent ist true, wenn der Nutzer einen Termin, ein Gespräch, einen Rückruf oder eine Beratung buchen möchte.
+- confirmed ist nur true, wenn der Nutzer klar bestätigt hat, dass der Termin verbindlich eingetragen werden soll.
+- start und end im Format YYYY-MM-DDTHH:mm:ss.
+- Wenn keine Endzeit genannt ist, nutze 30 Minuten Dauer.
+- Erfinde keine Namen, Mails, Telefonnummern oder Zeiten.
+- Wenn Daten fehlen, liste sie in missing.
+        `.trim(),
+      },
+      ...history.map((m) => ({
+        role: m.role,
+        content: m.content,
+      })),
+    ],
+  });
+
+  try {
+    return JSON.parse(completion.choices[0]?.message?.content || "{}");
+  } catch {
+    return {
+      bookingIntent: false,
+      confirmed: false,
+      name: null,
+      email: null,
+      phone: null,
+      topic: null,
+      start: null,
+      end: null,
+      missing: [],
+    };
+  }
+}
+
+async function logChat(params: {
+  tenantId: string;
+  sessionId: string;
+  userMessage: string;
+  assistantMessage: string;
+}) {
+  const { error } = await supabase.from("chat_logs").insert({
+    tenant: params.tenantId,
+    session_id: params.sessionId,
+    user_message: params.userMessage,
+    assistant_message: params.assistantMessage,
+  });
+
+  if (error) console.error("SUPABASE INSERT ERROR:", error);
+}
+
 export async function OPTIONS(req: NextRequest) {
   const origin = req.headers.get("origin");
 
@@ -112,17 +204,18 @@ export async function POST(req: NextRequest) {
   try {
     const ip = getClientIp(req);
 
-    const { success } = await ratelimit.limit(`chat:${ip}`);
+    if (ratelimit) {
+      const { success } = await ratelimit.limit(`chat:${ip}`);
 
-    if (!success) {
-      return NextResponse.json(
-        { ok: false, reply: "Zu viele Anfragen. Bitte kurz warten." },
-        { status: 429, headers: corsHeaders(origin) }
-      );
+      if (!success) {
+        return NextResponse.json(
+          { ok: false, reply: "Zu viele Anfragen. Bitte kurz warten." },
+          { status: 429, headers: corsHeaders(origin) }
+        );
+      }
     }
 
     const body = (await req.json()) as ChatBody;
-
     const messages = body.messages ?? [];
 
     if (!Array.isArray(messages)) {
@@ -174,9 +267,82 @@ export async function POST(req: NextRequest) {
       "demo";
 
     const tenant = getTenant(tenantParam);
-    const knowledgeText = await loadTenantKnowledge(tenant.id);
-    const systemPrompt = buildSystemPrompt(tenant, knowledgeText);
     const sessionId = body.sessionId || crypto.randomUUID();
+
+    const calendarBookingEnabled = tenant.id === "btdesigns";
+
+    if (calendarBookingEnabled) {
+      const booking = await extractBookingData(history);
+
+      const hasAllBookingData =
+        booking.bookingIntent &&
+        booking.confirmed &&
+        booking.name &&
+        booking.email &&
+        booking.start &&
+        booking.end;
+
+      if (hasAllBookingData) {
+        const eventResponse = await fetch(
+          `${req.nextUrl.origin}/api/create-event`,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              name: booking.name,
+              email: booking.email,
+              phone: booking.phone || "",
+              topic: booking.topic || "Beratung über den Chatbot",
+              start: booking.start,
+              end: booking.end,
+            }),
+          }
+        );
+
+        const eventData = await eventResponse.json();
+
+        let reply = "";
+
+        if (eventResponse.ok && eventData.success) {
+          reply =
+            "Perfekt, ich habe den Termin verbindlich eingetragen. ✅";
+        } else if (eventResponse.status === 409) {
+          reply =
+            "Der gewünschte Zeitraum ist leider bereits belegt. Bitte nenne mir eine andere Uhrzeit oder einen anderen Tag. 📅";
+        } else {
+          reply =
+            "Der Termin konnte gerade technisch nicht eingetragen werden. Bitte versuche es noch einmal oder kontaktiere uns direkt. ⚠️";
+        }
+
+        await logChat({
+          tenantId: tenant.id,
+          sessionId,
+          userMessage: lastUserMessage,
+          assistantMessage: reply,
+        });
+
+        return NextResponse.json(
+          { ok: true, reply, sessionId },
+          { headers: corsHeaders(origin) }
+        );
+      }
+    }
+
+    const knowledgeText = await loadTenantKnowledge(tenant.id);
+
+    const bookingPromptAddOn = calendarBookingEnabled
+      ? `
+Zusatzregel Terminbuchung:
+Du darfst BTDesigns-Beratungstermine vorbereiten.
+Frage nacheinander Name, E-Mail, Telefonnummer optional, Thema sowie Datum und Uhrzeit ab.
+Buche niemals ohne klare Bestätigung des Nutzers.
+Wenn alle Daten vorliegen, frage: "Soll ich den Termin verbindlich eintragen?"
+Erst wenn der Nutzer klar bestätigt, gilt der Termin als freigegeben.
+`
+      : "";
+
+    const systemPrompt =
+      buildSystemPrompt(tenant, knowledgeText) + "\n\n" + bookingPromptAddOn;
 
     const completion = await openai.chat.completions.create({
       model: "gpt-4o-mini",
@@ -197,25 +363,12 @@ export async function POST(req: NextRequest) {
 
     const cleanReply = stripMarkdown(reply);
 
-    const { error } = await supabase.from("chat_logs").insert({
-      tenant: tenant.id,
-      session_id: sessionId,
-      user_message: lastUserMessage,
-      assistant_message: cleanReply,
+    await logChat({
+      tenantId: tenant.id,
+      sessionId,
+      userMessage: lastUserMessage,
+      assistantMessage: cleanReply,
     });
-
-    if (error) {
-      console.error("SUPABASE INSERT ERROR:", error);
-
-      return NextResponse.json(
-        {
-          ok: true,
-          reply: cleanReply,
-          sessionId,
-        },
-        { headers: corsHeaders(origin) }
-      );
-    }
 
     return NextResponse.json(
       {
