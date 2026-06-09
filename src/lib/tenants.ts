@@ -1,4 +1,10 @@
-export type TenantId = "demo" | "zahnputzpulver" | "btdesigns" | "bauteam" | "willi";
+export type TenantId =
+  | "demo"
+  | "zahnputzpulver"
+  | "btdesigns"
+  | "bauteam"
+  | "willi"
+  | "mm-wartung";
 
 export type ThemeConfig = {
   accent: string;
@@ -123,7 +129,8 @@ export const TENANTS: Record<TenantId, TenantConfig> = {
       files: ["knowledge.md"],
     },
 
-    websiteUrl: "https://www.zahnputzpulver.de/?srsltid=AfmBOooeohb0pS2QK6pGBQu15asRHTeelJ-91oJQhvclnOJ2O5EX0O9X",
+    websiteUrl:
+      "https://www.zahnputzpulver.de/?srsltid=AfmBOooeohb0pS2QK6pGBQu15asRHTeelJ-91oJQhvclnOJ2O5EX0O9X",
 
     fallbackContact: {
       label: "Support",
@@ -312,6 +319,61 @@ export const TENANTS: Record<TenantId, TenantConfig> = {
       bg: "#0f0d0a",
       glass: "rgba(201,166,107,0.14)",
       text: "#fff7e8",
+    },
+
+    assets: {
+      launcherIcon: "/favicon.ico",
+    },
+  },
+
+  "mm-wartung": {
+    id: "mm-wartung",
+    brandName: "MM Wartung",
+    assistantName: "MM Assistent",
+    language: "de",
+
+    knowledge: {
+      files: ["knowledge.md"],
+    },
+
+    websiteUrl: "https://mm-wartung.de",
+
+    primaryCta: {
+      label: "Anfrage stellen",
+      url: "https://mm-wartung.de",
+    },
+
+    fallbackContact: {
+      label: "Kontakt",
+      value: "info@mm-wartung.de",
+    },
+
+    companyInfo: {
+      address: "Deutschland",
+      phone: "Auf Anfrage",
+      email: "info@mm-wartung.de",
+      openingHours: "Nach Vereinbarung",
+    },
+
+    contacts: [
+      {
+        name: "Moritz Manthei",
+        role: "Ansprechpartner",
+        email: "info@mm-wartung.de",
+      },
+    ],
+
+    rules: {
+      noMedicalClaims: true,
+      noInventingPrices: true,
+      noGuarantees: true,
+    },
+
+    theme: {
+      accent: "#ff7a00",
+      bg: "#0d0d0d",
+      glass: "rgba(255,122,0,0.12)",
+      text: "#ffffff",
     },
 
     assets: {

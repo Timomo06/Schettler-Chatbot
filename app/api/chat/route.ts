@@ -72,6 +72,29 @@ function stripMarkdown(text: string): string {
   return text.replace(/\*\*/g, "").replace(/__/g, "");
 }
 
+function isThanksOnly(text: string): boolean {
+  const clean = text.toLowerCase().trim();
+  return ["danke", "dankeschön", "danke dir", "top danke", "super danke", "alles klar danke", "okay danke", "ok danke"].some(
+    (v) => clean === v || clean.includes(v)
+  );
+}
+
+function formatGermanTime(iso: string): string {
+  return new Intl.DateTimeFormat("de-DE", {
+    weekday: "long",
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    timeZone: "Europe/Berlin",
+  }).format(new Date(iso));
+}
+
+function addMinutes(iso: string, minutes: number): string {
+  return new Date(new Date(iso).getTime() + minutes * 60000).toISOString();
+}
+
 function tenantFromReferer(req: NextRequest): string | null {
   const ref = req.headers.get("referer");
   if (!ref) return null;
@@ -101,9 +124,23 @@ function corsHeaders(origin: string) {
   };
 }
 
-async function extractBookingData(
-  history: ChatMessage[]
-): Promise<BookingExtraction> {
+async function logChat(params: {
+  tenantId: string;
+  sessionId: string;
+  userMessage: string;
+  assistantMessage: string;
+}) {
+  const { error } = await supabase.from("chat_logs").insert({
+    tenant: params.tenantId,
+    session_id: params.sessionId,
+    user_message: params.userMessage,
+    assistant_message: params.assistantMessage,
+  });
+
+  if (error) console.error("SUPABASE INSERT ERROR:", error);
+}
+
+async function extractBookingData(history: ChatMessage[]): Promise<BookingExtraction> {
   const today = new Date().toISOString().slice(0, 10);
 
   const completion = await openai.chat.completions.create({
@@ -119,7 +156,7 @@ Du extrahierst Terminbuchungsdaten aus einem deutschen Chatverlauf.
 Heute ist ${today}.
 Zeitzone ist Europe/Berlin.
 
-Antworte ausschließlich als JSON mit diesem Schema:
+Antworte ausschließlich als JSON:
 {
   "bookingIntent": boolean,
   "confirmed": boolean,
@@ -134,7 +171,8 @@ Antworte ausschließlich als JSON mit diesem Schema:
 
 Regeln:
 - bookingIntent ist true, wenn der Nutzer einen Termin, ein Gespräch, einen Rückruf oder eine Beratung buchen möchte.
-- confirmed ist nur true, wenn der Nutzer klar bestätigt hat, dass der Termin verbindlich eingetragen werden soll.
+- confirmed ist nur true, wenn der Nutzer klar sagt, dass der Termin verbindlich eingetragen/gebucht werden soll.
+- Ein reines "Danke" ist keine Bestätigung.
 - start und end im Format YYYY-MM-DDTHH:mm:ss.
 - Wenn keine Endzeit genannt ist, nutze 30 Minuten Dauer.
 - Erfinde keine Namen, Mails, Telefonnummern oder Zeiten.
@@ -142,7 +180,7 @@ Regeln:
         `.trim(),
       },
       ...history.map((m) => ({
-        role: m.role,
+        role: m.role as "user" | "assistant",
         content: m.content,
       })),
     ],
@@ -165,20 +203,45 @@ Regeln:
   }
 }
 
-async function logChat(params: {
-  tenantId: string;
-  sessionId: string;
-  userMessage: string;
-  assistantMessage: string;
-}) {
-  const { error } = await supabase.from("chat_logs").insert({
-    tenant: params.tenantId,
-    session_id: params.sessionId,
-    user_message: params.userMessage,
-    assistant_message: params.assistantMessage,
+async function checkSlot(origin: string, start: string, end: string) {
+  const response = await fetch(`${origin}/api/create-event`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      start,
+      end,
+      checkOnly: true,
+    }),
   });
 
-  if (error) console.error("SUPABASE INSERT ERROR:", error);
+  return {
+    ok: response.ok,
+    status: response.status,
+  };
+}
+
+async function findNextFreeSlotSameDay(origin: string, start: string, end: string) {
+  const durationMs = new Date(end).getTime() - new Date(start).getTime();
+  const durationMinutes = Math.max(30, Math.round(durationMs / 60000));
+  const day = start.slice(0, 10);
+
+  for (let i = 1; i <= 12; i++) {
+    const nextStart = addMinutes(start, i * 30);
+    const nextEnd = addMinutes(nextStart, durationMinutes);
+
+    if (nextStart.slice(0, 10) !== day) break;
+
+    const hour = new Date(nextStart).getHours();
+    if (hour < 8 || hour > 19) continue;
+
+    const check = await checkSlot(origin, nextStart, nextEnd);
+
+    if (check.ok) {
+      return { start: nextStart, end: nextEnd };
+    }
+  }
+
+  return null;
 }
 
 export async function OPTIONS(req: NextRequest) {
@@ -202,6 +265,7 @@ export async function POST(req: NextRequest) {
   }
 
   try {
+    const requestOrigin = new URL(req.url).origin;
     const ip = getClientIp(req);
 
     if (ratelimit) {
@@ -268,11 +332,13 @@ export async function POST(req: NextRequest) {
 
     const tenant = getTenant(tenantParam);
     const sessionId = body.sessionId || crypto.randomUUID();
+   const calendarBookingEnabled = ["btdesigns", "demo", "lina"].includes(tenant.id);
+// mm-wartung bewusst NICHT eintragen, weil der Bot nur beraten und Anfragen vorbereiten soll
 
-    const calendarBookingEnabled = tenant.id === "btdesigns";
-
-    if (calendarBookingEnabled) {
+    if (calendarBookingEnabled && !isThanksOnly(lastUserMessage)) {
       const booking = await extractBookingData(history);
+
+      const hasProposedTime = booking.bookingIntent && booking.start && booking.end;
 
       const hasAllBookingData =
         booking.bookingIntent &&
@@ -283,33 +349,42 @@ export async function POST(req: NextRequest) {
         booking.end;
 
       if (hasAllBookingData) {
-        const eventResponse = await fetch(
-          `${req.nextUrl.origin}/api/create-event`,
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              name: booking.name,
-              email: booking.email,
-              phone: booking.phone || "",
-              topic: booking.topic || "Beratung über den Chatbot",
-              start: booking.start,
-              end: booking.end,
-            }),
-          }
-        );
+        const eventResponse = await fetch(`${requestOrigin}/api/create-event`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            name: booking.name,
+            email: booking.email,
+            phone: booking.phone || "",
+            topic: booking.topic || "Beratung über den Chatbot",
+            start: booking.start,
+            end: booking.end,
+            checkOnly: false,
+          }),
+        });
 
         const eventData = await eventResponse.json();
 
         let reply = "";
 
         if (eventResponse.ok && eventData.success) {
-          reply =
-            "Perfekt, ich habe den Termin verbindlich eingetragen. ✅";
+          reply = `Perfekt, ich habe den Termin verbindlich eingetragen: ${formatGermanTime(
+            booking.start
+          )}. ✅`;
         } else if (eventResponse.status === 409) {
-          reply =
-            "Der gewünschte Zeitraum ist leider bereits belegt. Bitte nenne mir eine andere Uhrzeit oder einen anderen Tag. 📅";
+          const alternative = await findNextFreeSlotSameDay(
+            requestOrigin,
+            booking.start,
+            booking.end
+          );
+
+          reply = alternative
+            ? `Der gewünschte Zeitraum ist leider bereits belegt. Am gleichen Tag wäre ${formatGermanTime(
+                alternative.start
+              )} noch frei. Passt dir dieser Termin? 📅`
+            : "Der gewünschte Zeitraum ist leider bereits belegt. Am gleichen Tag habe ich keinen passenden freien Alternativtermin gefunden. Bitte nenne mir einen anderen Tag. 📅";
         } else {
+          console.error("CREATE EVENT ERROR:", eventData);
           reply =
             "Der Termin konnte gerade technisch nicht eingetragen werden. Bitte versuche es noch einmal oder kontaktiere uns direkt. ⚠️";
         }
@@ -326,6 +401,43 @@ export async function POST(req: NextRequest) {
           { headers: corsHeaders(origin) }
         );
       }
+
+      if (hasProposedTime && !booking.confirmed) {
+        const checkResponse = await checkSlot(requestOrigin, booking.start, booking.end);
+
+        let reply = "";
+
+        if (checkResponse.ok) {
+          reply =
+            "Der Zeitraum ist noch frei. Schick mir bitte noch deinen Namen, deine E-Mail und optional deine Telefonnummer, dann frage ich dich einmal zur verbindlichen Bestätigung. ✅";
+        } else if (checkResponse.status === 409) {
+          const alternative = await findNextFreeSlotSameDay(
+            requestOrigin,
+            booking.start,
+            booking.end
+          );
+
+          reply = alternative
+            ? `Der gewünschte Zeitraum ist leider schon belegt. Am gleichen Tag wäre ${formatGermanTime(
+                alternative.start
+              )} noch frei. Passt dir dieser Termin? 📅`
+            : "Der gewünschte Zeitraum ist leider schon belegt. Am gleichen Tag habe ich keinen passenden freien Alternativtermin gefunden. Nenne mir bitte einen anderen Tag. 📅";
+        }
+
+        if (reply) {
+          await logChat({
+            tenantId: tenant.id,
+            sessionId,
+            userMessage: lastUserMessage,
+            assistantMessage: reply,
+          });
+
+          return NextResponse.json(
+            { ok: true, reply, sessionId },
+            { headers: corsHeaders(origin) }
+          );
+        }
+      }
     }
 
     const knowledgeText = await loadTenantKnowledge(tenant.id);
@@ -334,10 +446,19 @@ export async function POST(req: NextRequest) {
       ? `
 Zusatzregel Terminbuchung:
 Du darfst BTDesigns-Beratungstermine vorbereiten.
+Wenn der Nutzer eine konkrete Wunschzeit nennt, prüft das System automatisch die Verfügbarkeit.
 Frage nacheinander Name, E-Mail, Telefonnummer optional, Thema sowie Datum und Uhrzeit ab.
-Buche niemals ohne klare Bestätigung des Nutzers.
-Wenn alle Daten vorliegen, frage: "Soll ich den Termin verbindlich eintragen?"
-Erst wenn der Nutzer klar bestätigt, gilt der Termin als freigegeben.
+Wenn alle Daten vorliegen und der Zeitraum frei ist, frage: "Soll ich den Termin verbindlich eintragen?"
+Ein reines "Danke" oder "Dankeschön" ist keine Buchungsbestätigung.
+
+Wichtig:
+ABSOLUTES VERBOT:
+Du darfst niemals sagen oder andeuten, dass ein Termin eingetragen, gebucht, gespeichert oder verbindlich vereinbart wurde.
+Auch nicht nach einer Bestätigung wie "Ja".
+Nur der Server-Code darf nach erfolgreichem /api/create-event-Aufruf diese Erfolgsmeldung ausgeben.
+Wenn der Nutzer bestätigt, antworte nicht selbst mit Erfolg, sondern bleibe neutral.
+Wenn Name oder E-Mail fehlen, frage diese zuerst ab.
+Sage niemals "Ich trage ihn jetzt ein" oder "Einen Moment", wenn du den Termin nicht technisch erstellt hast.
 `
       : "";
 
@@ -351,7 +472,7 @@ Erst wenn der Nutzer klar bestätigt, gilt der Termin als freigegeben.
       messages: [
         { role: "system", content: systemPrompt },
         ...history.map((m) => ({
-          role: m.role,
+          role: m.role as "user" | "assistant",
           content: m.content,
         })),
       ],
