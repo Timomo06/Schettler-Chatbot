@@ -329,7 +329,7 @@ export const TENANTS: Record<TenantId, TenantConfig> = {
   "mm-wartung": {
     id: "mm-wartung",
     brandName: "MM Wartung",
-    assistantName: "MM Assistent",
+    assistantName: "MM-Doc",
     language: "de",
 
     knowledge: {
