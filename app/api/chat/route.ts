@@ -74,9 +74,17 @@ function stripMarkdown(text: string): string {
 
 function isThanksOnly(text: string): boolean {
   const clean = text.toLowerCase().trim();
-  return ["danke", "dankeschön", "danke dir", "top danke", "super danke", "alles klar danke", "okay danke", "ok danke"].some(
-    (v) => clean === v || clean.includes(v)
-  );
+
+  return [
+    "danke",
+    "dankeschön",
+    "danke dir",
+    "top danke",
+    "super danke",
+    "alles klar danke",
+    "okay danke",
+    "ok danke",
+  ].some((v) => clean === v || clean.includes(v));
 }
 
 function formatGermanTime(iso: string): string {
@@ -140,7 +148,9 @@ async function logChat(params: {
   if (error) console.error("SUPABASE INSERT ERROR:", error);
 }
 
-async function extractBookingData(history: ChatMessage[]): Promise<BookingExtraction> {
+async function extractBookingData(
+  history: ChatMessage[]
+): Promise<BookingExtraction> {
   const today = new Date().toISOString().slice(0, 10);
 
   const completion = await openai.chat.completions.create({
@@ -220,7 +230,11 @@ async function checkSlot(origin: string, start: string, end: string) {
   };
 }
 
-async function findNextFreeSlotSameDay(origin: string, start: string, end: string) {
+async function findNextFreeSlotSameDay(
+  origin: string,
+  start: string,
+  end: string
+) {
   const durationMs = new Date(end).getTime() - new Date(start).getTime();
   const durationMinutes = Math.max(30, Math.round(durationMs / 60000));
   const day = start.slice(0, 10);
@@ -332,23 +346,31 @@ export async function POST(req: NextRequest) {
 
     const tenant = getTenant(tenantParam);
     const sessionId = body.sessionId || crypto.randomUUID();
-   const calendarBookingEnabled = ["btdesigns", "demo", "lina"].includes(tenant.id);
-// mm-wartung bewusst NICHT eintragen, weil der Bot nur beraten und Anfragen vorbereiten soll
+
+    const calendarBookingEnabled = ["btdesigns", "demo", "lina"].includes(
+      tenant.id
+    );
 
     if (calendarBookingEnabled && !isThanksOnly(lastUserMessage)) {
       const booking = await extractBookingData(history);
 
-      const hasProposedTime = booking.bookingIntent && booking.start && booking.end;
+      const hasProposedTime =
+        booking.bookingIntent &&
+        typeof booking.start === "string" &&
+        typeof booking.end === "string";
 
       const hasAllBookingData =
         booking.bookingIntent &&
         booking.confirmed &&
-        booking.name &&
-        booking.email &&
-        booking.start &&
-        booking.end;
+        typeof booking.name === "string" &&
+        typeof booking.email === "string" &&
+        typeof booking.start === "string" &&
+        typeof booking.end === "string";
 
       if (hasAllBookingData) {
+        const bookingStart = booking.start;
+        const bookingEnd = booking.end;
+
         const eventResponse = await fetch(`${requestOrigin}/api/create-event`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -357,8 +379,8 @@ export async function POST(req: NextRequest) {
             email: booking.email,
             phone: booking.phone || "",
             topic: booking.topic || "Beratung über den Chatbot",
-            start: booking.start,
-            end: booking.end,
+            start: bookingStart,
+            end: bookingEnd,
             checkOnly: false,
           }),
         });
@@ -368,15 +390,16 @@ export async function POST(req: NextRequest) {
         let reply = "";
 
         if (eventResponse.ok && eventData.success) {
-      reply = `Perfekt, ich habe den Termin verbindlich eingetragen: ${formatGermanTime(
-  booking.start!
-)}. ✅`;
+          reply = `Perfekt, ich habe den Termin verbindlich eingetragen: ${formatGermanTime(
+            booking.start!
+          )}. ✅`;
         } else if (eventResponse.status === 409) {
-         const alternative = await findNextFreeSlotSameDay(
-  requestOrigin,
-  booking.start!,
-  booking.end!
-);
+          const alternative = await findNextFreeSlotSameDay(
+            requestOrigin,
+            booking.start!,
+            booking.end!
+          );
+
           reply = alternative
             ? `Der gewünschte Zeitraum ist leider bereits belegt. Am gleichen Tag wäre ${formatGermanTime(
                 alternative.start
@@ -402,7 +425,14 @@ export async function POST(req: NextRequest) {
       }
 
       if (hasProposedTime && !booking.confirmed) {
-        const checkResponse = await checkSlot(requestOrigin, booking.start!, booking.end!);
+        const bookingStart = booking.start as string;
+        const bookingEnd = booking.end as string;
+
+        const checkResponse = await checkSlot(
+          requestOrigin,
+          bookingStart,
+          bookingEnd
+        );
 
         let reply = "";
 
@@ -412,8 +442,8 @@ export async function POST(req: NextRequest) {
         } else if (checkResponse.status === 409) {
           const alternative = await findNextFreeSlotSameDay(
             requestOrigin,
-            booking.start,
-            booking.end
+            bookingStart,
+            bookingEnd
           );
 
           reply = alternative
