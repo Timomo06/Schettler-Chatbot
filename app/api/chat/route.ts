@@ -368,16 +368,15 @@ export async function POST(req: NextRequest) {
         let reply = "";
 
         if (eventResponse.ok && eventData.success) {
-          reply = `Perfekt, ich habe den Termin verbindlich eingetragen: ${formatGermanTime(
-            booking.start
-          )}. ✅`;
+      reply = `Perfekt, ich habe den Termin verbindlich eingetragen: ${formatGermanTime(
+  booking.start!
+)}. ✅`;
         } else if (eventResponse.status === 409) {
-          const alternative = await findNextFreeSlotSameDay(
-            requestOrigin,
-            booking.start,
-            booking.end
-          );
-
+         const alternative = await findNextFreeSlotSameDay(
+  requestOrigin,
+  booking.start!,
+  booking.end!
+);
           reply = alternative
             ? `Der gewünschte Zeitraum ist leider bereits belegt. Am gleichen Tag wäre ${formatGermanTime(
                 alternative.start
@@ -403,7 +402,7 @@ export async function POST(req: NextRequest) {
       }
 
       if (hasProposedTime && !booking.confirmed) {
-        const checkResponse = await checkSlot(requestOrigin, booking.start, booking.end);
+        const checkResponse = await checkSlot(requestOrigin, booking.start!, booking.end!);
 
         let reply = "";
 
