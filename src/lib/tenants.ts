@@ -5,7 +5,8 @@ export type TenantId =
   | "bauteam"
   | "willi"
   | "mm-wartung"
-  | "txbikes";
+  | "txbikes"
+  | "txbikesV2";
 
 export type ThemeConfig = {
   accent: string;
@@ -393,6 +394,60 @@ export const TENANTS: Record<TenantId, TenantConfig> = {
     },
 
     websiteUrl: "https://txbikes.de",
+
+    primaryCta: {
+      label: "Termin buchen",
+      url: "https://txbikes.de/pages/kontakt",
+    },
+
+    fallbackContact: {
+      label: "Kontakt",
+      value: "Über das Kontaktformular auf txbikes.de",
+    },
+
+    companyInfo: {
+      address: "Duisburg Süd & Düsseldorf Nord",
+      phone: "Über das Kontaktformular auf txbikes.de",
+      email: "Über das Kontaktformular auf txbikes.de",
+      openingHours: "Nach Vereinbarung",
+    },
+
+    contacts: [
+      {
+        name: "Tarik",
+        role: "Ansprechpartner / Fahrradservice",
+        email: "Über das Kontaktformular auf txbikes.de",
+      },
+    ],
+
+    rules: {
+      noMedicalClaims: true,
+      noInventingPrices: true,
+      noGuarantees: true,
+    },
+
+    theme: {
+      accent: "#4f8f3a",
+      bg: "#07100a",
+      glass: "rgba(79,143,58,0.16)",
+      text: "#f2f8ef",
+    },
+
+    assets: {
+      launcherIcon: "/favicon.ico",
+    },
+  },
+    txbikesV2: {
+    id: "txbikesV2",
+    brandName: "TXBIKESV2",
+    assistantName: "TX Doc",
+    language: "de",
+
+    knowledge: {
+      files: ["knowledge.md"],
+    },
+
+    websiteUrl: "https://txbikesV2.de",
 
     primaryCta: {
       label: "Termin buchen",
