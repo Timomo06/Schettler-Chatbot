@@ -4,7 +4,8 @@ export type TenantId =
   | "btdesigns"
   | "bauteam"
   | "willi"
-  | "mm-wartung";
+  | "mm-wartung"
+  | "txbikes";
 
 export type ThemeConfig = {
   accent: string;
@@ -374,6 +375,61 @@ export const TENANTS: Record<TenantId, TenantConfig> = {
       bg: "#0d0d0d",
       glass: "rgba(255,122,0,0.12)",
       text: "#ffffff",
+    },
+
+    assets: {
+      launcherIcon: "/favicon.ico",
+    },
+  },
+
+  txbikes: {
+    id: "txbikes",
+    brandName: "TXBIKES",
+    assistantName: "TX Doc",
+    language: "de",
+
+    knowledge: {
+      files: ["knowledge.md"],
+    },
+
+    websiteUrl: "https://txbikes.de",
+
+    primaryCta: {
+      label: "Termin buchen",
+      url: "https://txbikes.de/pages/kontakt",
+    },
+
+    fallbackContact: {
+      label: "Kontakt",
+      value: "Über das Kontaktformular auf txbikes.de",
+    },
+
+    companyInfo: {
+      address: "Duisburg Süd & Düsseldorf Nord",
+      phone: "Über das Kontaktformular auf txbikes.de",
+      email: "Über das Kontaktformular auf txbikes.de",
+      openingHours: "Nach Vereinbarung",
+    },
+
+    contacts: [
+      {
+        name: "Tarik",
+        role: "Ansprechpartner / Fahrradservice",
+        email: "Über das Kontaktformular auf txbikes.de",
+      },
+    ],
+
+    rules: {
+      noMedicalClaims: true,
+      noInventingPrices: true,
+      noGuarantees: true,
+    },
+
+    theme: {
+      accent: "#4f8f3a",
+      bg: "#07100a",
+      glass: "rgba(79,143,58,0.16)",
+      text: "#f2f8ef",
     },
 
     assets: {
