@@ -249,11 +249,15 @@ export default function WidgetPage() {
     if (!isEmbedded) return;
 
     const size = open
-      ? { type: "bt-chat-resize", width: 460, height: 760 }
-      : { type: "bt-chat-resize", width: 88, height: 88 };
+      ? {
+          type: "bt-chat-resize",
+          width: isLinaInterface ? 820 : isTxbikesInterface ? 760 : 460,
+          height: isLinaInterface ? 860 : isTxbikesInterface ? 820 : 760,
+        }
+      : { type: "bt-chat-resize", width: 96, height: 96 };
 
     window.parent.postMessage(size, "*");
-  }, [open, isEmbedded]);
+  }, [open, isEmbedded, isLinaInterface, isTxbikesInterface]);
 
   async function sendText(rawText: string) {
     const text = rawText.trim();
@@ -436,9 +440,9 @@ export default function WidgetPage() {
     setInput("");
   }
 
-  const panelW = isEmbedded ? 420 : 470;
-  const panelH = isEmbedded ? 650 : 700;
-  const panelRadius = 28;
+  const panelW = isLinaInterface ? 780 : isTxbikesInterface ? 720 : isEmbedded ? 420 : 470;
+  const panelH = isLinaInterface ? 770 : isTxbikesInterface ? 740 : isEmbedded ? 650 : 700;
+  const panelRadius = isEnhancedInterface ? 34 : 28;
   const GLOBAL_LOGO_SRC = "/brand/btai-logo.png";
 
   if (!mounted) return null;
@@ -562,16 +566,16 @@ export default function WidgetPage() {
         }
 
         .bt-round-action-button {
-          height: 46px;
-          width: 46px;
-          border-radius: 14px;
+          height: ${isEnhancedInterface ? "56px" : "46px"};
+          width: ${isEnhancedInterface ? "56px" : "46px"};
+          border-radius: ${isEnhancedInterface ? "18px" : "14px"};
           border: 1px solid rgba(255,255,255,0.26);
           background: linear-gradient(180deg, rgba(255,255,255,0.82), rgba(255,255,255,0.58));
           color: ${textPrimary};
           display: grid;
           place-items: center;
           cursor: pointer;
-          font-size: 19px;
+          font-size: ${isEnhancedInterface ? "22px" : "19px"};
           box-shadow: 0 10px 24px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.26);
           backdrop-filter: blur(14px) saturate(145%);
           -webkit-backdrop-filter: blur(14px) saturate(145%);
@@ -621,9 +625,9 @@ export default function WidgetPage() {
 
         .bt-voice-card {
           align-self: center;
-          width: min(100%, 360px);
-          border-radius: 22px;
-          padding: 16px 14px;
+          width: ${isEnhancedInterface ? "min(100%, 580px)" : "min(100%, 360px)"};
+          border-radius: ${isEnhancedInterface ? "28px" : "22px"};
+          padding: ${isEnhancedInterface ? "22px 22px" : "16px 14px"};
           border: 1px solid rgba(255,255,255,0.38);
           background:
             radial-gradient(320px 180px at 20% 0%, rgba(${accentRgb}, 0.26), transparent 72%),
@@ -638,8 +642,8 @@ export default function WidgetPage() {
         }
 
         .bt-voice-visual {
-          width: 66px;
-          height: 66px;
+          width: ${isEnhancedInterface ? "82px" : "66px"};
+          height: ${isEnhancedInterface ? "82px" : "66px"};
           border-radius: 999px;
           display: grid;
           place-items: center;
@@ -662,8 +666,8 @@ export default function WidgetPage() {
         }
 
         .bt-voice-orb {
-          width: 46px;
-          height: 46px;
+          width: ${isEnhancedInterface ? "58px" : "46px"};
+          height: ${isEnhancedInterface ? "58px" : "46px"};
           background:
             radial-gradient(circle at 30% 24%, rgba(255,255,255,0.86), transparent 24%),
             radial-gradient(circle at 70% 72%, rgba(${accentRgb}, 0.68), transparent 36%),
@@ -708,7 +712,7 @@ export default function WidgetPage() {
         .bt-image-preview-wrap img {
           display: block;
           width: 100%;
-          max-height: 260px;
+          max-height: ${isEnhancedInterface ? "340px" : "260px"};
           object-fit: cover;
         }
 
@@ -830,9 +834,10 @@ export default function WidgetPage() {
 
         .bt-start-card {
           width: 100%;
+          min-height: ${isEnhancedInterface ? "132px" : "auto"};
           border: 1px solid rgba(255,255,255,0.38);
-          border-radius: 16px;
-          padding: 12px;
+          border-radius: ${isEnhancedInterface ? "24px" : "16px"};
+          padding: ${isEnhancedInterface ? "18px" : "12px"};
           text-align: left;
           background:
             radial-gradient(160px 90px at 12% 0%, rgba(${accentRgb}, 0.18), transparent 72%),
@@ -857,6 +862,14 @@ export default function WidgetPage() {
         .bt-start-card:disabled {
           cursor: not-allowed;
           opacity: 0.62;
+        }
+
+        @media (max-width: 680px) {
+          .bt-start-card {
+            min-height: auto;
+            padding: 14px;
+            border-radius: 18px;
+          }
         }
 
         @media (prefers-reduced-motion: reduce) {
@@ -925,9 +938,9 @@ export default function WidgetPage() {
                 right: launcherOffset,
                 bottom: panelOffsetBottom,
                 width: panelW,
-                maxWidth: "calc(100vw - 28px)",
+                maxWidth: isEnhancedInterface ? "calc(100vw - 28px)" : "calc(100vw - 28px)",
                 height: panelH,
-                maxHeight: "calc(100vh - 122px)",
+                maxHeight: isEnhancedInterface ? "calc(100vh - 112px)" : "calc(100vh - 122px)",
                 border: "1px solid rgba(255,255,255,0.46)",
                 background: `
                   radial-gradient(980px 520px at 18% -10%, ${widgetAccent}26 0%, transparent 62%),
@@ -1011,13 +1024,13 @@ export default function WidgetPage() {
               >
                 <div
                   style={{
-                    padding: "16px 14px 14px",
+                    padding: isEnhancedInterface ? "22px 24px 20px" : "16px 14px 14px",
                     borderBottom: "1px solid rgba(22,49,38,0.12)",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "space-between",
-                    gap: 10,
-                    minHeight: 86,
+                    gap: isEnhancedInterface ? 14 : 10,
+                    minHeight: isEnhancedInterface ? 112 : 86,
                     flex: "0 0 auto",
                     background: `
                       radial-gradient(520px 180px at 18% 0%, ${widgetAccent}14 0%, transparent 72%),
@@ -1026,7 +1039,7 @@ export default function WidgetPage() {
                     boxShadow: "0 1px 0 rgba(255,255,255,0.22) inset",
                   }}
                 >
-                  <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: isEnhancedInterface ? 12 : 10 }}>
                     <div
                       style={{
                         width: 12,
@@ -1042,8 +1055,8 @@ export default function WidgetPage() {
                     <div style={{ lineHeight: 1.2 }}>
                       <div
                         style={{
-                          fontSize: 17,
-                          fontWeight: 600,
+                          fontSize: isEnhancedInterface ? 20 : 17,
+                          fontWeight: 700,
                           letterSpacing: 0.3,
                           opacity: 0.96,
                           color: textPrimary,
@@ -1051,7 +1064,7 @@ export default function WidgetPage() {
                       >
                         {cfg.brandName} – {cfg.assistantName}
                       </div>
-                      <div style={{ fontSize: 12.5, opacity: 0.9, marginTop: 2, color: textSecondary }}>
+                      <div style={{ fontSize: isEnhancedInterface ? 14 : 12.5, opacity: 0.9, marginTop: 3, color: textSecondary }}>
                         {loading ? "Tippt…" : isListening ? "Hört zu…" : "Online verfügbar"}
                       </div>
                     </div>
@@ -1063,10 +1076,10 @@ export default function WidgetPage() {
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",
-                        width: 52,
-                        height: 52,
-                        padding: "7px",
-                        borderRadius: 14,
+                        width: isEnhancedInterface ? 64 : 52,
+                        height: isEnhancedInterface ? 64 : 52,
+                        padding: isEnhancedInterface ? "9px" : "7px",
+                        borderRadius: isEnhancedInterface ? 18 : 14,
                         border: "1px solid rgba(255,255,255,0.42)",
                         background:
                           "linear-gradient(180deg, rgba(255,255,255,0.62), rgba(255,255,255,0.36))",
@@ -1101,9 +1114,9 @@ export default function WidgetPage() {
                         target="_blank"
                         rel="noreferrer"
                         style={{
-                          fontSize: 11.5,
-                          padding: "8px 10px",
-                          borderRadius: 11,
+                          fontSize: isEnhancedInterface ? 12.5 : 11.5,
+                          padding: isEnhancedInterface ? "11px 14px" : "8px 10px",
+                          borderRadius: isEnhancedInterface ? 14 : 11,
                           border: "1px solid rgba(255,255,255,0.24)",
                           background: `linear-gradient(180deg, ${widgetAccent}D6, ${widgetAccent}92)`,
                           color: "#ffffff",
@@ -1120,9 +1133,9 @@ export default function WidgetPage() {
                     <button
                       onClick={resetChat}
                       style={{
-                        fontSize: 11.5,
-                        padding: "8px 10px",
-                        borderRadius: 11,
+                        fontSize: isEnhancedInterface ? 12.5 : 11.5,
+                        padding: isEnhancedInterface ? "11px 14px" : "8px 10px",
+                        borderRadius: isEnhancedInterface ? 14 : 11,
                         border: "1px solid rgba(255,255,255,0.24)",
                         background:
                           "linear-gradient(180deg, rgba(255,255,255,0.72), rgba(255,255,255,0.50))",
@@ -1144,10 +1157,10 @@ export default function WidgetPage() {
                     flex: "1 1 auto",
                     minHeight: 0,
                     overflowY: "auto",
-                    padding: 14,
+                    padding: isEnhancedInterface ? 22 : 14,
                     display: "flex",
                     flexDirection: "column",
-                    gap: 10,
+                    gap: isEnhancedInterface ? 14 : 10,
                     background:
                       "linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03))",
                     boxShadow:
@@ -1160,20 +1173,20 @@ export default function WidgetPage() {
                         width: "100%",
                         display: "flex",
                         flexDirection: "column",
-                        gap: 10,
+                        gap: isEnhancedInterface ? 14 : 10,
                         marginBottom: 2,
                       }}
                     >
                       <div
                         style={{
-                          padding: "14px 14px 4px",
+                          padding: isEnhancedInterface ? "20px 20px 8px" : "14px 14px 4px",
                           color: textPrimary,
                         }}
                       >
                         <div
                           style={{
-                            fontSize: 18,
-                            fontWeight: 700,
+                            fontSize: isEnhancedInterface ? 26 : 18,
+                            fontWeight: 800,
                             letterSpacing: 0.2,
                             marginBottom: 6,
                           }}
@@ -1182,8 +1195,8 @@ export default function WidgetPage() {
                         </div>
                         <div
                           style={{
-                            fontSize: 13,
-                            lineHeight: 1.4,
+                            fontSize: isEnhancedInterface ? 15 : 13,
+                            lineHeight: 1.5,
                             color: textSecondary,
                           }}
                         >
@@ -1196,8 +1209,10 @@ export default function WidgetPage() {
                       <div
                         style={{
                           display: "grid",
-                          gridTemplateColumns: "1fr 1fr",
-                          gap: 10,
+                          gridTemplateColumns: isEnhancedInterface
+                            ? "repeat(auto-fit, minmax(195px, 1fr))"
+                            : "1fr 1fr",
+                          gap: isEnhancedInterface ? 14 : 10,
                         }}
                       >
                         {startCards.map((card) => (
@@ -1226,20 +1241,20 @@ export default function WidgetPage() {
                               style={{
                                 display: "flex",
                                 alignItems: "center",
-                                gap: 10,
-                                marginBottom: 8,
+                                gap: isEnhancedInterface ? 12 : 10,
+                                marginBottom: isEnhancedInterface ? 12 : 8,
                               }}
                             >
                               <span
                                 style={{
-                                  width: 30,
-                                  height: 30,
-                                  borderRadius: 12,
+                                  width: isEnhancedInterface ? 42 : 30,
+                                  height: isEnhancedInterface ? 42 : 30,
+                                  borderRadius: isEnhancedInterface ? 16 : 12,
                                   display: "grid",
                                   placeItems: "center",
                                   background: `rgba(${accentRgb}, 0.13)`,
                                   boxShadow: `0 0 0 1px rgba(${accentRgb}, 0.10) inset`,
-                                  fontSize: 17,
+                                  fontSize: isEnhancedInterface ? 22 : 17,
                                   flex: "0 0 auto",
                                 }}
                               >
@@ -1247,9 +1262,9 @@ export default function WidgetPage() {
                               </span>
                               <span
                                 style={{
-                                  fontSize: 13,
-                                  fontWeight: 700,
-                                  lineHeight: 1.15,
+                                  fontSize: isEnhancedInterface ? 15.5 : 13,
+                                  fontWeight: 800,
+                                  lineHeight: 1.18,
                                 }}
                               >
                                 {card.title}
@@ -1258,8 +1273,8 @@ export default function WidgetPage() {
 
                             <div
                               style={{
-                                fontSize: 12,
-                                lineHeight: 1.35,
+                                fontSize: isEnhancedInterface ? 13.5 : 12,
+                                lineHeight: 1.45,
                                 color: textSecondary,
                               }}
                             >
@@ -1277,10 +1292,10 @@ export default function WidgetPage() {
                         <div className="bt-voice-orb" />
                       </div>
                       <div style={{ minWidth: 0 }}>
-                        <div style={{ fontSize: 15, fontWeight: 700, marginBottom: 3 }}>
+                        <div style={{ fontSize: isEnhancedInterface ? 18 : 15, fontWeight: 800, marginBottom: 4 }}>
                           Ich höre zu…
                         </div>
-                        <div style={{ fontSize: 13, lineHeight: 1.4, color: textSecondary }}>
+                        <div style={{ fontSize: isEnhancedInterface ? 14.5 : 13, lineHeight: 1.45, color: textSecondary }}>
                           {isLinaInterface
                             ? "Erzähl kurz, was du brauchst. Danach wird deine Sprache automatisch als Nachricht gesendet."
                             : "Erzähl kurz, was mit dem Fahrrad los ist. Danach wird deine Sprache automatisch als Nachricht gesendet."}
@@ -1303,16 +1318,16 @@ export default function WidgetPage() {
                         key={i}
                         style={{
                           alignSelf: isUser ? "flex-end" : "flex-start",
-                          maxWidth: "86%",
+                          maxWidth: isEnhancedInterface ? "78%" : "86%",
                         }}
                       >
                         <div
                           style={{
-                            padding: "12px 14px",
-                            borderRadius: 14,
+                            padding: isEnhancedInterface ? "15px 17px" : "12px 14px",
+                            borderRadius: isEnhancedInterface ? 18 : 14,
                             whiteSpace: "pre-wrap",
-                            lineHeight: 1.4,
-                            fontSize: 14.5,
+                            lineHeight: 1.45,
+                            fontSize: isEnhancedInterface ? 15.5 : 14.5,
                             border: isUser
                               ? "1px solid rgba(255,255,255,0.18)"
                               : "1px solid rgba(22,49,38,0.10)",
@@ -1346,15 +1361,15 @@ export default function WidgetPage() {
                   })}
 
                   {loading && (
-                    <div style={{ alignSelf: "flex-start", maxWidth: "86%" }}>
+                    <div style={{ alignSelf: "flex-start", maxWidth: isEnhancedInterface ? "78%" : "86%" }}>
                       <div
                         style={{
-                          padding: "12px 14px",
-                          borderRadius: 14,
+                          padding: isEnhancedInterface ? "15px 17px" : "12px 14px",
+                          borderRadius: isEnhancedInterface ? 18 : 14,
                           border: "1px solid rgba(22,49,38,0.10)",
                           background:
                             "linear-gradient(180deg, rgba(255,255,255,0.88), rgba(255,255,255,0.74))",
-                          fontSize: 15,
+                          fontSize: isEnhancedInterface ? 16 : 15,
                           opacity: 0.88,
                           backdropFilter: "blur(12px) saturate(145%)",
                           WebkitBackdropFilter: "blur(12px) saturate(145%)",
@@ -1370,11 +1385,11 @@ export default function WidgetPage() {
 
                 <div
                   style={{
-                    padding: 14,
-                    paddingBottom: "calc(16px + env(safe-area-inset-bottom))",
+                    padding: isEnhancedInterface ? 20 : 14,
+                    paddingBottom: isEnhancedInterface ? "calc(22px + env(safe-area-inset-bottom))" : "calc(16px + env(safe-area-inset-bottom))",
                     borderTop: "1px solid rgba(22,49,38,0.12)",
                     display: "flex",
-                    gap: 10,
+                    gap: isEnhancedInterface ? 12 : 10,
                     alignItems: "center",
                     background:
                       "linear-gradient(180deg, rgba(255,255,255,0.22), rgba(255,255,255,0.12))",
@@ -1426,9 +1441,9 @@ export default function WidgetPage() {
                     placeholder={isListening ? "Sprich jetzt…" : isLinaInterface ? "Schreib kurz, was du brauchst…" : "Schreib eine Frage…"}
                     style={{
                       flex: 1,
-                      height: 46,
-                      padding: "0 12px",
-                      borderRadius: 14,
+                      height: isEnhancedInterface ? 56 : 46,
+                      padding: isEnhancedInterface ? "0 16px" : "0 12px",
+                      borderRadius: isEnhancedInterface ? 18 : 14,
                       border: "1px solid rgba(22,49,38,0.12)",
                       background:
                         "linear-gradient(180deg, rgba(255,255,255,0.84), rgba(255,255,255,0.72))",
@@ -1439,6 +1454,7 @@ export default function WidgetPage() {
                       color: textPrimary,
                       outline: "none",
                       caretColor: textPrimary,
+                      fontSize: isEnhancedInterface ? 15.5 : 14,
                     }}
                   />
 
@@ -1446,9 +1462,9 @@ export default function WidgetPage() {
                     onClick={send}
                     disabled={!input.trim() || loading || isListening}
                     style={{
-                      height: 46,
-                      padding: "0 18px",
-                      borderRadius: 14,
+                      height: isEnhancedInterface ? 56 : 46,
+                      padding: isEnhancedInterface ? "0 24px" : "0 18px",
+                      borderRadius: isEnhancedInterface ? 18 : 14,
                       border: "1px solid rgba(255,255,255,0.18)",
                       background: input.trim()
                         ? `linear-gradient(180deg, ${widgetAccent}F0, ${widgetAccent}A8)`
@@ -1456,6 +1472,8 @@ export default function WidgetPage() {
                       color: input.trim() ? "#ffffff" : "#5c7a6d",
                       cursor: input.trim() && !loading && !isListening ? "pointer" : "not-allowed",
                       opacity: loading ? 0.72 : 1,
+                      fontWeight: isEnhancedInterface ? 700 : 500,
+                      fontSize: isEnhancedInterface ? 15 : 14,
                       boxShadow: input.trim()
                         ? `0 16px 40px rgba(0,0,0,0.14), 0 0 0 1px ${widgetAccent}12 inset`
                         : "none",
