@@ -251,13 +251,48 @@ export default function WidgetPage() {
     const size = open
       ? {
           type: "bt-chat-resize",
-          width: isLinaInterface ? 820 : isTxbikesInterface ? 760 : 460,
-          height: isLinaInterface ? 860 : isTxbikesInterface ? 820 : 760,
+          width: isLinaInterface ? 1080 : isTxbikesInterface ? 980 : 500,
+          height: isLinaInterface ? 920 : isTxbikesInterface ? 880 : 760,
         }
       : { type: "bt-chat-resize", width: 96, height: 96 };
 
     window.parent.postMessage(size, "*");
   }, [open, isEmbedded, isLinaInterface, isTxbikesInterface]);
+
+  useEffect(() => {
+    if (!mounted) return;
+
+    window.parent?.postMessage(
+      {
+        type: "bt-chat-ready",
+        tenant: tenantId,
+        interface: isLinaInterface ? "btai" : isTxbikesInterface ? "txbikes" : "default",
+      },
+      "*",
+    );
+
+    const handleBtAiMessage = (event: MessageEvent) => {
+      if (event.data?.type === "bt-chat-open" || event.data?.type === "btai-open") {
+        setOpen(true);
+        setShowBadge(false);
+      }
+
+      if (event.data?.type === "bt-chat-close" || event.data?.type === "btai-close") {
+        setOpen(false);
+      }
+
+      if (event.data?.type === "bt-chat-toggle" || event.data?.type === "btai-toggle") {
+        setOpen((current) => !current);
+        setShowBadge(false);
+      }
+    };
+
+    window.addEventListener("message", handleBtAiMessage);
+
+    return () => {
+      window.removeEventListener("message", handleBtAiMessage);
+    };
+  }, [mounted, tenantId, isLinaInterface, isTxbikesInterface]);
 
   async function sendText(rawText: string) {
     const text = rawText.trim();
@@ -440,9 +475,9 @@ export default function WidgetPage() {
     setInput("");
   }
 
-  const panelW = isLinaInterface ? 780 : isTxbikesInterface ? 720 : isEmbedded ? 420 : 470;
-  const panelH = isLinaInterface ? 770 : isTxbikesInterface ? 740 : isEmbedded ? 650 : 700;
-  const panelRadius = isEnhancedInterface ? 34 : 28;
+  const panelW = isLinaInterface ? 1040 : isTxbikesInterface ? 940 : isEmbedded ? 460 : 500;
+  const panelH = isLinaInterface ? 840 : isTxbikesInterface ? 820 : isEmbedded ? 660 : 720;
+  const panelRadius = isEnhancedInterface ? 38 : 28;
   const GLOBAL_LOGO_SRC = "/brand/btai-logo.png";
 
   if (!mounted) return null;
@@ -834,10 +869,10 @@ export default function WidgetPage() {
 
         .bt-start-card {
           width: 100%;
-          min-height: ${isEnhancedInterface ? "132px" : "auto"};
+          min-height: ${isEnhancedInterface ? "138px" : "auto"};
           border: 1px solid rgba(255,255,255,0.38);
           border-radius: ${isEnhancedInterface ? "24px" : "16px"};
-          padding: ${isEnhancedInterface ? "18px" : "12px"};
+          padding: ${isEnhancedInterface ? "20px" : "12px"};
           text-align: left;
           background:
             radial-gradient(160px 90px at 12% 0%, rgba(${accentRgb}, 0.18), transparent 72%),
@@ -862,6 +897,12 @@ export default function WidgetPage() {
         .bt-start-card:disabled {
           cursor: not-allowed;
           opacity: 0.62;
+        }
+
+        @media (max-width: 900px) {
+          .bt-start-card {
+            min-height: 124px;
+          }
         }
 
         @media (max-width: 680px) {
@@ -940,7 +981,7 @@ export default function WidgetPage() {
                 width: panelW,
                 maxWidth: isEnhancedInterface ? "calc(100vw - 28px)" : "calc(100vw - 28px)",
                 height: panelH,
-                maxHeight: isEnhancedInterface ? "calc(100vh - 112px)" : "calc(100vh - 122px)",
+                maxHeight: isEnhancedInterface ? "calc(100vh - 96px)" : "calc(100vh - 122px)",
                 border: "1px solid rgba(255,255,255,0.46)",
                 background: `
                   radial-gradient(980px 520px at 18% -10%, ${widgetAccent}26 0%, transparent 62%),
@@ -1024,13 +1065,13 @@ export default function WidgetPage() {
               >
                 <div
                   style={{
-                    padding: isEnhancedInterface ? "22px 24px 20px" : "16px 14px 14px",
+                    padding: isEnhancedInterface ? "24px 28px 22px" : "16px 14px 14px",
                     borderBottom: "1px solid rgba(22,49,38,0.12)",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "space-between",
-                    gap: isEnhancedInterface ? 14 : 10,
-                    minHeight: isEnhancedInterface ? 112 : 86,
+                    gap: isEnhancedInterface ? 16 : 10,
+                    minHeight: isEnhancedInterface ? 116 : 86,
                     flex: "0 0 auto",
                     background: `
                       radial-gradient(520px 180px at 18% 0%, ${widgetAccent}14 0%, transparent 72%),
@@ -1157,10 +1198,10 @@ export default function WidgetPage() {
                     flex: "1 1 auto",
                     minHeight: 0,
                     overflowY: "auto",
-                    padding: isEnhancedInterface ? 22 : 14,
+                    padding: isEnhancedInterface ? 26 : 14,
                     display: "flex",
                     flexDirection: "column",
-                    gap: isEnhancedInterface ? 14 : 10,
+                    gap: isEnhancedInterface ? 16 : 10,
                     background:
                       "linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03))",
                     boxShadow:
@@ -1173,19 +1214,19 @@ export default function WidgetPage() {
                         width: "100%",
                         display: "flex",
                         flexDirection: "column",
-                        gap: isEnhancedInterface ? 14 : 10,
+                        gap: isEnhancedInterface ? 16 : 10,
                         marginBottom: 2,
                       }}
                     >
                       <div
                         style={{
-                          padding: isEnhancedInterface ? "20px 20px 8px" : "14px 14px 4px",
+                          padding: isEnhancedInterface ? "22px 22px 10px" : "14px 14px 4px",
                           color: textPrimary,
                         }}
                       >
                         <div
                           style={{
-                            fontSize: isEnhancedInterface ? 26 : 18,
+                            fontSize: isEnhancedInterface ? 30 : 18,
                             fontWeight: 800,
                             letterSpacing: 0.2,
                             marginBottom: 6,
@@ -1195,7 +1236,7 @@ export default function WidgetPage() {
                         </div>
                         <div
                           style={{
-                            fontSize: isEnhancedInterface ? 15 : 13,
+                            fontSize: isEnhancedInterface ? 16 : 13,
                             lineHeight: 1.5,
                             color: textSecondary,
                           }}
@@ -1210,9 +1251,9 @@ export default function WidgetPage() {
                         style={{
                           display: "grid",
                           gridTemplateColumns: isEnhancedInterface
-                            ? "repeat(auto-fit, minmax(195px, 1fr))"
+                            ? "repeat(3, minmax(0, 1fr))"
                             : "1fr 1fr",
-                          gap: isEnhancedInterface ? 14 : 10,
+                          gap: isEnhancedInterface ? 16 : 10,
                         }}
                       >
                         {startCards.map((card) => (
@@ -1262,7 +1303,7 @@ export default function WidgetPage() {
                               </span>
                               <span
                                 style={{
-                                  fontSize: isEnhancedInterface ? 15.5 : 13,
+                                  fontSize: isEnhancedInterface ? 16.5 : 13,
                                   fontWeight: 800,
                                   lineHeight: 1.18,
                                 }}
@@ -1273,7 +1314,7 @@ export default function WidgetPage() {
 
                             <div
                               style={{
-                                fontSize: isEnhancedInterface ? 13.5 : 12,
+                                fontSize: isEnhancedInterface ? 14.5 : 12,
                                 lineHeight: 1.45,
                                 color: textSecondary,
                               }}
@@ -1385,7 +1426,7 @@ export default function WidgetPage() {
 
                 <div
                   style={{
-                    padding: isEnhancedInterface ? 20 : 14,
+                    padding: isEnhancedInterface ? 22 : 14,
                     paddingBottom: isEnhancedInterface ? "calc(22px + env(safe-area-inset-bottom))" : "calc(16px + env(safe-area-inset-bottom))",
                     borderTop: "1px solid rgba(22,49,38,0.12)",
                     display: "flex",
@@ -1441,7 +1482,7 @@ export default function WidgetPage() {
                     placeholder={isListening ? "Sprich jetzt…" : isLinaInterface ? "Schreib kurz, was du brauchst…" : "Schreib eine Frage…"}
                     style={{
                       flex: 1,
-                      height: isEnhancedInterface ? 56 : 46,
+                      height: isEnhancedInterface ? 60 : 46,
                       padding: isEnhancedInterface ? "0 16px" : "0 12px",
                       borderRadius: isEnhancedInterface ? 18 : 14,
                       border: "1px solid rgba(22,49,38,0.12)",
@@ -1454,7 +1495,7 @@ export default function WidgetPage() {
                       color: textPrimary,
                       outline: "none",
                       caretColor: textPrimary,
-                      fontSize: isEnhancedInterface ? 15.5 : 14,
+                      fontSize: isEnhancedInterface ? 16 : 14,
                     }}
                   />
 
@@ -1462,7 +1503,7 @@ export default function WidgetPage() {
                     onClick={send}
                     disabled={!input.trim() || loading || isListening}
                     style={{
-                      height: isEnhancedInterface ? 56 : 46,
+                      height: isEnhancedInterface ? 60 : 46,
                       padding: isEnhancedInterface ? "0 24px" : "0 18px",
                       borderRadius: isEnhancedInterface ? 18 : 14,
                       border: "1px solid rgba(255,255,255,0.18)",
@@ -1473,7 +1514,7 @@ export default function WidgetPage() {
                       cursor: input.trim() && !loading && !isListening ? "pointer" : "not-allowed",
                       opacity: loading ? 0.72 : 1,
                       fontWeight: isEnhancedInterface ? 700 : 500,
-                      fontSize: isEnhancedInterface ? 15 : 14,
+                      fontSize: isEnhancedInterface ? 16 : 14,
                       boxShadow: input.trim()
                         ? `0 16px 40px rgba(0,0,0,0.14), 0 0 0 1px ${widgetAccent}12 inset`
                         : "none",
