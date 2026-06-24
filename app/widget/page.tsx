@@ -97,6 +97,45 @@ const TXBIKES_START_CARDS: StartCard[] = [
   },
 ];
 
+const BTDESIGNS_START_CARDS: StartCard[] = [
+  {
+    icon: "✨",
+    title: "Social Media",
+    description: "Pakete, Reels oder Betreuung einschätzen",
+    message: "Ich möchte wissen, welches Social-Media-Paket für mein Unternehmen sinnvoll ist.",
+  },
+  {
+    icon: "🌐",
+    title: "Website",
+    description: "Neue Website, Relaunch oder Shop besprechen",
+    message: "Ich interessiere mich für eine Website oder einen Online-Shop von BTDesigns.",
+  },
+  {
+    icon: "🤖",
+    title: "AI Interface",
+    description: "LINA, Website-KI oder Automatisierung planen",
+    message: "Ich möchte wissen, wie ein AI Interface von BTDesigns meinem Unternehmen helfen kann.",
+  },
+  {
+    icon: "🧢",
+    title: "Werbemittel",
+    description: "Textilien, Drucksachen oder Giveaways anfragen",
+    message: "Ich interessiere mich für Werbemittel von BTDesigns und möchte eine Anfrage stellen.",
+  },
+  {
+    icon: "💬",
+    title: "Kurz erzählen",
+    description: "Sprich deine Anfrage direkt ein",
+    action: "voice",
+  },
+  {
+    icon: "📷",
+    title: "Beispiel zeigen",
+    description: "Bild, Screenshot oder Idee hochladen",
+    action: "photo",
+  },
+];
+
 function hexToRgb(hex: string) {
   const clean = hex.replace("#", "");
   const full =
@@ -133,11 +172,14 @@ export default function WidgetPage() {
 
   const cfg = useMemo(() => getTenant(tenantId), [tenantId]);
   const theme = cfg.theme;
-  const isTxbikesInterface = tenantId.toLowerCase() === "txbikesv2";
+  const normalizedTenantId = tenantId.toLowerCase();
+  const isTxbikesInterface = normalizedTenantId === "txbikesv2";
+  const isLinaInterface = ["btdesigns", "lina", "btai", "btdesigns-lina"].includes(normalizedTenantId);
+  const isEnhancedInterface = isTxbikesInterface || isLinaInterface;
   const widgetAccent = isTxbikesInterface ? "#8b5cf6" : theme.accent;
-  const widgetBackground = isTxbikesInterface ? "#f6f2ff" : theme.bg;
-  const textPrimary = isTxbikesInterface ? "#1f1636" : "#163126";
-  const textSecondary = isTxbikesInterface ? "#6a5f8d" : "#355f52";
+  const widgetBackground = isTxbikesInterface ? "#f6f2ff" : isLinaInterface ? "#f7fbff" : theme.bg;
+  const textPrimary = isTxbikesInterface ? "#1f1636" : isLinaInterface ? "#182536" : "#163126";
+  const textSecondary = isTxbikesInterface ? "#6a5f8d" : isLinaInterface ? "#566477" : "#355f52";
   const accentRgb = useMemo(() => hexToRgb(widgetAccent), [widgetAccent]);
 
   const [open, setOpen] = useState(false);
@@ -156,11 +198,16 @@ export default function WidgetPage() {
 
   useEffect(() => {
     if (!mounted) return;
-    setMsgs([{ role: "assistant", content: `Hi — ich bin ${cfg.assistantName}. Worum geht’s?` }]);
+
+    const firstMessage = isLinaInterface
+      ? `Hi — ich bin ${cfg.assistantName}. Wobei soll ich dir bei BTDesigns helfen?`
+      : `Hi — ich bin ${cfg.assistantName}. Worum geht’s?`;
+
+    setMsgs([{ role: "assistant", content: firstMessage }]);
 
     const SpeechRecognitionCtor = window.SpeechRecognition || window.webkitSpeechRecognition;
     setVoiceSupported(Boolean(SpeechRecognitionCtor));
-  }, [mounted, cfg.assistantName]);
+  }, [mounted, cfg.assistantName, isLinaInterface]);
 
   useEffect(() => {
     return () => {
@@ -202,8 +249,8 @@ export default function WidgetPage() {
     if (!isEmbedded) return;
 
     const size = open
-      ? { type: "bt-chat-resize", width: 800, height: 980 }
-      : { type: "bt-chat-resize", width: 104, height: 104 };
+      ? { type: "bt-chat-resize", width: 460, height: 760 }
+      : { type: "bt-chat-resize", width: 88, height: 88 };
 
     window.parent.postMessage(size, "*");
   }, [open, isEmbedded]);
@@ -271,14 +318,15 @@ export default function WidgetPage() {
       ...current,
       {
         role: "user",
-        content: "📷 Foto vom Fahrradproblem hinzugefügt",
+        content: isLinaInterface ? "📷 Beispiel oder Projektbild hinzugefügt" : "📷 Foto vom Fahrradproblem hinzugefügt",
         imagePreviewUrl,
         imageName: file.name,
       },
       {
         role: "assistant",
-        content:
-          "Danke, das Foto ist jetzt in der Anfrage sichtbar. Beschreib kurz, was genau passiert, damit ich das Problem besser eingrenzen kann.",
+        content: isLinaInterface
+          ? "Danke, das Bild ist jetzt in der Anfrage sichtbar. Schreib kurz, worum es geht, dann ordne ich es besser ein."
+          : "Danke, das Foto ist jetzt in der Anfrage sichtbar. Beschreib kurz, was genau passiert, damit ich das Problem besser eingrenzen kann.",
       },
     ]);
   }
@@ -300,7 +348,9 @@ export default function WidgetPage() {
         {
           role: "assistant",
           content:
-            "Spracheingabe wird auf diesem Gerät leider nicht unterstützt. Schreib dein Problem kurz als Text oder nutze ein Foto.",
+            isLinaInterface
+              ? "Spracheingabe wird auf diesem Gerät leider nicht unterstützt. Schreib deine Anfrage kurz als Text oder lade ein Beispielbild hoch."
+              : "Spracheingabe wird auf diesem Gerät leider nicht unterstützt. Schreib dein Problem kurz als Text oder nutze ein Foto.",
         },
       ]);
       return;
@@ -375,26 +425,35 @@ export default function WidgetPage() {
   function resetChat() {
     recognitionRef.current?.stop();
     setIsListening(false);
-    setMsgs([{ role: "assistant", content: `Alles klar — womit kann ich dir helfen?` }]);
+    setMsgs([
+      {
+        role: "assistant",
+        content: isLinaInterface
+          ? `Alles klar — wobei soll ich dir bei BTDesigns helfen?`
+          : `Alles klar — womit kann ich dir helfen?`,
+      },
+    ]);
     setInput("");
   }
 
-  const panelW = isEmbedded ? 660 : 700;
-  const panelH = isEmbedded ? 820 : 860;
-  const panelRadius = 32;
+  const panelW = isEmbedded ? 420 : 470;
+  const panelH = isEmbedded ? 650 : 700;
+  const panelRadius = 28;
   const GLOBAL_LOGO_SRC = "/brand/btai-logo.png";
 
   if (!mounted) return null;
 
-  const launcherOffset = isEmbedded ? 14 : 22;
-  const panelOffsetBottom = launcherOffset + 92;
+  const launcherOffset = isEmbedded ? 10 : 16;
+  const panelOffsetBottom = launcherOffset + 78;
 
   const showStartCards =
-    isTxbikesInterface &&
+    isEnhancedInterface &&
     msgs.length === 1 &&
     msgs[0]?.role === "assistant" &&
     !loading &&
     !isListening;
+
+  const startCards = isTxbikesInterface ? TXBIKES_START_CARDS : BTDESIGNS_START_CARDS;
 
   const wrapperBackground = isEmbedded
     ? "transparent"
@@ -414,8 +473,8 @@ export default function WidgetPage() {
         setShowBadge(false);
       }}
       style={{
-        width: 70,
-        height: 70,
+        width: 60,
+        height: 60,
         borderRadius: 999,
         border: open
           ? `1px solid rgba(${accentRgb}, 0.34)`
@@ -451,8 +510,8 @@ export default function WidgetPage() {
       {open ? (
         <span
           style={{
-            fontSize: 20,
-            lineHeight: "20px",
+            fontSize: 19,
+            lineHeight: "19px",
             textShadow: `0 0 12px rgba(${accentRgb}, 0.20)`,
           }}
         >
@@ -460,7 +519,7 @@ export default function WidgetPage() {
         </span>
       ) : (
         <MessageCircle
-          size={28}
+          size={26}
           strokeWidth={2.5}
           style={{
             filter: `drop-shadow(0 0 10px rgba(${accentRgb}, 0.16))`,
@@ -473,9 +532,9 @@ export default function WidgetPage() {
   return (
     <div
       style={{
-        minHeight: isEmbedded ? 104 : "100vh",
-        width: isEmbedded && !open ? 104 : undefined,
-        height: isEmbedded && !open ? 104 : undefined,
+        minHeight: isEmbedded ? 88 : "100vh",
+        width: isEmbedded && !open ? 88 : undefined,
+        height: isEmbedded && !open ? 88 : undefined,
         background: wrapperBackground,
         color: textPrimary,
         fontFamily:
@@ -490,8 +549,6 @@ export default function WidgetPage() {
           margin: 0 !important;
           padding: 0 !important;
           overflow: visible !important;
-          -webkit-font-smoothing: antialiased;
-          text-rendering: geometricPrecision;
         }
 
         body::before,
@@ -505,17 +562,16 @@ export default function WidgetPage() {
         }
 
         .bt-round-action-button {
-          height: 56px;
-          width: 56px;
-          border-radius: 16px;
+          height: 46px;
+          width: 46px;
+          border-radius: 14px;
           border: 1px solid rgba(255,255,255,0.26);
           background: linear-gradient(180deg, rgba(255,255,255,0.82), rgba(255,255,255,0.58));
           color: ${textPrimary};
           display: grid;
           place-items: center;
           cursor: pointer;
-          font-size: 22px;
-          font-weight: 700;
+          font-size: 19px;
           box-shadow: 0 10px 24px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.26);
           backdrop-filter: blur(14px) saturate(145%);
           -webkit-backdrop-filter: blur(14px) saturate(145%);
@@ -565,9 +621,9 @@ export default function WidgetPage() {
 
         .bt-voice-card {
           align-self: center;
-          width: min(100%, 420px);
-          border-radius: 24px;
-          padding: 18px 16px;
+          width: min(100%, 360px);
+          border-radius: 22px;
+          padding: 16px 14px;
           border: 1px solid rgba(255,255,255,0.38);
           background:
             radial-gradient(320px 180px at 20% 0%, rgba(${accentRgb}, 0.26), transparent 72%),
@@ -582,8 +638,8 @@ export default function WidgetPage() {
         }
 
         .bt-voice-visual {
-          width: 76px;
-          height: 76px;
+          width: 66px;
+          height: 66px;
           border-radius: 999px;
           display: grid;
           place-items: center;
@@ -606,8 +662,8 @@ export default function WidgetPage() {
         }
 
         .bt-voice-orb {
-          width: 56px;
-          height: 56px;
+          width: 46px;
+          height: 46px;
           background:
             radial-gradient(circle at 30% 24%, rgba(255,255,255,0.86), transparent 24%),
             radial-gradient(circle at 70% 72%, rgba(${accentRgb}, 0.68), transparent 36%),
@@ -658,8 +714,7 @@ export default function WidgetPage() {
 
         .bt-image-preview-label {
           padding: 8px 10px;
-          font-size: 14px;
-          font-weight: 650;
+          font-size: 12px;
           line-height: 1.3;
           opacity: 0.9;
         }
@@ -730,12 +785,12 @@ export default function WidgetPage() {
 
         .bt-badge {
           position: absolute;
-          right: 84px;
-          bottom: 16px;
+          right: 68px;
+          bottom: 10px;
           display: inline-flex;
           align-items: center;
           gap: 8px;
-          padding: 12px 14px;
+          padding: 9px 11px;
           border-radius: 999px;
           border: 1px solid rgba(255,255,255,0.20);
           background: linear-gradient(180deg, rgba(255,255,255,0.32), rgba(255,255,255,0.18));
@@ -743,8 +798,7 @@ export default function WidgetPage() {
           -webkit-backdrop-filter: blur(14px) saturate(140%);
           box-shadow: 0 16px 50px rgba(0,0,0,0.16);
           color: ${textPrimary};
-          font-size: 14px;
-          font-weight: 650;
+          font-size: 12px;
           white-space: nowrap;
           pointer-events: none;
           animation: bt-badge-in 260ms ease-out;
@@ -777,8 +831,8 @@ export default function WidgetPage() {
         .bt-start-card {
           width: 100%;
           border: 1px solid rgba(255,255,255,0.38);
-          border-radius: 20px;
-          padding: 16px;
+          border-radius: 16px;
+          padding: 12px;
           text-align: left;
           background:
             radial-gradient(160px 90px at 12% 0%, rgba(${accentRgb}, 0.18), transparent 72%),
@@ -822,8 +876,8 @@ export default function WidgetPage() {
             position: "fixed",
             right: launcherOffset,
             bottom: launcherOffset,
-            width: 104,
-            height: 104,
+            width: 88,
+            height: 88,
             display: "grid",
             placeItems: "center",
             zIndex: 999999,
@@ -842,8 +896,8 @@ export default function WidgetPage() {
               position: "fixed",
               right: launcherOffset,
               bottom: launcherOffset,
-              width: 104,
-              height: 104,
+              width: 96,
+              height: 96,
               display: "grid",
               placeItems: "center",
               zIndex: 999999,
@@ -871,9 +925,9 @@ export default function WidgetPage() {
                 right: launcherOffset,
                 bottom: panelOffsetBottom,
                 width: panelW,
-                maxWidth: "calc(100vw - 16px)",
+                maxWidth: "calc(100vw - 28px)",
                 height: panelH,
-                maxHeight: "calc(100vh - 118px)",
+                maxHeight: "calc(100vh - 122px)",
                 border: "1px solid rgba(255,255,255,0.46)",
                 background: `
                   radial-gradient(980px 520px at 18% -10%, ${widgetAccent}26 0%, transparent 62%),
@@ -883,8 +937,7 @@ export default function WidgetPage() {
                 `,
                 backdropFilter: "blur(34px) saturate(180%)",
                 WebkitBackdropFilter: "blur(34px) saturate(180%)",
-                boxShadow:
-                  "0 34px 140px rgba(17,12,31,0.24), 0 0 0 1px rgba(255,255,255,0.18) inset, 0 0 70px rgba(139,92,246,0.14)",
+                boxShadow: `0 28px 110px rgba(17,12,31,0.22), 0 0 0 1px rgba(255,255,255,0.18) inset, 0 0 58px rgba(${accentRgb},0.13)`,
                 zIndex: 999999,
               }}
             >
@@ -958,13 +1011,13 @@ export default function WidgetPage() {
               >
                 <div
                   style={{
-                    padding: "22px 20px 20px",
+                    padding: "16px 14px 14px",
                     borderBottom: "1px solid rgba(22,49,38,0.12)",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "space-between",
-                    gap: 14,
-                    minHeight: 106,
+                    gap: 10,
+                    minHeight: 86,
                     flex: "0 0 auto",
                     background: `
                       radial-gradient(520px 180px at 18% 0%, ${widgetAccent}14 0%, transparent 72%),
@@ -973,7 +1026,7 @@ export default function WidgetPage() {
                     boxShadow: "0 1px 0 rgba(255,255,255,0.22) inset",
                   }}
                 >
-                  <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
                     <div
                       style={{
                         width: 12,
@@ -989,8 +1042,8 @@ export default function WidgetPage() {
                     <div style={{ lineHeight: 1.2 }}>
                       <div
                         style={{
-                          fontSize: 23,
-                          fontWeight: 800,
+                          fontSize: 17,
+                          fontWeight: 600,
                           letterSpacing: 0.3,
                           opacity: 0.96,
                           color: textPrimary,
@@ -998,7 +1051,7 @@ export default function WidgetPage() {
                       >
                         {cfg.brandName} – {cfg.assistantName}
                       </div>
-                      <div style={{ fontSize: 15, fontWeight: 650, opacity: 0.9, marginTop: 3, color: textSecondary }}>
+                      <div style={{ fontSize: 12.5, opacity: 0.9, marginTop: 2, color: textSecondary }}>
                         {loading ? "Tippt…" : isListening ? "Hört zu…" : "Online verfügbar"}
                       </div>
                     </div>
@@ -1010,10 +1063,10 @@ export default function WidgetPage() {
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",
-                        width: 64,
-                        height: 64,
-                        padding: "8px",
-                        borderRadius: 18,
+                        width: 52,
+                        height: 52,
+                        padding: "7px",
+                        borderRadius: 14,
                         border: "1px solid rgba(255,255,255,0.42)",
                         background:
                           "linear-gradient(180deg, rgba(255,255,255,0.62), rgba(255,255,255,0.36))",
@@ -1048,10 +1101,9 @@ export default function WidgetPage() {
                         target="_blank"
                         rel="noreferrer"
                         style={{
-                          fontSize: 14,
-                          fontWeight: 750,
-                          padding: "11px 13px",
-                          borderRadius: 12,
+                          fontSize: 11.5,
+                          padding: "8px 10px",
+                          borderRadius: 11,
                           border: "1px solid rgba(255,255,255,0.24)",
                           background: `linear-gradient(180deg, ${widgetAccent}D6, ${widgetAccent}92)`,
                           color: "#ffffff",
@@ -1068,10 +1120,9 @@ export default function WidgetPage() {
                     <button
                       onClick={resetChat}
                       style={{
-                        fontSize: 14,
-                        fontWeight: 750,
-                        padding: "11px 13px",
-                        borderRadius: 12,
+                        fontSize: 11.5,
+                        padding: "8px 10px",
+                        borderRadius: 11,
                         border: "1px solid rgba(255,255,255,0.24)",
                         background:
                           "linear-gradient(180deg, rgba(255,255,255,0.72), rgba(255,255,255,0.50))",
@@ -1093,10 +1144,10 @@ export default function WidgetPage() {
                     flex: "1 1 auto",
                     minHeight: 0,
                     overflowY: "auto",
-                    padding: 18,
+                    padding: 14,
                     display: "flex",
                     flexDirection: "column",
-                    gap: 14,
+                    gap: 10,
                     background:
                       "linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03))",
                     boxShadow:
@@ -1109,7 +1160,7 @@ export default function WidgetPage() {
                         width: "100%",
                         display: "flex",
                         flexDirection: "column",
-                        gap: 14,
+                        gap: 10,
                         marginBottom: 2,
                       }}
                     >
@@ -1121,8 +1172,8 @@ export default function WidgetPage() {
                       >
                         <div
                           style={{
-                            fontSize: 22,
-                            fontWeight: 750,
+                            fontSize: 18,
+                            fontWeight: 700,
                             letterSpacing: 0.2,
                             marginBottom: 6,
                           }}
@@ -1131,12 +1182,14 @@ export default function WidgetPage() {
                         </div>
                         <div
                           style={{
-                            fontSize: 14.5,
-                            lineHeight: 1.45,
+                            fontSize: 13,
+                            lineHeight: 1.4,
                             color: textSecondary,
                           }}
                         >
-                          Wähle einen Einstieg aus. Danach führt dich {cfg.assistantName} gezielt weiter.
+                          {isLinaInterface
+                            ? `Wähle einen Einstieg aus. Danach führt dich ${cfg.assistantName} gezielt zur passenden Lösung.`
+                            : `Wähle einen Einstieg aus. Danach führt dich ${cfg.assistantName} gezielt weiter.`}
                         </div>
                       </div>
 
@@ -1144,10 +1197,10 @@ export default function WidgetPage() {
                         style={{
                           display: "grid",
                           gridTemplateColumns: "1fr 1fr",
-                          gap: 12,
+                          gap: 10,
                         }}
                       >
-                        {TXBIKES_START_CARDS.map((card) => (
+                        {startCards.map((card) => (
                           <button
                             key={card.title}
                             type="button"
@@ -1173,20 +1226,20 @@ export default function WidgetPage() {
                               style={{
                                 display: "flex",
                                 alignItems: "center",
-                                gap: 12,
+                                gap: 10,
                                 marginBottom: 8,
                               }}
                             >
                               <span
                                 style={{
-                                  width: 38,
-                                  height: 38,
+                                  width: 30,
+                                  height: 30,
                                   borderRadius: 12,
                                   display: "grid",
                                   placeItems: "center",
                                   background: `rgba(${accentRgb}, 0.13)`,
                                   boxShadow: `0 0 0 1px rgba(${accentRgb}, 0.10) inset`,
-                                  fontSize: 19,
+                                  fontSize: 17,
                                   flex: "0 0 auto",
                                 }}
                               >
@@ -1194,8 +1247,8 @@ export default function WidgetPage() {
                               </span>
                               <span
                                 style={{
-                                  fontSize: 14.5,
-                                  fontWeight: 750,
+                                  fontSize: 13,
+                                  fontWeight: 700,
                                   lineHeight: 1.15,
                                 }}
                               >
@@ -1205,8 +1258,8 @@ export default function WidgetPage() {
 
                             <div
                               style={{
-                                fontSize: 13,
-                                lineHeight: 1.38,
+                                fontSize: 12,
+                                lineHeight: 1.35,
                                 color: textSecondary,
                               }}
                             >
@@ -1224,11 +1277,13 @@ export default function WidgetPage() {
                         <div className="bt-voice-orb" />
                       </div>
                       <div style={{ minWidth: 0 }}>
-                        <div style={{ fontSize: 18, fontWeight: 850, marginBottom: 4 }}>
+                        <div style={{ fontSize: 15, fontWeight: 700, marginBottom: 3 }}>
                           Ich höre zu…
                         </div>
-                        <div style={{ fontSize: 15, fontWeight: 550, lineHeight: 1.45, color: textSecondary }}>
-                          Erzähl kurz, was mit dem Fahrrad los ist. Danach wird deine Sprache automatisch als Nachricht gesendet.
+                        <div style={{ fontSize: 13, lineHeight: 1.4, color: textSecondary }}>
+                          {isLinaInterface
+                            ? "Erzähl kurz, was du brauchst. Danach wird deine Sprache automatisch als Nachricht gesendet."
+                            : "Erzähl kurz, was mit dem Fahrrad los ist. Danach wird deine Sprache automatisch als Nachricht gesendet."}
                         </div>
                         <div className="bt-voice-bars" aria-hidden="true">
                           <span />
@@ -1248,18 +1303,16 @@ export default function WidgetPage() {
                         key={i}
                         style={{
                           alignSelf: isUser ? "flex-end" : "flex-start",
-                          maxWidth: "90%",
+                          maxWidth: "86%",
                         }}
                       >
                         <div
                           style={{
-                            padding: "13px 15px",
-                            borderRadius: 18,
+                            padding: "12px 14px",
+                            borderRadius: 14,
                             whiteSpace: "pre-wrap",
                             lineHeight: 1.4,
-                            fontSize: 17,
-                            fontWeight: isUser ? 650 : 550,
-                            letterSpacing: 0.05,
+                            fontSize: 14.5,
                             border: isUser
                               ? "1px solid rgba(255,255,255,0.18)"
                               : "1px solid rgba(22,49,38,0.10)",
@@ -1278,7 +1331,10 @@ export default function WidgetPage() {
 
                           {m.imagePreviewUrl && (
                             <div className="bt-image-preview-wrap">
-                              <img src={m.imagePreviewUrl} alt="Hochgeladenes Foto vom Fahrradproblem" />
+                              <img
+                                src={m.imagePreviewUrl}
+                                alt={isLinaInterface ? "Hochgeladenes Beispielbild" : "Hochgeladenes Foto vom Fahrradproblem"}
+                              />
                               <div className="bt-image-preview-label">
                                 {m.imageName ? `Foto: ${m.imageName}` : "Foto hinzugefügt"}
                               </div>
@@ -1294,13 +1350,12 @@ export default function WidgetPage() {
                       <div
                         style={{
                           padding: "12px 14px",
-                          borderRadius: 18,
+                          borderRadius: 14,
                           border: "1px solid rgba(22,49,38,0.10)",
                           background:
                             "linear-gradient(180deg, rgba(255,255,255,0.88), rgba(255,255,255,0.74))",
-                          fontSize: 17,
-                          fontWeight: 700,
-                          opacity: 0.9,
+                          fontSize: 15,
+                          opacity: 0.88,
                           backdropFilter: "blur(12px) saturate(145%)",
                           WebkitBackdropFilter: "blur(12px) saturate(145%)",
                           color: textPrimary,
@@ -1315,11 +1370,11 @@ export default function WidgetPage() {
 
                 <div
                   style={{
-                    padding: 18,
-                    paddingBottom: "calc(18px + env(safe-area-inset-bottom))",
+                    padding: 14,
+                    paddingBottom: "calc(16px + env(safe-area-inset-bottom))",
                     borderTop: "1px solid rgba(22,49,38,0.12)",
                     display: "flex",
-                    gap: 14,
+                    gap: 10,
                     alignItems: "center",
                     background:
                       "linear-gradient(180deg, rgba(255,255,255,0.22), rgba(255,255,255,0.12))",
@@ -1368,12 +1423,12 @@ export default function WidgetPage() {
                         send();
                       }
                     }}
-                    placeholder={isListening ? "Sprich jetzt…" : "Schreib eine Frage…"}
+                    placeholder={isListening ? "Sprich jetzt…" : isLinaInterface ? "Schreib kurz, was du brauchst…" : "Schreib eine Frage…"}
                     style={{
                       flex: 1,
-                      height: 56,
-                      padding: "0 16px",
-                      borderRadius: 18,
+                      height: 46,
+                      padding: "0 12px",
+                      borderRadius: 14,
                       border: "1px solid rgba(22,49,38,0.12)",
                       background:
                         "linear-gradient(180deg, rgba(255,255,255,0.84), rgba(255,255,255,0.72))",
@@ -1384,8 +1439,6 @@ export default function WidgetPage() {
                       color: textPrimary,
                       outline: "none",
                       caretColor: textPrimary,
-                      fontSize: 17,
-                      fontWeight: 550,
                     }}
                   />
 
@@ -1393,9 +1446,9 @@ export default function WidgetPage() {
                     onClick={send}
                     disabled={!input.trim() || loading || isListening}
                     style={{
-                      height: 56,
-                      padding: "0 22px",
-                      borderRadius: 18,
+                      height: 46,
+                      padding: "0 18px",
+                      borderRadius: 14,
                       border: "1px solid rgba(255,255,255,0.18)",
                       background: input.trim()
                         ? `linear-gradient(180deg, ${widgetAccent}F0, ${widgetAccent}A8)`
@@ -1406,8 +1459,6 @@ export default function WidgetPage() {
                       boxShadow: input.trim()
                         ? `0 16px 40px rgba(0,0,0,0.14), 0 0 0 1px ${widgetAccent}12 inset`
                         : "none",
-                      fontSize: 16,
-                      fontWeight: 800,
                     }}
                   >
                     Senden
