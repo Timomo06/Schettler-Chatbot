@@ -136,6 +136,45 @@ const BTDESIGNS_START_CARDS: StartCard[] = [
   },
 ];
 
+const MM_WARTUNG_START_CARDS: StartCard[] = [
+  {
+    icon: "🔧",
+    title: "Fahrzeugproblem",
+    description: "Geräusch, Warnlampe, Startproblem oder Aussetzer",
+    message: "Ich habe ein Problem mit meinem Fahrzeug.",
+  },
+  {
+    icon: "🚗",
+    title: "Ersatzteil anfragen",
+    description: "Teil gesucht? Anfrage für Moritz vorbereiten",
+    message: "Ich suche ein bestimmtes Ersatzteil.",
+  },
+  {
+    icon: "📅",
+    title: "Termin anfragen",
+    description: "Prüfung, Service oder Rückmeldung planen",
+    message: "Ich möchte einen Termin bei MM Wartung vereinbaren.",
+  },
+  {
+    icon: "⚙️",
+    title: "Spezialleistung",
+    description: "Ultraschallreinigung, alte Technik oder Landmaschinen",
+    message: "Ich habe eine Frage zu einer Spezialleistung von MM Wartung.",
+  },
+  {
+    icon: "📷",
+    title: "Foto zeigen",
+    description: "Bild vom Fahrzeug, Teil oder Problem hochladen",
+    action: "photo",
+  },
+  {
+    icon: "🎙️",
+    title: "Kurz erzählen",
+    description: "Sprich dein Anliegen direkt ein",
+    action: "voice",
+  },
+];
+
 function hexToRgb(hex: string) {
   const clean = hex.replace("#", "");
   const full =
@@ -175,11 +214,35 @@ export default function WidgetPage() {
   const normalizedTenantId = tenantId.toLowerCase();
   const isTxbikesInterface = normalizedTenantId === "txbikesv2";
   const isLinaInterface = ["btdesigns", "lina", "btai", "btdesigns-lina"].includes(normalizedTenantId);
-  const isEnhancedInterface = isTxbikesInterface || isLinaInterface;
-  const widgetAccent = isTxbikesInterface ? "#8b5cf6" : theme.accent;
-  const widgetBackground = isTxbikesInterface ? "#f6f2ff" : isLinaInterface ? "#f7fbff" : theme.bg;
-  const textPrimary = isTxbikesInterface ? "#1f1636" : isLinaInterface ? "#182536" : "#163126";
-  const textSecondary = isTxbikesInterface ? "#6a5f8d" : isLinaInterface ? "#566477" : "#355f52";
+  const isMmWartungInterface = ["mm-wartung", "mmwartung", "mm_wartung", "mm-wartung.de", "mmwartungde", "mm"].includes(normalizedTenantId);
+  const isEnhancedInterface = isTxbikesInterface || isLinaInterface || isMmWartungInterface;
+  const embedClosedSize = isEnhancedInterface ? 190 : 120;
+  const launcherFrameSize = isEnhancedInterface ? 124 : 96;
+  const launcherButtonSize = isEnhancedInterface ? 74 : 60;
+  const launcherIconSize = isEnhancedInterface ? 32 : 26;
+  const launcherXIconSize = isEnhancedInterface ? 24 : 19;
+  const widgetAccent = isTxbikesInterface ? "#8b5cf6" : isMmWartungInterface ? theme.accent || "#ff751f" : theme.accent;
+  const widgetBackground = isTxbikesInterface
+    ? "#f6f2ff"
+    : isLinaInterface
+      ? "#f7fbff"
+      : isMmWartungInterface
+        ? "#fff7ed"
+        : theme.bg;
+  const textPrimary = isTxbikesInterface
+    ? "#1f1636"
+    : isLinaInterface
+      ? "#182536"
+      : isMmWartungInterface
+        ? "#2b1f18"
+        : "#163126";
+  const textSecondary = isTxbikesInterface
+    ? "#6a5f8d"
+    : isLinaInterface
+      ? "#566477"
+      : isMmWartungInterface
+        ? "#705a4a"
+        : "#355f52";
   const accentRgb = useMemo(() => hexToRgb(widgetAccent), [widgetAccent]);
 
   const [open, setOpen] = useState(false);
@@ -201,13 +264,15 @@ export default function WidgetPage() {
 
     const firstMessage = isLinaInterface
       ? `Hi — ich bin ${cfg.assistantName}. Wobei soll ich dir bei BTDesigns helfen?`
-      : `Hi — ich bin ${cfg.assistantName}. Worum geht’s?`;
+      : isMmWartungInterface
+        ? `Hi — ich bin ${cfg.assistantName}. Was möchtest du bei MM Wartung machen?`
+        : `Hi — ich bin ${cfg.assistantName}. Worum geht’s?`;
 
     setMsgs([{ role: "assistant", content: firstMessage }]);
 
     const SpeechRecognitionCtor = window.SpeechRecognition || window.webkitSpeechRecognition;
     setVoiceSupported(Boolean(SpeechRecognitionCtor));
-  }, [mounted, cfg.assistantName, isLinaInterface]);
+  }, [mounted, cfg.assistantName, isLinaInterface, isMmWartungInterface]);
 
   useEffect(() => {
     return () => {
@@ -251,13 +316,13 @@ export default function WidgetPage() {
     const size = open
       ? {
           type: "bt-chat-resize",
-          width: isLinaInterface ? 1080 : isTxbikesInterface ? 980 : 500,
-          height: isLinaInterface ? 920 : isTxbikesInterface ? 880 : 760,
+          width: isLinaInterface ? 1080 : isTxbikesInterface || isMmWartungInterface ? 980 : 500,
+          height: isLinaInterface ? 920 : isTxbikesInterface || isMmWartungInterface ? 880 : 760,
         }
-      : { type: "bt-chat-resize", width: 96, height: 96 };
+      : { type: "bt-chat-resize", width: embedClosedSize, height: embedClosedSize };
 
     window.parent.postMessage(size, "*");
-  }, [open, isEmbedded, isLinaInterface, isTxbikesInterface]);
+  }, [open, isEmbedded, isLinaInterface, isTxbikesInterface, isMmWartungInterface, embedClosedSize]);
 
   useEffect(() => {
     if (!mounted) return;
@@ -266,7 +331,7 @@ export default function WidgetPage() {
       {
         type: "bt-chat-ready",
         tenant: tenantId,
-        interface: isLinaInterface ? "btai" : isTxbikesInterface ? "txbikes" : "default",
+        interface: isLinaInterface ? "btai" : isTxbikesInterface ? "txbikes" : isMmWartungInterface ? "mm-wartung" : "default",
       },
       "*",
     );
@@ -292,7 +357,7 @@ export default function WidgetPage() {
     return () => {
       window.removeEventListener("message", handleBtAiMessage);
     };
-  }, [mounted, tenantId, isLinaInterface, isTxbikesInterface]);
+  }, [mounted, tenantId, isLinaInterface, isTxbikesInterface, isMmWartungInterface]);
 
   async function sendText(rawText: string) {
     const text = rawText.trim();
@@ -357,7 +422,11 @@ export default function WidgetPage() {
       ...current,
       {
         role: "user",
-        content: isLinaInterface ? "📷 Beispiel oder Projektbild hinzugefügt" : "📷 Foto vom Fahrradproblem hinzugefügt",
+        content: isLinaInterface
+          ? "📷 Beispiel oder Projektbild hinzugefügt"
+          : isMmWartungInterface
+            ? "📷 Foto zum Fahrzeug oder Ersatzteil hinzugefügt"
+            : "📷 Foto vom Fahrradproblem hinzugefügt",
         imagePreviewUrl,
         imageName: file.name,
       },
@@ -365,7 +434,9 @@ export default function WidgetPage() {
         role: "assistant",
         content: isLinaInterface
           ? "Danke, das Bild ist jetzt in der Anfrage sichtbar. Schreib kurz, worum es geht, dann ordne ich es besser ein."
-          : "Danke, das Foto ist jetzt in der Anfrage sichtbar. Beschreib kurz, was genau passiert, damit ich das Problem besser eingrenzen kann.",
+          : isMmWartungInterface
+            ? "Danke, das Foto ist jetzt in der Anfrage sichtbar. Schreib kurz dazu, ob es um ein Fahrzeugproblem, einen Termin oder ein Ersatzteil geht."
+            : "Danke, das Foto ist jetzt in der Anfrage sichtbar. Beschreib kurz, was genau passiert, damit ich das Problem besser eingrenzen kann.",
       },
     ]);
   }
@@ -389,7 +460,9 @@ export default function WidgetPage() {
           content:
             isLinaInterface
               ? "Spracheingabe wird auf diesem Gerät leider nicht unterstützt. Schreib deine Anfrage kurz als Text oder lade ein Beispielbild hoch."
-              : "Spracheingabe wird auf diesem Gerät leider nicht unterstützt. Schreib dein Problem kurz als Text oder nutze ein Foto.",
+              : isMmWartungInterface
+                ? "Spracheingabe wird auf diesem Gerät leider nicht unterstützt. Schreib dein Anliegen kurz als Text oder nutze ein Foto."
+                : "Spracheingabe wird auf diesem Gerät leider nicht unterstützt. Schreib dein Problem kurz als Text oder nutze ein Foto.",
         },
       ]);
       return;
@@ -469,21 +542,23 @@ export default function WidgetPage() {
         role: "assistant",
         content: isLinaInterface
           ? `Alles klar — wobei soll ich dir bei BTDesigns helfen?`
-          : `Alles klar — womit kann ich dir helfen?`,
+          : isMmWartungInterface
+            ? `Alles klar — was möchtest du bei MM Wartung machen?`
+            : `Alles klar — womit kann ich dir helfen?`,
       },
     ]);
     setInput("");
   }
 
-  const panelW = isLinaInterface ? 1040 : isTxbikesInterface ? 940 : isEmbedded ? 460 : 500;
-  const panelH = isLinaInterface ? 840 : isTxbikesInterface ? 820 : isEmbedded ? 660 : 720;
+  const panelW = isLinaInterface ? 1040 : isTxbikesInterface || isMmWartungInterface ? 940 : isEmbedded ? 460 : 500;
+  const panelH = isLinaInterface ? 840 : isTxbikesInterface || isMmWartungInterface ? 820 : isEmbedded ? 660 : 720;
   const panelRadius = isEnhancedInterface ? 38 : 28;
   const GLOBAL_LOGO_SRC = "/brand/btai-logo.png";
 
   if (!mounted) return null;
 
-  const launcherOffset = isEmbedded ? 10 : 16;
-  const panelOffsetBottom = launcherOffset + 78;
+  const launcherOffset = isEmbedded ? (isEnhancedInterface ? 0 : 10) : 16;
+  const panelOffsetBottom = launcherOffset + (isEnhancedInterface ? 104 : 78);
 
   const showStartCards =
     isEnhancedInterface &&
@@ -492,7 +567,11 @@ export default function WidgetPage() {
     !loading &&
     !isListening;
 
-  const startCards = isTxbikesInterface ? TXBIKES_START_CARDS : BTDESIGNS_START_CARDS;
+  const startCards = isTxbikesInterface
+    ? TXBIKES_START_CARDS
+    : isMmWartungInterface
+      ? MM_WARTUNG_START_CARDS
+      : BTDESIGNS_START_CARDS;
 
   const wrapperBackground = isEmbedded
     ? "transparent"
@@ -512,8 +591,8 @@ export default function WidgetPage() {
         setShowBadge(false);
       }}
       style={{
-        width: 60,
-        height: 60,
+        width: launcherButtonSize,
+        height: launcherButtonSize,
         borderRadius: 999,
         border: open
           ? `1px solid rgba(${accentRgb}, 0.34)`
@@ -549,8 +628,8 @@ export default function WidgetPage() {
       {open ? (
         <span
           style={{
-            fontSize: 19,
-            lineHeight: "19px",
+            fontSize: launcherXIconSize,
+            lineHeight: `${launcherXIconSize}px`,
             textShadow: `0 0 12px rgba(${accentRgb}, 0.20)`,
           }}
         >
@@ -558,7 +637,7 @@ export default function WidgetPage() {
         </span>
       ) : (
         <MessageCircle
-          size={26}
+          size={launcherIconSize}
           strokeWidth={2.5}
           style={{
             filter: `drop-shadow(0 0 10px rgba(${accentRgb}, 0.16))`,
@@ -571,9 +650,9 @@ export default function WidgetPage() {
   return (
     <div
       style={{
-        minHeight: isEmbedded ? 88 : "100vh",
-        width: isEmbedded && !open ? 88 : undefined,
-        height: isEmbedded && !open ? 88 : undefined,
+        minHeight: isEmbedded ? embedClosedSize : "100vh",
+        width: isEmbedded && !open ? embedClosedSize : undefined,
+        height: isEmbedded && !open ? embedClosedSize : undefined,
         background: wrapperBackground,
         color: textPrimary,
         fontFamily:
@@ -800,7 +879,7 @@ export default function WidgetPage() {
         .bt-launcher::before {
           content: "";
           position: absolute;
-          inset: -12px;
+          inset: -14px;
           border-radius: 999px;
           background: radial-gradient(circle, rgba(${accentRgb}, 0.36) 0%, rgba(${accentRgb}, 0.13) 42%, transparent 72%);
           filter: blur(3px);
@@ -811,7 +890,7 @@ export default function WidgetPage() {
         .bt-launcher::after {
           content: "";
           position: absolute;
-          inset: -16px;
+          inset: -18px;
           border-radius: 999px;
           border: 1px solid rgba(${accentRgb}, 0.32);
           animation: bt-pulse 2.4s ease-out infinite;
@@ -930,8 +1009,8 @@ export default function WidgetPage() {
             position: "fixed",
             right: launcherOffset,
             bottom: launcherOffset,
-            width: 88,
-            height: 88,
+            width: launcherFrameSize,
+            height: launcherFrameSize,
             display: "grid",
             placeItems: "center",
             zIndex: 999999,
@@ -950,8 +1029,8 @@ export default function WidgetPage() {
               position: "fixed",
               right: launcherOffset,
               bottom: launcherOffset,
-              width: 96,
-              height: 96,
+              width: launcherFrameSize,
+              height: launcherFrameSize,
               display: "grid",
               placeItems: "center",
               zIndex: 999999,
@@ -1243,7 +1322,9 @@ export default function WidgetPage() {
                         >
                           {isLinaInterface
                             ? `Wähle einen Einstieg aus. Danach führt dich ${cfg.assistantName} gezielt zur passenden Lösung.`
-                            : `Wähle einen Einstieg aus. Danach führt dich ${cfg.assistantName} gezielt weiter.`}
+                            : isMmWartungInterface
+                              ? `Wähle aus, worum es geht. Danach nimmt ${cfg.assistantName} dein Anliegen für Moritz sauber auf.`
+                              : `Wähle einen Einstieg aus. Danach führt dich ${cfg.assistantName} gezielt weiter.`}
                         </div>
                       </div>
 
@@ -1339,7 +1420,9 @@ export default function WidgetPage() {
                         <div style={{ fontSize: isEnhancedInterface ? 14.5 : 13, lineHeight: 1.45, color: textSecondary }}>
                           {isLinaInterface
                             ? "Erzähl kurz, was du brauchst. Danach wird deine Sprache automatisch als Nachricht gesendet."
-                            : "Erzähl kurz, was mit dem Fahrrad los ist. Danach wird deine Sprache automatisch als Nachricht gesendet."}
+                            : isMmWartungInterface
+                              ? "Erzähl kurz, ob es um ein Fahrzeugproblem, einen Termin oder ein Ersatzteil geht. Danach wird deine Sprache automatisch gesendet."
+                              : "Erzähl kurz, was mit dem Fahrrad los ist. Danach wird deine Sprache automatisch als Nachricht gesendet."}
                         </div>
                         <div className="bt-voice-bars" aria-hidden="true">
                           <span />
@@ -1389,7 +1472,11 @@ export default function WidgetPage() {
                             <div className="bt-image-preview-wrap">
                               <img
                                 src={m.imagePreviewUrl}
-                                alt={isLinaInterface ? "Hochgeladenes Beispielbild" : "Hochgeladenes Foto vom Fahrradproblem"}
+                                alt={isLinaInterface
+                                  ? "Hochgeladenes Beispielbild"
+                                  : isMmWartungInterface
+                                    ? "Hochgeladenes Foto zum Fahrzeug oder Ersatzteil"
+                                    : "Hochgeladenes Foto vom Fahrradproblem"}
                               />
                               <div className="bt-image-preview-label">
                                 {m.imageName ? `Foto: ${m.imageName}` : "Foto hinzugefügt"}
@@ -1479,7 +1566,15 @@ export default function WidgetPage() {
                         send();
                       }
                     }}
-                    placeholder={isListening ? "Sprich jetzt…" : isLinaInterface ? "Schreib kurz, was du brauchst…" : "Schreib eine Frage…"}
+                    placeholder={
+                      isListening
+                        ? "Sprich jetzt…"
+                        : isLinaInterface
+                          ? "Schreib kurz, was du brauchst…"
+                          : isMmWartungInterface
+                            ? "Schreib dein Anliegen…"
+                            : "Schreib eine Frage…"
+                    }
                     style={{
                       flex: 1,
                       height: isEnhancedInterface ? 60 : 46,

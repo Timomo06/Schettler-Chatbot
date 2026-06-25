@@ -14,6 +14,8 @@ export const runtime = "nodejs";
 const allowedOrigins = [
   "https://btdesigns.de",
   "https://www.btdesigns.de",
+  "https://mm-wartung.de",
+  "https://www.mm-wartung.de",
   "https://schettlers-chatbot-lca3.vercel.app",
   "http://localhost:3000",
 ];
@@ -186,6 +188,7 @@ Regeln:
 - start und end im Format YYYY-MM-DDTHH:mm:ss.
 - Wenn keine Endzeit genannt ist, nutze 30 Minuten Dauer.
 - Erfinde keine Namen, Mails, Telefonnummern oder Zeiten.
+- Für Werkstatttermine kann die Telefonnummer die E-Mail ersetzen, wenn keine E-Mail genannt wurde.
 - Wenn Daten fehlen, liste sie in missing.
         `.trim(),
       },
@@ -347,7 +350,7 @@ export async function POST(req: NextRequest) {
     const tenant = getTenant(tenantParam);
     const sessionId = body.sessionId || crypto.randomUUID();
 
-    const calendarBookingEnabled = ["btdesigns", "demo", "lina"].includes(
+    const calendarBookingEnabled = ["btdesigns", "demo", "lina", "mm-wartung"].includes(
       tenant.id
     );
 
@@ -363,7 +366,7 @@ export async function POST(req: NextRequest) {
         booking.bookingIntent &&
         booking.confirmed &&
         typeof booking.name === "string" &&
-        typeof booking.email === "string" &&
+        (typeof booking.email === "string" || typeof booking.phone === "string") &&
         typeof booking.start === "string" &&
         typeof booking.end === "string";
 
@@ -376,9 +379,13 @@ export async function POST(req: NextRequest) {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             name: booking.name,
-            email: booking.email,
+            email: booking.email || "",
             phone: booking.phone || "",
-            topic: booking.topic || "Beratung über den Chatbot",
+            topic:
+              booking.topic ||
+              (tenant.id === "mm-wartung"
+                ? "Werkstatttermin über MM-Doc"
+                : "Beratung über den Chatbot"),
             start: bookingStart,
             end: bookingEnd,
             checkOnly: false,
@@ -390,9 +397,14 @@ export async function POST(req: NextRequest) {
         let reply = "";
 
         if (eventResponse.ok && eventData.success) {
-          reply = `Perfekt, ich habe den Termin verbindlich eingetragen: ${formatGermanTime(
-            booking.start!
-          )}. ✅`;
+          reply =
+            tenant.id === "mm-wartung"
+              ? `Perfekt, ich habe den Termin bei MM Wartung verbindlich eingetragen: ${formatGermanTime(
+                  booking.start!
+                )}. Moritz sieht sich das dann vor Ort genauer an. ✅`
+              : `Perfekt, ich habe den Termin verbindlich eingetragen: ${formatGermanTime(
+                  booking.start!
+                )}. ✅`;
         } else if (eventResponse.status === 409) {
           const alternative = await findNextFreeSlotSameDay(
             requestOrigin,
@@ -438,7 +450,9 @@ export async function POST(req: NextRequest) {
 
         if (checkResponse.ok) {
           reply =
-            "Der Zeitraum ist noch frei. Schick mir bitte noch deinen Namen, deine E-Mail und optional deine Telefonnummer, dann frage ich dich einmal zur verbindlichen Bestätigung. ✅";
+            tenant.id === "mm-wartung"
+              ? "Der Zeitraum ist noch frei. Schick mir bitte noch deinen Namen und deine Telefonnummer, dann frage ich dich einmal zur verbindlichen Bestätigung. ✅"
+              : "Der Zeitraum ist noch frei. Schick mir bitte noch deinen Namen, deine E-Mail und optional deine Telefonnummer, dann frage ich dich einmal zur verbindlichen Bestätigung. ✅";
         } else if (checkResponse.status === 409) {
           const alternative = await findNextFreeSlotSameDay(
             requestOrigin,
@@ -474,10 +488,29 @@ export async function POST(req: NextRequest) {
     const bookingPromptAddOn = calendarBookingEnabled
       ? `
 Zusatzregel Terminbuchung:
-Du darfst BTDesigns-Beratungstermine vorbereiten.
+
+Du darfst Termine vorbereiten.
+
+Wenn tenant.id "mm-wartung" ist, geht es um Werkstatttermine bei MM Wartung.
+Dann frage nacheinander ab:
+- Name
+- Telefonnummer
+- E-Mail optional
+- Fahrzeug
+- Anliegen
+- Datum und Uhrzeit
+
+Bei MM Wartung ist die Telefonnummer wichtiger als die E-Mail.
+Wenn der Nutzer keine E-Mail nennen möchte, ist das okay.
+
+Wenn tenant.id nicht "mm-wartung" ist, geht es um einen Beratungstermin.
+Dann frage nacheinander Name, E-Mail, Telefonnummer optional, Thema sowie Datum und Uhrzeit ab.
+
 Wenn der Nutzer eine konkrete Wunschzeit nennt, prüft das System automatisch die Verfügbarkeit.
-Frage nacheinander Name, E-Mail, Telefonnummer optional, Thema sowie Datum und Uhrzeit ab.
-Wenn alle Daten vorliegen und der Zeitraum frei ist, frage: "Soll ich den Termin verbindlich eintragen?"
+
+Wenn alle notwendigen Daten vorliegen und der Zeitraum frei ist, frage:
+"Soll ich den Termin verbindlich eintragen?"
+
 Ein reines "Danke" oder "Dankeschön" ist keine Buchungsbestätigung.
 
 Wichtig:
@@ -486,7 +519,6 @@ Du darfst niemals sagen oder andeuten, dass ein Termin eingetragen, gebucht, ges
 Auch nicht nach einer Bestätigung wie "Ja".
 Nur der Server-Code darf nach erfolgreichem /api/create-event-Aufruf diese Erfolgsmeldung ausgeben.
 Wenn der Nutzer bestätigt, antworte nicht selbst mit Erfolg, sondern bleibe neutral.
-Wenn Name oder E-Mail fehlen, frage diese zuerst ab.
 Sage niemals "Ich trage ihn jetzt ein" oder "Einen Moment", wenn du den Termin nicht technisch erstellt hast.
 `
       : "";
