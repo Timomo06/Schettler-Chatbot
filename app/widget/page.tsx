@@ -1,7 +1,7 @@
 // app/widget/page.tsx
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { type FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import { getTenant } from "@/lib/tenants";
 import { MessageCircle } from "lucide-react";
 
@@ -55,8 +55,39 @@ type StartCard = {
   title: string;
   description: string;
   message?: string;
-  action?: "photo" | "voice";
+  action?: "photo" | "voice" | "booking";
 };
+
+type BookingFormState = {
+  name: string;
+  email: string;
+  phone: string;
+  service: string;
+  date: string;
+  time: string;
+  durationMinutes: string;
+  message: string;
+};
+
+const DEFAULT_BOOKING_FORM: BookingFormState = {
+  name: "",
+  email: "",
+  phone: "",
+  service: "Website Beratung",
+  date: "",
+  time: "",
+  durationMinutes: "30",
+  message: "",
+};
+
+const BTDESIGNS_BOOKING_SERVICES = [
+  "Website Beratung",
+  "Social Media Beratung",
+  "AI Interface Beratung",
+  "Werbemittel Anfrage",
+  "Foto/Video Anfrage",
+  "Allgemeines Erstgespräch",
+];
 
 const TXBIKES_START_CARDS: StartCard[] = [
   {
@@ -121,6 +152,12 @@ const BTDESIGNS_START_CARDS: StartCard[] = [
     title: "Werbemittel",
     description: "Textilien, Drucksachen oder Giveaways anfragen",
     message: "Ich interessiere mich für Werbemittel von BTDesigns und möchte eine Anfrage stellen.",
+  },
+  {
+    icon: "📅",
+    title: "Termin buchen",
+    description: "Beratung direkt in deinen Apple Kalender eintragen",
+    action: "booking",
   },
   {
     icon: "💬",
@@ -253,6 +290,9 @@ export default function WidgetPage() {
   const [showBadge, setShowBadge] = useState(true);
   const [isListening, setIsListening] = useState(false);
   const [voiceSupported, setVoiceSupported] = useState(false);
+  const [bookingOpen, setBookingOpen] = useState(false);
+  const [bookingSubmitting, setBookingSubmitting] = useState(false);
+  const [bookingForm, setBookingForm] = useState<BookingFormState>(DEFAULT_BOOKING_FORM);
 
   const isEmbedClosed = isEmbedded && !open;
   const listRef = useRef<HTMLDivElement | null>(null);
@@ -363,6 +403,14 @@ export default function WidgetPage() {
     const text = rawText.trim();
     if (!text || loading) return;
 
+    const wantsBooking =
+      isLinaInterface &&
+      /\b(termin|beratungsgespräch|erstgespräch|gespräch|meeting|call|buchen|anrufen)\b/i.test(text);
+
+    if (wantsBooking) {
+      setBookingOpen(true);
+    }
+
     const next: Msg[] = [...msgs, { role: "user", content: text }];
     setMsgs(next);
     setInput("");
@@ -391,6 +439,165 @@ export default function WidgetPage() {
       ]);
     } finally {
       setLoading(false);
+    }
+  }
+
+  function openBookingForm() {
+    if (loading || isListening || bookingSubmitting) return;
+
+    setBookingOpen(true);
+    setShowBadge(false);
+
+    setMsgs((current) => {
+      const alreadyHasBookingHint = current.some((msg) =>
+        msg.role === "assistant" && msg.content.includes("Termindaten")
+      );
+
+      if (alreadyHasBookingHint) return current;
+
+      return [
+        ...current,
+        {
+          role: "assistant",
+          content:
+            "Klar — trag kurz deine Termindaten ein. Danach wird der Termin direkt in den BTDesigns Apple Kalender geschrieben.",
+        },
+      ];
+    });
+  }
+
+  function updateBookingForm(field: keyof BookingFormState, value: string) {
+    setBookingForm((current) => ({ ...current, [field]: value }));
+  }
+
+  function buildLocalDate(dateValue: string, timeValue: string) {
+    const [year, month, day] = dateValue.split("-").map(Number);
+    const [hour, minute] = timeValue.split(":").map(Number);
+
+    if (!year || !month || !day || Number.isNaN(hour) || Number.isNaN(minute)) {
+      return null;
+    }
+
+    const date = new Date(year, month - 1, day, hour, minute, 0, 0);
+
+    if (Number.isNaN(date.getTime())) return null;
+
+    return date;
+  }
+
+  async function submitBooking(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+
+    if (bookingSubmitting) return;
+
+    const name = bookingForm.name.trim();
+    const email = bookingForm.email.trim();
+    const phone = bookingForm.phone.trim();
+    const service = bookingForm.service.trim() || "Website Beratung";
+    const date = bookingForm.date.trim();
+    const time = bookingForm.time.trim();
+    const durationMinutes = Number(bookingForm.durationMinutes || 30);
+    const message = bookingForm.message.trim();
+
+    if (!name || !date || !time) {
+      setMsgs((current) => [
+        ...current,
+        {
+          role: "assistant",
+          content: "Für die Terminbuchung brauche ich mindestens Name, Datum und Uhrzeit.",
+        },
+      ]);
+      return;
+    }
+
+    if (!email && !phone) {
+      setMsgs((current) => [
+        ...current,
+        {
+          role: "assistant",
+          content: "Bitte gib mindestens eine E-Mail-Adresse oder Telefonnummer an, damit BTDesigns dich erreichen kann.",
+        },
+      ]);
+      return;
+    }
+
+    const startDate = buildLocalDate(date, time);
+
+    if (!startDate) {
+      setMsgs((current) => [
+        ...current,
+        {
+          role: "assistant",
+          content: "Datum oder Uhrzeit konnte ich nicht lesen. Bitte prüfe die Eingabe nochmal.",
+        },
+      ]);
+      return;
+    }
+
+    const safeDurationMinutes = Number.isFinite(durationMinutes) && durationMinutes > 0 ? durationMinutes : 30;
+    const endDate = new Date(startDate.getTime() + safeDurationMinutes * 60 * 1000);
+
+    setBookingSubmitting(true);
+
+    try {
+      const res = await fetch("/api/create-event", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name,
+          email,
+          phone,
+          service,
+          message,
+          start: startDate.toISOString(),
+          end: endDate.toISOString(),
+        }),
+      });
+
+      const data = await res.json().catch(() => null);
+
+      if (!res.ok || !data?.ok) {
+        setMsgs((current) => [
+          ...current,
+          {
+            role: "assistant",
+            content:
+              data?.error ||
+              "Der Termin konnte gerade nicht eingetragen werden. Bitte wähle eine andere Uhrzeit oder versuch es nochmal.",
+          },
+        ]);
+        return;
+      }
+
+      const readableDate = startDate.toLocaleString("de-DE", {
+        weekday: "short",
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+      });
+
+      setMsgs((current) => [
+        ...current,
+        {
+          role: "assistant",
+          content: `Erledigt — der Termin wurde in den BTDesigns Kalender eingetragen.\n\n${readableDate}\nLeistung: ${service}`,
+        },
+      ]);
+
+      setBookingOpen(false);
+      setBookingForm(DEFAULT_BOOKING_FORM);
+    } catch {
+      setMsgs((current) => [
+        ...current,
+        {
+          role: "assistant",
+          content: "Technischer Fehler beim Kalendereintrag. Bitte versuch es nochmal.",
+        },
+      ]);
+    } finally {
+      setBookingSubmitting(false);
     }
   }
 
@@ -537,6 +744,9 @@ export default function WidgetPage() {
   function resetChat() {
     recognitionRef.current?.stop();
     setIsListening(false);
+    setBookingOpen(false);
+    setBookingSubmitting(false);
+    setBookingForm(DEFAULT_BOOKING_FORM);
     setMsgs([
       {
         role: "assistant",
@@ -1354,6 +1564,11 @@ export default function WidgetPage() {
                                 return;
                               }
 
+                              if (card.action === "booking") {
+                                openBookingForm();
+                                return;
+                              }
+
                               if (card.message) {
                                 void sendText(card.message);
                               }
@@ -1406,6 +1621,235 @@ export default function WidgetPage() {
                         ))}
                       </div>
                     </div>
+                  )}
+
+                  {bookingOpen && isLinaInterface && (
+                    <form
+                      onSubmit={submitBooking}
+                      style={{
+                        alignSelf: "stretch",
+                        borderRadius: isEnhancedInterface ? 28 : 20,
+                        border: "1px solid rgba(255,255,255,0.42)",
+                        background:
+                          "linear-gradient(180deg, rgba(255,255,255,0.88), rgba(255,255,255,0.66))",
+                        boxShadow:
+                          "0 18px 54px rgba(0,0,0,0.12), inset 0 1px 0 rgba(255,255,255,0.40)",
+                        backdropFilter: "blur(24px) saturate(180%)",
+                        WebkitBackdropFilter: "blur(24px) saturate(180%)",
+                        padding: isEnhancedInterface ? 22 : 16,
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: 14,
+                        color: textPrimary,
+                      }}
+                    >
+                      <div style={{ display: "flex", justifyContent: "space-between", gap: 12, alignItems: "flex-start" }}>
+                        <div>
+                          <div style={{ fontSize: isEnhancedInterface ? 22 : 17, fontWeight: 850, marginBottom: 4 }}>
+                            Termin bei BTDesigns buchen
+                          </div>
+                          <div style={{ fontSize: isEnhancedInterface ? 14.5 : 13, color: textSecondary, lineHeight: 1.45 }}>
+                            Der Termin wird direkt in den Apple Kalender „BTDesigns Termine“ eingetragen.
+                          </div>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => setBookingOpen(false)}
+                          disabled={bookingSubmitting}
+                          style={{
+                            border: "1px solid rgba(22,49,38,0.10)",
+                            background: "rgba(255,255,255,0.62)",
+                            borderRadius: 999,
+                            width: 34,
+                            height: 34,
+                            cursor: bookingSubmitting ? "not-allowed" : "pointer",
+                            color: textPrimary,
+                            fontSize: 20,
+                            lineHeight: "30px",
+                          }}
+                          aria-label="Terminformular schließen"
+                          title="Schließen"
+                        >
+                          ×
+                        </button>
+                      </div>
+
+                      <div
+                        style={{
+                          display: "grid",
+                          gridTemplateColumns: isEnhancedInterface ? "repeat(2, minmax(0, 1fr))" : "1fr",
+                          gap: 12,
+                        }}
+                      >
+                        <label style={{ display: "flex", flexDirection: "column", gap: 6, fontSize: 13.5, fontWeight: 700 }}>
+                          Name *
+                          <input
+                            value={bookingForm.name}
+                            onChange={(e) => updateBookingForm("name", e.target.value)}
+                            placeholder="Dein Name"
+                            style={{
+                              height: 46,
+                              borderRadius: 14,
+                              border: "1px solid rgba(22,49,38,0.12)",
+                              background: "rgba(255,255,255,0.78)",
+                              padding: "0 12px",
+                              outline: "none",
+                              color: textPrimary,
+                              fontSize: 14,
+                            }}
+                          />
+                        </label>
+
+                        <label style={{ display: "flex", flexDirection: "column", gap: 6, fontSize: 13.5, fontWeight: 700 }}>
+                          Leistung
+                          <select
+                            value={bookingForm.service}
+                            onChange={(e) => updateBookingForm("service", e.target.value)}
+                            style={{
+                              height: 46,
+                              borderRadius: 14,
+                              border: "1px solid rgba(22,49,38,0.12)",
+                              background: "rgba(255,255,255,0.78)",
+                              padding: "0 12px",
+                              outline: "none",
+                              color: textPrimary,
+                              fontSize: 14,
+                            }}
+                          >
+                            {BTDESIGNS_BOOKING_SERVICES.map((service) => (
+                              <option key={service} value={service}>
+                                {service}
+                              </option>
+                            ))}
+                          </select>
+                        </label>
+
+                        <label style={{ display: "flex", flexDirection: "column", gap: 6, fontSize: 13.5, fontWeight: 700 }}>
+                          E-Mail
+                          <input
+                            value={bookingForm.email}
+                            onChange={(e) => updateBookingForm("email", e.target.value)}
+                            placeholder="name@example.de"
+                            type="email"
+                            style={{
+                              height: 46,
+                              borderRadius: 14,
+                              border: "1px solid rgba(22,49,38,0.12)",
+                              background: "rgba(255,255,255,0.78)",
+                              padding: "0 12px",
+                              outline: "none",
+                              color: textPrimary,
+                              fontSize: 14,
+                            }}
+                          />
+                        </label>
+
+                        <label style={{ display: "flex", flexDirection: "column", gap: 6, fontSize: 13.5, fontWeight: 700 }}>
+                          Telefon
+                          <input
+                            value={bookingForm.phone}
+                            onChange={(e) => updateBookingForm("phone", e.target.value)}
+                            placeholder="0176 ..."
+                            type="tel"
+                            style={{
+                              height: 46,
+                              borderRadius: 14,
+                              border: "1px solid rgba(22,49,38,0.12)",
+                              background: "rgba(255,255,255,0.78)",
+                              padding: "0 12px",
+                              outline: "none",
+                              color: textPrimary,
+                              fontSize: 14,
+                            }}
+                          />
+                        </label>
+
+                        <label style={{ display: "flex", flexDirection: "column", gap: 6, fontSize: 13.5, fontWeight: 700 }}>
+                          Datum *
+                          <input
+                            value={bookingForm.date}
+                            onChange={(e) => updateBookingForm("date", e.target.value)}
+                            type="date"
+                            style={{
+                              height: 46,
+                              borderRadius: 14,
+                              border: "1px solid rgba(22,49,38,0.12)",
+                              background: "rgba(255,255,255,0.78)",
+                              padding: "0 12px",
+                              outline: "none",
+                              color: textPrimary,
+                              fontSize: 14,
+                            }}
+                          />
+                        </label>
+
+                        <label style={{ display: "flex", flexDirection: "column", gap: 6, fontSize: 13.5, fontWeight: 700 }}>
+                          Uhrzeit *
+                          <input
+                            value={bookingForm.time}
+                            onChange={(e) => updateBookingForm("time", e.target.value)}
+                            type="time"
+                            step="900"
+                            style={{
+                              height: 46,
+                              borderRadius: 14,
+                              border: "1px solid rgba(22,49,38,0.12)",
+                              background: "rgba(255,255,255,0.78)",
+                              padding: "0 12px",
+                              outline: "none",
+                              color: textPrimary,
+                              fontSize: 14,
+                            }}
+                          />
+                        </label>
+                      </div>
+
+                      <label style={{ display: "flex", flexDirection: "column", gap: 6, fontSize: 13.5, fontWeight: 700 }}>
+                        Nachricht
+                        <textarea
+                          value={bookingForm.message}
+                          onChange={(e) => updateBookingForm("message", e.target.value)}
+                          placeholder="Worum soll es gehen?"
+                          rows={3}
+                          style={{
+                            borderRadius: 14,
+                            border: "1px solid rgba(22,49,38,0.12)",
+                            background: "rgba(255,255,255,0.78)",
+                            padding: "12px",
+                            outline: "none",
+                            color: textPrimary,
+                            fontSize: 14,
+                            resize: "vertical",
+                            fontFamily: "inherit",
+                          }}
+                        />
+                      </label>
+
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
+                        <div style={{ fontSize: 12.5, color: textSecondary, lineHeight: 1.4 }}>
+                          * Pflichtfelder. E-Mail oder Telefon muss angegeben werden.
+                        </div>
+                        <button
+                          type="submit"
+                          disabled={bookingSubmitting}
+                          style={{
+                            height: 48,
+                            padding: "0 18px",
+                            borderRadius: 16,
+                            border: "1px solid rgba(255,255,255,0.22)",
+                            background: `linear-gradient(180deg, ${widgetAccent}F0, ${widgetAccent}A8)`,
+                            color: "#ffffff",
+                            cursor: bookingSubmitting ? "not-allowed" : "pointer",
+                            fontWeight: 800,
+                            fontSize: 14.5,
+                            boxShadow: `0 14px 34px rgba(0,0,0,0.14), 0 0 0 1px ${widgetAccent}12 inset`,
+                            opacity: bookingSubmitting ? 0.68 : 1,
+                          }}
+                        >
+                          {bookingSubmitting ? "Wird eingetragen…" : "Termin eintragen"}
+                        </button>
+                      </div>
+                    </form>
                   )}
 
                   {isListening && (
