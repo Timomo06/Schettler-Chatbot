@@ -55,7 +55,10 @@ type StartCard = {
   title: string;
   description: string;
   message?: string;
-  action?: "photo" | "voice" | "booking";
+  action?: "photo" | "voice" | "booking" | "fahrwerkSignup" | "fahrwerkPanel";
+  fahrwerkPanel?: FahrwerkPanel;
+  prefillLicenseClass?: string;
+  prefillStartWish?: string;
 };
 
 type BookingFormState = {
@@ -69,6 +72,48 @@ type BookingFormState = {
   message: string;
 };
 
+type FahrwerkSignupFormState = {
+  licenseClass: string;
+  startWish: string;
+  name: string;
+  email: string;
+  phone: string;
+  message: string;
+  privacyAccepted: boolean;
+};
+
+type FahrwerkPanel =
+  | "dashboard"
+  | "start"
+  | "documents"
+  | "theory"
+  | "practice"
+  | "exam"
+  | "student"
+  | "contact";
+
+type FahrwerkStageId =
+  | "new"
+  | "registered"
+  | "documents"
+  | "theory"
+  | "theory_exam"
+  | "practice"
+  | "practical_exam";
+
+type FahrwerkDocumentItem = {
+  id: string;
+  label: string;
+  hint: string;
+};
+
+type FahrwerkStage = {
+  id: FahrwerkStageId;
+  label: string;
+  next: string;
+  detail: string;
+};
+
 const DEFAULT_BOOKING_FORM: BookingFormState = {
   name: "",
   email: "",
@@ -79,6 +124,90 @@ const DEFAULT_BOOKING_FORM: BookingFormState = {
   durationMinutes: "30",
   message: "",
 };
+
+const DEFAULT_FAHRWERK_SIGNUP_FORM: FahrwerkSignupFormState = {
+  licenseClass: "Klasse B",
+  startWish: "Schnell starten",
+  name: "",
+  email: "",
+  phone: "",
+  message: "",
+  privacyAccepted: false,
+};
+
+const FAHRWERK_LICENSE_CLASSES = [
+  "Klasse B",
+  "B197",
+  "BF17",
+  "BE Anhänger",
+  "Ich bin noch unsicher",
+];
+
+const FAHRWERK_START_WISHES = [
+  "Schnell starten",
+  "Erstmal beraten lassen",
+  "Theorie-Einstieg finden",
+  "Rückruf von Fahrwerk B",
+];
+
+const FAHRWERK_DOCUMENT_ITEMS: FahrwerkDocumentItem[] = [
+  { id: "ausweis", label: "Ausweis", hint: "Personalausweis oder Reisepass bereitlegen." },
+  { id: "sehtest", label: "Sehtest", hint: "Für Klasse B/B197/BF17 nötig. Gültigkeit beachten." },
+  { id: "erstehilfe", label: "Erste-Hilfe-Kurs", hint: "Bescheinigung für den Antrag sichern." },
+  { id: "passbild", label: "Biometrisches Passbild", hint: "Wird für den Führerscheinantrag benötigt." },
+  { id: "antrag", label: "Antrag beim Amt", hint: "Erst danach kann die Prüfung später sauber laufen." },
+  { id: "bf17", label: "BF17-Begleitpersonen", hint: "Nur relevant, wenn begleitetes Fahren ab 17 geplant ist." },
+];
+
+const FAHRWERK_STAGES: FahrwerkStage[] = [
+  {
+    id: "new",
+    label: "Noch nicht angemeldet",
+    next: "Passende Klasse finden und Anmeldung vorbereiten.",
+    detail: "Starte mit Klasse B, B197, BF17 oder BE. Wenn du unsicher bist, führt dich das Interface über wenige Fragen zur passenden Richtung.",
+  },
+  {
+    id: "registered",
+    label: "Angemeldet",
+    next: "Unterlagen vollständig machen.",
+    detail: "Sehtest, Erste-Hilfe-Kurs, Passbild und Antrag sind meistens die nächsten Baustellen.",
+  },
+  {
+    id: "documents",
+    label: "Unterlagen laufen",
+    next: "Theorie sauber starten und Antrag im Blick behalten.",
+    detail: "Wenn Unterlagen fehlen, dauert später oft die Prüfungsfreigabe länger. Deshalb zuerst den Dokumenten-Check erledigen.",
+  },
+  {
+    id: "theory",
+    label: "Theorie läuft",
+    next: "Regelmäßig lernen und Theorieprüfung planen.",
+    detail: "Das Interface kann dir erklären, was in der Theoriephase wichtig ist. Konkrete Kurszeiten bleiben bei Fahrschule.live.",
+  },
+  {
+    id: "theory_exam",
+    label: "Theorieprüfung bestanden",
+    next: "Praxisphase und Fahrstunden fokussieren.",
+    detail: "Jetzt geht es stärker um Fahrpraxis, Sonderfahrten und Vorbereitung auf die praktische Prüfung.",
+  },
+  {
+    id: "practice",
+    label: "Praxis läuft",
+    next: "Fahrstunden, Sonderfahrten und Prüfungsreife klären.",
+    detail: "Wenn du unsicher bist, kann das Interface deine Frage vorstrukturieren, bevor Fahrwerk B sie prüft.",
+  },
+  {
+    id: "practical_exam",
+    label: "Prüfung steht an",
+    next: "Prüfungs-Checkliste durchgehen und ruhig bleiben.",
+    detail: "Kurz vor der Prüfung helfen klare Checklisten mehr als lange Texte. Nutze den Prüfungsmodus im Interface.",
+  },
+];
+
+const DEFAULT_FAHRWERK_CHECKLIST = FAHRWERK_DOCUMENT_ITEMS.reduce<Record<string, boolean>>((acc, item) => {
+  acc[item.id] = false;
+  return acc;
+}, {});
 
 const BTDESIGNS_BOOKING_SERVICES = [
   "Website Beratung",
@@ -212,6 +341,51 @@ const MM_WARTUNG_START_CARDS: StartCard[] = [
   },
 ];
 
+const FAHRWERK_B_START_CARDS: StartCard[] = [
+  {
+    icon: "🧭",
+    title: "Ich will starten",
+    description: "Klasse finden, Anmeldung vorbereiten, nächsten Schritt sehen",
+    action: "fahrwerkPanel",
+    fahrwerkPanel: "start",
+  },
+  {
+    icon: "✅",
+    title: "Unterlagen prüfen",
+    description: "Sehtest, Erste Hilfe, Passbild, Antrag und BF17-Check",
+    action: "fahrwerkPanel",
+    fahrwerkPanel: "documents",
+  },
+  {
+    icon: "📚",
+    title: "Theorie begleiten",
+    description: "Theorie-Einstieg, Lernen und Prüfung besser einordnen",
+    action: "fahrwerkPanel",
+    fahrwerkPanel: "theory",
+  },
+  {
+    icon: "🚘",
+    title: "Praxisphase",
+    description: "Fahrstunden, Sonderfahrten und praktische Prüfung verstehen",
+    action: "fahrwerkPanel",
+    fahrwerkPanel: "practice",
+  },
+  {
+    icon: "🎯",
+    title: "Prüfungsmodus",
+    description: "Theorie- oder Praxisprüfung mit Checkliste vorbereiten",
+    action: "fahrwerkPanel",
+    fahrwerkPanel: "exam",
+  },
+  {
+    icon: "👤",
+    title: "Ich bin Fahrschüler",
+    description: "Stand auswählen und den nächsten sinnvollen Schritt sehen",
+    action: "fahrwerkPanel",
+    fahrwerkPanel: "student",
+  },
+];
+
 function hexToRgb(hex: string) {
   const clean = hex.replace("#", "");
   const full =
@@ -246,40 +420,61 @@ export default function WidgetPage() {
     setIsEmbedded(embedded);
   }, []);
 
-  const cfg = useMemo(() => getTenant(tenantId), [tenantId]);
+  const cfg = useMemo(() => {
+    try {
+      return getTenant(tenantId);
+    } catch {
+      return getTenant("demo");
+    }
+  }, [tenantId]);
   const theme = cfg.theme;
   const normalizedTenantId = tenantId.toLowerCase();
   const isTxbikesInterface = normalizedTenantId === "txbikesv2";
   const isLinaInterface = ["btdesigns", "lina", "btai", "btdesigns-lina"].includes(normalizedTenantId);
   const isMmWartungInterface = ["mm-wartung", "mmwartung", "mm_wartung", "mm-wartung.de", "mmwartungde", "mm"].includes(normalizedTenantId);
-  const isEnhancedInterface = isTxbikesInterface || isLinaInterface || isMmWartungInterface;
+  const isFahrwerkBInterface = ["fahrwerk-b", "fahrwerkb", "fahrwerk_b", "fahrwerk-b.de", "fahrwerkbde", "fahrwerk"].includes(normalizedTenantId);
+  const isEnhancedInterface = isTxbikesInterface || isLinaInterface || isMmWartungInterface || isFahrwerkBInterface;
+  const displayBrandName = isFahrwerkBInterface ? "Fahrwerk B" : cfg.brandName;
+  const displayAssistantName = isFahrwerkBInterface ? "Führerschein-Cockpit" : cfg.assistantName;
   const embedClosedSize = isEnhancedInterface ? 190 : 120;
   const launcherFrameSize = isEnhancedInterface ? 124 : 96;
   const launcherButtonSize = isEnhancedInterface ? 74 : 60;
   const launcherIconSize = isEnhancedInterface ? 32 : 26;
   const launcherXIconSize = isEnhancedInterface ? 24 : 19;
-  const widgetAccent = isTxbikesInterface ? "#8b5cf6" : isMmWartungInterface ? theme.accent || "#ff751f" : theme.accent;
+  const widgetAccent = isTxbikesInterface
+    ? "#8b5cf6"
+    : isMmWartungInterface
+      ? theme.accent || "#ff751f"
+      : isFahrwerkBInterface
+        ? "#facc15"
+        : theme.accent;
   const widgetBackground = isTxbikesInterface
     ? "#f6f2ff"
     : isLinaInterface
       ? "#f7fbff"
       : isMmWartungInterface
         ? "#fff7ed"
-        : theme.bg;
+        : isFahrwerkBInterface
+          ? "#0b0f16"
+          : theme.bg;
   const textPrimary = isTxbikesInterface
     ? "#1f1636"
     : isLinaInterface
       ? "#182536"
       : isMmWartungInterface
         ? "#2b1f18"
-        : "#163126";
+        : isFahrwerkBInterface
+          ? "#111827"
+          : "#163126";
   const textSecondary = isTxbikesInterface
     ? "#6a5f8d"
     : isLinaInterface
       ? "#566477"
       : isMmWartungInterface
         ? "#705a4a"
-        : "#355f52";
+        : isFahrwerkBInterface
+          ? "#4b5563"
+          : "#355f52";
   const accentRgb = useMemo(() => hexToRgb(widgetAccent), [widgetAccent]);
 
   const [open, setOpen] = useState(false);
@@ -293,6 +488,11 @@ export default function WidgetPage() {
   const [bookingOpen, setBookingOpen] = useState(false);
   const [bookingSubmitting, setBookingSubmitting] = useState(false);
   const [bookingForm, setBookingForm] = useState<BookingFormState>(DEFAULT_BOOKING_FORM);
+  const [fahrwerkSignupOpen, setFahrwerkSignupOpen] = useState(false);
+  const [fahrwerkSignupForm, setFahrwerkSignupForm] = useState<FahrwerkSignupFormState>(DEFAULT_FAHRWERK_SIGNUP_FORM);
+  const [fahrwerkPanel, setFahrwerkPanel] = useState<FahrwerkPanel>("dashboard");
+  const [fahrwerkStage, setFahrwerkStage] = useState<FahrwerkStageId>("new");
+  const [fahrwerkChecklist, setFahrwerkChecklist] = useState<Record<string, boolean>>(DEFAULT_FAHRWERK_CHECKLIST);
 
   const isEmbedClosed = isEmbedded && !open;
   const listRef = useRef<HTMLDivElement | null>(null);
@@ -300,19 +500,52 @@ export default function WidgetPage() {
   const recognitionRef = useRef<SpeechRecognitionLike | null>(null);
 
   useEffect(() => {
+    if (!mounted || !isFahrwerkBInterface) return;
+
+    try {
+      const savedStage = window.localStorage.getItem("fahrwerk-b-stage") as FahrwerkStageId | null;
+      const savedChecklist = window.localStorage.getItem("fahrwerk-b-checklist");
+
+      if (savedStage && FAHRWERK_STAGES.some((stage) => stage.id === savedStage)) {
+        setFahrwerkStage(savedStage);
+      }
+
+      if (savedChecklist) {
+        const parsed = JSON.parse(savedChecklist) as Record<string, boolean>;
+        setFahrwerkChecklist({ ...DEFAULT_FAHRWERK_CHECKLIST, ...parsed });
+      }
+    } catch {
+      // Lokaler Fortschritt ist Komfort. Wenn localStorage blockiert ist, läuft das Interface trotzdem.
+    }
+  }, [mounted, isFahrwerkBInterface]);
+
+  useEffect(() => {
+    if (!mounted || !isFahrwerkBInterface) return;
+
+    try {
+      window.localStorage.setItem("fahrwerk-b-stage", fahrwerkStage);
+      window.localStorage.setItem("fahrwerk-b-checklist", JSON.stringify(fahrwerkChecklist));
+    } catch {
+      // Ignorieren, damit das Interface auch ohne lokalen Speicher nutzbar bleibt.
+    }
+  }, [mounted, isFahrwerkBInterface, fahrwerkStage, fahrwerkChecklist]);
+
+  useEffect(() => {
     if (!mounted) return;
 
-    const firstMessage = isLinaInterface
-      ? `Hi — ich bin ${cfg.assistantName}. Wobei soll ich dir bei BTDesigns helfen?`
-      : isMmWartungInterface
-        ? `Hi — ich bin ${cfg.assistantName}. Was möchtest du bei MM Wartung machen?`
-        : `Hi — ich bin ${cfg.assistantName}. Worum geht’s?`;
+    const firstMessage = isFahrwerkBInterface
+      ? "Hi — ich bin dein Fahrwerk B Führerschein-Cockpit. Wähle aus, wo du gerade stehst, und ich zeige dir den nächsten sinnvollen Schritt."
+      : isLinaInterface
+        ? `Hi — ich bin ${displayAssistantName}. Wobei soll ich dir bei BTDesigns helfen?`
+        : isMmWartungInterface
+          ? `Hi — ich bin ${displayAssistantName}. Was möchtest du bei MM Wartung machen?`
+          : `Hi — ich bin ${displayAssistantName}. Worum geht’s?`;
 
     setMsgs([{ role: "assistant", content: firstMessage }]);
 
     const SpeechRecognitionCtor = window.SpeechRecognition || window.webkitSpeechRecognition;
     setVoiceSupported(Boolean(SpeechRecognitionCtor));
-  }, [mounted, cfg.assistantName, isLinaInterface, isMmWartungInterface]);
+  }, [mounted, displayAssistantName, isFahrwerkBInterface, isLinaInterface, isMmWartungInterface]);
 
   useEffect(() => {
     return () => {
@@ -356,13 +589,13 @@ export default function WidgetPage() {
     const size = open
       ? {
           type: "bt-chat-resize",
-          width: isLinaInterface ? 1080 : isTxbikesInterface || isMmWartungInterface ? 980 : 500,
-          height: isLinaInterface ? 920 : isTxbikesInterface || isMmWartungInterface ? 880 : 760,
+          width: isLinaInterface ? 1080 : isTxbikesInterface || isMmWartungInterface || isFahrwerkBInterface ? 980 : 500,
+          height: isLinaInterface ? 920 : isTxbikesInterface || isMmWartungInterface || isFahrwerkBInterface ? 880 : 760,
         }
       : { type: "bt-chat-resize", width: embedClosedSize, height: embedClosedSize };
 
     window.parent.postMessage(size, "*");
-  }, [open, isEmbedded, isLinaInterface, isTxbikesInterface, isMmWartungInterface, embedClosedSize]);
+  }, [open, isEmbedded, isLinaInterface, isTxbikesInterface, isMmWartungInterface, isFahrwerkBInterface, embedClosedSize]);
 
   useEffect(() => {
     if (!mounted) return;
@@ -371,7 +604,7 @@ export default function WidgetPage() {
       {
         type: "bt-chat-ready",
         tenant: tenantId,
-        interface: isLinaInterface ? "btai" : isTxbikesInterface ? "txbikes" : isMmWartungInterface ? "mm-wartung" : "default",
+        interface: isFahrwerkBInterface ? "fahrwerk-b" : isLinaInterface ? "btai" : isTxbikesInterface ? "txbikes" : isMmWartungInterface ? "mm-wartung" : "default",
       },
       "*",
     );
@@ -397,7 +630,7 @@ export default function WidgetPage() {
     return () => {
       window.removeEventListener("message", handleBtAiMessage);
     };
-  }, [mounted, tenantId, isLinaInterface, isTxbikesInterface, isMmWartungInterface]);
+  }, [mounted, tenantId, isFahrwerkBInterface, isLinaInterface, isTxbikesInterface, isMmWartungInterface]);
 
   async function sendText(rawText: string) {
     const text = rawText.trim();
@@ -409,6 +642,22 @@ export default function WidgetPage() {
 
     if (wantsBooking) {
       setBookingOpen(true);
+    }
+
+    if (isFahrwerkBInterface) {
+      if (/\b(unterlagen|sehtest|erste hilfe|passbild|antrag|dokumente)\b/i.test(text)) {
+        setFahrwerkPanel("documents");
+      } else if (/\b(theorie|theorieprüfung|lernen|app|prüfungsfragen)\b/i.test(text)) {
+        setFahrwerkPanel("theory");
+      } else if (/\b(praxis|fahrstunde|sonderfahrt|praktische prüfung|prüfungsangst)\b/i.test(text)) {
+        setFahrwerkPanel("practice");
+      } else if (/\b(prüfung|prüfungsvorbereitung|durchgefallen)\b/i.test(text)) {
+        setFahrwerkPanel("exam");
+      } else if (/\b(angemeldet|fahrschüler|bin schon|mein stand)\b/i.test(text)) {
+        setFahrwerkPanel("student");
+      } else if (/\b(anmelden|starten|b197|bf17|klasse b|anhänger|be)\b/i.test(text)) {
+        setFahrwerkPanel("start");
+      }
     }
 
     const next: Msg[] = [...msgs, { role: "user", content: text }];
@@ -439,6 +688,135 @@ export default function WidgetPage() {
       ]);
     } finally {
       setLoading(false);
+    }
+  }
+
+  function openFahrwerkSignupForm(licenseClass?: string, startWish?: string) {
+    if (!isFahrwerkBInterface || loading || isListening) return;
+
+    setFahrwerkSignupOpen(true);
+    setShowBadge(false);
+    setFahrwerkSignupForm((current) => ({
+      ...current,
+      licenseClass: licenseClass || current.licenseClass,
+      startWish: startWish || current.startWish,
+    }));
+
+    setMsgs((current) => {
+      const alreadyHasSignupHint = current.some((msg) =>
+        msg.role === "assistant" && msg.content.includes("Anmeldevorbereitung")
+      );
+
+      if (alreadyHasSignupHint) return current;
+
+      return [
+        ...current,
+        {
+          role: "assistant",
+          content:
+            "Alles klar — ich öffne dir die Anmeldevorbereitung. Danach fehlen später nur noch die echte Fahrschule.live-Verknüpfung und der Mailversand an Fahrwerk B.",
+        },
+      ];
+    });
+  }
+
+  function updateFahrwerkSignupForm(field: keyof FahrwerkSignupFormState, value: string | boolean) {
+    setFahrwerkSignupForm((current) => ({ ...current, [field]: value }));
+  }
+
+  function submitFahrwerkSignup(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+
+    const name = fahrwerkSignupForm.name.trim();
+    const email = fahrwerkSignupForm.email.trim();
+    const phone = fahrwerkSignupForm.phone.trim();
+
+    if (!name) {
+      setMsgs((current) => [
+        ...current,
+        {
+          role: "assistant",
+          content: "Für die Anmeldevorbereitung brauche ich mindestens deinen Namen.",
+        },
+      ]);
+      return;
+    }
+
+    if (!email && !phone) {
+      setMsgs((current) => [
+        ...current,
+        {
+          role: "assistant",
+          content: "Bitte gib mindestens eine E-Mail-Adresse oder Telefonnummer an, damit Fahrwerk B dich erreichen kann.",
+        },
+      ]);
+      return;
+    }
+
+    if (!fahrwerkSignupForm.privacyAccepted) {
+      setMsgs((current) => [
+        ...current,
+        {
+          role: "assistant",
+          content: "Bitte bestätige kurz den Datenschutz-Hinweis. Erst danach sollte eine Anfrage an Fahrwerk B vorbereitet werden.",
+        },
+      ]);
+      return;
+    }
+
+    setMsgs((current) => [
+      ...current,
+      {
+        role: "user",
+        content: `Anmeldevorbereitung ausgefüllt:\nKlasse: ${fahrwerkSignupForm.licenseClass}\nWunsch: ${fahrwerkSignupForm.startWish}\nName: ${name}`,
+      },
+      {
+        role: "assistant",
+        content:
+          "Perfekt — optisch ist die Anmeldung jetzt vorbereitet. In Phase 2 senden wir diese Daten an Fahrwerk B und öffnen danach automatisch die offizielle Anmeldung über Fahrschule.live.",
+      },
+    ]);
+
+    setFahrwerkSignupOpen(false);
+    setFahrwerkSignupForm(DEFAULT_FAHRWERK_SIGNUP_FORM);
+    setFahrwerkPanel("dashboard");
+  }
+
+  function openFahrwerkPanel(panel: FahrwerkPanel) {
+    if (!isFahrwerkBInterface || loading || isListening) return;
+
+    setFahrwerkPanel(panel);
+    setFahrwerkSignupOpen(false);
+    setShowBadge(false);
+  }
+
+  function toggleFahrwerkChecklistItem(itemId: string) {
+    setFahrwerkChecklist((current) => ({
+      ...current,
+      [itemId]: !current[itemId],
+    }));
+  }
+
+  function updateFahrwerkStage(stageId: FahrwerkStageId) {
+    setFahrwerkStage(stageId);
+    setFahrwerkPanel("student");
+  }
+
+  function sendFahrwerkGuidedMessage(message: string) {
+    if (loading || isListening) return;
+    void sendText(message);
+  }
+
+  function resetFahrwerkProgress() {
+    setFahrwerkStage("new");
+    setFahrwerkChecklist(DEFAULT_FAHRWERK_CHECKLIST);
+    setFahrwerkPanel("dashboard");
+
+    try {
+      window.localStorage.removeItem("fahrwerk-b-stage");
+      window.localStorage.removeItem("fahrwerk-b-checklist");
+    } catch {
+      // Lokaler Speicher ist optional.
     }
   }
 
@@ -629,21 +1007,25 @@ export default function WidgetPage() {
       ...current,
       {
         role: "user",
-        content: isLinaInterface
-          ? "📷 Beispiel oder Projektbild hinzugefügt"
-          : isMmWartungInterface
-            ? "📷 Foto zum Fahrzeug oder Ersatzteil hinzugefügt"
-            : "📷 Foto vom Fahrradproblem hinzugefügt",
+        content: isFahrwerkBInterface
+          ? "📷 Bild zur Führerschein-Anfrage hinzugefügt"
+          : isLinaInterface
+            ? "📷 Beispiel oder Projektbild hinzugefügt"
+            : isMmWartungInterface
+              ? "📷 Foto zum Fahrzeug oder Ersatzteil hinzugefügt"
+              : "📷 Foto vom Fahrradproblem hinzugefügt",
         imagePreviewUrl,
         imageName: file.name,
       },
       {
         role: "assistant",
-        content: isLinaInterface
-          ? "Danke, das Bild ist jetzt in der Anfrage sichtbar. Schreib kurz, worum es geht, dann ordne ich es besser ein."
-          : isMmWartungInterface
-            ? "Danke, das Foto ist jetzt in der Anfrage sichtbar. Schreib kurz dazu, ob es um ein Fahrzeugproblem, einen Termin oder ein Ersatzteil geht."
-            : "Danke, das Foto ist jetzt in der Anfrage sichtbar. Beschreib kurz, was genau passiert, damit ich das Problem besser eingrenzen kann.",
+        content: isFahrwerkBInterface
+          ? "Danke, das Bild ist jetzt in der Anfrage sichtbar. Schreib kurz dazu, ob es um Anmeldung, Beratung oder Unterlagen geht."
+          : isLinaInterface
+            ? "Danke, das Bild ist jetzt in der Anfrage sichtbar. Schreib kurz, worum es geht, dann ordne ich es besser ein."
+            : isMmWartungInterface
+              ? "Danke, das Foto ist jetzt in der Anfrage sichtbar. Schreib kurz dazu, ob es um ein Fahrzeugproblem, einen Termin oder ein Ersatzteil geht."
+              : "Danke, das Foto ist jetzt in der Anfrage sichtbar. Beschreib kurz, was genau passiert, damit ich das Problem besser eingrenzen kann.",
       },
     ]);
   }
@@ -665,11 +1047,13 @@ export default function WidgetPage() {
         {
           role: "assistant",
           content:
-            isLinaInterface
-              ? "Spracheingabe wird auf diesem Gerät leider nicht unterstützt. Schreib deine Anfrage kurz als Text oder lade ein Beispielbild hoch."
-              : isMmWartungInterface
-                ? "Spracheingabe wird auf diesem Gerät leider nicht unterstützt. Schreib dein Anliegen kurz als Text oder nutze ein Foto."
-                : "Spracheingabe wird auf diesem Gerät leider nicht unterstützt. Schreib dein Problem kurz als Text oder nutze ein Foto.",
+            isFahrwerkBInterface
+              ? "Spracheingabe wird auf diesem Gerät leider nicht unterstützt. Schreib kurz, welchen Führerschein du starten möchtest."
+              : isLinaInterface
+                ? "Spracheingabe wird auf diesem Gerät leider nicht unterstützt. Schreib deine Anfrage kurz als Text oder lade ein Beispielbild hoch."
+                : isMmWartungInterface
+                  ? "Spracheingabe wird auf diesem Gerät leider nicht unterstützt. Schreib dein Anliegen kurz als Text oder nutze ein Foto."
+                  : "Spracheingabe wird auf diesem Gerät leider nicht unterstützt. Schreib dein Problem kurz als Text oder nutze ein Foto.",
         },
       ]);
       return;
@@ -747,21 +1131,26 @@ export default function WidgetPage() {
     setBookingOpen(false);
     setBookingSubmitting(false);
     setBookingForm(DEFAULT_BOOKING_FORM);
+    setFahrwerkSignupOpen(false);
+    setFahrwerkSignupForm(DEFAULT_FAHRWERK_SIGNUP_FORM);
+    setFahrwerkPanel("dashboard");
     setMsgs([
       {
         role: "assistant",
-        content: isLinaInterface
-          ? `Alles klar — wobei soll ich dir bei BTDesigns helfen?`
-          : isMmWartungInterface
-            ? `Alles klar — was möchtest du bei MM Wartung machen?`
-            : `Alles klar — womit kann ich dir helfen?`,
+        content: isFahrwerkBInterface
+          ? "Alles klar — wo stehst du gerade bei deinem Führerschein?"
+          : isLinaInterface
+            ? `Alles klar — wobei soll ich dir bei BTDesigns helfen?`
+            : isMmWartungInterface
+              ? `Alles klar — was möchtest du bei MM Wartung machen?`
+              : `Alles klar — womit kann ich dir helfen?`,
       },
     ]);
     setInput("");
   }
 
-  const panelW = isLinaInterface ? 1040 : isTxbikesInterface || isMmWartungInterface ? 940 : isEmbedded ? 460 : 500;
-  const panelH = isLinaInterface ? 840 : isTxbikesInterface || isMmWartungInterface ? 820 : isEmbedded ? 660 : 720;
+  const panelW = isLinaInterface ? 1040 : isTxbikesInterface || isMmWartungInterface || isFahrwerkBInterface ? 940 : isEmbedded ? 460 : 500;
+  const panelH = isLinaInterface ? 840 : isTxbikesInterface || isMmWartungInterface || isFahrwerkBInterface ? 820 : isEmbedded ? 660 : 720;
   const panelRadius = isEnhancedInterface ? 38 : 28;
   const GLOBAL_LOGO_SRC = "/brand/btai-logo.png";
 
@@ -777,11 +1166,17 @@ export default function WidgetPage() {
     !loading &&
     !isListening;
 
-  const startCards = isTxbikesInterface
-    ? TXBIKES_START_CARDS
-    : isMmWartungInterface
-      ? MM_WARTUNG_START_CARDS
-      : BTDESIGNS_START_CARDS;
+  const startCards = isFahrwerkBInterface
+    ? FAHRWERK_B_START_CARDS
+    : isTxbikesInterface
+      ? TXBIKES_START_CARDS
+      : isMmWartungInterface
+        ? MM_WARTUNG_START_CARDS
+        : BTDESIGNS_START_CARDS;
+
+  const fahrwerkActiveStage = FAHRWERK_STAGES.find((stage) => stage.id === fahrwerkStage) || FAHRWERK_STAGES[0];
+  const fahrwerkCompletedDocuments = FAHRWERK_DOCUMENT_ITEMS.filter((item) => Boolean(fahrwerkChecklist[item.id])).length;
+  const fahrwerkDocumentProgress = Math.round((fahrwerkCompletedDocuments / FAHRWERK_DOCUMENT_ITEMS.length) * 100);
 
   const wrapperBackground = isEmbedded
     ? "transparent"
@@ -833,7 +1228,7 @@ export default function WidgetPage() {
         WebkitAppearance: "none",
       }}
       aria-label="Chat öffnen"
-      title={`${cfg.brandName} Chat`}
+      title={`${displayBrandName} Chat`}
     >
       {open ? (
         <span
@@ -1253,7 +1648,7 @@ export default function WidgetPage() {
             {!open && showBadge && !isEmbedded && (
               <div className={`bt-badge ${!showBadge ? "bt-badge-hide" : ""}`}>
                 <span className="bt-badge-dot" />
-                <span>Fragen? Chatte mit {cfg.assistantName}</span>
+                <span>{isFahrwerkBInterface ? "Führerschein starten?" : `Fragen? Chatte mit ${displayAssistantName}`}</span>
               </div>
             )}
 
@@ -1392,10 +1787,10 @@ export default function WidgetPage() {
                           color: textPrimary,
                         }}
                       >
-                        {cfg.brandName} – {cfg.assistantName}
+                        {displayBrandName} – {displayAssistantName}
                       </div>
                       <div style={{ fontSize: isEnhancedInterface ? 14 : 12.5, opacity: 0.9, marginTop: 3, color: textSecondary }}>
-                        {loading ? "Tippt…" : isListening ? "Hört zu…" : "Online verfügbar"}
+                        {loading ? "Tippt…" : isListening ? "Hört zu…" : isFahrwerkBInterface ? "In 1 Minute zum passenden Einstieg" : "Online verfügbar"}
                       </div>
                     </div>
                   </div>
@@ -1521,7 +1916,7 @@ export default function WidgetPage() {
                             marginBottom: 6,
                           }}
                         >
-                          Was möchtest du machen?
+                          {isFahrwerkBInterface ? "Dein Führerschein-Cockpit" : "Was möchtest du machen?"}
                         </div>
                         <div
                           style={{
@@ -1530,12 +1925,43 @@ export default function WidgetPage() {
                             color: textSecondary,
                           }}
                         >
-                          {isLinaInterface
-                            ? `Wähle einen Einstieg aus. Danach führt dich ${cfg.assistantName} gezielt zur passenden Lösung.`
-                            : isMmWartungInterface
-                              ? `Wähle aus, worum es geht. Danach nimmt ${cfg.assistantName} dein Anliegen für Moritz sauber auf.`
-                              : `Wähle einen Einstieg aus. Danach führt dich ${cfg.assistantName} gezielt weiter.`}
+                          {isFahrwerkBInterface
+                            ? "Wähle aus, wo du gerade stehst. Das Interface zeigt dir den nächsten Schritt, prüft Unterlagen und bereitet Anfragen sauber vor."
+                            : isLinaInterface
+                              ? `Wähle einen Einstieg aus. Danach führt dich ${displayAssistantName} gezielt zur passenden Lösung.`
+                              : isMmWartungInterface
+                                ? `Wähle aus, worum es geht. Danach nimmt ${displayAssistantName} dein Anliegen für Moritz sauber auf.`
+                                : `Wähle einen Einstieg aus. Danach führt dich ${displayAssistantName} gezielt weiter.`}
                         </div>
+
+                        {isFahrwerkBInterface && (
+                          <div
+                            style={{
+                              display: "grid",
+                              gridTemplateColumns: "repeat(4, minmax(0, 1fr))",
+                              gap: 8,
+                              marginTop: 18,
+                            }}
+                          >
+                            {["1 Orientierung", "2 Unterlagen", "3 Theorie/Praxis", "4 Anfrage"].map((step) => (
+                              <div
+                                key={step}
+                                style={{
+                                  borderRadius: 999,
+                                  border: `1px solid rgba(${accentRgb}, 0.24)`,
+                                  background: `rgba(${accentRgb}, 0.10)`,
+                                  color: textPrimary,
+                                  padding: "8px 10px",
+                                  fontSize: 12,
+                                  fontWeight: 800,
+                                  textAlign: "center",
+                                }}
+                              >
+                                {step}
+                              </div>
+                            ))}
+                          </div>
+                        )}
                       </div>
 
                       <div
@@ -1566,6 +1992,16 @@ export default function WidgetPage() {
 
                               if (card.action === "booking") {
                                 openBookingForm();
+                                return;
+                              }
+
+                              if (card.action === "fahrwerkSignup") {
+                                openFahrwerkSignupForm(card.prefillLicenseClass, card.prefillStartWish);
+                                return;
+                              }
+
+                              if (card.action === "fahrwerkPanel" && card.fahrwerkPanel) {
+                                openFahrwerkPanel(card.fahrwerkPanel);
                                 return;
                               }
 
@@ -1621,6 +2057,565 @@ export default function WidgetPage() {
                         ))}
                       </div>
                     </div>
+                  )}
+
+                  {isFahrwerkBInterface &&
+                    (fahrwerkPanel !== "dashboard" || fahrwerkCompletedDocuments > 0 || fahrwerkStage !== "new") && (
+                      <div
+                        style={{
+                          alignSelf: "stretch",
+                          borderRadius: isEnhancedInterface ? 30 : 20,
+                          border: "1px solid rgba(255,255,255,0.42)",
+                          background:
+                            "linear-gradient(180deg, rgba(255,255,255,0.92), rgba(255,255,255,0.68))",
+                          boxShadow:
+                            "0 18px 54px rgba(0,0,0,0.12), inset 0 1px 0 rgba(255,255,255,0.42)",
+                          backdropFilter: "blur(24px) saturate(180%)",
+                          WebkitBackdropFilter: "blur(24px) saturate(180%)",
+                          padding: isEnhancedInterface ? 22 : 16,
+                          display: "flex",
+                          flexDirection: "column",
+                          gap: 16,
+                          color: textPrimary,
+                        }}
+                      >
+                        <div style={{ display: "flex", justifyContent: "space-between", gap: 14, alignItems: "flex-start", flexWrap: "wrap" }}>
+                          <div>
+                            <div style={{ fontSize: isEnhancedInterface ? 24 : 18, fontWeight: 900, marginBottom: 4 }}>
+                              Führerschein-Begleiter
+                            </div>
+                            <div style={{ fontSize: isEnhancedInterface ? 14.5 : 13, color: textSecondary, lineHeight: 1.45 }}>
+                              Aktueller Stand: <strong>{fahrwerkActiveStage.label}</strong> · Unterlagen: {fahrwerkCompletedDocuments}/{FAHRWERK_DOCUMENT_ITEMS.length} erledigt
+                            </div>
+                          </div>
+
+                          <button
+                            type="button"
+                            onClick={resetFahrwerkProgress}
+                            style={{
+                              border: "1px solid rgba(22,49,38,0.10)",
+                              background: "rgba(255,255,255,0.60)",
+                              borderRadius: 999,
+                              padding: "9px 12px",
+                              cursor: "pointer",
+                              color: textSecondary,
+                              fontSize: 12.5,
+                              fontWeight: 800,
+                            }}
+                          >
+                            Fortschritt zurücksetzen
+                          </button>
+                        </div>
+
+                        <div
+                          style={{
+                            height: 10,
+                            borderRadius: 999,
+                            overflow: "hidden",
+                            background: "rgba(17,24,39,0.08)",
+                            border: "1px solid rgba(255,255,255,0.34)",
+                          }}
+                          aria-label="Unterlagen-Fortschritt"
+                        >
+                          <div
+                            style={{
+                              height: "100%",
+                              width: `${fahrwerkDocumentProgress}%`,
+                              background: `linear-gradient(90deg, ${widgetAccent}, rgba(${accentRgb}, 0.56))`,
+                              borderRadius: 999,
+                              transition: "width 220ms ease",
+                            }}
+                          />
+                        </div>
+
+                        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                          {[
+                            ["start", "Starten"],
+                            ["documents", "Unterlagen"],
+                            ["theory", "Theorie"],
+                            ["practice", "Praxis"],
+                            ["exam", "Prüfung"],
+                            ["student", "Mein Stand"],
+                            ["contact", "Hilfe"],
+                          ].map(([panel, label]) => (
+                            <button
+                              key={panel}
+                              type="button"
+                              onClick={() => openFahrwerkPanel(panel as FahrwerkPanel)}
+                              style={{
+                                borderRadius: 999,
+                                border: `1px solid rgba(${accentRgb}, ${fahrwerkPanel === panel ? 0.40 : 0.16})`,
+                                background:
+                                  fahrwerkPanel === panel
+                                    ? `linear-gradient(180deg, rgba(${accentRgb}, 0.22), rgba(${accentRgb}, 0.10))`
+                                    : "rgba(255,255,255,0.50)",
+                                color: textPrimary,
+                                padding: "9px 12px",
+                                fontSize: 12.5,
+                                fontWeight: 850,
+                                cursor: "pointer",
+                              }}
+                            >
+                              {label}
+                            </button>
+                          ))}
+                        </div>
+
+                        {fahrwerkPanel === "start" && (
+                          <div style={{ display: "grid", gridTemplateColumns: isEnhancedInterface ? "repeat(2, minmax(0, 1fr))" : "1fr", gap: 12 }}>
+                            {[
+                              ["Klasse B", "Auto-Führerschein starten", "Schnell starten"],
+                              ["B197", "Schalten lernen, später flexibel fahren", "Schnell starten"],
+                              ["BF17", "Begleitetes Fahren ab 17 vorbereiten", "Schnell starten"],
+                              ["BE Anhänger", "Anhänger-Führerschein anfragen", "Erstmal beraten lassen"],
+                              ["Ich bin noch unsicher", "Interface bereitet eine Beratungsanfrage vor", "Erstmal beraten lassen"],
+                            ].map(([licenseClass, description, wish]) => (
+                              <button
+                                key={licenseClass}
+                                type="button"
+                                onClick={() => openFahrwerkSignupForm(licenseClass, wish)}
+                                className="bt-start-card"
+                                style={{ minHeight: 0 }}
+                              >
+                                <div style={{ fontSize: 16, fontWeight: 900, marginBottom: 5 }}>{licenseClass}</div>
+                                <div style={{ fontSize: 13.5, color: textSecondary, lineHeight: 1.4 }}>{description}</div>
+                              </button>
+                            ))}
+                          </div>
+                        )}
+
+                        {fahrwerkPanel === "documents" && (
+                          <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                            <div style={{ fontSize: 15, color: textSecondary, lineHeight: 1.45 }}>
+                              Hake ab, was schon erledigt ist. Der Stand wird nur lokal im Browser gespeichert, bis wir später eine echte Account-/Fahrschule.live-Anbindung bauen.
+                            </div>
+                            <div style={{ display: "grid", gridTemplateColumns: isEnhancedInterface ? "repeat(2, minmax(0, 1fr))" : "1fr", gap: 10 }}>
+                              {FAHRWERK_DOCUMENT_ITEMS.map((item) => (
+                                <button
+                                  key={item.id}
+                                  type="button"
+                                  onClick={() => toggleFahrwerkChecklistItem(item.id)}
+                                  style={{
+                                    textAlign: "left",
+                                    borderRadius: 18,
+                                    border: `1px solid rgba(${accentRgb}, ${fahrwerkChecklist[item.id] ? 0.34 : 0.14})`,
+                                    background: fahrwerkChecklist[item.id] ? `rgba(${accentRgb}, 0.12)` : "rgba(255,255,255,0.54)",
+                                    padding: 14,
+                                    cursor: "pointer",
+                                    color: textPrimary,
+                                  }}
+                                >
+                                  <div style={{ display: "flex", gap: 10, alignItems: "center", marginBottom: 6 }}>
+                                    <span
+                                      style={{
+                                        width: 24,
+                                        height: 24,
+                                        borderRadius: 999,
+                                        display: "grid",
+                                        placeItems: "center",
+                                        background: fahrwerkChecklist[item.id] ? widgetAccent : "rgba(17,24,39,0.08)",
+                                        color: fahrwerkChecklist[item.id] ? "#111827" : textSecondary,
+                                        fontWeight: 900,
+                                      }}
+                                    >
+                                      {fahrwerkChecklist[item.id] ? "✓" : ""}
+                                    </span>
+                                    <strong>{item.label}</strong>
+                                  </div>
+                                  <div style={{ fontSize: 12.5, color: textSecondary, lineHeight: 1.4 }}>{item.hint}</div>
+                                </button>
+                              ))}
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() => sendFahrwerkGuidedMessage("Welche Unterlagen brauche ich für meinen Führerschein bei Fahrwerk B?")}
+                              style={{
+                                alignSelf: "flex-start",
+                                height: 46,
+                                padding: "0 16px",
+                                borderRadius: 15,
+                                border: "1px solid rgba(255,255,255,0.22)",
+                                background: `linear-gradient(180deg, ${widgetAccent}F0, ${widgetAccent}A8)`,
+                                color: "#111827",
+                                cursor: "pointer",
+                                fontWeight: 900,
+                              }}
+                            >
+                              Unterlagen kurz erklären
+                            </button>
+                          </div>
+                        )}
+
+                        {fahrwerkPanel === "student" && (
+                          <div style={{ display: "grid", gridTemplateColumns: isEnhancedInterface ? "1fr 1.15fr" : "1fr", gap: 14 }}>
+                            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                              {FAHRWERK_STAGES.map((stage) => (
+                                <button
+                                  key={stage.id}
+                                  type="button"
+                                  onClick={() => updateFahrwerkStage(stage.id)}
+                                  style={{
+                                    textAlign: "left",
+                                    borderRadius: 16,
+                                    border: `1px solid rgba(${accentRgb}, ${fahrwerkStage === stage.id ? 0.38 : 0.14})`,
+                                    background: fahrwerkStage === stage.id ? `rgba(${accentRgb}, 0.14)` : "rgba(255,255,255,0.48)",
+                                    padding: "12px 14px",
+                                    cursor: "pointer",
+                                    color: textPrimary,
+                                    fontWeight: 850,
+                                  }}
+                                >
+                                  {stage.label}
+                                </button>
+                              ))}
+                            </div>
+                            <div
+                              style={{
+                                borderRadius: 22,
+                                border: "1px solid rgba(22,49,38,0.10)",
+                                background: "rgba(255,255,255,0.58)",
+                                padding: 18,
+                                display: "flex",
+                                flexDirection: "column",
+                                gap: 10,
+                              }}
+                            >
+                              <div style={{ fontSize: 13, color: textSecondary, fontWeight: 850 }}>Nächster sinnvoller Schritt</div>
+                              <div style={{ fontSize: 20, fontWeight: 950 }}>{fahrwerkActiveStage.next}</div>
+                              <div style={{ fontSize: 14, color: textSecondary, lineHeight: 1.5 }}>{fahrwerkActiveStage.detail}</div>
+                              <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginTop: 4 }}>
+                                <button
+                                  type="button"
+                                  onClick={() => openFahrwerkPanel("documents")}
+                                  style={{ borderRadius: 14, border: "1px solid rgba(22,49,38,0.10)", background: "rgba(255,255,255,0.68)", padding: "10px 12px", cursor: "pointer", fontWeight: 850 }}
+                                >
+                                  Unterlagen prüfen
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => openFahrwerkSignupForm("Ich bin schon Fahrschüler", "Rückruf von Fahrwerk B")}
+                                  style={{ borderRadius: 14, border: "1px solid rgba(255,255,255,0.22)", background: `linear-gradient(180deg, ${widgetAccent}F0, ${widgetAccent}A8)`, color: "#111827", padding: "10px 12px", cursor: "pointer", fontWeight: 900 }}
+                                >
+                                  Frage vorbereiten
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+
+                        {fahrwerkPanel === "theory" && (
+                          <div style={{ display: "grid", gridTemplateColumns: isEnhancedInterface ? "repeat(3, minmax(0, 1fr))" : "1fr", gap: 12 }}>
+                            {[
+                              ["Theorie-Einstieg", "Aktuelle Termine laufen später sauber über Fahrschule.live.", "Ich möchte den passenden Theorie-Einstieg bei Fahrwerk B finden."],
+                              ["Theorieprüfung", "Ablauf, Vorbereitung und typische Fehler kurz erklären.", "Wie bereite ich mich auf die Theorieprüfung vor?"],
+                              ["Durchgefallen", "Ruhig einordnen und den nächsten Versuch planen.", "Ich bin bei der Theorieprüfung durchgefallen. Was ist jetzt sinnvoll?"],
+                            ].map(([title, description, message]) => (
+                              <button key={title} type="button" className="bt-start-card" onClick={() => sendFahrwerkGuidedMessage(message)} style={{ minHeight: 0 }}>
+                                <div style={{ fontSize: 16, fontWeight: 900, marginBottom: 6 }}>{title}</div>
+                                <div style={{ fontSize: 13.5, color: textSecondary, lineHeight: 1.4 }}>{description}</div>
+                              </button>
+                            ))}
+                          </div>
+                        )}
+
+                        {fahrwerkPanel === "practice" && (
+                          <div style={{ display: "grid", gridTemplateColumns: isEnhancedInterface ? "repeat(2, minmax(0, 1fr))" : "1fr", gap: 12 }}>
+                            {[
+                              ["Erste Fahrstunde", "Was dich erwartet und wie du dich vorbereitest.", "Was erwartet mich bei der ersten Fahrstunde?"],
+                              ["Sonderfahrten", "Autobahn, Nachtfahrt und Überland verständlich erklärt.", "Was sind Sonderfahrten und wann kommen sie dran?"],
+                              ["Prüfungsangst", "Kurze, praktische Tipps statt langer Theorie.", "Ich habe Angst vor der praktischen Prüfung. Was hilft?"],
+                              ["Fahrstunde klären", "Anfrage an Fahrwerk B vorbereiten.", "Ich habe eine Frage zu meinen Fahrstunden bei Fahrwerk B."],
+                            ].map(([title, description, message]) => (
+                              <button key={title} type="button" className="bt-start-card" onClick={() => sendFahrwerkGuidedMessage(message)} style={{ minHeight: 0 }}>
+                                <div style={{ fontSize: 16, fontWeight: 900, marginBottom: 6 }}>{title}</div>
+                                <div style={{ fontSize: 13.5, color: textSecondary, lineHeight: 1.4 }}>{description}</div>
+                              </button>
+                            ))}
+                          </div>
+                        )}
+
+                        {fahrwerkPanel === "exam" && (
+                          <div style={{ display: "grid", gridTemplateColumns: isEnhancedInterface ? "repeat(2, minmax(0, 1fr))" : "1fr", gap: 12 }}>
+                            <button type="button" className="bt-start-card" onClick={() => sendFahrwerkGuidedMessage("Gib mir eine kurze Checkliste für die Theorieprüfung.")} style={{ minHeight: 0 }}>
+                              <div style={{ fontSize: 16, fontWeight: 900, marginBottom: 6 }}>Theorieprüfung-Check</div>
+                              <div style={{ fontSize: 13.5, color: textSecondary, lineHeight: 1.4 }}>Was du vorher prüfen solltest und wie du ruhig bleibst.</div>
+                            </button>
+                            <button type="button" className="bt-start-card" onClick={() => sendFahrwerkGuidedMessage("Gib mir eine kurze Checkliste für die praktische Prüfung.")} style={{ minHeight: 0 }}>
+                              <div style={{ fontSize: 16, fontWeight: 900, marginBottom: 6 }}>Praktische Prüfung-Check</div>
+                              <div style={{ fontSize: 13.5, color: textSecondary, lineHeight: 1.4 }}>Ausweis, Ruhe, typische Prüfungsfehler und Ablauf.</div>
+                            </button>
+                          </div>
+                        )}
+
+                        {fahrwerkPanel === "contact" && (
+                          <div
+                            style={{
+                              borderRadius: 22,
+                              border: "1px solid rgba(22,49,38,0.10)",
+                              background: "rgba(255,255,255,0.58)",
+                              padding: 18,
+                              display: "flex",
+                              flexDirection: "column",
+                              gap: 10,
+                            }}
+                          >
+                            <div style={{ fontSize: 20, fontWeight: 950 }}>Fahrwerk B direkt einbinden</div>
+                            <div style={{ fontSize: 14, color: textSecondary, lineHeight: 1.5 }}>
+                              Wenn das Interface die Frage nicht sicher lösen kann, bereitet es eine Anfrage vor. Später senden wir diese per Mail oder über eine API an Fahrwerk B und öffnen danach Fahrschule.live.
+                            </div>
+                            <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+                              <button
+                                type="button"
+                                onClick={() => openFahrwerkSignupForm("Ich bin noch unsicher", "Rückruf von Fahrwerk B")}
+                                style={{ height: 46, padding: "0 16px", borderRadius: 15, border: "1px solid rgba(255,255,255,0.22)", background: `linear-gradient(180deg, ${widgetAccent}F0, ${widgetAccent}A8)`, color: "#111827", cursor: "pointer", fontWeight: 900 }}
+                              >
+                                Rückruf / Anfrage vorbereiten
+                              </button>
+                              <button
+                                type="button"
+                                onClick={startVoiceInput}
+                                style={{ height: 46, padding: "0 16px", borderRadius: 15, border: "1px solid rgba(22,49,38,0.10)", background: "rgba(255,255,255,0.66)", color: textPrimary, cursor: "pointer", fontWeight: 850 }}
+                              >
+                                Anliegen einsprechen
+                              </button>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    )}
+
+                  {fahrwerkSignupOpen && isFahrwerkBInterface && (
+                    <form
+                      onSubmit={submitFahrwerkSignup}
+                      style={{
+                        alignSelf: "stretch",
+                        borderRadius: isEnhancedInterface ? 28 : 20,
+                        border: "1px solid rgba(255,255,255,0.42)",
+                        background:
+                          "linear-gradient(180deg, rgba(255,255,255,0.92), rgba(255,255,255,0.70))",
+                        boxShadow:
+                          "0 18px 54px rgba(0,0,0,0.14), inset 0 1px 0 rgba(255,255,255,0.42)",
+                        backdropFilter: "blur(24px) saturate(180%)",
+                        WebkitBackdropFilter: "blur(24px) saturate(180%)",
+                        padding: isEnhancedInterface ? 22 : 16,
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: 14,
+                        color: textPrimary,
+                      }}
+                    >
+                      <div style={{ display: "flex", justifyContent: "space-between", gap: 12, alignItems: "flex-start" }}>
+                        <div>
+                          <div style={{ fontSize: isEnhancedInterface ? 22 : 17, fontWeight: 850, marginBottom: 4 }}>
+                            Anmeldung vorbereiten
+                          </div>
+                          <div style={{ fontSize: isEnhancedInterface ? 14.5 : 13, color: textSecondary, lineHeight: 1.45 }}>
+                            Optische Vorstufe: Später werden diese Daten an Fahrwerk B gesendet und danach Fahrschule.live geöffnet.
+                          </div>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => setFahrwerkSignupOpen(false)}
+                          style={{
+                            border: "1px solid rgba(22,49,38,0.10)",
+                            background: "rgba(255,255,255,0.62)",
+                            borderRadius: 999,
+                            width: 34,
+                            height: 34,
+                            cursor: "pointer",
+                            color: textPrimary,
+                            fontSize: 20,
+                            lineHeight: "30px",
+                          }}
+                          aria-label="Anmeldeformular schließen"
+                          title="Schließen"
+                        >
+                          ×
+                        </button>
+                      </div>
+
+                      <div
+                        style={{
+                          display: "grid",
+                          gridTemplateColumns: isEnhancedInterface ? "repeat(2, minmax(0, 1fr))" : "1fr",
+                          gap: 12,
+                        }}
+                      >
+                        <label style={{ display: "flex", flexDirection: "column", gap: 6, fontSize: 13.5, fontWeight: 700 }}>
+                          Führerscheinklasse
+                          <select
+                            value={fahrwerkSignupForm.licenseClass}
+                            onChange={(e) => updateFahrwerkSignupForm("licenseClass", e.target.value)}
+                            style={{
+                              height: 46,
+                              borderRadius: 14,
+                              border: "1px solid rgba(22,49,38,0.12)",
+                              background: "rgba(255,255,255,0.82)",
+                              padding: "0 12px",
+                              outline: "none",
+                              color: textPrimary,
+                              fontSize: 14,
+                            }}
+                          >
+                            {FAHRWERK_LICENSE_CLASSES.map((licenseClass) => (
+                              <option key={licenseClass} value={licenseClass}>
+                                {licenseClass}
+                              </option>
+                            ))}
+                          </select>
+                        </label>
+
+                        <label style={{ display: "flex", flexDirection: "column", gap: 6, fontSize: 13.5, fontWeight: 700 }}>
+                          Wunsch
+                          <select
+                            value={fahrwerkSignupForm.startWish}
+                            onChange={(e) => updateFahrwerkSignupForm("startWish", e.target.value)}
+                            style={{
+                              height: 46,
+                              borderRadius: 14,
+                              border: "1px solid rgba(22,49,38,0.12)",
+                              background: "rgba(255,255,255,0.82)",
+                              padding: "0 12px",
+                              outline: "none",
+                              color: textPrimary,
+                              fontSize: 14,
+                            }}
+                          >
+                            {FAHRWERK_START_WISHES.map((wish) => (
+                              <option key={wish} value={wish}>
+                                {wish}
+                              </option>
+                            ))}
+                          </select>
+                        </label>
+
+                        <label style={{ display: "flex", flexDirection: "column", gap: 6, fontSize: 13.5, fontWeight: 700 }}>
+                          Name *
+                          <input
+                            value={fahrwerkSignupForm.name}
+                            onChange={(e) => updateFahrwerkSignupForm("name", e.target.value)}
+                            placeholder="Dein Name"
+                            style={{
+                              height: 46,
+                              borderRadius: 14,
+                              border: "1px solid rgba(22,49,38,0.12)",
+                              background: "rgba(255,255,255,0.82)",
+                              padding: "0 12px",
+                              outline: "none",
+                              color: textPrimary,
+                              fontSize: 14,
+                            }}
+                          />
+                        </label>
+
+                        <label style={{ display: "flex", flexDirection: "column", gap: 6, fontSize: 13.5, fontWeight: 700 }}>
+                          Telefon
+                          <input
+                            value={fahrwerkSignupForm.phone}
+                            onChange={(e) => updateFahrwerkSignupForm("phone", e.target.value)}
+                            placeholder="0176 ..."
+                            type="tel"
+                            style={{
+                              height: 46,
+                              borderRadius: 14,
+                              border: "1px solid rgba(22,49,38,0.12)",
+                              background: "rgba(255,255,255,0.82)",
+                              padding: "0 12px",
+                              outline: "none",
+                              color: textPrimary,
+                              fontSize: 14,
+                            }}
+                          />
+                        </label>
+
+                        <label style={{ display: "flex", flexDirection: "column", gap: 6, fontSize: 13.5, fontWeight: 700 }}>
+                          E-Mail
+                          <input
+                            value={fahrwerkSignupForm.email}
+                            onChange={(e) => updateFahrwerkSignupForm("email", e.target.value)}
+                            placeholder="name@example.de"
+                            type="email"
+                            style={{
+                              height: 46,
+                              borderRadius: 14,
+                              border: "1px solid rgba(22,49,38,0.12)",
+                              background: "rgba(255,255,255,0.82)",
+                              padding: "0 12px",
+                              outline: "none",
+                              color: textPrimary,
+                              fontSize: 14,
+                            }}
+                          />
+                        </label>
+
+                        <label style={{ display: "flex", flexDirection: "column", gap: 6, fontSize: 13.5, fontWeight: 700 }}>
+                          Nachricht
+                          <input
+                            value={fahrwerkSignupForm.message}
+                            onChange={(e) => updateFahrwerkSignupForm("message", e.target.value)}
+                            placeholder="z. B. Ich möchte möglichst schnell anfangen"
+                            style={{
+                              height: 46,
+                              borderRadius: 14,
+                              border: "1px solid rgba(22,49,38,0.12)",
+                              background: "rgba(255,255,255,0.82)",
+                              padding: "0 12px",
+                              outline: "none",
+                              color: textPrimary,
+                              fontSize: 14,
+                            }}
+                          />
+                        </label>
+                      </div>
+
+                      <label
+                        style={{
+                          display: "flex",
+                          alignItems: "flex-start",
+                          gap: 10,
+                          borderRadius: 16,
+                          border: "1px solid rgba(22,49,38,0.10)",
+                          background: "rgba(255,255,255,0.48)",
+                          padding: 12,
+                          fontSize: 12.5,
+                          lineHeight: 1.45,
+                          color: textSecondary,
+                        }}
+                      >
+                        <input
+                          type="checkbox"
+                          checked={fahrwerkSignupForm.privacyAccepted}
+                          onChange={(e) => updateFahrwerkSignupForm("privacyAccepted", e.target.checked)}
+                          style={{ marginTop: 2 }}
+                        />
+                        <span>
+                          Ich bin einverstanden, dass meine Angaben zur Bearbeitung der Anfrage an Fahrwerk B verwendet werden.
+                        </span>
+                      </label>
+
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
+                        <div style={{ fontSize: 12.5, color: textSecondary, lineHeight: 1.4 }}>
+                          * Pflichtfeld. E-Mail oder Telefon muss angegeben werden.
+                        </div>
+                        <button
+                          type="submit"
+                          style={{
+                            height: 48,
+                            padding: "0 18px",
+                            borderRadius: 16,
+                            border: "1px solid rgba(255,255,255,0.28)",
+                            background: `linear-gradient(180deg, ${widgetAccent}F0, ${widgetAccent}B8)`,
+                            color: "#111827",
+                            cursor: "pointer",
+                            fontWeight: 900,
+                            fontSize: 14.5,
+                            boxShadow: `0 14px 34px rgba(0,0,0,0.16), 0 0 0 1px ${widgetAccent}12 inset`,
+                          }}
+                        >
+                          Anmeldung vorbereiten
+                        </button>
+                      </div>
+                    </form>
                   )}
 
                   {bookingOpen && isLinaInterface && (
@@ -1862,11 +2857,13 @@ export default function WidgetPage() {
                           Ich höre zu…
                         </div>
                         <div style={{ fontSize: isEnhancedInterface ? 14.5 : 13, lineHeight: 1.45, color: textSecondary }}>
-                          {isLinaInterface
-                            ? "Erzähl kurz, was du brauchst. Danach wird deine Sprache automatisch als Nachricht gesendet."
-                            : isMmWartungInterface
-                              ? "Erzähl kurz, ob es um ein Fahrzeugproblem, einen Termin oder ein Ersatzteil geht. Danach wird deine Sprache automatisch gesendet."
-                              : "Erzähl kurz, was mit dem Fahrrad los ist. Danach wird deine Sprache automatisch als Nachricht gesendet."}
+                          {isFahrwerkBInterface
+                            ? "Erzähl kurz, welche Klasse du starten möchtest und ob du schnell starten oder erst beraten werden willst. Danach wird deine Sprache automatisch gesendet."
+                            : isLinaInterface
+                              ? "Erzähl kurz, was du brauchst. Danach wird deine Sprache automatisch als Nachricht gesendet."
+                              : isMmWartungInterface
+                                ? "Erzähl kurz, ob es um ein Fahrzeugproblem, einen Termin oder ein Ersatzteil geht. Danach wird deine Sprache automatisch gesendet."
+                                : "Erzähl kurz, was mit dem Fahrrad los ist. Danach wird deine Sprache automatisch als Nachricht gesendet."}
                         </div>
                         <div className="bt-voice-bars" aria-hidden="true">
                           <span />
@@ -1916,11 +2913,13 @@ export default function WidgetPage() {
                             <div className="bt-image-preview-wrap">
                               <img
                                 src={m.imagePreviewUrl}
-                                alt={isLinaInterface
-                                  ? "Hochgeladenes Beispielbild"
-                                  : isMmWartungInterface
-                                    ? "Hochgeladenes Foto zum Fahrzeug oder Ersatzteil"
-                                    : "Hochgeladenes Foto vom Fahrradproblem"}
+                                alt={isFahrwerkBInterface
+                                  ? "Hochgeladenes Bild zur Führerschein-Anfrage"
+                                  : isLinaInterface
+                                    ? "Hochgeladenes Beispielbild"
+                                    : isMmWartungInterface
+                                      ? "Hochgeladenes Foto zum Fahrzeug oder Ersatzteil"
+                                      : "Hochgeladenes Foto vom Fahrradproblem"}
                               />
                               <div className="bt-image-preview-label">
                                 {m.imageName ? `Foto: ${m.imageName}` : "Foto hinzugefügt"}
@@ -2013,11 +3012,13 @@ export default function WidgetPage() {
                     placeholder={
                       isListening
                         ? "Sprich jetzt…"
-                        : isLinaInterface
-                          ? "Schreib kurz, was du brauchst…"
-                          : isMmWartungInterface
-                            ? "Schreib dein Anliegen…"
-                            : "Schreib eine Frage…"
+                        : isFahrwerkBInterface
+                          ? "Schreib z. B. B197, BF17 oder Beratung…"
+                          : isLinaInterface
+                            ? "Schreib kurz, was du brauchst…"
+                            : isMmWartungInterface
+                              ? "Schreib dein Anliegen…"
+                              : "Schreib eine Frage…"
                     }
                     style={{
                       flex: 1,
