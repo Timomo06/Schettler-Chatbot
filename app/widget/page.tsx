@@ -446,7 +446,7 @@ export default function WidgetPage() {
     : isMmWartungInterface
       ? theme.accent || "#ff751f"
       : isFahrwerkBInterface
-        ? "#facc15"
+        ? "#c8102e"
         : theme.accent;
   const widgetBackground = isTxbikesInterface
     ? "#f6f2ff"
@@ -1473,11 +1473,27 @@ export default function WidgetPage() {
           100% { transform: translate3d(-6%, -4%, 0) scale(1); opacity: .36; }
         }
 
+        @keyframes bt-launcher-arrive {
+          0% { opacity: 0; transform: translate3d(22px, 26px, 0) scale(0.62); filter: blur(8px); }
+          58% { opacity: 1; transform: translate3d(-3px, -5px, 0) scale(1.06); filter: blur(0); }
+          78% { transform: translate3d(0, 0, 0) scale(0.97); }
+          100% { opacity: 1; transform: translate3d(0, 0, 0) scale(1); filter: blur(0); }
+        }
+
+        @keyframes bt-panel-pop-in {
+          0% { opacity: 0; transform: translate3d(28px, 34px, 0) scale(0.82); filter: blur(14px); }
+          52% { opacity: 1; transform: translate3d(-4px, -6px, 0) scale(1.025); filter: blur(0); }
+          72% { transform: translate3d(0, 0, 0) scale(0.988); }
+          100% { opacity: 1; transform: translate3d(0, 0, 0) scale(1); filter: blur(0); }
+        }
+
         .bt-launcher {
           position: relative;
           overflow: visible;
           will-change: transform;
           transform: translateZ(0);
+          animation: bt-launcher-arrive 680ms cubic-bezier(.16,1,.3,1) both;
+          transform-origin: right bottom;
           background-clip: padding-box;
         }
 
@@ -1543,6 +1559,8 @@ export default function WidgetPage() {
           border-radius: ${panelRadius}px;
           overflow: hidden;
           transform: translateZ(0);
+          transform-origin: right bottom;
+          animation: bt-panel-pop-in 520ms cubic-bezier(.16,1,.3,1) both;
           -webkit-mask-image: -webkit-radial-gradient(white, black);
           isolation: isolate;
         }
@@ -1599,6 +1617,8 @@ export default function WidgetPage() {
 
         @media (prefers-reduced-motion: reduce) {
           .bt-bouncing { animation: none !important; }
+          .bt-launcher { animation: none !important; }
+          .bt-panel { animation: none !important; }
           .bt-launcher::after { animation: none !important; }
           .bt-panel-liquid { animation: none !important; }
           .bt-voice-orb,
@@ -2214,7 +2234,7 @@ export default function WidgetPage() {
                                         display: "grid",
                                         placeItems: "center",
                                         background: fahrwerkChecklist[item.id] ? widgetAccent : "rgba(17,24,39,0.08)",
-                                        color: fahrwerkChecklist[item.id] ? "#111827" : textSecondary,
+                                        color: fahrwerkChecklist[item.id] ? "#ffffff" : textSecondary,
                                         fontWeight: 900,
                                       }}
                                     >
@@ -2236,7 +2256,7 @@ export default function WidgetPage() {
                                 borderRadius: 15,
                                 border: "1px solid rgba(255,255,255,0.22)",
                                 background: `linear-gradient(180deg, ${widgetAccent}F0, ${widgetAccent}A8)`,
-                                color: "#111827",
+                                color: "#ffffff",
                                 cursor: "pointer",
                                 fontWeight: 900,
                               }}
@@ -2294,7 +2314,7 @@ export default function WidgetPage() {
                                 <button
                                   type="button"
                                   onClick={() => openFahrwerkSignupForm("Ich bin schon Fahrschüler", "Rückruf von Fahrwerk B")}
-                                  style={{ borderRadius: 14, border: "1px solid rgba(255,255,255,0.22)", background: `linear-gradient(180deg, ${widgetAccent}F0, ${widgetAccent}A8)`, color: "#111827", padding: "10px 12px", cursor: "pointer", fontWeight: 900 }}
+                                  style={{ borderRadius: 14, border: "1px solid rgba(255,255,255,0.22)", background: `linear-gradient(180deg, ${widgetAccent}F0, ${widgetAccent}A8)`, color: "#ffffff", padding: "10px 12px", cursor: "pointer", fontWeight: 900 }}
                                 >
                                   Frage vorbereiten
                                 </button>
@@ -2367,7 +2387,7 @@ export default function WidgetPage() {
                               <button
                                 type="button"
                                 onClick={() => openFahrwerkSignupForm("Ich bin noch unsicher", "Rückruf von Fahrwerk B")}
-                                style={{ height: 46, padding: "0 16px", borderRadius: 15, border: "1px solid rgba(255,255,255,0.22)", background: `linear-gradient(180deg, ${widgetAccent}F0, ${widgetAccent}A8)`, color: "#111827", cursor: "pointer", fontWeight: 900 }}
+                                style={{ height: 46, padding: "0 16px", borderRadius: 15, border: "1px solid rgba(255,255,255,0.22)", background: `linear-gradient(180deg, ${widgetAccent}F0, ${widgetAccent}A8)`, color: "#ffffff", cursor: "pointer", fontWeight: 900 }}
                               >
                                 Rückruf / Anfrage vorbereiten
                               </button>
@@ -2605,7 +2625,7 @@ export default function WidgetPage() {
                             borderRadius: 16,
                             border: "1px solid rgba(255,255,255,0.28)",
                             background: `linear-gradient(180deg, ${widgetAccent}F0, ${widgetAccent}B8)`,
-                            color: "#111827",
+                            color: "#ffffff",
                             cursor: "pointer",
                             fontWeight: 900,
                             fontSize: 14.5,
@@ -3050,7 +3070,7 @@ export default function WidgetPage() {
                       background: input.trim()
                         ? `linear-gradient(180deg, ${widgetAccent}F0, ${widgetAccent}A8)`
                         : "rgba(255,255,255,0.26)",
-                      color: input.trim() ? "#ffffff" : "#5c7a6d",
+                      color: input.trim() ? "#ffffff" : isFahrwerkBInterface ? "rgba(127,29,29,0.62)" : "#5c7a6d",
                       cursor: input.trim() && !loading && !isListening ? "pointer" : "not-allowed",
                       opacity: loading ? 0.72 : 1,
                       fontWeight: isEnhancedInterface ? 700 : 500,
