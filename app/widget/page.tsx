@@ -968,7 +968,10 @@ export default function WidgetPage() {
         return;
       }
 
-      const readableDate = startDate.toLocaleString("de-DE", {
+      const confirmedStart = data?.event?.start ? new Date(data.event.start) : startDate;
+      const confirmedEnd = data?.event?.end ? new Date(data.event.end) : endDate;
+
+      const readableDate = confirmedStart.toLocaleString("de-DE", {
         weekday: "short",
         day: "2-digit",
         month: "2-digit",
@@ -977,20 +980,37 @@ export default function WidgetPage() {
         minute: "2-digit",
       });
 
+      const readableEnd = confirmedEnd.toLocaleTimeString("de-DE", {
+        hour: "2-digit",
+        minute: "2-digit",
+      });
+
+      const calendarText = isMmWartungInterface
+        ? "Apple Kalender von MM Wartung"
+        : "BTDesigns Kalender";
+
+      const alternativeText =
+        data?.wasAlternative && isMmWartungInterface
+          ? `\n\nDie gewünschte Zeit war nicht möglich. ${
+              data?.alternativeReason ||
+              "Ich habe automatisch den nächsten passenden freien Termin gewählt."
+            }`
+          : "";
+
       setMsgs((current) => [
         ...current,
         {
           role: "assistant",
-          content: `Erledigt — der Termin wurde in den ${bookingBusinessName} Kalender eingetragen.\n\n${readableDate}\nLeistung: ${service}`,
+          content: `Erledigt — der Termin wurde in den ${calendarText} eingetragen.${alternativeText}\n\n${readableDate}–${readableEnd}\nLeistung: ${service}`,
         },
       ]);
 
       setBookingOpen(false);
       setBookingForm({
-      ...DEFAULT_BOOKING_FORM,
-      service: bookingDefaultService,
-      durationMinutes: isMmWartungInterface ? "60" : "30",
-    });
+        ...DEFAULT_BOOKING_FORM,
+        service: bookingDefaultService,
+        durationMinutes: isMmWartungInterface ? "60" : "30",
+      });
     } catch {
       setMsgs((current) => [
         ...current,
