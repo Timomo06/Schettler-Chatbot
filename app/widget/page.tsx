@@ -218,6 +218,16 @@ const BTDESIGNS_BOOKING_SERVICES = [
   "Allgemeines Erstgespräch",
 ];
 
+const MM_WARTUNG_BOOKING_SERVICES = [
+  "Werkstatt Termin",
+  "Ölwechsel / Wartung",
+  "Fehlerdiagnose",
+  "Ersatzteil Anfrage",
+  "Ultraschallreinigung",
+  "Landmaschinen / alte Technik",
+  "Allgemeine Rückfrage",
+];
+
 const TXBIKES_START_CARDS: StartCard[] = [
   {
     icon: "📷",
@@ -319,7 +329,7 @@ const MM_WARTUNG_START_CARDS: StartCard[] = [
     icon: "📅",
     title: "Termin anfragen",
     description: "Prüfung, Service oder Rückmeldung planen",
-    message: "Ich möchte einen Termin bei MM Wartung vereinbaren.",
+    action: "booking",
   },
   {
     icon: "⚙️",
@@ -434,6 +444,10 @@ export default function WidgetPage() {
   const isMmWartungInterface = ["mm-wartung", "mmwartung", "mm_wartung", "mm-wartung.de", "mmwartungde", "mm"].includes(normalizedTenantId);
   const isFahrwerkBInterface = ["fahrwerk-b", "fahrwerkb", "fahrwerk_b", "fahrwerk-b.de", "fahrwerkbde", "fahrwerk"].includes(normalizedTenantId);
   const isEnhancedInterface = isTxbikesInterface || isLinaInterface || isMmWartungInterface || isFahrwerkBInterface;
+  const isBookingInterface = isLinaInterface || isMmWartungInterface;
+  const bookingBusinessName = isMmWartungInterface ? "MM Wartung" : "BTDesigns";
+  const bookingDefaultService = isMmWartungInterface ? "Werkstatt Termin" : "Website Beratung";
+  const bookingCalendarLabel = isMmWartungInterface ? "Arbeit" : "BTDesigns Termine";
   const displayBrandName = isFahrwerkBInterface ? "Fahrwerk B" : cfg.brandName;
   const displayAssistantName = isFahrwerkBInterface ? "Führerschein-Cockpit" : cfg.assistantName;
   const embedClosedSize = isEnhancedInterface ? 190 : 120;
@@ -589,13 +603,13 @@ export default function WidgetPage() {
     const size = open
       ? {
           type: "bt-chat-resize",
-          width: isLinaInterface ? 1080 : isTxbikesInterface || isMmWartungInterface || isFahrwerkBInterface ? 980 : 500,
-          height: isLinaInterface ? 920 : isTxbikesInterface || isMmWartungInterface || isFahrwerkBInterface ? 880 : 760,
+          width: isBookingInterface ? 1080 : isTxbikesInterface || isFahrwerkBInterface ? 980 : 500,
+          height: isBookingInterface ? 920 : isTxbikesInterface || isFahrwerkBInterface ? 880 : 760,
         }
       : { type: "bt-chat-resize", width: embedClosedSize, height: embedClosedSize };
 
     window.parent.postMessage(size, "*");
-  }, [open, isEmbedded, isLinaInterface, isTxbikesInterface, isMmWartungInterface, isFahrwerkBInterface, embedClosedSize]);
+  }, [open, isEmbedded, isBookingInterface, isTxbikesInterface, isFahrwerkBInterface, embedClosedSize]);
 
   useEffect(() => {
     if (!mounted) return;
@@ -637,8 +651,8 @@ export default function WidgetPage() {
     if (!text || loading) return;
 
     const wantsBooking =
-      isLinaInterface &&
-      /\b(termin|beratungsgespräch|erstgespräch|gespräch|meeting|call|buchen|anrufen)\b/i.test(text);
+      isBookingInterface &&
+      /\b(termin|werkstatttermin|beratungsgespräch|erstgespräch|gespräch|meeting|call|buchen|anrufen|vereinbaren)\b/i.test(text);
 
     if (wantsBooking) {
       setBookingOpen(true);
@@ -825,6 +839,11 @@ export default function WidgetPage() {
 
     setBookingOpen(true);
     setShowBadge(false);
+    setBookingForm((current) => ({
+      ...current,
+      service: isMmWartungInterface && current.service === "Website Beratung" ? bookingDefaultService : current.service || bookingDefaultService,
+      durationMinutes: isMmWartungInterface && current.durationMinutes === "30" ? "60" : current.durationMinutes || (isMmWartungInterface ? "60" : "30"),
+    }));
 
     setMsgs((current) => {
       const alreadyHasBookingHint = current.some((msg) =>
@@ -837,8 +856,9 @@ export default function WidgetPage() {
         ...current,
         {
           role: "assistant",
-          content:
-            "Klar — trag kurz deine Termindaten ein. Danach wird der Termin direkt in den BTDesigns Apple Kalender geschrieben.",
+          content: isMmWartungInterface
+            ? "Klar — trag kurz die Termindaten ein. Danach wird der Termin direkt in den Apple Kalender von MM Wartung geschrieben."
+            : "Klar — trag kurz deine Termindaten ein. Danach wird der Termin direkt in den BTDesigns Apple Kalender geschrieben.",
         },
       ];
     });
@@ -871,7 +891,7 @@ export default function WidgetPage() {
     const name = bookingForm.name.trim();
     const email = bookingForm.email.trim();
     const phone = bookingForm.phone.trim();
-    const service = bookingForm.service.trim() || "Website Beratung";
+    const service = bookingForm.service.trim() || bookingDefaultService;
     const date = bookingForm.date.trim();
     const time = bookingForm.time.trim();
     const durationMinutes = Number(bookingForm.durationMinutes || 30);
@@ -893,7 +913,7 @@ export default function WidgetPage() {
         ...current,
         {
           role: "assistant",
-          content: "Bitte gib mindestens eine E-Mail-Adresse oder Telefonnummer an, damit BTDesigns dich erreichen kann.",
+          content: `Bitte gib mindestens eine E-Mail-Adresse oder Telefonnummer an, damit ${bookingBusinessName} dich erreichen kann.`,
         },
       ]);
       return;
@@ -922,6 +942,7 @@ export default function WidgetPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          tenant: isMmWartungInterface ? "mm-wartung" : tenantId,
           name,
           email,
           phone,
@@ -960,12 +981,16 @@ export default function WidgetPage() {
         ...current,
         {
           role: "assistant",
-          content: `Erledigt — der Termin wurde in den BTDesigns Kalender eingetragen.\n\n${readableDate}\nLeistung: ${service}`,
+          content: `Erledigt — der Termin wurde in den ${bookingBusinessName} Kalender eingetragen.\n\n${readableDate}\nLeistung: ${service}`,
         },
       ]);
 
       setBookingOpen(false);
-      setBookingForm(DEFAULT_BOOKING_FORM);
+      setBookingForm({
+      ...DEFAULT_BOOKING_FORM,
+      service: bookingDefaultService,
+      durationMinutes: isMmWartungInterface ? "60" : "30",
+    });
     } catch {
       setMsgs((current) => [
         ...current,
@@ -1130,7 +1155,11 @@ export default function WidgetPage() {
     setIsListening(false);
     setBookingOpen(false);
     setBookingSubmitting(false);
-    setBookingForm(DEFAULT_BOOKING_FORM);
+    setBookingForm({
+      ...DEFAULT_BOOKING_FORM,
+      service: bookingDefaultService,
+      durationMinutes: isMmWartungInterface ? "60" : "30",
+    });
     setFahrwerkSignupOpen(false);
     setFahrwerkSignupForm(DEFAULT_FAHRWERK_SIGNUP_FORM);
     setFahrwerkPanel("dashboard");
@@ -1149,8 +1178,8 @@ export default function WidgetPage() {
     setInput("");
   }
 
-  const panelW = isLinaInterface ? 1040 : isTxbikesInterface || isMmWartungInterface || isFahrwerkBInterface ? 940 : isEmbedded ? 460 : 500;
-  const panelH = isLinaInterface ? 840 : isTxbikesInterface || isMmWartungInterface || isFahrwerkBInterface ? 820 : isEmbedded ? 660 : 720;
+  const panelW = isBookingInterface ? 1040 : isTxbikesInterface || isFahrwerkBInterface ? 940 : isEmbedded ? 460 : 500;
+  const panelH = isBookingInterface ? 840 : isTxbikesInterface || isFahrwerkBInterface ? 820 : isEmbedded ? 660 : 720;
   const panelRadius = isEnhancedInterface ? 38 : 28;
   const GLOBAL_LOGO_SRC = "/brand/btai-logo.png";
 
@@ -2638,7 +2667,7 @@ export default function WidgetPage() {
                     </form>
                   )}
 
-                  {bookingOpen && isLinaInterface && (
+                  {bookingOpen && isBookingInterface && (
                     <form
                       onSubmit={submitBooking}
                       style={{
@@ -2661,10 +2690,10 @@ export default function WidgetPage() {
                       <div style={{ display: "flex", justifyContent: "space-between", gap: 12, alignItems: "flex-start" }}>
                         <div>
                           <div style={{ fontSize: isEnhancedInterface ? 22 : 17, fontWeight: 850, marginBottom: 4 }}>
-                            Termin bei BTDesigns buchen
+                            Termin bei {bookingBusinessName} buchen
                           </div>
                           <div style={{ fontSize: isEnhancedInterface ? 14.5 : 13, color: textSecondary, lineHeight: 1.45 }}>
-                            Der Termin wird direkt in den Apple Kalender „BTDesigns Termine“ eingetragen.
+                            Der Termin wird direkt in den Apple Kalender „{bookingCalendarLabel}“ eingetragen.
                           </div>
                         </div>
                         <button
@@ -2731,7 +2760,7 @@ export default function WidgetPage() {
                               fontSize: 14,
                             }}
                           >
-                            {BTDESIGNS_BOOKING_SERVICES.map((service) => (
+                            {(isMmWartungInterface ? MM_WARTUNG_BOOKING_SERVICES : BTDESIGNS_BOOKING_SERVICES).map((service) => (
                               <option key={service} value={service}>
                                 {service}
                               </option>
@@ -2824,7 +2853,7 @@ export default function WidgetPage() {
                         <textarea
                           value={bookingForm.message}
                           onChange={(e) => updateBookingForm("message", e.target.value)}
-                          placeholder="Worum soll es gehen?"
+                          placeholder={isMmWartungInterface ? "Fahrzeug, Problem oder Wunsch kurz beschreiben" : "Worum soll es gehen?"}
                           rows={3}
                           style={{
                             borderRadius: 14,
