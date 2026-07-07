@@ -228,6 +228,25 @@ const MM_WARTUNG_BOOKING_SERVICES = [
   "Allgemeine Rückfrage",
 ];
 
+const TXBIKES_BOOKING_SERVICES = [
+  "Werkstatttermin",
+  "Inspektion / Wartung",
+  "E-Bike Diagnose",
+  "Reparatur Anfrage",
+  "Kaufberatung Fahrrad / E-Bike",
+  "Zubehör Beratung",
+  "Allgemeine Rückfrage",
+];
+
+const WILLI_BOOKING_SERVICES = [
+  "Beratung",
+  "Termin / Rückruf",
+  "Service Anfrage",
+  "Angebot anfragen",
+  "Projekt besprechen",
+  "Allgemeine Rückfrage",
+];
+
 const TXBIKES_START_CARDS: StartCard[] = [
   {
     icon: "📷",
@@ -250,8 +269,8 @@ const TXBIKES_START_CARDS: StartCard[] = [
   {
     icon: "📅",
     title: "Termin buchen",
-    description: "Werkstatttermin oder Rückmeldung anfragen",
-    message: "Ich möchte einen Termin bei TXBIKES anfragen.",
+    description: "Werkstatttermin direkt anfragen",
+    action: "booking",
   },
   {
     icon: "🚴",
@@ -264,6 +283,45 @@ const TXBIKES_START_CARDS: StartCard[] = [
     title: "Wartung & Service",
     description: "Inspektion, Kette, Bremsen oder Pflege planen",
     message: "Ich möchte wissen, welche Wartung oder welcher Service für mein Fahrrad sinnvoll ist.",
+  },
+];
+
+const WILLI_START_CARDS: StartCard[] = [
+  {
+    icon: "✨",
+    title: "Beratung",
+    description: "Kurz schildern, worum es geht",
+    message: "Ich möchte mich beraten lassen und mein Anliegen kurz schildern.",
+  },
+  {
+    icon: "📅",
+    title: "Termin buchen",
+    description: "Termin oder Rückruf direkt anfragen",
+    action: "booking",
+  },
+  {
+    icon: "🛠️",
+    title: "Service Anfrage",
+    description: "Problem, Wunsch oder Auftrag vorbereiten",
+    message: "Ich habe eine Service-Anfrage und möchte mein Anliegen vorbereiten.",
+  },
+  {
+    icon: "💬",
+    title: "Kurz erzählen",
+    description: "Sprich deine Anfrage direkt ein",
+    action: "voice",
+  },
+  {
+    icon: "📷",
+    title: "Bild zeigen",
+    description: "Foto, Screenshot oder Beispiel hochladen",
+    action: "photo",
+  },
+  {
+    icon: "📋",
+    title: "Angebot anfragen",
+    description: "Infos sammeln und Anfrage formulieren",
+    message: "Ich möchte ein Angebot anfragen und die wichtigsten Informationen sammeln.",
   },
 ];
 
@@ -439,17 +497,44 @@ export default function WidgetPage() {
   }, [tenantId]);
   const theme = cfg.theme;
   const normalizedTenantId = tenantId.toLowerCase();
-  const isTxbikesInterface = normalizedTenantId === "txbikesv2";
+  const isTxbikesInterface = ["txbikesv2", "txbikes", "tx-bikes", "tx_bikes", "txbikes.de", "txbikesde"].includes(normalizedTenantId);
+  const isWilliInterface = ["willi", "willi-ai", "willi-interface", "williinterface", "willis"].includes(normalizedTenantId);
   const isLinaInterface = ["btdesigns", "lina", "btai", "btdesigns-lina"].includes(normalizedTenantId);
   const isMmWartungInterface = ["mm-wartung", "mmwartung", "mm_wartung", "mm-wartung.de", "mmwartungde", "mm"].includes(normalizedTenantId);
   const isFahrwerkBInterface = ["fahrwerk-b", "fahrwerkb", "fahrwerk_b", "fahrwerk-b.de", "fahrwerkbde", "fahrwerk"].includes(normalizedTenantId);
-  const isEnhancedInterface = isTxbikesInterface || isLinaInterface || isMmWartungInterface || isFahrwerkBInterface;
-  const isBookingInterface = isLinaInterface || isMmWartungInterface;
-  const bookingBusinessName = isMmWartungInterface ? "MM Wartung" : "BTDesigns";
-  const bookingDefaultService = isMmWartungInterface ? "Werkstatt Termin" : "Website Beratung";
-  const bookingCalendarLabel = isMmWartungInterface ? "Arbeit" : "BTDesigns Termine";
-  const displayBrandName = isFahrwerkBInterface ? "Fahrwerk B" : cfg.brandName;
-  const displayAssistantName = isFahrwerkBInterface ? "Führerschein-Cockpit" : cfg.assistantName;
+  const isEnhancedInterface = isTxbikesInterface || isWilliInterface || isLinaInterface || isMmWartungInterface || isFahrwerkBInterface;
+  const isBookingInterface = isLinaInterface || isMmWartungInterface || isTxbikesInterface || isWilliInterface;
+  const bookingBusinessName = isMmWartungInterface ? "MM Wartung" : isTxbikesInterface ? "TXBikes" : isWilliInterface ? "Willi" : "BTDesigns";
+  const bookingDefaultService = isMmWartungInterface
+    ? "Werkstatt Termin"
+    : isTxbikesInterface
+      ? "Werkstatttermin"
+      : isWilliInterface
+        ? "Termin / Rückruf"
+        : "Website Beratung";
+  const bookingDefaultDuration = isMmWartungInterface || isTxbikesInterface ? "60" : "30";
+  const bookingCalendarLabel = isMmWartungInterface
+    ? "Arbeit"
+    : isTxbikesInterface
+      ? "TXBikes Termine"
+      : isWilliInterface
+        ? "Willi Termine"
+        : "BTDesigns Termine";
+  const bookingServices = isMmWartungInterface
+    ? MM_WARTUNG_BOOKING_SERVICES
+    : isTxbikesInterface
+      ? TXBIKES_BOOKING_SERVICES
+      : isWilliInterface
+        ? WILLI_BOOKING_SERVICES
+        : BTDESIGNS_BOOKING_SERVICES;
+  const displayBrandName = isFahrwerkBInterface ? "Fahrwerk B" : isTxbikesInterface ? "TXBikes" : isWilliInterface ? "Willi" : cfg.brandName;
+  const displayAssistantName = isFahrwerkBInterface
+    ? "Führerschein-Cockpit"
+    : isTxbikesInterface
+      ? "Bike-Service Interface"
+      : isWilliInterface
+        ? "AI Interface"
+        : cfg.assistantName;
   const embedClosedSize = isEnhancedInterface ? 190 : 120;
   const launcherFrameSize = isEnhancedInterface ? 124 : 96;
   const launcherButtonSize = isEnhancedInterface ? 74 : 60;
@@ -457,38 +542,46 @@ export default function WidgetPage() {
   const launcherXIconSize = isEnhancedInterface ? 24 : 19;
   const widgetAccent = isTxbikesInterface
     ? "#8b5cf6"
-    : isMmWartungInterface
-      ? theme.accent || "#ff751f"
-      : isFahrwerkBInterface
-        ? "#c8102e"
-        : theme.accent;
+    : isWilliInterface
+      ? theme.accent || "#2563eb"
+      : isMmWartungInterface
+        ? theme.accent || "#ff751f"
+        : isFahrwerkBInterface
+          ? "#c8102e"
+          : theme.accent;
   const widgetBackground = isTxbikesInterface
     ? "#f6f2ff"
-    : isLinaInterface
-      ? "#f7fbff"
-      : isMmWartungInterface
-        ? "#fff7ed"
-        : isFahrwerkBInterface
-          ? "#0b0f16"
-          : theme.bg;
+    : isWilliInterface
+      ? "#f8fbff"
+      : isLinaInterface
+        ? "#f7fbff"
+        : isMmWartungInterface
+          ? "#fff7ed"
+          : isFahrwerkBInterface
+            ? "#0b0f16"
+            : theme.bg;
   const textPrimary = isTxbikesInterface
     ? "#1f1636"
-    : isLinaInterface
-      ? "#182536"
-      : isMmWartungInterface
-        ? "#2b1f18"
-        : isFahrwerkBInterface
-          ? "#111827"
-          : "#163126";
+    : isWilliInterface
+      ? "#172033"
+      : isLinaInterface
+        ? "#182536"
+        : isMmWartungInterface
+          ? "#2b1f18"
+          : isFahrwerkBInterface
+            ? "#111827"
+            : "#163126";
   const textSecondary = isTxbikesInterface
     ? "#6a5f8d"
-    : isLinaInterface
-      ? "#566477"
-      : isMmWartungInterface
-        ? "#705a4a"
-        : isFahrwerkBInterface
-          ? "#4b5563"
-          : "#355f52";
+    : isWilliInterface
+      ? "#59667a"
+      : isLinaInterface
+        ? "#566477"
+        : isMmWartungInterface
+          ? "#705a4a"
+          : isFahrwerkBInterface
+            ? "#4b5563"
+            : "#355f52";
   const accentRgb = useMemo(() => hexToRgb(widgetAccent), [widgetAccent]);
 
   const [open, setOpen] = useState(false);
@@ -553,13 +646,17 @@ export default function WidgetPage() {
         ? `Hi — ich bin ${displayAssistantName}. Wobei soll ich dir bei BTDesigns helfen?`
         : isMmWartungInterface
           ? `Hi — ich bin ${displayAssistantName}. Was möchtest du bei MM Wartung machen?`
-          : `Hi — ich bin ${displayAssistantName}. Worum geht’s?`;
+          : isTxbikesInterface
+            ? `Hi — ich bin das ${displayAssistantName}. Was möchtest du bei TXBikes machen?`
+            : isWilliInterface
+              ? `Hi — ich bin das ${displayAssistantName} von Willi. Wobei soll ich helfen?`
+              : `Hi — ich bin ${displayAssistantName}. Worum geht’s?`;
 
     setMsgs([{ role: "assistant", content: firstMessage }]);
 
     const SpeechRecognitionCtor = window.SpeechRecognition || window.webkitSpeechRecognition;
     setVoiceSupported(Boolean(SpeechRecognitionCtor));
-  }, [mounted, displayAssistantName, isFahrwerkBInterface, isLinaInterface, isMmWartungInterface]);
+  }, [mounted, displayAssistantName, isFahrwerkBInterface, isLinaInterface, isMmWartungInterface, isTxbikesInterface, isWilliInterface]);
 
   useEffect(() => {
     return () => {
@@ -618,7 +715,7 @@ export default function WidgetPage() {
       {
         type: "bt-chat-ready",
         tenant: tenantId,
-        interface: isFahrwerkBInterface ? "fahrwerk-b" : isLinaInterface ? "btai" : isTxbikesInterface ? "txbikes" : isMmWartungInterface ? "mm-wartung" : "default",
+        interface: isFahrwerkBInterface ? "fahrwerk-b" : isLinaInterface ? "btai" : isTxbikesInterface ? "txbikes" : isWilliInterface ? "willi" : isMmWartungInterface ? "mm-wartung" : "default",
       },
       "*",
     );
@@ -644,7 +741,7 @@ export default function WidgetPage() {
     return () => {
       window.removeEventListener("message", handleBtAiMessage);
     };
-  }, [mounted, tenantId, isFahrwerkBInterface, isLinaInterface, isTxbikesInterface, isMmWartungInterface]);
+  }, [mounted, tenantId, isFahrwerkBInterface, isLinaInterface, isTxbikesInterface, isWilliInterface, isMmWartungInterface]);
 
   async function sendText(rawText: string) {
     const text = rawText.trim();
@@ -652,7 +749,7 @@ export default function WidgetPage() {
 
     const wantsBooking =
       isBookingInterface &&
-      /\b(termin|werkstatttermin|beratungsgespräch|erstgespräch|gespräch|meeting|call|buchen|anrufen|vereinbaren)\b/i.test(text);
+      /\b(termin|werkstatttermin|beratungsgespräch|erstgespräch|gespräch|meeting|call|buchen|anrufen|vereinbaren|rückruf|reparatur|inspektion|wartung|service)\b/i.test(text);
 
     if (wantsBooking) {
       setBookingOpen(true);
@@ -839,11 +936,15 @@ export default function WidgetPage() {
 
     setBookingOpen(true);
     setShowBadge(false);
-    setBookingForm((current) => ({
-      ...current,
-      service: isMmWartungInterface && current.service === "Website Beratung" ? bookingDefaultService : current.service || bookingDefaultService,
-      durationMinutes: isMmWartungInterface && current.durationMinutes === "30" ? "60" : current.durationMinutes || (isMmWartungInterface ? "60" : "30"),
-    }));
+    setBookingForm((current) => {
+      const currentServiceStillFits = bookingServices.includes(current.service);
+
+      return {
+        ...current,
+        service: currentServiceStillFits ? current.service : bookingDefaultService,
+        durationMinutes: current.durationMinutes === DEFAULT_BOOKING_FORM.durationMinutes ? bookingDefaultDuration : current.durationMinutes || bookingDefaultDuration,
+      };
+    });
 
     setMsgs((current) => {
       const alreadyHasBookingHint = current.some((msg) =>
@@ -856,9 +957,7 @@ export default function WidgetPage() {
         ...current,
         {
           role: "assistant",
-          content: isMmWartungInterface
-            ? "Klar — trag kurz die Termindaten ein. Danach wird der Termin direkt in den Apple Kalender von MM Wartung geschrieben."
-            : "Klar — trag kurz deine Termindaten ein. Danach wird der Termin direkt in den BTDesigns Apple Kalender geschrieben.",
+          content: `Klar — trag kurz die Termindaten ein. Danach wird der Termin direkt in den Apple Kalender von ${bookingBusinessName} geschrieben.`,
         },
       ];
     });
@@ -894,7 +993,7 @@ export default function WidgetPage() {
     const service = bookingForm.service.trim() || bookingDefaultService;
     const date = bookingForm.date.trim();
     const time = bookingForm.time.trim();
-    const durationMinutes = Number(bookingForm.durationMinutes || 30);
+    const durationMinutes = Number(bookingForm.durationMinutes || bookingDefaultDuration);
     const message = bookingForm.message.trim();
 
     if (!name || !date || !time) {
@@ -942,7 +1041,7 @@ export default function WidgetPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          tenant: isMmWartungInterface ? "mm-wartung" : tenantId,
+          tenant: isMmWartungInterface ? "mm-wartung" : isTxbikesInterface ? "txbikesv2" : isWilliInterface ? "willi" : tenantId,
           name,
           email,
           phone,
@@ -987,10 +1086,14 @@ export default function WidgetPage() {
 
       const calendarText = isMmWartungInterface
         ? "Apple Kalender von MM Wartung"
-        : "BTDesigns Kalender";
+        : isTxbikesInterface
+          ? "TXBikes Kalender"
+          : isWilliInterface
+            ? "Willi Kalender"
+            : "BTDesigns Kalender";
 
       const alternativeText =
-        data?.wasAlternative && isMmWartungInterface
+        data?.wasAlternative && isBookingInterface
           ? `\n\nDie gewünschte Zeit war nicht möglich. ${
               data?.alternativeReason ||
               "Ich habe automatisch den nächsten passenden freien Termin gewählt."
@@ -1009,7 +1112,7 @@ export default function WidgetPage() {
       setBookingForm({
         ...DEFAULT_BOOKING_FORM,
         service: bookingDefaultService,
-        durationMinutes: isMmWartungInterface ? "60" : "30",
+        durationMinutes: bookingDefaultDuration,
       });
     } catch {
       setMsgs((current) => [
@@ -1058,7 +1161,11 @@ export default function WidgetPage() {
             ? "📷 Beispiel oder Projektbild hinzugefügt"
             : isMmWartungInterface
               ? "📷 Foto zum Fahrzeug oder Ersatzteil hinzugefügt"
-              : "📷 Foto vom Fahrradproblem hinzugefügt",
+              : isTxbikesInterface
+                ? "📷 Foto vom Fahrradproblem hinzugefügt"
+                : isWilliInterface
+                  ? "📷 Bild zur Anfrage hinzugefügt"
+                  : "📷 Foto hinzugefügt",
         imagePreviewUrl,
         imageName: file.name,
       },
@@ -1070,7 +1177,11 @@ export default function WidgetPage() {
             ? "Danke, das Bild ist jetzt in der Anfrage sichtbar. Schreib kurz, worum es geht, dann ordne ich es besser ein."
             : isMmWartungInterface
               ? "Danke, das Foto ist jetzt in der Anfrage sichtbar. Schreib kurz dazu, ob es um ein Fahrzeugproblem, einen Termin oder ein Ersatzteil geht."
-              : "Danke, das Foto ist jetzt in der Anfrage sichtbar. Beschreib kurz, was genau passiert, damit ich das Problem besser eingrenzen kann.",
+              : isTxbikesInterface
+                ? "Danke, das Foto ist jetzt in der Anfrage sichtbar. Beschreib kurz, was genau am Fahrrad passiert, damit ich das Problem besser eingrenzen kann."
+                : isWilliInterface
+                  ? "Danke, das Bild ist jetzt in der Anfrage sichtbar. Schreib kurz dazu, worum es geht."
+                  : "Danke, das Foto ist jetzt in der Anfrage sichtbar. Schreib kurz dazu, worum es geht.",
       },
     ]);
   }
@@ -1098,7 +1209,11 @@ export default function WidgetPage() {
                 ? "Spracheingabe wird auf diesem Gerät leider nicht unterstützt. Schreib deine Anfrage kurz als Text oder lade ein Beispielbild hoch."
                 : isMmWartungInterface
                   ? "Spracheingabe wird auf diesem Gerät leider nicht unterstützt. Schreib dein Anliegen kurz als Text oder nutze ein Foto."
-                  : "Spracheingabe wird auf diesem Gerät leider nicht unterstützt. Schreib dein Problem kurz als Text oder nutze ein Foto.",
+                  : isTxbikesInterface
+                    ? "Spracheingabe wird auf diesem Gerät leider nicht unterstützt. Schreib dein Fahrradproblem kurz als Text oder nutze ein Foto."
+                    : isWilliInterface
+                      ? "Spracheingabe wird auf diesem Gerät leider nicht unterstützt. Schreib dein Anliegen kurz als Text oder nutze ein Bild."
+                      : "Spracheingabe wird auf diesem Gerät leider nicht unterstützt. Schreib dein Problem kurz als Text oder nutze ein Foto.",
         },
       ]);
       return;
@@ -1178,7 +1293,7 @@ export default function WidgetPage() {
     setBookingForm({
       ...DEFAULT_BOOKING_FORM,
       service: bookingDefaultService,
-      durationMinutes: isMmWartungInterface ? "60" : "30",
+      durationMinutes: bookingDefaultDuration,
     });
     setFahrwerkSignupOpen(false);
     setFahrwerkSignupForm(DEFAULT_FAHRWERK_SIGNUP_FORM);
@@ -1192,7 +1307,11 @@ export default function WidgetPage() {
             ? `Alles klar — wobei soll ich dir bei BTDesigns helfen?`
             : isMmWartungInterface
               ? `Alles klar — was möchtest du bei MM Wartung machen?`
-              : `Alles klar — womit kann ich dir helfen?`,
+              : isTxbikesInterface
+                ? `Alles klar — was möchtest du bei TXBikes machen?`
+                : isWilliInterface
+                  ? `Alles klar — wobei soll ich dir bei Willi helfen?`
+                  : `Alles klar — womit kann ich dir helfen?`,
       },
     ]);
     setInput("");
@@ -1219,7 +1338,9 @@ export default function WidgetPage() {
     ? FAHRWERK_B_START_CARDS
     : isTxbikesInterface
       ? TXBIKES_START_CARDS
-      : isMmWartungInterface
+      : isWilliInterface
+        ? WILLI_START_CARDS
+        : isMmWartungInterface
         ? MM_WARTUNG_START_CARDS
         : BTDESIGNS_START_CARDS;
 
@@ -1717,7 +1838,7 @@ export default function WidgetPage() {
             {!open && showBadge && !isEmbedded && (
               <div className={`bt-badge ${!showBadge ? "bt-badge-hide" : ""}`}>
                 <span className="bt-badge-dot" />
-                <span>{isFahrwerkBInterface ? "Führerschein starten?" : `Fragen? Chatte mit ${displayAssistantName}`}</span>
+                <span>{isFahrwerkBInterface ? "Führerschein starten?" : isTxbikesInterface ? "Fahrrad-Frage?" : isWilliInterface ? "Fragen?" : `Fragen? Chatte mit ${displayAssistantName}`}</span>
               </div>
             )}
 
@@ -2000,7 +2121,11 @@ export default function WidgetPage() {
                               ? `Wähle einen Einstieg aus. Danach führt dich ${displayAssistantName} gezielt zur passenden Lösung.`
                               : isMmWartungInterface
                                 ? `Wähle aus, worum es geht. Danach nimmt ${displayAssistantName} dein Anliegen für Moritz sauber auf.`
-                                : `Wähle einen Einstieg aus. Danach führt dich ${displayAssistantName} gezielt weiter.`}
+                                : isTxbikesInterface
+                                  ? `Wähle aus, worum es geht. Danach nimmt ${displayAssistantName} dein Anliegen für TXBikes sauber auf.`
+                                  : isWilliInterface
+                                    ? `Wähle aus, worum es geht. Danach führt dich ${displayAssistantName} gezielt weiter.`
+                                    : `Wähle einen Einstieg aus. Danach führt dich ${displayAssistantName} gezielt weiter.`}
                         </div>
 
                         {isFahrwerkBInterface && (
@@ -2780,7 +2905,7 @@ export default function WidgetPage() {
                               fontSize: 14,
                             }}
                           >
-                            {(isMmWartungInterface ? MM_WARTUNG_BOOKING_SERVICES : BTDESIGNS_BOOKING_SERVICES).map((service) => (
+                            {bookingServices.map((service) => (
                               <option key={service} value={service}>
                                 {service}
                               </option>
@@ -2873,7 +2998,13 @@ export default function WidgetPage() {
                         <textarea
                           value={bookingForm.message}
                           onChange={(e) => updateBookingForm("message", e.target.value)}
-                          placeholder={isMmWartungInterface ? "Fahrzeug, Problem oder Wunsch kurz beschreiben" : "Worum soll es gehen?"}
+                          placeholder={isMmWartungInterface
+                            ? "Fahrzeug, Problem oder Wunsch kurz beschreiben"
+                            : isTxbikesInterface
+                              ? "Fahrrad, E-Bike, Problem oder Wunsch kurz beschreiben"
+                              : isWilliInterface
+                                ? "Anliegen, Wunsch oder Rückrufgrund kurz beschreiben"
+                                : "Worum soll es gehen?"}
                           rows={3}
                           style={{
                             borderRadius: 14,
@@ -2932,7 +3063,11 @@ export default function WidgetPage() {
                               ? "Erzähl kurz, was du brauchst. Danach wird deine Sprache automatisch als Nachricht gesendet."
                               : isMmWartungInterface
                                 ? "Erzähl kurz, ob es um ein Fahrzeugproblem, einen Termin oder ein Ersatzteil geht. Danach wird deine Sprache automatisch gesendet."
-                                : "Erzähl kurz, was mit dem Fahrrad los ist. Danach wird deine Sprache automatisch als Nachricht gesendet."}
+                                : isTxbikesInterface
+                                  ? "Erzähl kurz, was mit dem Fahrrad los ist oder welchen Termin du brauchst. Danach wird deine Sprache automatisch als Nachricht gesendet."
+                                  : isWilliInterface
+                                    ? "Erzähl kurz dein Anliegen. Danach wird deine Sprache automatisch als Nachricht gesendet."
+                                    : "Erzähl kurz, worum es geht. Danach wird deine Sprache automatisch als Nachricht gesendet."}
                         </div>
                         <div className="bt-voice-bars" aria-hidden="true">
                           <span />
@@ -2988,7 +3123,11 @@ export default function WidgetPage() {
                                     ? "Hochgeladenes Beispielbild"
                                     : isMmWartungInterface
                                       ? "Hochgeladenes Foto zum Fahrzeug oder Ersatzteil"
-                                      : "Hochgeladenes Foto vom Fahrradproblem"}
+                                      : isTxbikesInterface
+                                        ? "Hochgeladenes Foto vom Fahrradproblem"
+                                        : isWilliInterface
+                                          ? "Hochgeladenes Bild zur Anfrage"
+                                          : "Hochgeladenes Foto"}
                               />
                               <div className="bt-image-preview-label">
                                 {m.imageName ? `Foto: ${m.imageName}` : "Foto hinzugefügt"}
@@ -3087,7 +3226,11 @@ export default function WidgetPage() {
                             ? "Schreib kurz, was du brauchst…"
                             : isMmWartungInterface
                               ? "Schreib dein Anliegen…"
-                              : "Schreib eine Frage…"
+                              : isTxbikesInterface
+                                ? "Schreib z. B. Reparatur, E-Bike oder Termin…"
+                                : isWilliInterface
+                                  ? "Schreib kurz dein Anliegen…"
+                                  : "Schreib eine Frage…"
                     }
                     style={{
                       flex: 1,
