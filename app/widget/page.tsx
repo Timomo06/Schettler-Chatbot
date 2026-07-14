@@ -689,12 +689,13 @@ export default function WidgetPage() {
 
     setMsgs([{ role: "assistant", content: firstMessage }]);
 
-    setVoiceSupported(
-      Boolean(
-        navigator.mediaDevices?.getUserMedia &&
-          typeof window.MediaRecorder !== "undefined"
-      )
-    );
+    const hasGetUserMedia =
+  typeof navigator.mediaDevices !== "undefined" &&
+  typeof navigator.mediaDevices.getUserMedia === "function";
+
+const hasMediaRecorder = typeof window.MediaRecorder !== "undefined";
+
+setVoiceSupported(hasGetUserMedia && hasMediaRecorder);
   }, [mounted, displayAssistantName, isFahrwerkBInterface, isLinaInterface, isMmWartungInterface, isTxbikesInterface, isWilliInterface]);
 
   useEffect(() => {
