@@ -1,7 +1,15 @@
 // app/widget/page.tsx
 "use client";
 
-import { type ChangeEvent, type CSSProperties, type FormEvent, useEffect, useMemo, useRef, useState } from "react";
+import {
+  type ChangeEvent,
+  type CSSProperties,
+  type FormEvent,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { getTenant } from "@/lib/tenants";
 import { MessageCircle } from "lucide-react";
 
@@ -31,7 +39,13 @@ type StartCard = {
   title: string;
   description: string;
   message?: string;
-  action?: "photo" | "voice" | "booking" | "fahrwerkSignup" | "fahrwerkLiveSignup" | "fahrwerkPanel";
+  action?:
+    | "photo"
+    | "voice"
+    | "booking"
+    | "fahrwerkSignup"
+    | "fahrwerkLiveSignup"
+    | "fahrwerkPanel";
   fahrwerkPanel?: FahrwerkPanel;
   prefillLicenseClass?: string;
   prefillStartWish?: string;
@@ -130,12 +144,36 @@ const FAHRWERK_START_WISHES = [
 ];
 
 const FAHRWERK_DOCUMENT_ITEMS: FahrwerkDocumentItem[] = [
-  { id: "ausweis", label: "Ausweis", hint: "Personalausweis oder Reisepass bereitlegen." },
-  { id: "sehtest", label: "Sehtest", hint: "Für Klasse B/B197/BF17 nötig. Gültigkeit beachten." },
-  { id: "erstehilfe", label: "Erste-Hilfe-Kurs", hint: "Bescheinigung für den Antrag sichern." },
-  { id: "passbild", label: "Biometrisches Passbild", hint: "Wird für den Führerscheinantrag benötigt." },
-  { id: "antrag", label: "Antrag beim Amt", hint: "Erst danach kann die Prüfung später sauber laufen." },
-  { id: "bf17", label: "BF17-Begleitpersonen", hint: "Nur relevant, wenn begleitetes Fahren ab 17 geplant ist." },
+  {
+    id: "ausweis",
+    label: "Ausweis",
+    hint: "Personalausweis oder Reisepass bereitlegen.",
+  },
+  {
+    id: "sehtest",
+    label: "Sehtest",
+    hint: "Für Klasse B/B197/BF17 nötig. Gültigkeit beachten.",
+  },
+  {
+    id: "erstehilfe",
+    label: "Erste-Hilfe-Kurs",
+    hint: "Bescheinigung für den Antrag sichern.",
+  },
+  {
+    id: "passbild",
+    label: "Biometrisches Passbild",
+    hint: "Wird für den Führerscheinantrag benötigt.",
+  },
+  {
+    id: "antrag",
+    label: "Antrag beim Amt",
+    hint: "Erst danach kann die Prüfung später sauber laufen.",
+  },
+  {
+    id: "bf17",
+    label: "BF17-Begleitpersonen",
+    hint: "Nur relevant, wenn begleitetes Fahren ab 17 geplant ist.",
+  },
 ];
 
 const FAHRWERK_STAGES: FahrwerkStage[] = [
@@ -143,47 +181,56 @@ const FAHRWERK_STAGES: FahrwerkStage[] = [
     id: "new",
     label: "Noch nicht angemeldet",
     next: "Passende Klasse finden oder direkt online anmelden.",
-    detail: "Starte mit Klasse B, B197, BF17 oder BE. Wenn du unsicher bist, führt dich das Interface über wenige Fragen zur passenden Richtung.",
+    detail:
+      "Starte mit Klasse B, B197, BF17 oder BE. Wenn du unsicher bist, führt dich das Interface über wenige Fragen zur passenden Richtung.",
   },
   {
     id: "registered",
     label: "Angemeldet",
     next: "Unterlagen vollständig machen.",
-    detail: "Sehtest, Erste-Hilfe-Kurs, Passbild und Antrag sind meistens die nächsten Baustellen.",
+    detail:
+      "Sehtest, Erste-Hilfe-Kurs, Passbild und Antrag sind meistens die nächsten Baustellen.",
   },
   {
     id: "documents",
     label: "Unterlagen laufen",
     next: "Theorie sauber starten und Antrag im Blick behalten.",
-    detail: "Wenn Unterlagen fehlen, dauert später oft die Prüfungsfreigabe länger. Deshalb zuerst den Dokumenten-Check erledigen.",
+    detail:
+      "Wenn Unterlagen fehlen, dauert später oft die Prüfungsfreigabe länger. Deshalb zuerst den Dokumenten-Check erledigen.",
   },
   {
     id: "theory",
     label: "Theorie läuft",
     next: "Regelmäßig lernen und Theorieprüfung planen.",
-    detail: "Das Interface kann dir erklären, was in der Theoriephase wichtig ist. Konkrete Kurszeiten bleiben bei Fahrschule.live.",
+    detail:
+      "Das Interface kann dir erklären, was in der Theoriephase wichtig ist. Konkrete Kurszeiten bleiben bei Fahrschule.live.",
   },
   {
     id: "theory_exam",
     label: "Theorieprüfung bestanden",
     next: "Praxisphase und Fahrstunden fokussieren.",
-    detail: "Jetzt geht es stärker um Fahrpraxis, Sonderfahrten und Vorbereitung auf die praktische Prüfung.",
+    detail:
+      "Jetzt geht es stärker um Fahrpraxis, Sonderfahrten und Vorbereitung auf die praktische Prüfung.",
   },
   {
     id: "practice",
     label: "Praxis läuft",
     next: "Fahrstunden, Sonderfahrten und Prüfungsreife klären.",
-    detail: "Wenn du unsicher bist, kann das Interface deine Frage vorstrukturieren, bevor Fahrwerk B sie prüft.",
+    detail:
+      "Wenn du unsicher bist, kann das Interface deine Frage vorstrukturieren, bevor Fahrwerk B sie prüft.",
   },
   {
     id: "practical_exam",
     label: "Prüfung steht an",
     next: "Prüfungs-Checkliste durchgehen und ruhig bleiben.",
-    detail: "Kurz vor der Prüfung helfen klare Checklisten mehr als lange Texte. Nutze den Prüfungsmodus im Interface.",
+    detail:
+      "Kurz vor der Prüfung helfen klare Checklisten mehr als lange Texte. Nutze den Prüfungsmodus im Interface.",
   },
 ];
 
-const DEFAULT_FAHRWERK_CHECKLIST = FAHRWERK_DOCUMENT_ITEMS.reduce<Record<string, boolean>>((acc, item) => {
+const DEFAULT_FAHRWERK_CHECKLIST = FAHRWERK_DOCUMENT_ITEMS.reduce<
+  Record<string, boolean>
+>((acc, item) => {
   acc[item.id] = false;
   return acc;
 }, {});
@@ -243,7 +290,8 @@ const TXBIKES_START_CARDS: StartCard[] = [
     icon: "🛠️",
     title: "Problem am Fahrrad",
     description: "Geräusche, Defekte oder Fehler eingrenzen",
-    message: "Ich habe ein Problem mit meinem Fahrrad und möchte den Fehler eingrenzen.",
+    message:
+      "Ich habe ein Problem mit meinem Fahrrad und möchte den Fehler eingrenzen.",
   },
   {
     icon: "📅",
@@ -261,7 +309,8 @@ const TXBIKES_START_CARDS: StartCard[] = [
     icon: "🔧",
     title: "Wartung & Service",
     description: "Inspektion, Kette, Bremsen oder Pflege planen",
-    message: "Ich möchte wissen, welche Wartung oder welcher Service für mein Fahrrad sinnvoll ist.",
+    message:
+      "Ich möchte wissen, welche Wartung oder welcher Service für mein Fahrrad sinnvoll ist.",
   },
 ];
 
@@ -282,7 +331,8 @@ const WILLI_START_CARDS: StartCard[] = [
     icon: "🛠️",
     title: "Service Anfrage",
     description: "Problem, Wunsch oder Auftrag vorbereiten",
-    message: "Ich habe eine Service-Anfrage und möchte mein Anliegen vorbereiten.",
+    message:
+      "Ich habe eine Service-Anfrage und möchte mein Anliegen vorbereiten.",
   },
   {
     icon: "💬",
@@ -300,7 +350,8 @@ const WILLI_START_CARDS: StartCard[] = [
     icon: "📋",
     title: "Angebot anfragen",
     description: "Infos sammeln und Anfrage formulieren",
-    message: "Ich möchte ein Angebot anfragen und die wichtigsten Informationen sammeln.",
+    message:
+      "Ich möchte ein Angebot anfragen und die wichtigsten Informationen sammeln.",
   },
 ];
 
@@ -309,25 +360,29 @@ const BTDESIGNS_START_CARDS: StartCard[] = [
     icon: "✨",
     title: "Social Media",
     description: "Pakete, Reels oder Betreuung einschätzen",
-    message: "Ich möchte wissen, welches Social-Media-Paket für mein Unternehmen sinnvoll ist.",
+    message:
+      "Ich möchte wissen, welches Social-Media-Paket für mein Unternehmen sinnvoll ist.",
   },
   {
     icon: "🌐",
     title: "Website",
     description: "Neue Website, Relaunch oder Shop besprechen",
-    message: "Ich interessiere mich für eine Website oder einen Online-Shop von BTDesigns.",
+    message:
+      "Ich interessiere mich für eine Website oder einen Online-Shop von BTDesigns.",
   },
   {
     icon: "🤖",
     title: "AI Interface",
     description: "LINA, Website-KI oder Automatisierung planen",
-    message: "Ich möchte wissen, wie ein AI Interface von BTDesigns meinem Unternehmen helfen kann.",
+    message:
+      "Ich möchte wissen, wie ein AI Interface von BTDesigns meinem Unternehmen helfen kann.",
   },
   {
     icon: "🧢",
     title: "Werbemittel",
     description: "Textilien, Drucksachen oder Giveaways anfragen",
-    message: "Ich interessiere mich für Werbemittel von BTDesigns und möchte eine Anfrage stellen.",
+    message:
+      "Ich interessiere mich für Werbemittel von BTDesigns und möchte eine Anfrage stellen.",
   },
   {
     icon: "📅",
@@ -392,7 +447,8 @@ const FAHRWERK_B_START_CARDS: StartCard[] = [
   {
     icon: "🚀",
     title: "Online anmelden",
-    description: "Offizielle Anmeldung bei Fahrwerk B über Fahrschule.live öffnen",
+    description:
+      "Offizielle Anmeldung bei Fahrwerk B über Fahrschule.live öffnen",
     action: "fahrwerkLiveSignup",
   },
   {
@@ -469,9 +525,15 @@ function ensureFahrwerkEmoji(content: string) {
     emoji = "👋";
   } else if (/\b(fehler|problem|nicht möglich|technisch)\b/.test(normalized)) {
     emoji = "⚠️";
-  } else if (/\b(anmeld|klasse b|b197|bf17|führerschein starten)\b/.test(normalized)) {
+  } else if (
+    /\b(anmeld|klasse b|b197|bf17|führerschein starten)\b/.test(normalized)
+  ) {
     emoji = "📝";
-  } else if (/\b(unterlagen|dokument|sehtest|erste hilfe|passbild|antrag)\b/.test(normalized)) {
+  } else if (
+    /\b(unterlagen|dokument|sehtest|erste hilfe|passbild|antrag)\b/.test(
+      normalized,
+    )
+  ) {
     emoji = "📄";
   } else if (/\b(theorie|lernen|prüfungsfragen)\b/.test(normalized)) {
     emoji = "📚";
@@ -513,14 +575,61 @@ export default function WidgetPage() {
   }, [tenantId]);
   const theme = cfg.theme;
   const normalizedTenantId = tenantId.toLowerCase();
-  const isTxbikesInterface = ["txbikesv2", "txbikes", "tx-bikes", "tx_bikes", "txbikes.de", "txbikesde"].includes(normalizedTenantId);
-  const isWilliInterface = ["willi", "willi-ai", "willi-interface", "williinterface", "willis"].includes(normalizedTenantId);
-  const isLinaInterface = ["btdesigns", "lina", "btai", "btdesigns-lina"].includes(normalizedTenantId);
-  const isMmWartungInterface = ["mm-wartung", "mmwartung", "mm_wartung", "mm-wartung.de", "mmwartungde", "mm"].includes(normalizedTenantId);
-  const isFahrwerkBInterface = ["fahrwerk-b", "fahrwerkb", "fahrwerk_b", "fahrwerk-b.de", "fahrwerkbde", "fahrwerk"].includes(normalizedTenantId);
-  const isEnhancedInterface = isTxbikesInterface || isWilliInterface || isLinaInterface || isMmWartungInterface || isFahrwerkBInterface;
-  const isBookingInterface = isLinaInterface || isMmWartungInterface || isTxbikesInterface || isWilliInterface;
-  const bookingBusinessName = isMmWartungInterface ? "MM Wartung" : isTxbikesInterface ? "TXBikes" : isWilliInterface ? "Willi" : "BTDesigns";
+  const isTxbikesInterface = [
+    "txbikesv2",
+    "txbikes",
+    "tx-bikes",
+    "tx_bikes",
+    "txbikes.de",
+    "txbikesde",
+  ].includes(normalizedTenantId);
+  const isWilliInterface = [
+    "willi",
+    "willi-ai",
+    "willi-interface",
+    "williinterface",
+    "willis",
+  ].includes(normalizedTenantId);
+  const isLinaInterface = [
+    "btdesigns",
+    "lina",
+    "btai",
+    "btdesigns-lina",
+  ].includes(normalizedTenantId);
+  const isMmWartungInterface = [
+    "mm-wartung",
+    "mmwartung",
+    "mm_wartung",
+    "mm-wartung.de",
+    "mmwartungde",
+    "mm",
+  ].includes(normalizedTenantId);
+  const isFahrwerkBInterface = [
+    "fahrwerk-b",
+    "fahrwerkb",
+    "fahrwerk_b",
+    "fahrwerk-b.de",
+    "fahrwerkbde",
+    "fahrwerk",
+  ].includes(normalizedTenantId);
+  const isEnhancedInterface =
+    isTxbikesInterface ||
+    isWilliInterface ||
+    isLinaInterface ||
+    isMmWartungInterface ||
+    isFahrwerkBInterface;
+  const isBookingInterface =
+    isLinaInterface ||
+    isMmWartungInterface ||
+    isTxbikesInterface ||
+    isWilliInterface;
+  const bookingBusinessName = isMmWartungInterface
+    ? "MM Wartung"
+    : isTxbikesInterface
+      ? "TXBikes"
+      : isWilliInterface
+        ? "Willi"
+        : "BTDesigns";
   const bookingDefaultService = isMmWartungInterface
     ? "Werkstatt Termin"
     : isTxbikesInterface
@@ -528,7 +637,8 @@ export default function WidgetPage() {
       : isWilliInterface
         ? "Termin / Rückruf"
         : "Website Beratung";
-  const bookingDefaultDuration = isMmWartungInterface || isTxbikesInterface ? "60" : "30";
+  const bookingDefaultDuration =
+    isMmWartungInterface || isTxbikesInterface ? "60" : "30";
   const bookingCalendarLabel = isMmWartungInterface
     ? "Arbeit"
     : isTxbikesInterface
@@ -543,7 +653,13 @@ export default function WidgetPage() {
       : isWilliInterface
         ? WILLI_BOOKING_SERVICES
         : BTDESIGNS_BOOKING_SERVICES;
-  const displayBrandName = isFahrwerkBInterface ? "Fahrwerk B" : isTxbikesInterface ? "TXBikes" : isWilliInterface ? "Willi" : cfg.brandName;
+  const displayBrandName = isFahrwerkBInterface
+    ? "Fahrwerk B"
+    : isTxbikesInterface
+      ? "TXBikes"
+      : isWilliInterface
+        ? "Willi"
+        : cfg.brandName;
   const displayAssistantName = isFahrwerkBInterface
     ? "Führerschein-Cockpit"
     : isTxbikesInterface
@@ -614,12 +730,17 @@ export default function WidgetPage() {
   const isVoiceActive = voicePhase !== "idle";
   const [bookingOpen, setBookingOpen] = useState(false);
   const [bookingSubmitting, setBookingSubmitting] = useState(false);
-  const [bookingForm, setBookingForm] = useState<BookingFormState>(DEFAULT_BOOKING_FORM);
+  const [bookingForm, setBookingForm] =
+    useState<BookingFormState>(DEFAULT_BOOKING_FORM);
   const [fahrwerkSignupOpen, setFahrwerkSignupOpen] = useState(false);
-  const [fahrwerkSignupForm, setFahrwerkSignupForm] = useState<FahrwerkSignupFormState>(DEFAULT_FAHRWERK_SIGNUP_FORM);
-  const [fahrwerkPanel, setFahrwerkPanel] = useState<FahrwerkPanel>("dashboard");
+  const [fahrwerkSignupForm, setFahrwerkSignupForm] =
+    useState<FahrwerkSignupFormState>(DEFAULT_FAHRWERK_SIGNUP_FORM);
+  const [fahrwerkPanel, setFahrwerkPanel] =
+    useState<FahrwerkPanel>("dashboard");
   const [fahrwerkStage, setFahrwerkStage] = useState<FahrwerkStageId>("new");
-  const [fahrwerkChecklist, setFahrwerkChecklist] = useState<Record<string, boolean>>(DEFAULT_FAHRWERK_CHECKLIST);
+  const [fahrwerkChecklist, setFahrwerkChecklist] = useState<
+    Record<string, boolean>
+  >(DEFAULT_FAHRWERK_CHECKLIST);
 
   const isEmbedClosed = isEmbedded && !open;
   const listRef = useRef<HTMLDivElement | null>(null);
@@ -631,7 +752,9 @@ export default function WidgetPage() {
   const audioContextRef = useRef<AudioContext | null>(null);
   const analyserRef = useRef<AnalyserNode | null>(null);
   const voiceAnimationFrameRef = useRef<number | null>(null);
-  const voiceStopTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const voiceStopTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
+    null,
+  );
   const voiceStartedAtRef = useRef(0);
   const voiceDetectedRef = useRef(false);
   const silenceStartedAtRef = useRef<number | null>(null);
@@ -640,15 +763,28 @@ export default function WidgetPage() {
   const voiceAudioRef = useRef<HTMLAudioElement | null>(null);
   const voiceAudioUrlRef = useRef<string | null>(null);
   const voiceStageRef = useRef<HTMLDivElement | null>(null);
+  const voiceConversationActiveRef = useRef(false);
+  const voiceRestartTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
+    null,
+  );
+  const msgsRef = useRef<Msg[]>([]);
+  const loadingRef = useRef(false);
 
   useEffect(() => {
     if (!mounted || !isFahrwerkBInterface) return;
 
     try {
-      const savedStage = window.localStorage.getItem("fahrwerk-b-stage") as FahrwerkStageId | null;
-      const savedChecklist = window.localStorage.getItem("fahrwerk-b-checklist");
+      const savedStage = window.localStorage.getItem(
+        "fahrwerk-b-stage",
+      ) as FahrwerkStageId | null;
+      const savedChecklist = window.localStorage.getItem(
+        "fahrwerk-b-checklist",
+      );
 
-      if (savedStage && FAHRWERK_STAGES.some((stage) => stage.id === savedStage)) {
+      if (
+        savedStage &&
+        FAHRWERK_STAGES.some((stage) => stage.id === savedStage)
+      ) {
         setFahrwerkStage(savedStage);
       }
 
@@ -666,7 +802,10 @@ export default function WidgetPage() {
 
     try {
       window.localStorage.setItem("fahrwerk-b-stage", fahrwerkStage);
-      window.localStorage.setItem("fahrwerk-b-checklist", JSON.stringify(fahrwerkChecklist));
+      window.localStorage.setItem(
+        "fahrwerk-b-checklist",
+        JSON.stringify(fahrwerkChecklist),
+      );
     } catch {
       // Ignorieren, damit das Interface auch ohne lokalen Speicher nutzbar bleibt.
     }
@@ -690,13 +829,29 @@ export default function WidgetPage() {
     setMsgs([{ role: "assistant", content: firstMessage }]);
 
     const hasGetUserMedia =
-  typeof navigator.mediaDevices !== "undefined" &&
-  typeof navigator.mediaDevices.getUserMedia === "function";
+      typeof navigator.mediaDevices !== "undefined" &&
+      typeof navigator.mediaDevices.getUserMedia === "function";
 
-const hasMediaRecorder = typeof window.MediaRecorder !== "undefined";
+    const hasMediaRecorder = typeof window.MediaRecorder !== "undefined";
 
-setVoiceSupported(hasGetUserMedia && hasMediaRecorder);
-  }, [mounted, displayAssistantName, isFahrwerkBInterface, isLinaInterface, isMmWartungInterface, isTxbikesInterface, isWilliInterface]);
+    setVoiceSupported(hasGetUserMedia && hasMediaRecorder);
+  }, [
+    mounted,
+    displayAssistantName,
+    isFahrwerkBInterface,
+    isLinaInterface,
+    isMmWartungInterface,
+    isTxbikesInterface,
+    isWilliInterface,
+  ]);
+
+  useEffect(() => {
+    msgsRef.current = msgs;
+  }, [msgs]);
+
+  useEffect(() => {
+    loadingRef.current = loading;
+  }, [loading]);
 
   useEffect(() => {
     return () => {
@@ -711,7 +866,10 @@ setVoiceSupported(hasGetUserMedia && hasMediaRecorder);
   }, [open]);
 
   useEffect(() => {
-    listRef.current?.scrollTo({ top: listRef.current.scrollHeight, behavior: "smooth" });
+    listRef.current?.scrollTo({
+      top: listRef.current.scrollHeight,
+      behavior: "smooth",
+    });
   }, [msgs, loading, voicePhase]);
 
   useEffect(() => {
@@ -746,13 +904,32 @@ setVoiceSupported(hasGetUserMedia && hasMediaRecorder);
     const size = open
       ? {
           type: "bt-chat-resize",
-          width: isBookingInterface ? 1080 : isTxbikesInterface || isFahrwerkBInterface ? 980 : 500,
-          height: isBookingInterface ? 920 : isTxbikesInterface || isFahrwerkBInterface ? 880 : 760,
+          width: isBookingInterface
+            ? 1080
+            : isTxbikesInterface || isFahrwerkBInterface
+              ? 980
+              : 500,
+          height: isBookingInterface
+            ? 920
+            : isTxbikesInterface || isFahrwerkBInterface
+              ? 880
+              : 760,
         }
-      : { type: "bt-chat-resize", width: embedClosedSize, height: embedClosedSize };
+      : {
+          type: "bt-chat-resize",
+          width: embedClosedSize,
+          height: embedClosedSize,
+        };
 
     window.parent.postMessage(size, "*");
-  }, [open, isEmbedded, isBookingInterface, isTxbikesInterface, isFahrwerkBInterface, embedClosedSize]);
+  }, [
+    open,
+    isEmbedded,
+    isBookingInterface,
+    isTxbikesInterface,
+    isFahrwerkBInterface,
+    embedClosedSize,
+  ]);
 
   useEffect(() => {
     if (!mounted) return;
@@ -761,22 +938,41 @@ setVoiceSupported(hasGetUserMedia && hasMediaRecorder);
       {
         type: "bt-chat-ready",
         tenant: tenantId,
-        interface: isFahrwerkBInterface ? "fahrwerk-b" : isLinaInterface ? "btai" : isTxbikesInterface ? "txbikes" : isWilliInterface ? "willi" : isMmWartungInterface ? "mm-wartung" : "default",
+        interface: isFahrwerkBInterface
+          ? "fahrwerk-b"
+          : isLinaInterface
+            ? "btai"
+            : isTxbikesInterface
+              ? "txbikes"
+              : isWilliInterface
+                ? "willi"
+                : isMmWartungInterface
+                  ? "mm-wartung"
+                  : "default",
       },
       "*",
     );
 
     const handleBtAiMessage = (event: MessageEvent) => {
-      if (event.data?.type === "bt-chat-open" || event.data?.type === "btai-open") {
+      if (
+        event.data?.type === "bt-chat-open" ||
+        event.data?.type === "btai-open"
+      ) {
         setOpen(true);
         setShowBadge(false);
       }
 
-      if (event.data?.type === "bt-chat-close" || event.data?.type === "btai-close") {
+      if (
+        event.data?.type === "bt-chat-close" ||
+        event.data?.type === "btai-close"
+      ) {
         setOpen(false);
       }
 
-      if (event.data?.type === "bt-chat-toggle" || event.data?.type === "btai-toggle") {
+      if (
+        event.data?.type === "bt-chat-toggle" ||
+        event.data?.type === "btai-toggle"
+      ) {
         setOpen((current) => !current);
         setShowBadge(false);
       }
@@ -787,75 +983,119 @@ setVoiceSupported(hasGetUserMedia && hasMediaRecorder);
     return () => {
       window.removeEventListener("message", handleBtAiMessage);
     };
-  }, [mounted, tenantId, isFahrwerkBInterface, isLinaInterface, isTxbikesInterface, isWilliInterface, isMmWartungInterface]);
+  }, [
+    mounted,
+    tenantId,
+    isFahrwerkBInterface,
+    isLinaInterface,
+    isTxbikesInterface,
+    isWilliInterface,
+    isMmWartungInterface,
+  ]);
 
-  async function sendText(rawText: string, options: SendTextOptions = {}): Promise<string | null> {
+  async function sendText(
+    rawText: string,
+    options: SendTextOptions = {},
+  ): Promise<string | null> {
     const text = rawText.trim();
-    if (!text || loading) return null;
+    if (!text || loadingRef.current) return null;
 
     const wantsBooking =
       isBookingInterface &&
-      /\b(termin|werkstatttermin|beratungsgespräch|erstgespräch|gespräch|meeting|call|buchen|anrufen|vereinbaren|rückruf|reparatur|inspektion|wartung|service)\b/i.test(text);
+      /\b(termin|werkstatttermin|beratungsgespräch|erstgespräch|gespräch|meeting|call|buchen|anrufen|vereinbaren|rückruf|reparatur|inspektion|wartung|service)\b/i.test(
+        text,
+      );
 
     if (wantsBooking) {
       setBookingOpen(true);
     }
 
     if (isFahrwerkBInterface) {
-      if (/\b(unterlagen|sehtest|erste hilfe|passbild|antrag|dokumente)\b/i.test(text)) {
+      if (
+        /\b(unterlagen|sehtest|erste hilfe|passbild|antrag|dokumente)\b/i.test(
+          text,
+        )
+      ) {
         setFahrwerkPanel("documents");
-      } else if (/\b(theorie|theorieprüfung|lernen|app|prüfungsfragen)\b/i.test(text)) {
+      } else if (
+        /\b(theorie|theorieprüfung|lernen|app|prüfungsfragen)\b/i.test(text)
+      ) {
         setFahrwerkPanel("theory");
-      } else if (/\b(praxis|fahrstunde|sonderfahrt|praktische prüfung|prüfungsangst)\b/i.test(text)) {
+      } else if (
+        /\b(praxis|fahrstunde|sonderfahrt|praktische prüfung|prüfungsangst)\b/i.test(
+          text,
+        )
+      ) {
         setFahrwerkPanel("practice");
-      } else if (/\b(prüfung|prüfungsvorbereitung|durchgefallen)\b/i.test(text)) {
+      } else if (
+        /\b(prüfung|prüfungsvorbereitung|durchgefallen)\b/i.test(text)
+      ) {
         setFahrwerkPanel("exam");
-      } else if (/\b(angemeldet|fahrschüler|bin schon|mein stand)\b/i.test(text)) {
+      } else if (
+        /\b(angemeldet|fahrschüler|bin schon|mein stand)\b/i.test(text)
+      ) {
         setFahrwerkPanel("student");
-      } else if (/\b(anmelden|starten|b197|bf17|klasse b|anhänger|be)\b/i.test(text)) {
+      } else if (
+        /\b(anmelden|starten|b197|bf17|klasse b|anhänger|be)\b/i.test(text)
+      ) {
         setFahrwerkPanel("start");
       }
     }
 
-    const next: Msg[] = [...msgs, { role: "user", content: text }];
+    const next: Msg[] = [...msgsRef.current, { role: "user", content: text }];
+    msgsRef.current = next;
     setMsgs(next);
     setInput("");
+    loadingRef.current = true;
     setLoading(true);
 
     try {
-      const res = await fetch(`/api/chat?tenant=${encodeURIComponent(tenantId)}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          tenant: tenantId,
-          messages: next.map(({ role, content }) => ({ role, content })),
-        }),
-        signal: options.signal,
-      });
+      const res = await fetch(
+        `/api/chat?tenant=${encodeURIComponent(tenantId)}`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            tenant: tenantId,
+            messages: next.map(({ role, content }) => ({ role, content })),
+          }),
+          signal: options.signal,
+        },
+      );
 
       const data = await res.json().catch(() => null);
 
       if (!res.ok) {
-        throw new Error(data?.error || "Die Antwort konnte nicht geladen werden.");
+        throw new Error(
+          data?.error || "Die Antwort konnte nicht geladen werden.",
+        );
       }
 
-      const assistantMsg: Msg = { role: "assistant", content: data?.reply || "Okay." };
-      setMsgs([...next, assistantMsg]);
+      const assistantMsg: Msg = {
+        role: "assistant",
+        content: data?.reply || "Okay.",
+      };
+      const completedConversation = [...next, assistantMsg];
+      msgsRef.current = completedConversation;
+      setMsgs(completedConversation);
       return assistantMsg.content;
     } catch (error) {
       if (error instanceof DOMException && error.name === "AbortError") {
         return null;
       }
 
-      setMsgs([
+      const failedConversation: Msg[] = [
         ...next,
         {
           role: "assistant",
           content: "Kurz ein technisches Problem — versuch’s nochmal.",
-        } as Msg,
-      ]);
+        },
+      ];
+      msgsRef.current = failedConversation;
+      setMsgs(failedConversation);
       return null;
     } finally {
+      loadingRef.current = false;
       setLoading(false);
     }
   }
@@ -867,7 +1107,9 @@ setVoiceSupported(hasGetUserMedia && hasMediaRecorder);
 
     setMsgs((current) => {
       const alreadyHasLiveSignupHint = current.some(
-        (msg) => msg.role === "assistant" && msg.content.includes("offizielle Online-Anmeldung"),
+        (msg) =>
+          msg.role === "assistant" &&
+          msg.content.includes("offizielle Online-Anmeldung"),
       );
 
       if (alreadyHasLiveSignupHint) return current;
@@ -906,8 +1148,10 @@ setVoiceSupported(hasGetUserMedia && hasMediaRecorder);
     }));
 
     setMsgs((current) => {
-      const alreadyHasSignupHint = current.some((msg) =>
-        msg.role === "assistant" && msg.content.includes("Anmeldevorbereitung")
+      const alreadyHasSignupHint = current.some(
+        (msg) =>
+          msg.role === "assistant" &&
+          msg.content.includes("Anmeldevorbereitung"),
       );
 
       if (alreadyHasSignupHint) return current;
@@ -923,7 +1167,10 @@ setVoiceSupported(hasGetUserMedia && hasMediaRecorder);
     });
   }
 
-  function updateFahrwerkSignupForm(field: keyof FahrwerkSignupFormState, value: string | boolean) {
+  function updateFahrwerkSignupForm(
+    field: keyof FahrwerkSignupFormState,
+    value: string | boolean,
+  ) {
     setFahrwerkSignupForm((current) => ({ ...current, [field]: value }));
   }
 
@@ -939,7 +1186,8 @@ setVoiceSupported(hasGetUserMedia && hasMediaRecorder);
         ...current,
         {
           role: "assistant",
-          content: "Für die Anfragevorbereitung brauche ich mindestens deinen Namen.",
+          content:
+            "Für die Anfragevorbereitung brauche ich mindestens deinen Namen.",
         },
       ]);
       return;
@@ -950,7 +1198,8 @@ setVoiceSupported(hasGetUserMedia && hasMediaRecorder);
         ...current,
         {
           role: "assistant",
-          content: "Bitte gib mindestens eine E-Mail-Adresse oder Telefonnummer an, damit Fahrwerk B dich erreichen kann.",
+          content:
+            "Bitte gib mindestens eine E-Mail-Adresse oder Telefonnummer an, damit Fahrwerk B dich erreichen kann.",
         },
       ]);
       return;
@@ -961,7 +1210,8 @@ setVoiceSupported(hasGetUserMedia && hasMediaRecorder);
         ...current,
         {
           role: "assistant",
-          content: "Bitte bestätige kurz den Datenschutz-Hinweis. Erst danach sollte eine Anfrage an Fahrwerk B vorbereitet werden.",
+          content:
+            "Bitte bestätige kurz den Datenschutz-Hinweis. Erst danach sollte eine Anfrage an Fahrwerk B vorbereitet werden.",
         },
       ]);
       return;
@@ -1055,14 +1305,20 @@ setVoiceSupported(hasGetUserMedia && hasMediaRecorder);
 
       return {
         ...current,
-        service: currentServiceStillFits ? current.service : bookingDefaultService,
-        durationMinutes: current.durationMinutes === DEFAULT_BOOKING_FORM.durationMinutes ? bookingDefaultDuration : current.durationMinutes || bookingDefaultDuration,
+        service: currentServiceStillFits
+          ? current.service
+          : bookingDefaultService,
+        durationMinutes:
+          current.durationMinutes === DEFAULT_BOOKING_FORM.durationMinutes
+            ? bookingDefaultDuration
+            : current.durationMinutes || bookingDefaultDuration,
       };
     });
 
     setMsgs((current) => {
-      const alreadyHasBookingHint = current.some((msg) =>
-        msg.role === "assistant" && msg.content.includes("Termindaten")
+      const alreadyHasBookingHint = current.some(
+        (msg) =>
+          msg.role === "assistant" && msg.content.includes("Termindaten"),
       );
 
       if (alreadyHasBookingHint) return current;
@@ -1107,7 +1363,9 @@ setVoiceSupported(hasGetUserMedia && hasMediaRecorder);
     const service = bookingForm.service.trim() || bookingDefaultService;
     const date = bookingForm.date.trim();
     const time = bookingForm.time.trim();
-    const durationMinutes = Number(bookingForm.durationMinutes || bookingDefaultDuration);
+    const durationMinutes = Number(
+      bookingForm.durationMinutes || bookingDefaultDuration,
+    );
     const message = bookingForm.message.trim();
 
     if (!name || !date || !time) {
@@ -1115,7 +1373,8 @@ setVoiceSupported(hasGetUserMedia && hasMediaRecorder);
         ...current,
         {
           role: "assistant",
-          content: "Für die Terminbuchung brauche ich mindestens Name, Datum und Uhrzeit.",
+          content:
+            "Für die Terminbuchung brauche ich mindestens Name, Datum und Uhrzeit.",
         },
       ]);
       return;
@@ -1139,14 +1398,20 @@ setVoiceSupported(hasGetUserMedia && hasMediaRecorder);
         ...current,
         {
           role: "assistant",
-          content: "Datum oder Uhrzeit konnte ich nicht lesen. Bitte prüfe die Eingabe nochmal.",
+          content:
+            "Datum oder Uhrzeit konnte ich nicht lesen. Bitte prüfe die Eingabe nochmal.",
         },
       ]);
       return;
     }
 
-    const safeDurationMinutes = Number.isFinite(durationMinutes) && durationMinutes > 0 ? durationMinutes : 30;
-    const endDate = new Date(startDate.getTime() + safeDurationMinutes * 60 * 1000);
+    const safeDurationMinutes =
+      Number.isFinite(durationMinutes) && durationMinutes > 0
+        ? durationMinutes
+        : 30;
+    const endDate = new Date(
+      startDate.getTime() + safeDurationMinutes * 60 * 1000,
+    );
 
     setBookingSubmitting(true);
 
@@ -1155,7 +1420,13 @@ setVoiceSupported(hasGetUserMedia && hasMediaRecorder);
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          tenant: isMmWartungInterface ? "mm-wartung" : isTxbikesInterface ? "txbikesv2" : isWilliInterface ? "willi" : tenantId,
+          tenant: isMmWartungInterface
+            ? "mm-wartung"
+            : isTxbikesInterface
+              ? "txbikesv2"
+              : isWilliInterface
+                ? "willi"
+                : tenantId,
           name,
           email,
           phone,
@@ -1181,8 +1452,12 @@ setVoiceSupported(hasGetUserMedia && hasMediaRecorder);
         return;
       }
 
-      const confirmedStart = data?.event?.start ? new Date(data.event.start) : startDate;
-      const confirmedEnd = data?.event?.end ? new Date(data.event.end) : endDate;
+      const confirmedStart = data?.event?.start
+        ? new Date(data.event.start)
+        : startDate;
+      const confirmedEnd = data?.event?.end
+        ? new Date(data.event.end)
+        : endDate;
 
       const readableDate = confirmedStart.toLocaleString("de-DE", {
         weekday: "short",
@@ -1233,7 +1508,8 @@ setVoiceSupported(hasGetUserMedia && hasMediaRecorder);
         ...current,
         {
           role: "assistant",
-          content: "Technischer Fehler beim Kalendereintrag. Bitte versuch es nochmal.",
+          content:
+            "Technischer Fehler beim Kalendereintrag. Bitte versuch es nochmal.",
         },
       ]);
     } finally {
@@ -1257,7 +1533,8 @@ setVoiceSupported(hasGetUserMedia && hasMediaRecorder);
         ...current,
         {
           role: "assistant",
-          content: "Bitte lade ein normales Bild hoch, zum Beispiel ein Foto aus der Kamera oder Galerie.",
+          content:
+            "Bitte lade ein normales Bild hoch, zum Beispiel ein Foto aus der Kamera oder Galerie.",
         },
       ]);
       return;
@@ -1308,7 +1585,10 @@ setVoiceSupported(hasGetUserMedia && hasMediaRecorder);
 
     stage.style.setProperty("--voice-scale", (1 + safeLevel * 0.34).toFixed(3));
     stage.style.setProperty("--voice-energy", safeLevel.toFixed(3));
-    stage.style.setProperty("--voice-glow", (0.24 + safeLevel * 0.68).toFixed(3));
+    stage.style.setProperty(
+      "--voice-glow",
+      (0.24 + safeLevel * 0.68).toFixed(3),
+    );
   }
 
   function stopVoiceAnimation() {
@@ -1342,6 +1622,13 @@ setVoiceSupported(hasGetUserMedia && hasMediaRecorder);
     }
   }
 
+  function clearVoiceRestartTimeout() {
+    if (voiceRestartTimeoutRef.current) {
+      clearTimeout(voiceRestartTimeoutRef.current);
+      voiceRestartTimeoutRef.current = null;
+    }
+  }
+
   function revokeVoiceAudioUrl() {
     if (voiceAudioUrlRef.current) {
       URL.revokeObjectURL(voiceAudioUrlRef.current);
@@ -1368,7 +1655,9 @@ setVoiceSupported(hasGetUserMedia && hasMediaRecorder);
 
   function releaseVoiceResources() {
     cancelVoiceRef.current = true;
+    voiceConversationActiveRef.current = false;
     clearVoiceStopTimeout();
+    clearVoiceRestartTimeout();
     voiceAbortControllerRef.current?.abort();
     voiceAbortControllerRef.current = null;
 
@@ -1388,10 +1677,19 @@ setVoiceSupported(hasGetUserMedia && hasMediaRecorder);
     audioChunksRef.current = [];
   }
 
-  function finishVoiceMode(delay = 520) {
-    clearVoiceStopTimeout();
-    voiceStopTimeoutRef.current = setTimeout(() => {
-      voiceStopTimeoutRef.current = null;
+  function finishVoiceMode(delay = 220) {
+    clearVoiceRestartTimeout();
+
+    voiceRestartTimeoutRef.current = setTimeout(() => {
+      voiceRestartTimeoutRef.current = null;
+
+      if (voiceConversationActiveRef.current && !cancelVoiceRef.current) {
+        setVoiceTranscript("");
+        setVoiceError("");
+        void beginVoiceRecording();
+        return;
+      }
+
       setVoicePhase("idle");
       setVoiceTranscript("");
       setVoiceError("");
@@ -1401,7 +1699,9 @@ setVoiceSupported(hasGetUserMedia && hasMediaRecorder);
 
   function showVoiceFailure(message: string) {
     cancelVoiceRef.current = true;
+    voiceConversationActiveRef.current = false;
     clearVoiceStopTimeout();
+    clearVoiceRestartTimeout();
 
     const recorder = mediaRecorderRef.current;
     mediaRecorderRef.current = null;
@@ -1421,6 +1721,32 @@ setVoiceSupported(hasGetUserMedia && hasMediaRecorder);
     setVoicePhase("error");
   }
 
+  async function getOrCreateVoiceStream() {
+    const existingStream = mediaStreamRef.current;
+    const hasLiveAudioTrack = existingStream
+      ?.getAudioTracks()
+      .some((track) => track.readyState === "live");
+
+    if (existingStream && hasLiveAudioTrack) {
+      return existingStream;
+    }
+
+    stopMicrophoneTracks();
+
+    const stream = await navigator.mediaDevices.getUserMedia({
+      audio: {
+        echoCancellation: true,
+        noiseSuppression: true,
+        autoGainControl: true,
+        channelCount: 1,
+      },
+      video: false,
+    });
+
+    mediaStreamRef.current = stream;
+    return stream;
+  }
+
   function getRecordingFormat() {
     const formats = [
       { mimeType: "audio/webm;codecs=opus", extension: "webm" },
@@ -1430,7 +1756,9 @@ setVoiceSupported(hasGetUserMedia && hasMediaRecorder);
     ];
 
     return (
-      formats.find((format) => MediaRecorder.isTypeSupported(format.mimeType)) || {
+      formats.find((format) =>
+        MediaRecorder.isTypeSupported(format.mimeType),
+      ) || {
         mimeType: "",
         extension: "webm",
       }
@@ -1476,15 +1804,15 @@ setVoiceSupported(hasGetUserMedia && hasMediaRecorder);
 
       setVoiceEnergy(normalizedLevel);
 
-      if (rms > 0.034) {
+      if (rms > 0.03) {
         voiceDetectedRef.current = true;
         silenceStartedAtRef.current = null;
-      } else if (voiceDetectedRef.current && elapsed > 1_000) {
+      } else if (voiceDetectedRef.current && elapsed > 550) {
         if (silenceStartedAtRef.current === null) {
           silenceStartedAtRef.current = now;
         }
 
-        if (now - silenceStartedAtRef.current > 1_350) {
+        if (now - silenceStartedAtRef.current > 850) {
           stopVoiceRecording();
           return;
         }
@@ -1547,7 +1875,9 @@ setVoiceSupported(hasGetUserMedia && hasMediaRecorder);
       recorder.requestData();
       recorder.stop();
     } catch {
-      showVoiceFailure("Die Aufnahme konnte nicht beendet werden. Versuch es bitte nochmal.");
+      showVoiceFailure(
+        "Die Aufnahme konnte nicht beendet werden. Versuch es bitte nochmal.",
+      );
     }
   }
 
@@ -1555,7 +1885,9 @@ setVoiceSupported(hasGetUserMedia && hasMediaRecorder);
     const audio = voiceAudioRef.current;
 
     if (!audio) {
-      showVoiceFailure("Die Sprachantwort ist nicht mehr verfügbar. Versuch es bitte nochmal.");
+      showVoiceFailure(
+        "Die Sprachantwort ist nicht mehr verfügbar. Versuch es bitte nochmal.",
+      );
       return;
     }
 
@@ -1591,7 +1923,9 @@ setVoiceSupported(hasGetUserMedia && hasMediaRecorder);
 
     if (!response.ok) {
       const data = await response.json().catch(() => null);
-      throw new Error(data?.error || "Die Sprachantwort konnte nicht erzeugt werden.");
+      throw new Error(
+        data?.error || "Die Sprachantwort konnte nicht erzeugt werden.",
+      );
     }
 
     const audioBlob = await response.blob();
@@ -1639,11 +1973,14 @@ setVoiceSupported(hasGetUserMedia && hasMediaRecorder);
         signal: abortController.signal,
       });
 
-      const transcriptionData = await transcriptionResponse.json().catch(() => null);
+      const transcriptionData = await transcriptionResponse
+        .json()
+        .catch(() => null);
 
       if (!transcriptionResponse.ok) {
         throw new Error(
-          transcriptionData?.error || "Deine Sprache konnte nicht verarbeitet werden."
+          transcriptionData?.error ||
+            "Deine Sprache konnte nicht verarbeitet werden.",
         );
       }
 
@@ -1687,11 +2024,112 @@ setVoiceSupported(hasGetUserMedia && hasMediaRecorder);
     }
   }
 
+  async function beginVoiceRecording() {
+    if (
+      !voiceConversationActiveRef.current ||
+      cancelVoiceRef.current ||
+      mediaRecorderRef.current?.state === "recording"
+    ) {
+      return;
+    }
+
+    clearVoiceStopTimeout();
+    clearVoiceRestartTimeout();
+    stopVoicePlayback();
+    setVoiceTranscript("");
+    setVoiceError("");
+    setInput("");
+    setVoicePhase("listening");
+    setVoiceEnergy(0.08);
+
+    try {
+      const stream = await getOrCreateVoiceStream();
+
+      if (!voiceConversationActiveRef.current || cancelVoiceRef.current) {
+        return;
+      }
+
+      const format = getRecordingFormat();
+      const recorder = format.mimeType
+        ? new MediaRecorder(stream, { mimeType: format.mimeType })
+        : new MediaRecorder(stream);
+
+      mediaRecorderRef.current = recorder;
+      audioChunksRef.current = [];
+      voiceStartedAtRef.current = performance.now();
+      voiceDetectedRef.current = false;
+      silenceStartedAtRef.current = null;
+
+      recorder.ondataavailable = (event) => {
+        if (event.data.size > 0) {
+          audioChunksRef.current.push(event.data);
+        }
+      };
+
+      recorder.onerror = () => {
+        showVoiceFailure(
+          "Das Mikrofon konnte die Aufnahme nicht sauber verarbeiten.",
+        );
+      };
+
+      recorder.onstop = () => {
+        clearVoiceStopTimeout();
+        stopVoiceAnimation();
+        closeVoiceAudioContext();
+        mediaRecorderRef.current = null;
+
+        if (cancelVoiceRef.current || !voiceConversationActiveRef.current) {
+          audioChunksRef.current = [];
+          return;
+        }
+
+        const chunks = audioChunksRef.current;
+        audioChunksRef.current = [];
+        const blob = new Blob(chunks, {
+          type: recorder.mimeType || format.mimeType || "audio/webm",
+        });
+
+        if (blob.size < 900 || !voiceDetectedRef.current) {
+          setVoiceTranscript("");
+          setVoiceError("");
+          finishVoiceMode(180);
+          return;
+        }
+
+        void processVoiceRecording(blob, format.extension);
+      };
+
+      startMicrophoneVisualization(stream);
+      recorder.start(120);
+
+      voiceStopTimeoutRef.current = setTimeout(() => {
+        stopVoiceRecording();
+      }, 25_000);
+    } catch (error) {
+      const message =
+        error instanceof DOMException &&
+        (error.name === "NotAllowedError" || error.name === "SecurityError")
+          ? "Das Mikrofon ist blockiert. Erlaube den Mikrofonzugriff im Browser und versuch es erneut."
+          : "Das Mikrofon konnte nicht gestartet werden. Versuch es bitte nochmal.";
+
+      showVoiceFailure(message);
+    }
+  }
+
   async function startVoiceInput() {
-    if (loading || ["transcribing", "thinking", "speaking"].includes(voicePhase)) return;
+    if (loadingRef.current || ["transcribing", "thinking"].includes(voicePhase))
+      return;
 
     if (voicePhase === "listening") {
       stopVoiceRecording();
+      return;
+    }
+
+    if (voicePhase === "speaking") {
+      stopVoicePlayback();
+      voiceConversationActiveRef.current = true;
+      cancelVoiceRef.current = false;
+      await beginVoiceRecording();
       return;
     }
 
@@ -1712,100 +2150,23 @@ setVoiceSupported(hasGetUserMedia && hasMediaRecorder);
       return;
     }
 
+    voiceConversationActiveRef.current = true;
     cancelVoiceRef.current = false;
     voiceAbortControllerRef.current?.abort();
-    stopVoicePlayback();
-    setVoiceTranscript("");
-    setVoiceError("");
-    setInput("");
-    setVoicePhase("listening");
-    setVoiceEnergy(0.08);
+    voiceAbortControllerRef.current = null;
+    clearVoiceRestartTimeout();
 
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({
-        audio: {
-          echoCancellation: true,
-          noiseSuppression: true,
-          autoGainControl: true,
-          channelCount: 1,
-        },
-        video: false,
-      });
-
-      const format = getRecordingFormat();
-      const recorder = format.mimeType
-        ? new MediaRecorder(stream, { mimeType: format.mimeType })
-        : new MediaRecorder(stream);
-
-      mediaStreamRef.current = stream;
-      mediaRecorderRef.current = recorder;
-      audioChunksRef.current = [];
-      voiceStartedAtRef.current = performance.now();
-      voiceDetectedRef.current = false;
-      silenceStartedAtRef.current = null;
-
-      recorder.ondataavailable = (event) => {
-        if (event.data.size > 0) {
-          audioChunksRef.current.push(event.data);
-        }
-      };
-
-      recorder.onerror = () => {
-        showVoiceFailure("Das Mikrofon konnte die Aufnahme nicht sauber verarbeiten.");
-      };
-
-      recorder.onstop = () => {
-        clearVoiceStopTimeout();
-        stopMicrophoneTracks();
-        stopVoiceAnimation();
-        closeVoiceAudioContext();
-        mediaRecorderRef.current = null;
-
-        if (cancelVoiceRef.current) {
-          audioChunksRef.current = [];
-          return;
-        }
-
-        const chunks = audioChunksRef.current;
-        audioChunksRef.current = [];
-        const blob = new Blob(chunks, {
-          type: recorder.mimeType || format.mimeType || "audio/webm",
-        });
-
-        if (blob.size < 900) {
-          showVoiceFailure("Ich habe keine verwertbare Aufnahme erkannt. Versuch es nochmal.");
-          return;
-        }
-
-        void processVoiceRecording(blob, format.extension);
-      };
-
-      startMicrophoneVisualization(stream);
-      recorder.start(220);
-
-      voiceStopTimeoutRef.current = setTimeout(() => {
-        stopVoiceRecording();
-      }, 25_000);
-    } catch (error) {
-      stopMicrophoneTracks();
-      stopVoiceAnimation();
-      closeVoiceAudioContext();
-
-      const message =
-        error instanceof DOMException &&
-        (error.name === "NotAllowedError" || error.name === "SecurityError")
-          ? "Das Mikrofon ist blockiert. Erlaube den Mikrofonzugriff im Browser und versuch es erneut."
-          : "Das Mikrofon konnte nicht gestartet werden. Versuch es bitte nochmal.";
-
-      showVoiceFailure(message);
-    }
+    await beginVoiceRecording();
   }
 
   function cancelVoiceMode() {
-    if (!isVoiceActive && !mediaRecorderRef.current && !voiceAudioRef.current) return;
+    if (!isVoiceActive && !mediaRecorderRef.current && !voiceAudioRef.current)
+      return;
 
     cancelVoiceRef.current = true;
+    voiceConversationActiveRef.current = false;
     clearVoiceStopTimeout();
+    clearVoiceRestartTimeout();
     voiceAbortControllerRef.current?.abort();
     voiceAbortControllerRef.current = null;
 
@@ -1862,8 +2223,20 @@ setVoiceSupported(hasGetUserMedia && hasMediaRecorder);
     setInput("");
   }
 
-  const panelW = isBookingInterface ? 1040 : isTxbikesInterface || isFahrwerkBInterface ? 940 : isEmbedded ? 460 : 500;
-  const panelH = isBookingInterface ? 840 : isTxbikesInterface || isFahrwerkBInterface ? 820 : isEmbedded ? 660 : 720;
+  const panelW = isBookingInterface
+    ? 1040
+    : isTxbikesInterface || isFahrwerkBInterface
+      ? 940
+      : isEmbedded
+        ? 460
+        : 500;
+  const panelH = isBookingInterface
+    ? 840
+    : isTxbikesInterface || isFahrwerkBInterface
+      ? 820
+      : isEmbedded
+        ? 660
+        : 720;
   const panelRadius = isEnhancedInterface ? 38 : 28;
   const GLOBAL_LOGO_SRC = "/brand/btai-logo.png";
 
@@ -1886,12 +2259,18 @@ setVoiceSupported(hasGetUserMedia && hasMediaRecorder);
       : isWilliInterface
         ? WILLI_START_CARDS
         : isMmWartungInterface
-        ? MM_WARTUNG_START_CARDS
-        : BTDESIGNS_START_CARDS;
+          ? MM_WARTUNG_START_CARDS
+          : BTDESIGNS_START_CARDS;
 
-  const fahrwerkActiveStage = FAHRWERK_STAGES.find((stage) => stage.id === fahrwerkStage) || FAHRWERK_STAGES[0];
-  const fahrwerkCompletedDocuments = FAHRWERK_DOCUMENT_ITEMS.filter((item) => Boolean(fahrwerkChecklist[item.id])).length;
-  const fahrwerkDocumentProgress = Math.round((fahrwerkCompletedDocuments / FAHRWERK_DOCUMENT_ITEMS.length) * 100);
+  const fahrwerkActiveStage =
+    FAHRWERK_STAGES.find((stage) => stage.id === fahrwerkStage) ||
+    FAHRWERK_STAGES[0];
+  const fahrwerkCompletedDocuments = FAHRWERK_DOCUMENT_ITEMS.filter((item) =>
+    Boolean(fahrwerkChecklist[item.id]),
+  ).length;
+  const fahrwerkDocumentProgress = Math.round(
+    (fahrwerkCompletedDocuments / FAHRWERK_DOCUMENT_ITEMS.length) * 100,
+  );
 
   const voiceTitle =
     voicePhase === "listening"
@@ -1926,14 +2305,15 @@ setVoiceSupported(hasGetUserMedia && hasMediaRecorder);
   const voiceDescription =
     voicePhase === "listening"
       ? isFahrwerkBInterface
-        ? "Sag zum Beispiel: Ich brauche in den Sommerferien einen Ferienkurs."
-        : "Sprich deine Anfrage ganz normal aus. Eine kurze Pause beendet die Aufnahme automatisch."
+        ? "Sprich einfach los. Nach einer kurzen Pause antworte ich automatisch."
+        : "Sprich einfach los. Nach einer kurzen Pause wird deine Anfrage automatisch gesendet."
       : voicePhase === "transcribing"
         ? "Deine Aufnahme wird gerade sicher in Text umgewandelt."
         : voicePhase === "thinking"
           ? voiceTranscript || "Deine Anfrage wird verarbeitet."
           : voicePhase === "speaking"
-            ? voiceTranscript || "Die Antwort wird jetzt vorgelesen."
+            ? voiceTranscript ||
+              "Die Antwort wird jetzt vorgelesen. Danach höre ich automatisch wieder zu."
             : voicePhase === "ready"
               ? voiceError || "Tippe auf die Kugel, um die Antwort zu hören."
               : voicePhase === "error"
@@ -2662,7 +3042,15 @@ setVoiceSupported(hasGetUserMedia && hasMediaRecorder);
             {!open && showBadge && !isEmbedded && (
               <div className={`bt-badge ${!showBadge ? "bt-badge-hide" : ""}`}>
                 <span className="bt-badge-dot" />
-                <span>{isFahrwerkBInterface ? "Führerschein starten?" : isTxbikesInterface ? "Fahrrad-Frage?" : isWilliInterface ? "Fragen?" : `Fragen? Chatte mit ${displayAssistantName}`}</span>
+                <span>
+                  {isFahrwerkBInterface
+                    ? "Führerschein starten?"
+                    : isTxbikesInterface
+                      ? "Fahrrad-Frage?"
+                      : isWilliInterface
+                        ? "Fragen?"
+                        : `Fragen? Chatte mit ${displayAssistantName}`}
+                </span>
               </div>
             )}
 
@@ -2677,9 +3065,13 @@ setVoiceSupported(hasGetUserMedia && hasMediaRecorder);
                 right: launcherOffset,
                 bottom: panelOffsetBottom,
                 width: panelW,
-                maxWidth: isEnhancedInterface ? "calc(100vw - 28px)" : "calc(100vw - 28px)",
+                maxWidth: isEnhancedInterface
+                  ? "calc(100vw - 28px)"
+                  : "calc(100vw - 28px)",
                 height: panelH,
-                maxHeight: isEnhancedInterface ? "calc(100vh - 96px)" : "calc(100vh - 122px)",
+                maxHeight: isEnhancedInterface
+                  ? "calc(100vh - 96px)"
+                  : "calc(100vh - 122px)",
                 border: "1px solid rgba(255,255,255,0.46)",
                 background: `
                   radial-gradient(980px 520px at 18% -10%, ${widgetAccent}26 0%, transparent 62%),
@@ -2719,7 +3111,7 @@ setVoiceSupported(hasGetUserMedia && hasMediaRecorder);
                   pointerEvents: "none",
                   background:
                     "linear-gradient(120deg, rgba(255,255,255,0.16) 0%, rgba(255,255,255,0.04) 34%, rgba(255,255,255,0.08) 70%, rgba(255,255,255,0.02) 100%)",
-                  opacity: 0.20,
+                  opacity: 0.2,
                   mixBlendMode: "screen",
                 }}
               />
@@ -2732,7 +3124,8 @@ setVoiceSupported(hasGetUserMedia && hasMediaRecorder);
                   left: 0,
                   right: 0,
                   height: 3,
-                  background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.78), transparent)",
+                  background:
+                    "linear-gradient(90deg, transparent, rgba(255,255,255,0.78), transparent)",
                   opacity: 0.9,
                   pointerEvents: "none",
                 }}
@@ -2763,7 +3156,9 @@ setVoiceSupported(hasGetUserMedia && hasMediaRecorder);
               >
                 <div
                   style={{
-                    padding: isEnhancedInterface ? "24px 28px 22px" : "16px 14px 14px",
+                    padding: isEnhancedInterface
+                      ? "24px 28px 22px"
+                      : "16px 14px 14px",
                     borderBottom: "1px solid rgba(22,49,38,0.12)",
                     display: "flex",
                     alignItems: "center",
@@ -2778,7 +3173,13 @@ setVoiceSupported(hasGetUserMedia && hasMediaRecorder);
                     boxShadow: "0 1px 0 rgba(255,255,255,0.22) inset",
                   }}
                 >
-                  <div style={{ display: "flex", alignItems: "center", gap: isEnhancedInterface ? 12 : 10 }}>
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: isEnhancedInterface ? 12 : 10,
+                    }}
+                  >
                     <div
                       style={{
                         width: 12,
@@ -2786,7 +3187,9 @@ setVoiceSupported(hasGetUserMedia && hasMediaRecorder);
                         borderRadius: 999,
                         background: loading ? "#f5c542" : widgetAccent,
                         boxShadow: `0 0 0 7px ${
-                          loading ? "rgba(245,197,66,0.14)" : `rgba(${accentRgb}, 0.12)`
+                          loading
+                            ? "rgba(245,197,66,0.14)"
+                            : `rgba(${accentRgb}, 0.12)`
                         }`,
                         flex: "0 0 auto",
                       }}
@@ -2803,13 +3206,35 @@ setVoiceSupported(hasGetUserMedia && hasMediaRecorder);
                       >
                         {displayBrandName} – {displayAssistantName}
                       </div>
-                      <div style={{ fontSize: isEnhancedInterface ? 14 : 12.5, opacity: 0.9, marginTop: 3, color: textSecondary }}>
-                        {voicePhase === "listening" ? "Hört zu…" : voicePhase === "transcribing" ? "Versteht dich…" : voicePhase === "thinking" ? "Denkt nach…" : voicePhase === "speaking" || voicePhase === "ready" ? "Antwortet…" : loading ? "Tippt…" : isFahrwerkBInterface ? "In 1 Minute zum passenden Einstieg" : "Online verfügbar"}
+                      <div
+                        style={{
+                          fontSize: isEnhancedInterface ? 14 : 12.5,
+                          opacity: 0.9,
+                          marginTop: 3,
+                          color: textSecondary,
+                        }}
+                      >
+                        {voicePhase === "listening"
+                          ? "Hört zu…"
+                          : voicePhase === "transcribing"
+                            ? "Versteht dich…"
+                            : voicePhase === "thinking"
+                              ? "Denkt nach…"
+                              : voicePhase === "speaking" ||
+                                  voicePhase === "ready"
+                                ? "Antwortet…"
+                                : loading
+                                  ? "Tippt…"
+                                  : isFahrwerkBInterface
+                                    ? "In 1 Minute zum passenden Einstieg"
+                                    : "Online verfügbar"}
                       </div>
                     </div>
                   </div>
 
-                  <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+                  <div
+                    style={{ display: "flex", gap: 8, alignItems: "center" }}
+                  >
                     <div
                       style={{
                         display: "flex",
@@ -2854,7 +3279,9 @@ setVoiceSupported(hasGetUserMedia && hasMediaRecorder);
                         rel="noreferrer"
                         style={{
                           fontSize: isEnhancedInterface ? 12.5 : 11.5,
-                          padding: isEnhancedInterface ? "11px 14px" : "8px 10px",
+                          padding: isEnhancedInterface
+                            ? "11px 14px"
+                            : "8px 10px",
                           borderRadius: isEnhancedInterface ? 14 : 11,
                           border: "1px solid rgba(255,255,255,0.24)",
                           background: `linear-gradient(180deg, ${widgetAccent}D6, ${widgetAccent}92)`,
@@ -2918,7 +3345,9 @@ setVoiceSupported(hasGetUserMedia && hasMediaRecorder);
                     >
                       <div
                         style={{
-                          padding: isEnhancedInterface ? "22px 22px 10px" : "14px 14px 4px",
+                          padding: isEnhancedInterface
+                            ? "22px 22px 10px"
+                            : "14px 14px 4px",
                           color: textPrimary,
                         }}
                       >
@@ -2930,7 +3359,9 @@ setVoiceSupported(hasGetUserMedia && hasMediaRecorder);
                             marginBottom: 6,
                           }}
                         >
-                          {isFahrwerkBInterface ? "Dein Führerschein-Cockpit" : "Was möchtest du machen?"}
+                          {isFahrwerkBInterface
+                            ? "Dein Führerschein-Cockpit"
+                            : "Was möchtest du machen?"}
                         </div>
                         <div
                           style={{
@@ -2961,7 +3392,12 @@ setVoiceSupported(hasGetUserMedia && hasMediaRecorder);
                               marginTop: 18,
                             }}
                           >
-                            {["1 Orientierung", "2 Unterlagen", "3 Theorie/Praxis", "4 Anfrage"].map((step) => (
+                            {[
+                              "1 Orientierung",
+                              "2 Unterlagen",
+                              "3 Theorie/Praxis",
+                              "4 Anfrage",
+                            ].map((step) => (
                               <div
                                 key={step}
                                 style={{
@@ -3014,7 +3450,10 @@ setVoiceSupported(hasGetUserMedia && hasMediaRecorder);
                               }
 
                               if (card.action === "fahrwerkSignup") {
-                                openFahrwerkSignupForm(card.prefillLicenseClass, card.prefillStartWish);
+                                openFahrwerkSignupForm(
+                                  card.prefillLicenseClass,
+                                  card.prefillStartWish,
+                                );
                                 return;
                               }
 
@@ -3023,7 +3462,10 @@ setVoiceSupported(hasGetUserMedia && hasMediaRecorder);
                                 return;
                               }
 
-                              if (card.action === "fahrwerkPanel" && card.fahrwerkPanel) {
+                              if (
+                                card.action === "fahrwerkPanel" &&
+                                card.fahrwerkPanel
+                              ) {
                                 openFahrwerkPanel(card.fahrwerkPanel);
                                 return;
                               }
@@ -3083,7 +3525,9 @@ setVoiceSupported(hasGetUserMedia && hasMediaRecorder);
                   )}
 
                   {isFahrwerkBInterface &&
-                    (fahrwerkPanel !== "dashboard" || fahrwerkCompletedDocuments > 0 || fahrwerkStage !== "new") && (
+                    (fahrwerkPanel !== "dashboard" ||
+                      fahrwerkCompletedDocuments > 0 ||
+                      fahrwerkStage !== "new") && (
                       <div
                         ref={fahrwerkPanelRef}
                         style={{
@@ -3103,13 +3547,36 @@ setVoiceSupported(hasGetUserMedia && hasMediaRecorder);
                           color: textPrimary,
                         }}
                       >
-                        <div style={{ display: "flex", justifyContent: "space-between", gap: 14, alignItems: "flex-start", flexWrap: "wrap" }}>
+                        <div
+                          style={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                            gap: 14,
+                            alignItems: "flex-start",
+                            flexWrap: "wrap",
+                          }}
+                        >
                           <div>
-                            <div style={{ fontSize: isEnhancedInterface ? 24 : 18, fontWeight: 900, marginBottom: 4 }}>
+                            <div
+                              style={{
+                                fontSize: isEnhancedInterface ? 24 : 18,
+                                fontWeight: 900,
+                                marginBottom: 4,
+                              }}
+                            >
                               Führerschein-Begleiter
                             </div>
-                            <div style={{ fontSize: isEnhancedInterface ? 14.5 : 13, color: textSecondary, lineHeight: 1.45 }}>
-                              Aktueller Stand: <strong>{fahrwerkActiveStage.label}</strong> · Unterlagen: {fahrwerkCompletedDocuments}/{FAHRWERK_DOCUMENT_ITEMS.length} erledigt
+                            <div
+                              style={{
+                                fontSize: isEnhancedInterface ? 14.5 : 13,
+                                color: textSecondary,
+                                lineHeight: 1.45,
+                              }}
+                            >
+                              Aktueller Stand:{" "}
+                              <strong>{fahrwerkActiveStage.label}</strong> ·
+                              Unterlagen: {fahrwerkCompletedDocuments}/
+                              {FAHRWERK_DOCUMENT_ITEMS.length} erledigt
                             </div>
                           </div>
 
@@ -3152,7 +3619,9 @@ setVoiceSupported(hasGetUserMedia && hasMediaRecorder);
                           />
                         </div>
 
-                        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                        <div
+                          style={{ display: "flex", gap: 8, flexWrap: "wrap" }}
+                        >
                           {[
                             ["start", "Starten"],
                             ["documents", "Unterlagen"],
@@ -3165,10 +3634,12 @@ setVoiceSupported(hasGetUserMedia && hasMediaRecorder);
                             <button
                               key={panel}
                               type="button"
-                              onClick={() => openFahrwerkPanel(panel as FahrwerkPanel)}
+                              onClick={() =>
+                                openFahrwerkPanel(panel as FahrwerkPanel)
+                              }
                               style={{
                                 borderRadius: 999,
-                                border: `1px solid rgba(${accentRgb}, ${fahrwerkPanel === panel ? 0.40 : 0.16})`,
+                                border: `1px solid rgba(${accentRgb}, ${fahrwerkPanel === panel ? 0.4 : 0.16})`,
                                 background:
                                   fahrwerkPanel === panel
                                     ? `linear-gradient(180deg, rgba(${accentRgb}, 0.22), rgba(${accentRgb}, 0.10))`
@@ -3186,7 +3657,13 @@ setVoiceSupported(hasGetUserMedia && hasMediaRecorder);
                         </div>
 
                         {fahrwerkPanel === "start" && (
-                          <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                          <div
+                            style={{
+                              display: "flex",
+                              flexDirection: "column",
+                              gap: 12,
+                            }}
+                          >
                             <div
                               style={{
                                 borderRadius: 22,
@@ -3201,11 +3678,27 @@ setVoiceSupported(hasGetUserMedia && hasMediaRecorder);
                               }}
                             >
                               <div style={{ flex: "1 1 360px" }}>
-                                <div style={{ fontSize: 20, fontWeight: 950, marginBottom: 5 }}>
+                                <div
+                                  style={{
+                                    fontSize: 20,
+                                    fontWeight: 950,
+                                    marginBottom: 5,
+                                  }}
+                                >
                                   Offizielle Online-Anmeldung
                                 </div>
-                                <div style={{ fontSize: 14, color: textSecondary, lineHeight: 1.5 }}>
-                                  Die Anmeldung läuft direkt über Fahrschule.live. Dort werden deine Daten erfasst; sofern die Mailvorlage eingerichtet ist, wird anschließend automatisch eine Bestätigung versendet.
+                                <div
+                                  style={{
+                                    fontSize: 14,
+                                    color: textSecondary,
+                                    lineHeight: 1.5,
+                                  }}
+                                >
+                                  Die Anmeldung läuft direkt über
+                                  Fahrschule.live. Dort werden deine Daten
+                                  erfasst; sofern die Mailvorlage eingerichtet
+                                  ist, wird anschließend automatisch eine
+                                  Bestätigung versendet.
                                 </div>
                               </div>
                               <button
@@ -3228,55 +3721,143 @@ setVoiceSupported(hasGetUserMedia && hasMediaRecorder);
                               </button>
                             </div>
 
-                            <div style={{ fontSize: 13.5, color: textSecondary, lineHeight: 1.45 }}>
-                              Noch unsicher? Wähle zuerst eine Führerscheinklasse aus und bereite eine Beratungsanfrage vor.
+                            <div
+                              style={{
+                                fontSize: 13.5,
+                                color: textSecondary,
+                                lineHeight: 1.45,
+                              }}
+                            >
+                              Noch unsicher? Wähle zuerst eine
+                              Führerscheinklasse aus und bereite eine
+                              Beratungsanfrage vor.
                             </div>
 
-                            <div style={{ display: "grid", gridTemplateColumns: isEnhancedInterface ? "repeat(2, minmax(0, 1fr))" : "1fr", gap: 12 }}>
-                            {[
-                              ["Klasse B", "Auto-Führerschein starten", "Schnell starten"],
-                              ["B197", "Schalten lernen, später flexibel fahren", "Schnell starten"],
-                              ["BF17", "Begleitetes Fahren ab 17 vorbereiten", "Schnell starten"],
-                              ["BE Anhänger", "Anhänger-Führerschein anfragen", "Erstmal beraten lassen"],
-                              ["Ich bin noch unsicher", "Interface bereitet eine Beratungsanfrage vor", "Erstmal beraten lassen"],
-                            ].map(([licenseClass, description, wish]) => (
-                              <button
-                                key={licenseClass}
-                                type="button"
-                                onClick={() => openFahrwerkSignupForm(licenseClass, wish)}
-                                className="bt-start-card"
-                                style={{ minHeight: 0 }}
-                              >
-                                <div style={{ fontSize: 16, fontWeight: 900, marginBottom: 5 }}>{licenseClass}</div>
-                                <div style={{ fontSize: 13.5, color: textSecondary, lineHeight: 1.4 }}>{description}</div>
-                              </button>
-                            ))}
+                            <div
+                              style={{
+                                display: "grid",
+                                gridTemplateColumns: isEnhancedInterface
+                                  ? "repeat(2, minmax(0, 1fr))"
+                                  : "1fr",
+                                gap: 12,
+                              }}
+                            >
+                              {[
+                                [
+                                  "Klasse B",
+                                  "Auto-Führerschein starten",
+                                  "Schnell starten",
+                                ],
+                                [
+                                  "B197",
+                                  "Schalten lernen, später flexibel fahren",
+                                  "Schnell starten",
+                                ],
+                                [
+                                  "BF17",
+                                  "Begleitetes Fahren ab 17 vorbereiten",
+                                  "Schnell starten",
+                                ],
+                                [
+                                  "BE Anhänger",
+                                  "Anhänger-Führerschein anfragen",
+                                  "Erstmal beraten lassen",
+                                ],
+                                [
+                                  "Ich bin noch unsicher",
+                                  "Interface bereitet eine Beratungsanfrage vor",
+                                  "Erstmal beraten lassen",
+                                ],
+                              ].map(([licenseClass, description, wish]) => (
+                                <button
+                                  key={licenseClass}
+                                  type="button"
+                                  onClick={() =>
+                                    openFahrwerkSignupForm(licenseClass, wish)
+                                  }
+                                  className="bt-start-card"
+                                  style={{ minHeight: 0 }}
+                                >
+                                  <div
+                                    style={{
+                                      fontSize: 16,
+                                      fontWeight: 900,
+                                      marginBottom: 5,
+                                    }}
+                                  >
+                                    {licenseClass}
+                                  </div>
+                                  <div
+                                    style={{
+                                      fontSize: 13.5,
+                                      color: textSecondary,
+                                      lineHeight: 1.4,
+                                    }}
+                                  >
+                                    {description}
+                                  </div>
+                                </button>
+                              ))}
                             </div>
                           </div>
                         )}
 
                         {fahrwerkPanel === "documents" && (
-                          <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-                            <div style={{ fontSize: 15, color: textSecondary, lineHeight: 1.45 }}>
-                              Hake ab, was schon erledigt ist. Der Stand wird nur lokal im Browser gespeichert, bis wir später eine echte Account-/Fahrschule.live-Anbindung bauen.
+                          <div
+                            style={{
+                              display: "flex",
+                              flexDirection: "column",
+                              gap: 12,
+                            }}
+                          >
+                            <div
+                              style={{
+                                fontSize: 15,
+                                color: textSecondary,
+                                lineHeight: 1.45,
+                              }}
+                            >
+                              Hake ab, was schon erledigt ist. Der Stand wird
+                              nur lokal im Browser gespeichert, bis wir später
+                              eine echte Account-/Fahrschule.live-Anbindung
+                              bauen.
                             </div>
-                            <div style={{ display: "grid", gridTemplateColumns: isEnhancedInterface ? "repeat(2, minmax(0, 1fr))" : "1fr", gap: 10 }}>
+                            <div
+                              style={{
+                                display: "grid",
+                                gridTemplateColumns: isEnhancedInterface
+                                  ? "repeat(2, minmax(0, 1fr))"
+                                  : "1fr",
+                                gap: 10,
+                              }}
+                            >
                               {FAHRWERK_DOCUMENT_ITEMS.map((item) => (
                                 <button
                                   key={item.id}
                                   type="button"
-                                  onClick={() => toggleFahrwerkChecklistItem(item.id)}
+                                  onClick={() =>
+                                    toggleFahrwerkChecklistItem(item.id)
+                                  }
                                   style={{
                                     textAlign: "left",
                                     borderRadius: 18,
                                     border: `1px solid rgba(${accentRgb}, ${fahrwerkChecklist[item.id] ? 0.34 : 0.14})`,
-                                    background: fahrwerkChecklist[item.id] ? `rgba(${accentRgb}, 0.12)` : "rgba(255,255,255,0.54)",
+                                    background: fahrwerkChecklist[item.id]
+                                      ? `rgba(${accentRgb}, 0.12)`
+                                      : "rgba(255,255,255,0.54)",
                                     padding: 14,
                                     cursor: "pointer",
                                     color: textPrimary,
                                   }}
                                 >
-                                  <div style={{ display: "flex", gap: 10, alignItems: "center", marginBottom: 6 }}>
+                                  <div
+                                    style={{
+                                      display: "flex",
+                                      gap: 10,
+                                      alignItems: "center",
+                                      marginBottom: 6,
+                                    }}
+                                  >
                                     <span
                                       style={{
                                         width: 24,
@@ -3284,8 +3865,12 @@ setVoiceSupported(hasGetUserMedia && hasMediaRecorder);
                                         borderRadius: 999,
                                         display: "grid",
                                         placeItems: "center",
-                                        background: fahrwerkChecklist[item.id] ? widgetAccent : "rgba(17,24,39,0.08)",
-                                        color: fahrwerkChecklist[item.id] ? "#ffffff" : textSecondary,
+                                        background: fahrwerkChecklist[item.id]
+                                          ? widgetAccent
+                                          : "rgba(17,24,39,0.08)",
+                                        color: fahrwerkChecklist[item.id]
+                                          ? "#ffffff"
+                                          : textSecondary,
                                         fontWeight: 900,
                                       }}
                                     >
@@ -3293,13 +3878,25 @@ setVoiceSupported(hasGetUserMedia && hasMediaRecorder);
                                     </span>
                                     <strong>{item.label}</strong>
                                   </div>
-                                  <div style={{ fontSize: 12.5, color: textSecondary, lineHeight: 1.4 }}>{item.hint}</div>
+                                  <div
+                                    style={{
+                                      fontSize: 12.5,
+                                      color: textSecondary,
+                                      lineHeight: 1.4,
+                                    }}
+                                  >
+                                    {item.hint}
+                                  </div>
                                 </button>
                               ))}
                             </div>
                             <button
                               type="button"
-                              onClick={() => sendFahrwerkGuidedMessage("Welche Unterlagen brauche ich für meinen Führerschein bei Fahrwerk B?")}
+                              onClick={() =>
+                                sendFahrwerkGuidedMessage(
+                                  "Welche Unterlagen brauche ich für meinen Führerschein bei Fahrwerk B?",
+                                )
+                              }
                               style={{
                                 alignSelf: "flex-start",
                                 height: 46,
@@ -3318,8 +3915,22 @@ setVoiceSupported(hasGetUserMedia && hasMediaRecorder);
                         )}
 
                         {fahrwerkPanel === "student" && (
-                          <div style={{ display: "grid", gridTemplateColumns: isEnhancedInterface ? "1fr 1.15fr" : "1fr", gap: 14 }}>
-                            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                          <div
+                            style={{
+                              display: "grid",
+                              gridTemplateColumns: isEnhancedInterface
+                                ? "1fr 1.15fr"
+                                : "1fr",
+                              gap: 14,
+                            }}
+                          >
+                            <div
+                              style={{
+                                display: "flex",
+                                flexDirection: "column",
+                                gap: 8,
+                              }}
+                            >
                               {FAHRWERK_STAGES.map((stage) => (
                                 <button
                                   key={stage.id}
@@ -3329,7 +3940,10 @@ setVoiceSupported(hasGetUserMedia && hasMediaRecorder);
                                     textAlign: "left",
                                     borderRadius: 16,
                                     border: `1px solid rgba(${accentRgb}, ${fahrwerkStage === stage.id ? 0.38 : 0.14})`,
-                                    background: fahrwerkStage === stage.id ? `rgba(${accentRgb}, 0.14)` : "rgba(255,255,255,0.48)",
+                                    background:
+                                      fahrwerkStage === stage.id
+                                        ? `rgba(${accentRgb}, 0.14)`
+                                        : "rgba(255,255,255,0.48)",
                                     padding: "12px 14px",
                                     cursor: "pointer",
                                     color: textPrimary,
@@ -3351,21 +3965,66 @@ setVoiceSupported(hasGetUserMedia && hasMediaRecorder);
                                 gap: 10,
                               }}
                             >
-                              <div style={{ fontSize: 13, color: textSecondary, fontWeight: 850 }}>Nächster sinnvoller Schritt</div>
-                              <div style={{ fontSize: 20, fontWeight: 950 }}>{fahrwerkActiveStage.next}</div>
-                              <div style={{ fontSize: 14, color: textSecondary, lineHeight: 1.5 }}>{fahrwerkActiveStage.detail}</div>
-                              <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginTop: 4 }}>
+                              <div
+                                style={{
+                                  fontSize: 13,
+                                  color: textSecondary,
+                                  fontWeight: 850,
+                                }}
+                              >
+                                Nächster sinnvoller Schritt
+                              </div>
+                              <div style={{ fontSize: 20, fontWeight: 950 }}>
+                                {fahrwerkActiveStage.next}
+                              </div>
+                              <div
+                                style={{
+                                  fontSize: 14,
+                                  color: textSecondary,
+                                  lineHeight: 1.5,
+                                }}
+                              >
+                                {fahrwerkActiveStage.detail}
+                              </div>
+                              <div
+                                style={{
+                                  display: "flex",
+                                  gap: 8,
+                                  flexWrap: "wrap",
+                                  marginTop: 4,
+                                }}
+                              >
                                 <button
                                   type="button"
                                   onClick={() => openFahrwerkPanel("documents")}
-                                  style={{ borderRadius: 14, border: "1px solid rgba(22,49,38,0.10)", background: "rgba(255,255,255,0.68)", padding: "10px 12px", cursor: "pointer", fontWeight: 850 }}
+                                  style={{
+                                    borderRadius: 14,
+                                    border: "1px solid rgba(22,49,38,0.10)",
+                                    background: "rgba(255,255,255,0.68)",
+                                    padding: "10px 12px",
+                                    cursor: "pointer",
+                                    fontWeight: 850,
+                                  }}
                                 >
                                   Unterlagen prüfen
                                 </button>
                                 <button
                                   type="button"
-                                  onClick={() => openFahrwerkSignupForm("Ich bin schon Fahrschüler", "Rückruf von Fahrwerk B")}
-                                  style={{ borderRadius: 14, border: "1px solid rgba(255,255,255,0.22)", background: `linear-gradient(180deg, ${widgetAccent}F0, ${widgetAccent}A8)`, color: "#ffffff", padding: "10px 12px", cursor: "pointer", fontWeight: 900 }}
+                                  onClick={() =>
+                                    openFahrwerkSignupForm(
+                                      "Ich bin schon Fahrschüler",
+                                      "Rückruf von Fahrwerk B",
+                                    )
+                                  }
+                                  style={{
+                                    borderRadius: 14,
+                                    border: "1px solid rgba(255,255,255,0.22)",
+                                    background: `linear-gradient(180deg, ${widgetAccent}F0, ${widgetAccent}A8)`,
+                                    color: "#ffffff",
+                                    padding: "10px 12px",
+                                    cursor: "pointer",
+                                    fontWeight: 900,
+                                  }}
                                 >
                                   Frage vorbereiten
                                 </button>
@@ -3375,45 +4034,197 @@ setVoiceSupported(hasGetUserMedia && hasMediaRecorder);
                         )}
 
                         {fahrwerkPanel === "theory" && (
-                          <div style={{ display: "grid", gridTemplateColumns: isEnhancedInterface ? "repeat(3, minmax(0, 1fr))" : "1fr", gap: 12 }}>
+                          <div
+                            style={{
+                              display: "grid",
+                              gridTemplateColumns: isEnhancedInterface
+                                ? "repeat(3, minmax(0, 1fr))"
+                                : "1fr",
+                              gap: 12,
+                            }}
+                          >
                             {[
-                              ["Theorie-Einstieg", "Aktuelle Termine laufen später sauber über Fahrschule.live.", "Ich möchte den passenden Theorie-Einstieg bei Fahrwerk B finden."],
-                              ["Theorieprüfung", "Ablauf, Vorbereitung und typische Fehler kurz erklären.", "Wie bereite ich mich auf die Theorieprüfung vor?"],
-                              ["Durchgefallen", "Ruhig einordnen und den nächsten Versuch planen.", "Ich bin bei der Theorieprüfung durchgefallen. Was ist jetzt sinnvoll?"],
+                              [
+                                "Theorie-Einstieg",
+                                "Aktuelle Termine laufen später sauber über Fahrschule.live.",
+                                "Ich möchte den passenden Theorie-Einstieg bei Fahrwerk B finden.",
+                              ],
+                              [
+                                "Theorieprüfung",
+                                "Ablauf, Vorbereitung und typische Fehler kurz erklären.",
+                                "Wie bereite ich mich auf die Theorieprüfung vor?",
+                              ],
+                              [
+                                "Durchgefallen",
+                                "Ruhig einordnen und den nächsten Versuch planen.",
+                                "Ich bin bei der Theorieprüfung durchgefallen. Was ist jetzt sinnvoll?",
+                              ],
                             ].map(([title, description, message]) => (
-                              <button key={title} type="button" className="bt-start-card" onClick={() => sendFahrwerkGuidedMessage(message)} style={{ minHeight: 0 }}>
-                                <div style={{ fontSize: 16, fontWeight: 900, marginBottom: 6 }}>{title}</div>
-                                <div style={{ fontSize: 13.5, color: textSecondary, lineHeight: 1.4 }}>{description}</div>
+                              <button
+                                key={title}
+                                type="button"
+                                className="bt-start-card"
+                                onClick={() =>
+                                  sendFahrwerkGuidedMessage(message)
+                                }
+                                style={{ minHeight: 0 }}
+                              >
+                                <div
+                                  style={{
+                                    fontSize: 16,
+                                    fontWeight: 900,
+                                    marginBottom: 6,
+                                  }}
+                                >
+                                  {title}
+                                </div>
+                                <div
+                                  style={{
+                                    fontSize: 13.5,
+                                    color: textSecondary,
+                                    lineHeight: 1.4,
+                                  }}
+                                >
+                                  {description}
+                                </div>
                               </button>
                             ))}
                           </div>
                         )}
 
                         {fahrwerkPanel === "practice" && (
-                          <div style={{ display: "grid", gridTemplateColumns: isEnhancedInterface ? "repeat(2, minmax(0, 1fr))" : "1fr", gap: 12 }}>
+                          <div
+                            style={{
+                              display: "grid",
+                              gridTemplateColumns: isEnhancedInterface
+                                ? "repeat(2, minmax(0, 1fr))"
+                                : "1fr",
+                              gap: 12,
+                            }}
+                          >
                             {[
-                              ["Erste Fahrstunde", "Was dich erwartet und wie du dich vorbereitest.", "Was erwartet mich bei der ersten Fahrstunde?"],
-                              ["Sonderfahrten", "Autobahn, Nachtfahrt und Überland verständlich erklärt.", "Was sind Sonderfahrten und wann kommen sie dran?"],
-                              ["Prüfungsangst", "Kurze, praktische Tipps statt langer Theorie.", "Ich habe Angst vor der praktischen Prüfung. Was hilft?"],
-                              ["Fahrstunde klären", "Anfrage an Fahrwerk B vorbereiten.", "Ich habe eine Frage zu meinen Fahrstunden bei Fahrwerk B."],
+                              [
+                                "Erste Fahrstunde",
+                                "Was dich erwartet und wie du dich vorbereitest.",
+                                "Was erwartet mich bei der ersten Fahrstunde?",
+                              ],
+                              [
+                                "Sonderfahrten",
+                                "Autobahn, Nachtfahrt und Überland verständlich erklärt.",
+                                "Was sind Sonderfahrten und wann kommen sie dran?",
+                              ],
+                              [
+                                "Prüfungsangst",
+                                "Kurze, praktische Tipps statt langer Theorie.",
+                                "Ich habe Angst vor der praktischen Prüfung. Was hilft?",
+                              ],
+                              [
+                                "Fahrstunde klären",
+                                "Anfrage an Fahrwerk B vorbereiten.",
+                                "Ich habe eine Frage zu meinen Fahrstunden bei Fahrwerk B.",
+                              ],
                             ].map(([title, description, message]) => (
-                              <button key={title} type="button" className="bt-start-card" onClick={() => sendFahrwerkGuidedMessage(message)} style={{ minHeight: 0 }}>
-                                <div style={{ fontSize: 16, fontWeight: 900, marginBottom: 6 }}>{title}</div>
-                                <div style={{ fontSize: 13.5, color: textSecondary, lineHeight: 1.4 }}>{description}</div>
+                              <button
+                                key={title}
+                                type="button"
+                                className="bt-start-card"
+                                onClick={() =>
+                                  sendFahrwerkGuidedMessage(message)
+                                }
+                                style={{ minHeight: 0 }}
+                              >
+                                <div
+                                  style={{
+                                    fontSize: 16,
+                                    fontWeight: 900,
+                                    marginBottom: 6,
+                                  }}
+                                >
+                                  {title}
+                                </div>
+                                <div
+                                  style={{
+                                    fontSize: 13.5,
+                                    color: textSecondary,
+                                    lineHeight: 1.4,
+                                  }}
+                                >
+                                  {description}
+                                </div>
                               </button>
                             ))}
                           </div>
                         )}
 
                         {fahrwerkPanel === "exam" && (
-                          <div style={{ display: "grid", gridTemplateColumns: isEnhancedInterface ? "repeat(2, minmax(0, 1fr))" : "1fr", gap: 12 }}>
-                            <button type="button" className="bt-start-card" onClick={() => sendFahrwerkGuidedMessage("Gib mir eine kurze Checkliste für die Theorieprüfung.")} style={{ minHeight: 0 }}>
-                              <div style={{ fontSize: 16, fontWeight: 900, marginBottom: 6 }}>Theorieprüfung-Check</div>
-                              <div style={{ fontSize: 13.5, color: textSecondary, lineHeight: 1.4 }}>Was du vorher prüfen solltest und wie du ruhig bleibst.</div>
+                          <div
+                            style={{
+                              display: "grid",
+                              gridTemplateColumns: isEnhancedInterface
+                                ? "repeat(2, minmax(0, 1fr))"
+                                : "1fr",
+                              gap: 12,
+                            }}
+                          >
+                            <button
+                              type="button"
+                              className="bt-start-card"
+                              onClick={() =>
+                                sendFahrwerkGuidedMessage(
+                                  "Gib mir eine kurze Checkliste für die Theorieprüfung.",
+                                )
+                              }
+                              style={{ minHeight: 0 }}
+                            >
+                              <div
+                                style={{
+                                  fontSize: 16,
+                                  fontWeight: 900,
+                                  marginBottom: 6,
+                                }}
+                              >
+                                Theorieprüfung-Check
+                              </div>
+                              <div
+                                style={{
+                                  fontSize: 13.5,
+                                  color: textSecondary,
+                                  lineHeight: 1.4,
+                                }}
+                              >
+                                Was du vorher prüfen solltest und wie du ruhig
+                                bleibst.
+                              </div>
                             </button>
-                            <button type="button" className="bt-start-card" onClick={() => sendFahrwerkGuidedMessage("Gib mir eine kurze Checkliste für die praktische Prüfung.")} style={{ minHeight: 0 }}>
-                              <div style={{ fontSize: 16, fontWeight: 900, marginBottom: 6 }}>Praktische Prüfung-Check</div>
-                              <div style={{ fontSize: 13.5, color: textSecondary, lineHeight: 1.4 }}>Ausweis, Ruhe, typische Prüfungsfehler und Ablauf.</div>
+                            <button
+                              type="button"
+                              className="bt-start-card"
+                              onClick={() =>
+                                sendFahrwerkGuidedMessage(
+                                  "Gib mir eine kurze Checkliste für die praktische Prüfung.",
+                                )
+                              }
+                              style={{ minHeight: 0 }}
+                            >
+                              <div
+                                style={{
+                                  fontSize: 16,
+                                  fontWeight: 900,
+                                  marginBottom: 6,
+                                }}
+                              >
+                                Praktische Prüfung-Check
+                              </div>
+                              <div
+                                style={{
+                                  fontSize: 13.5,
+                                  color: textSecondary,
+                                  lineHeight: 1.4,
+                                }}
+                              >
+                                Ausweis, Ruhe, typische Prüfungsfehler und
+                                Ablauf.
+                              </div>
                             </button>
                           </div>
                         )}
@@ -3430,29 +4241,79 @@ setVoiceSupported(hasGetUserMedia && hasMediaRecorder);
                               gap: 10,
                             }}
                           >
-                            <div style={{ fontSize: 20, fontWeight: 950 }}>Anmeldung und persönliche Hilfe</div>
-                            <div style={{ fontSize: 14, color: textSecondary, lineHeight: 1.5 }}>
-                              Die offizielle Online-Anmeldung über Fahrschule.live ist bereits angebunden. Falls du vorher Hilfe brauchst, kann das Interface zusätzlich eine Rückruf- oder Beratungsanfrage vorbereiten.
+                            <div style={{ fontSize: 20, fontWeight: 950 }}>
+                              Anmeldung und persönliche Hilfe
                             </div>
-                            <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+                            <div
+                              style={{
+                                fontSize: 14,
+                                color: textSecondary,
+                                lineHeight: 1.5,
+                              }}
+                            >
+                              Die offizielle Online-Anmeldung über
+                              Fahrschule.live ist bereits angebunden. Falls du
+                              vorher Hilfe brauchst, kann das Interface
+                              zusätzlich eine Rückruf- oder Beratungsanfrage
+                              vorbereiten.
+                            </div>
+                            <div
+                              style={{
+                                display: "flex",
+                                gap: 10,
+                                flexWrap: "wrap",
+                              }}
+                            >
                               <button
                                 type="button"
                                 onClick={openFahrwerkLiveSignup}
-                                style={{ height: 46, padding: "0 16px", borderRadius: 15, border: "1px solid rgba(255,255,255,0.22)", background: `linear-gradient(180deg, ${widgetAccent}F0, ${widgetAccent}A8)`, color: "#ffffff", cursor: "pointer", fontWeight: 900 }}
+                                style={{
+                                  height: 46,
+                                  padding: "0 16px",
+                                  borderRadius: 15,
+                                  border: "1px solid rgba(255,255,255,0.22)",
+                                  background: `linear-gradient(180deg, ${widgetAccent}F0, ${widgetAccent}A8)`,
+                                  color: "#ffffff",
+                                  cursor: "pointer",
+                                  fontWeight: 900,
+                                }}
                               >
                                 Online anmelden ↗
                               </button>
                               <button
                                 type="button"
-                                onClick={() => openFahrwerkSignupForm("Ich bin noch unsicher", "Rückruf von Fahrwerk B")}
-                                style={{ height: 46, padding: "0 16px", borderRadius: 15, border: "1px solid rgba(255,255,255,0.22)", background: `linear-gradient(180deg, ${widgetAccent}F0, ${widgetAccent}A8)`, color: "#ffffff", cursor: "pointer", fontWeight: 900 }}
+                                onClick={() =>
+                                  openFahrwerkSignupForm(
+                                    "Ich bin noch unsicher",
+                                    "Rückruf von Fahrwerk B",
+                                  )
+                                }
+                                style={{
+                                  height: 46,
+                                  padding: "0 16px",
+                                  borderRadius: 15,
+                                  border: "1px solid rgba(255,255,255,0.22)",
+                                  background: `linear-gradient(180deg, ${widgetAccent}F0, ${widgetAccent}A8)`,
+                                  color: "#ffffff",
+                                  cursor: "pointer",
+                                  fontWeight: 900,
+                                }}
                               >
                                 Rückruf / Anfrage vorbereiten
                               </button>
                               <button
                                 type="button"
                                 onClick={() => void startVoiceInput()}
-                                style={{ height: 46, padding: "0 16px", borderRadius: 15, border: "1px solid rgba(22,49,38,0.10)", background: "rgba(255,255,255,0.66)", color: textPrimary, cursor: "pointer", fontWeight: 850 }}
+                                style={{
+                                  height: 46,
+                                  padding: "0 16px",
+                                  borderRadius: 15,
+                                  border: "1px solid rgba(22,49,38,0.10)",
+                                  background: "rgba(255,255,255,0.66)",
+                                  color: textPrimary,
+                                  cursor: "pointer",
+                                  fontWeight: 850,
+                                }}
                               >
                                 Anliegen einsprechen
                               </button>
@@ -3482,13 +4343,34 @@ setVoiceSupported(hasGetUserMedia && hasMediaRecorder);
                         color: textPrimary,
                       }}
                     >
-                      <div style={{ display: "flex", justifyContent: "space-between", gap: 12, alignItems: "flex-start" }}>
+                      <div
+                        style={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          gap: 12,
+                          alignItems: "flex-start",
+                        }}
+                      >
                         <div>
-                          <div style={{ fontSize: isEnhancedInterface ? 22 : 17, fontWeight: 850, marginBottom: 4 }}>
+                          <div
+                            style={{
+                              fontSize: isEnhancedInterface ? 22 : 17,
+                              fontWeight: 850,
+                              marginBottom: 4,
+                            }}
+                          >
                             Beratung / Anfrage vorbereiten
                           </div>
-                          <div style={{ fontSize: isEnhancedInterface ? 14.5 : 13, color: textSecondary, lineHeight: 1.45 }}>
-                            Hier kannst du dein Anliegen vorstrukturieren. Die verbindliche Anmeldung läuft direkt über Fahrschule.live.
+                          <div
+                            style={{
+                              fontSize: isEnhancedInterface ? 14.5 : 13,
+                              color: textSecondary,
+                              lineHeight: 1.45,
+                            }}
+                          >
+                            Hier kannst du dein Anliegen vorstrukturieren. Die
+                            verbindliche Anmeldung läuft direkt über
+                            Fahrschule.live.
                           </div>
                         </div>
                         <button
@@ -3515,15 +4397,30 @@ setVoiceSupported(hasGetUserMedia && hasMediaRecorder);
                       <div
                         style={{
                           display: "grid",
-                          gridTemplateColumns: isEnhancedInterface ? "repeat(2, minmax(0, 1fr))" : "1fr",
+                          gridTemplateColumns: isEnhancedInterface
+                            ? "repeat(2, minmax(0, 1fr))"
+                            : "1fr",
                           gap: 12,
                         }}
                       >
-                        <label style={{ display: "flex", flexDirection: "column", gap: 6, fontSize: 13.5, fontWeight: 700 }}>
+                        <label
+                          style={{
+                            display: "flex",
+                            flexDirection: "column",
+                            gap: 6,
+                            fontSize: 13.5,
+                            fontWeight: 700,
+                          }}
+                        >
                           Führerscheinklasse
                           <select
                             value={fahrwerkSignupForm.licenseClass}
-                            onChange={(e) => updateFahrwerkSignupForm("licenseClass", e.target.value)}
+                            onChange={(e) =>
+                              updateFahrwerkSignupForm(
+                                "licenseClass",
+                                e.target.value,
+                              )
+                            }
                             style={{
                               height: 46,
                               borderRadius: 14,
@@ -3543,11 +4440,24 @@ setVoiceSupported(hasGetUserMedia && hasMediaRecorder);
                           </select>
                         </label>
 
-                        <label style={{ display: "flex", flexDirection: "column", gap: 6, fontSize: 13.5, fontWeight: 700 }}>
+                        <label
+                          style={{
+                            display: "flex",
+                            flexDirection: "column",
+                            gap: 6,
+                            fontSize: 13.5,
+                            fontWeight: 700,
+                          }}
+                        >
                           Wunsch
                           <select
                             value={fahrwerkSignupForm.startWish}
-                            onChange={(e) => updateFahrwerkSignupForm("startWish", e.target.value)}
+                            onChange={(e) =>
+                              updateFahrwerkSignupForm(
+                                "startWish",
+                                e.target.value,
+                              )
+                            }
                             style={{
                               height: 46,
                               borderRadius: 14,
@@ -3567,11 +4477,21 @@ setVoiceSupported(hasGetUserMedia && hasMediaRecorder);
                           </select>
                         </label>
 
-                        <label style={{ display: "flex", flexDirection: "column", gap: 6, fontSize: 13.5, fontWeight: 700 }}>
+                        <label
+                          style={{
+                            display: "flex",
+                            flexDirection: "column",
+                            gap: 6,
+                            fontSize: 13.5,
+                            fontWeight: 700,
+                          }}
+                        >
                           Name *
                           <input
                             value={fahrwerkSignupForm.name}
-                            onChange={(e) => updateFahrwerkSignupForm("name", e.target.value)}
+                            onChange={(e) =>
+                              updateFahrwerkSignupForm("name", e.target.value)
+                            }
                             placeholder="Dein Name"
                             style={{
                               height: 46,
@@ -3586,11 +4506,21 @@ setVoiceSupported(hasGetUserMedia && hasMediaRecorder);
                           />
                         </label>
 
-                        <label style={{ display: "flex", flexDirection: "column", gap: 6, fontSize: 13.5, fontWeight: 700 }}>
+                        <label
+                          style={{
+                            display: "flex",
+                            flexDirection: "column",
+                            gap: 6,
+                            fontSize: 13.5,
+                            fontWeight: 700,
+                          }}
+                        >
                           Telefon
                           <input
                             value={fahrwerkSignupForm.phone}
-                            onChange={(e) => updateFahrwerkSignupForm("phone", e.target.value)}
+                            onChange={(e) =>
+                              updateFahrwerkSignupForm("phone", e.target.value)
+                            }
                             placeholder="0176 ..."
                             type="tel"
                             style={{
@@ -3606,11 +4536,21 @@ setVoiceSupported(hasGetUserMedia && hasMediaRecorder);
                           />
                         </label>
 
-                        <label style={{ display: "flex", flexDirection: "column", gap: 6, fontSize: 13.5, fontWeight: 700 }}>
+                        <label
+                          style={{
+                            display: "flex",
+                            flexDirection: "column",
+                            gap: 6,
+                            fontSize: 13.5,
+                            fontWeight: 700,
+                          }}
+                        >
                           E-Mail
                           <input
                             value={fahrwerkSignupForm.email}
-                            onChange={(e) => updateFahrwerkSignupForm("email", e.target.value)}
+                            onChange={(e) =>
+                              updateFahrwerkSignupForm("email", e.target.value)
+                            }
                             placeholder="name@example.de"
                             type="email"
                             style={{
@@ -3626,11 +4566,24 @@ setVoiceSupported(hasGetUserMedia && hasMediaRecorder);
                           />
                         </label>
 
-                        <label style={{ display: "flex", flexDirection: "column", gap: 6, fontSize: 13.5, fontWeight: 700 }}>
+                        <label
+                          style={{
+                            display: "flex",
+                            flexDirection: "column",
+                            gap: 6,
+                            fontSize: 13.5,
+                            fontWeight: 700,
+                          }}
+                        >
                           Nachricht
                           <input
                             value={fahrwerkSignupForm.message}
-                            onChange={(e) => updateFahrwerkSignupForm("message", e.target.value)}
+                            onChange={(e) =>
+                              updateFahrwerkSignupForm(
+                                "message",
+                                e.target.value,
+                              )
+                            }
                             placeholder="z. B. Ich möchte möglichst schnell anfangen"
                             style={{
                               height: 46,
@@ -3663,19 +4616,48 @@ setVoiceSupported(hasGetUserMedia && hasMediaRecorder);
                         <input
                           type="checkbox"
                           checked={fahrwerkSignupForm.privacyAccepted}
-                          onChange={(e) => updateFahrwerkSignupForm("privacyAccepted", e.target.checked)}
+                          onChange={(e) =>
+                            updateFahrwerkSignupForm(
+                              "privacyAccepted",
+                              e.target.checked,
+                            )
+                          }
                           style={{ marginTop: 2 }}
                         />
                         <span>
-                          Ich bin einverstanden, dass meine Angaben zur Bearbeitung der Anfrage an Fahrwerk B verwendet werden.
+                          Ich bin einverstanden, dass meine Angaben zur
+                          Bearbeitung der Anfrage an Fahrwerk B verwendet
+                          werden.
                         </span>
                       </label>
 
-                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
-                        <div style={{ fontSize: 12.5, color: textSecondary, lineHeight: 1.4 }}>
-                          * Pflichtfeld. E-Mail oder Telefon muss angegeben werden.
+                      <div
+                        style={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                          gap: 12,
+                          flexWrap: "wrap",
+                        }}
+                      >
+                        <div
+                          style={{
+                            fontSize: 12.5,
+                            color: textSecondary,
+                            lineHeight: 1.4,
+                          }}
+                        >
+                          * Pflichtfeld. E-Mail oder Telefon muss angegeben
+                          werden.
                         </div>
-                        <div style={{ display: "flex", gap: 10, flexWrap: "wrap", justifyContent: "flex-end" }}>
+                        <div
+                          style={{
+                            display: "flex",
+                            gap: 10,
+                            flexWrap: "wrap",
+                            justifyContent: "flex-end",
+                          }}
+                        >
                           <button
                             type="button"
                             onClick={openFahrwerkLiveSignup}
@@ -3735,13 +4717,33 @@ setVoiceSupported(hasGetUserMedia && hasMediaRecorder);
                         color: textPrimary,
                       }}
                     >
-                      <div style={{ display: "flex", justifyContent: "space-between", gap: 12, alignItems: "flex-start" }}>
+                      <div
+                        style={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          gap: 12,
+                          alignItems: "flex-start",
+                        }}
+                      >
                         <div>
-                          <div style={{ fontSize: isEnhancedInterface ? 22 : 17, fontWeight: 850, marginBottom: 4 }}>
+                          <div
+                            style={{
+                              fontSize: isEnhancedInterface ? 22 : 17,
+                              fontWeight: 850,
+                              marginBottom: 4,
+                            }}
+                          >
                             Termin bei {bookingBusinessName} buchen
                           </div>
-                          <div style={{ fontSize: isEnhancedInterface ? 14.5 : 13, color: textSecondary, lineHeight: 1.45 }}>
-                            Der Termin wird direkt in den Apple Kalender „{bookingCalendarLabel}“ eingetragen.
+                          <div
+                            style={{
+                              fontSize: isEnhancedInterface ? 14.5 : 13,
+                              color: textSecondary,
+                              lineHeight: 1.45,
+                            }}
+                          >
+                            Der Termin wird direkt in den Apple Kalender „
+                            {bookingCalendarLabel}“ eingetragen.
                           </div>
                         </div>
                         <button
@@ -3754,7 +4756,9 @@ setVoiceSupported(hasGetUserMedia && hasMediaRecorder);
                             borderRadius: 999,
                             width: 34,
                             height: 34,
-                            cursor: bookingSubmitting ? "not-allowed" : "pointer",
+                            cursor: bookingSubmitting
+                              ? "not-allowed"
+                              : "pointer",
                             color: textPrimary,
                             fontSize: 20,
                             lineHeight: "30px",
@@ -3769,15 +4773,27 @@ setVoiceSupported(hasGetUserMedia && hasMediaRecorder);
                       <div
                         style={{
                           display: "grid",
-                          gridTemplateColumns: isEnhancedInterface ? "repeat(2, minmax(0, 1fr))" : "1fr",
+                          gridTemplateColumns: isEnhancedInterface
+                            ? "repeat(2, minmax(0, 1fr))"
+                            : "1fr",
                           gap: 12,
                         }}
                       >
-                        <label style={{ display: "flex", flexDirection: "column", gap: 6, fontSize: 13.5, fontWeight: 700 }}>
+                        <label
+                          style={{
+                            display: "flex",
+                            flexDirection: "column",
+                            gap: 6,
+                            fontSize: 13.5,
+                            fontWeight: 700,
+                          }}
+                        >
                           Name *
                           <input
                             value={bookingForm.name}
-                            onChange={(e) => updateBookingForm("name", e.target.value)}
+                            onChange={(e) =>
+                              updateBookingForm("name", e.target.value)
+                            }
                             placeholder="Dein Name"
                             style={{
                               height: 46,
@@ -3792,11 +4808,21 @@ setVoiceSupported(hasGetUserMedia && hasMediaRecorder);
                           />
                         </label>
 
-                        <label style={{ display: "flex", flexDirection: "column", gap: 6, fontSize: 13.5, fontWeight: 700 }}>
+                        <label
+                          style={{
+                            display: "flex",
+                            flexDirection: "column",
+                            gap: 6,
+                            fontSize: 13.5,
+                            fontWeight: 700,
+                          }}
+                        >
                           Leistung
                           <select
                             value={bookingForm.service}
-                            onChange={(e) => updateBookingForm("service", e.target.value)}
+                            onChange={(e) =>
+                              updateBookingForm("service", e.target.value)
+                            }
                             style={{
                               height: 46,
                               borderRadius: 14,
@@ -3816,11 +4842,21 @@ setVoiceSupported(hasGetUserMedia && hasMediaRecorder);
                           </select>
                         </label>
 
-                        <label style={{ display: "flex", flexDirection: "column", gap: 6, fontSize: 13.5, fontWeight: 700 }}>
+                        <label
+                          style={{
+                            display: "flex",
+                            flexDirection: "column",
+                            gap: 6,
+                            fontSize: 13.5,
+                            fontWeight: 700,
+                          }}
+                        >
                           E-Mail
                           <input
                             value={bookingForm.email}
-                            onChange={(e) => updateBookingForm("email", e.target.value)}
+                            onChange={(e) =>
+                              updateBookingForm("email", e.target.value)
+                            }
                             placeholder="name@example.de"
                             type="email"
                             style={{
@@ -3836,11 +4872,21 @@ setVoiceSupported(hasGetUserMedia && hasMediaRecorder);
                           />
                         </label>
 
-                        <label style={{ display: "flex", flexDirection: "column", gap: 6, fontSize: 13.5, fontWeight: 700 }}>
+                        <label
+                          style={{
+                            display: "flex",
+                            flexDirection: "column",
+                            gap: 6,
+                            fontSize: 13.5,
+                            fontWeight: 700,
+                          }}
+                        >
                           Telefon
                           <input
                             value={bookingForm.phone}
-                            onChange={(e) => updateBookingForm("phone", e.target.value)}
+                            onChange={(e) =>
+                              updateBookingForm("phone", e.target.value)
+                            }
                             placeholder="0176 ..."
                             type="tel"
                             style={{
@@ -3856,11 +4902,21 @@ setVoiceSupported(hasGetUserMedia && hasMediaRecorder);
                           />
                         </label>
 
-                        <label style={{ display: "flex", flexDirection: "column", gap: 6, fontSize: 13.5, fontWeight: 700 }}>
+                        <label
+                          style={{
+                            display: "flex",
+                            flexDirection: "column",
+                            gap: 6,
+                            fontSize: 13.5,
+                            fontWeight: 700,
+                          }}
+                        >
                           Datum *
                           <input
                             value={bookingForm.date}
-                            onChange={(e) => updateBookingForm("date", e.target.value)}
+                            onChange={(e) =>
+                              updateBookingForm("date", e.target.value)
+                            }
                             type="date"
                             style={{
                               height: 46,
@@ -3875,11 +4931,21 @@ setVoiceSupported(hasGetUserMedia && hasMediaRecorder);
                           />
                         </label>
 
-                        <label style={{ display: "flex", flexDirection: "column", gap: 6, fontSize: 13.5, fontWeight: 700 }}>
+                        <label
+                          style={{
+                            display: "flex",
+                            flexDirection: "column",
+                            gap: 6,
+                            fontSize: 13.5,
+                            fontWeight: 700,
+                          }}
+                        >
                           Uhrzeit *
                           <input
                             value={bookingForm.time}
-                            onChange={(e) => updateBookingForm("time", e.target.value)}
+                            onChange={(e) =>
+                              updateBookingForm("time", e.target.value)
+                            }
                             type="time"
                             step="900"
                             style={{
@@ -3896,18 +4962,30 @@ setVoiceSupported(hasGetUserMedia && hasMediaRecorder);
                         </label>
                       </div>
 
-                      <label style={{ display: "flex", flexDirection: "column", gap: 6, fontSize: 13.5, fontWeight: 700 }}>
+                      <label
+                        style={{
+                          display: "flex",
+                          flexDirection: "column",
+                          gap: 6,
+                          fontSize: 13.5,
+                          fontWeight: 700,
+                        }}
+                      >
                         Nachricht
                         <textarea
                           value={bookingForm.message}
-                          onChange={(e) => updateBookingForm("message", e.target.value)}
-                          placeholder={isMmWartungInterface
-                            ? "Fahrzeug, Problem oder Wunsch kurz beschreiben"
-                            : isTxbikesInterface
-                              ? "Fahrrad, E-Bike, Problem oder Wunsch kurz beschreiben"
-                              : isWilliInterface
-                                ? "Anliegen, Wunsch oder Rückrufgrund kurz beschreiben"
-                                : "Worum soll es gehen?"}
+                          onChange={(e) =>
+                            updateBookingForm("message", e.target.value)
+                          }
+                          placeholder={
+                            isMmWartungInterface
+                              ? "Fahrzeug, Problem oder Wunsch kurz beschreiben"
+                              : isTxbikesInterface
+                                ? "Fahrrad, E-Bike, Problem oder Wunsch kurz beschreiben"
+                                : isWilliInterface
+                                  ? "Anliegen, Wunsch oder Rückrufgrund kurz beschreiben"
+                                  : "Worum soll es gehen?"
+                          }
                           rows={3}
                           style={{
                             borderRadius: 14,
@@ -3923,9 +5001,24 @@ setVoiceSupported(hasGetUserMedia && hasMediaRecorder);
                         />
                       </label>
 
-                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
-                        <div style={{ fontSize: 12.5, color: textSecondary, lineHeight: 1.4 }}>
-                          * Pflichtfelder. E-Mail oder Telefon muss angegeben werden.
+                      <div
+                        style={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                          gap: 12,
+                          flexWrap: "wrap",
+                        }}
+                      >
+                        <div
+                          style={{
+                            fontSize: 12.5,
+                            color: textSecondary,
+                            lineHeight: 1.4,
+                          }}
+                        >
+                          * Pflichtfelder. E-Mail oder Telefon muss angegeben
+                          werden.
                         </div>
                         <button
                           type="submit"
@@ -3937,14 +5030,18 @@ setVoiceSupported(hasGetUserMedia && hasMediaRecorder);
                             border: "1px solid rgba(255,255,255,0.22)",
                             background: `linear-gradient(180deg, ${widgetAccent}F0, ${widgetAccent}A8)`,
                             color: "#ffffff",
-                            cursor: bookingSubmitting ? "not-allowed" : "pointer",
+                            cursor: bookingSubmitting
+                              ? "not-allowed"
+                              : "pointer",
                             fontWeight: 800,
                             fontSize: 14.5,
                             boxShadow: `0 14px 34px rgba(0,0,0,0.14), 0 0 0 1px ${widgetAccent}12 inset`,
                             opacity: bookingSubmitting ? 0.68 : 1,
                           }}
                         >
-                          {bookingSubmitting ? "Wird eingetragen…" : "Termin eintragen"}
+                          {bookingSubmitting
+                            ? "Wird eingetragen…"
+                            : "Termin eintragen"}
                         </button>
                       </div>
                     </form>
@@ -3962,7 +5059,9 @@ setVoiceSupported(hasGetUserMedia && hasMediaRecorder);
                       >
                         <div
                           style={{
-                            padding: isEnhancedInterface ? "15px 17px" : "12px 14px",
+                            padding: isEnhancedInterface
+                              ? "15px 17px"
+                              : "12px 14px",
                             borderRadius: isEnhancedInterface ? 18 : 14,
                             whiteSpace: "pre-wrap",
                             lineHeight: 1.45,
@@ -3989,20 +5088,24 @@ setVoiceSupported(hasGetUserMedia && hasMediaRecorder);
                             <div className="bt-image-preview-wrap">
                               <img
                                 src={m.imagePreviewUrl}
-                                alt={isFahrwerkBInterface
-                                  ? "Hochgeladenes Bild zur Führerschein-Anfrage"
-                                  : isLinaInterface
-                                    ? "Hochgeladenes Beispielbild"
-                                    : isMmWartungInterface
-                                      ? "Hochgeladenes Foto zum Fahrzeug oder Ersatzteil"
-                                      : isTxbikesInterface
-                                        ? "Hochgeladenes Foto vom Fahrradproblem"
-                                        : isWilliInterface
-                                          ? "Hochgeladenes Bild zur Anfrage"
-                                          : "Hochgeladenes Foto"}
+                                alt={
+                                  isFahrwerkBInterface
+                                    ? "Hochgeladenes Bild zur Führerschein-Anfrage"
+                                    : isLinaInterface
+                                      ? "Hochgeladenes Beispielbild"
+                                      : isMmWartungInterface
+                                        ? "Hochgeladenes Foto zum Fahrzeug oder Ersatzteil"
+                                        : isTxbikesInterface
+                                          ? "Hochgeladenes Foto vom Fahrradproblem"
+                                          : isWilliInterface
+                                            ? "Hochgeladenes Bild zur Anfrage"
+                                            : "Hochgeladenes Foto"
+                                }
                               />
                               <div className="bt-image-preview-label">
-                                {m.imageName ? `Foto: ${m.imageName}` : "Foto hinzugefügt"}
+                                {m.imageName
+                                  ? `Foto: ${m.imageName}`
+                                  : "Foto hinzugefügt"}
                               </div>
                             </div>
                           )}
@@ -4012,10 +5115,17 @@ setVoiceSupported(hasGetUserMedia && hasMediaRecorder);
                   })}
 
                   {loading && (
-                    <div style={{ alignSelf: "flex-start", maxWidth: isEnhancedInterface ? "78%" : "86%" }}>
+                    <div
+                      style={{
+                        alignSelf: "flex-start",
+                        maxWidth: isEnhancedInterface ? "78%" : "86%",
+                      }}
+                    >
                       <div
                         style={{
-                          padding: isEnhancedInterface ? "15px 17px" : "12px 14px",
+                          padding: isEnhancedInterface
+                            ? "15px 17px"
+                            : "12px 14px",
                           borderRadius: isEnhancedInterface ? 18 : 14,
                           border: "1px solid rgba(22,49,38,0.10)",
                           background:
@@ -4037,7 +5147,9 @@ setVoiceSupported(hasGetUserMedia && hasMediaRecorder);
                 <div
                   style={{
                     padding: isEnhancedInterface ? 22 : 14,
-                    paddingBottom: isEnhancedInterface ? "calc(22px + env(safe-area-inset-bottom))" : "calc(16px + env(safe-area-inset-bottom))",
+                    paddingBottom: isEnhancedInterface
+                      ? "calc(22px + env(safe-area-inset-bottom))"
+                      : "calc(16px + env(safe-area-inset-bottom))",
                     borderTop: "1px solid rgba(22,49,38,0.12)",
                     display: "flex",
                     gap: isEnhancedInterface ? 12 : 10,
@@ -4150,8 +5262,15 @@ setVoiceSupported(hasGetUserMedia && hasMediaRecorder);
                       background: input.trim()
                         ? `linear-gradient(180deg, ${widgetAccent}F0, ${widgetAccent}A8)`
                         : "rgba(255,255,255,0.26)",
-                      color: input.trim() ? "#ffffff" : isFahrwerkBInterface ? "rgba(127,29,29,0.62)" : "#5c7a6d",
-                      cursor: input.trim() && !loading && !isVoiceActive ? "pointer" : "not-allowed",
+                      color: input.trim()
+                        ? "#ffffff"
+                        : isFahrwerkBInterface
+                          ? "rgba(127,29,29,0.62)"
+                          : "#5c7a6d",
+                      cursor:
+                        input.trim() && !loading && !isVoiceActive
+                          ? "pointer"
+                          : "not-allowed",
                       opacity: loading ? 0.72 : 1,
                       fontWeight: isEnhancedInterface ? 700 : 500,
                       fontSize: isEnhancedInterface ? 16 : 14,
@@ -4173,11 +5292,13 @@ setVoiceSupported(hasGetUserMedia && hasMediaRecorder);
                   aria-modal="true"
                   aria-live="polite"
                   aria-label="Sprachmodus"
-                  style={{
-                    "--voice-scale": "1.03",
-                    "--voice-energy": "0.08",
-                    "--voice-glow": "0.30",
-                  } as CSSProperties}
+                  style={
+                    {
+                      "--voice-scale": "1.03",
+                      "--voice-energy": "0.08",
+                      "--voice-glow": "0.30",
+                    } as CSSProperties
+                  }
                 >
                   <div className="bt-voice-grid" aria-hidden="true" />
 
@@ -4198,21 +5319,29 @@ setVoiceSupported(hasGetUserMedia && hasMediaRecorder);
                       onClick={() => {
                         if (voicePhase === "listening") {
                           stopVoiceRecording();
+                        } else if (voicePhase === "speaking") {
+                          void startVoiceInput();
                         } else if (voicePhase === "ready") {
                           void playPreparedVoiceResponse();
                         } else if (voicePhase === "error") {
                           void startVoiceInput();
                         }
                       }}
-                      disabled={!["listening", "ready", "error"].includes(voicePhase)}
+                      disabled={
+                        !["listening", "speaking", "ready", "error"].includes(
+                          voicePhase,
+                        )
+                      }
                       aria-label={
                         voicePhase === "listening"
                           ? "Aufnahme beenden"
-                          : voicePhase === "ready"
-                            ? "Antwort abspielen"
-                            : voicePhase === "error"
-                              ? "Erneut versuchen"
-                              : voiceTitle
+                          : voicePhase === "speaking"
+                            ? "Antwort unterbrechen und weiterreden"
+                            : voicePhase === "ready"
+                              ? "Antwort abspielen"
+                              : voicePhase === "error"
+                                ? "Erneut versuchen"
+                                : voiceTitle
                       }
                     >
                       <span className="bt-voice-halo" aria-hidden="true" />
@@ -4223,7 +5352,9 @@ setVoiceSupported(hasGetUserMedia && hasMediaRecorder);
                     <div className="bt-voice-copy" key={voicePhase}>
                       <div className="bt-voice-eyebrow">{voiceEyebrow}</div>
                       <div className="bt-voice-title">{voiceTitle}</div>
-                      <div className="bt-voice-transcript">{voiceDescription}</div>
+                      <div className="bt-voice-transcript">
+                        {voiceDescription}
+                      </div>
 
                       {["transcribing", "thinking"].includes(voicePhase) && (
                         <div className="bt-voice-dots" aria-hidden="true">
@@ -4233,20 +5364,22 @@ setVoiceSupported(hasGetUserMedia && hasMediaRecorder);
                         </div>
                       )}
 
-                      {voicePhase === "listening" && (
-                        <button type="button" className="bt-voice-action" onClick={stopVoiceRecording}>
-                          Aufnahme beenden
-                        </button>
-                      )}
-
                       {voicePhase === "ready" && (
-                        <button type="button" className="bt-voice-action" onClick={() => void playPreparedVoiceResponse()}>
+                        <button
+                          type="button"
+                          className="bt-voice-action"
+                          onClick={() => void playPreparedVoiceResponse()}
+                        >
                           Antwort abspielen
                         </button>
                       )}
 
                       {voicePhase === "error" && (
-                        <button type="button" className="bt-voice-action" onClick={() => void startVoiceInput()}>
+                        <button
+                          type="button"
+                          className="bt-voice-action"
+                          onClick={() => void startVoiceInput()}
+                        >
                           Erneut versuchen
                         </button>
                       )}
@@ -4255,10 +5388,10 @@ setVoiceSupported(hasGetUserMedia && hasMediaRecorder);
 
                   <div className="bt-voice-footer">
                     {voicePhase === "listening"
-                      ? "Eine kurze Pause beendet die Aufnahme automatisch. Du kannst auch auf die Kugel tippen."
+                      ? "Eine kurze Pause reicht – deine Frage wird automatisch gesendet."
                       : voicePhase === "speaking"
-                        ? "Tippe oben rechts auf ×, um die Ausgabe zu beenden."
-                        : "Dein Mikrofon wird nur während des aktiven Sprachmodus verwendet."}
+                        ? "Nach der Antwort hört das Interface automatisch wieder zu."
+                        : "Der Sprachmodus bleibt aktiv, bis du ihn oben rechts schließt."}
                   </div>
                 </div>
               )}
