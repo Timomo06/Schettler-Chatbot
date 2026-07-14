@@ -1,7 +1,7 @@
 // app/widget/page.tsx
 "use client";
 
-import { type FormEvent, useEffect, useMemo, useRef, useState } from "react";
+import { type ChangeEvent, type CSSProperties, type FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import { getTenant } from "@/lib/tenants";
 import { MessageCircle } from "lucide-react";
 
@@ -12,43 +12,19 @@ type Msg = {
   imageName?: string;
 };
 
-type SpeechRecognitionResultLike = {
-  [key: number]: {
-    [key: number]: {
-      transcript: string;
-    };
-  };
+type VoicePhase =
+  | "idle"
+  | "listening"
+  | "transcribing"
+  | "thinking"
+  | "speaking"
+  | "ready"
+  | "error";
+
+type SendTextOptions = {
+  fromVoice?: boolean;
+  signal?: AbortSignal;
 };
-
-type SpeechRecognitionEventLike = {
-  results: SpeechRecognitionResultLike;
-};
-
-type SpeechRecognitionErrorEventLike = {
-  error?: string;
-};
-
-type SpeechRecognitionLike = {
-  lang: string;
-  interimResults: boolean;
-  continuous: boolean;
-  maxAlternatives: number;
-  onstart: (() => void) | null;
-  onend: (() => void) | null;
-  onresult: ((event: SpeechRecognitionEventLike) => void) | null;
-  onerror: ((event: SpeechRecognitionErrorEventLike) => void) | null;
-  start: () => void;
-  stop: () => void;
-};
-
-type SpeechRecognitionConstructorLike = new () => SpeechRecognitionLike;
-
-declare global {
-  interface Window {
-    SpeechRecognition?: SpeechRecognitionConstructorLike;
-    webkitSpeechRecognition?: SpeechRecognitionConstructorLike;
-  }
-}
 
 type StartCard = {
   icon: string;
@@ -630,8 +606,12 @@ export default function WidgetPage() {
   const [loading, setLoading] = useState(false);
   const [attention, setAttention] = useState(false);
   const [showBadge, setShowBadge] = useState(true);
-  const [isListening, setIsListening] = useState(false);
+  const [voicePhase, setVoicePhase] = useState<VoicePhase>("idle");
   const [voiceSupported, setVoiceSupported] = useState(false);
+  const [voiceTranscript, setVoiceTranscript] = useState("");
+  const [voiceError, setVoiceError] = useState("");
+  const isListening = voicePhase === "listening";
+  const isVoiceActive = voicePhase !== "idle";
   const [bookingOpen, setBookingOpen] = useState(false);
   const [bookingSubmitting, setBookingSubmitting] = useState(false);
   const [bookingForm, setBookingForm] = useState<BookingFormState>(DEFAULT_BOOKING_FORM);
@@ -645,7 +625,21 @@ export default function WidgetPage() {
   const listRef = useRef<HTMLDivElement | null>(null);
   const fahrwerkPanelRef = useRef<HTMLDivElement | null>(null);
   const photoInputRef = useRef<HTMLInputElement | null>(null);
-  const recognitionRef = useRef<SpeechRecognitionLike | null>(null);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const mediaStreamRef = useRef<MediaStream | null>(null);
+  const audioChunksRef = useRef<Blob[]>([]);
+  const audioContextRef = useRef<AudioContext | null>(null);
+  const analyserRef = useRef<AnalyserNode | null>(null);
+  const voiceAnimationFrameRef = useRef<number | null>(null);
+  const voiceStopTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const voiceStartedAtRef = useRef(0);
+  const voiceDetectedRef = useRef(false);
+  const silenceStartedAtRef = useRef<number | null>(null);
+  const cancelVoiceRef = useRef(false);
+  const voiceAbortControllerRef = useRef<AbortController | null>(null);
+  const voiceAudioRef = useRef<HTMLAudioElement | null>(null);
+  const voiceAudioUrlRef = useRef<string | null>(null);
+  const voiceStageRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     if (!mounted || !isFahrwerkBInterface) return;
@@ -695,19 +689,29 @@ export default function WidgetPage() {
 
     setMsgs([{ role: "assistant", content: firstMessage }]);
 
-    const SpeechRecognitionCtor = window.SpeechRecognition || window.webkitSpeechRecognition;
-    setVoiceSupported(Boolean(SpeechRecognitionCtor));
+    setVoiceSupported(
+      Boolean(
+        navigator.mediaDevices?.getUserMedia &&
+          typeof window.MediaRecorder !== "undefined"
+      )
+    );
   }, [mounted, displayAssistantName, isFahrwerkBInterface, isLinaInterface, isMmWartungInterface, isTxbikesInterface, isWilliInterface]);
 
   useEffect(() => {
     return () => {
-      recognitionRef.current?.stop();
+      releaseVoiceResources();
     };
   }, []);
 
   useEffect(() => {
+    if (!open && isVoiceActive) {
+      cancelVoiceMode();
+    }
+  }, [open]);
+
+  useEffect(() => {
     listRef.current?.scrollTo({ top: listRef.current.scrollHeight, behavior: "smooth" });
-  }, [msgs, loading, isListening]);
+  }, [msgs, loading, voicePhase]);
 
   useEffect(() => {
     const t = setTimeout(() => setShowBadge(false), 5000);
@@ -784,9 +788,9 @@ export default function WidgetPage() {
     };
   }, [mounted, tenantId, isFahrwerkBInterface, isLinaInterface, isTxbikesInterface, isWilliInterface, isMmWartungInterface]);
 
-  async function sendText(rawText: string) {
+  async function sendText(rawText: string, options: SendTextOptions = {}): Promise<string | null> {
     const text = rawText.trim();
-    if (!text || loading) return;
+    if (!text || loading) return null;
 
     const wantsBooking =
       isBookingInterface &&
@@ -825,12 +829,23 @@ export default function WidgetPage() {
           tenant: tenantId,
           messages: next.map(({ role, content }) => ({ role, content })),
         }),
+        signal: options.signal,
       });
 
-      const data = await res.json();
+      const data = await res.json().catch(() => null);
+
+      if (!res.ok) {
+        throw new Error(data?.error || "Die Antwort konnte nicht geladen werden.");
+      }
+
       const assistantMsg: Msg = { role: "assistant", content: data?.reply || "Okay." };
       setMsgs([...next, assistantMsg]);
-    } catch {
+      return assistantMsg.content;
+    } catch (error) {
+      if (error instanceof DOMException && error.name === "AbortError") {
+        return null;
+      }
+
       setMsgs([
         ...next,
         {
@@ -838,13 +853,14 @@ export default function WidgetPage() {
           content: "Kurz ein technisches Problem — versuch’s nochmal.",
         } as Msg,
       ]);
+      return null;
     } finally {
       setLoading(false);
     }
   }
 
   function openFahrwerkLiveSignup() {
-    if (!isFahrwerkBInterface || loading || isListening) return;
+    if (!isFahrwerkBInterface || loading || isVoiceActive) return;
 
     setShowBadge(false);
 
@@ -878,7 +894,7 @@ export default function WidgetPage() {
   }
 
   function openFahrwerkSignupForm(licenseClass?: string, startWish?: string) {
-    if (!isFahrwerkBInterface || loading || isListening) return;
+    if (!isFahrwerkBInterface || loading || isVoiceActive) return;
 
     setFahrwerkSignupOpen(true);
     setShowBadge(false);
@@ -990,7 +1006,7 @@ export default function WidgetPage() {
   }
 
   function openFahrwerkPanel(panel: FahrwerkPanel) {
-    if (!isFahrwerkBInterface || loading || isListening) return;
+    if (!isFahrwerkBInterface || loading || isVoiceActive) return;
 
     setFahrwerkPanel(panel);
     setFahrwerkSignupOpen(false);
@@ -1011,7 +1027,7 @@ export default function WidgetPage() {
   }
 
   function sendFahrwerkGuidedMessage(message: string) {
-    if (loading || isListening) return;
+    if (loading || isVoiceActive) return;
     void sendText(message);
   }
 
@@ -1029,7 +1045,7 @@ export default function WidgetPage() {
   }
 
   function openBookingForm() {
-    if (loading || isListening || bookingSubmitting) return;
+    if (loading || isVoiceActive || bookingSubmitting) return;
 
     setBookingOpen(true);
     setShowBadge(false);
@@ -1225,11 +1241,11 @@ export default function WidgetPage() {
   }
 
   function openPhotoPicker() {
-    if (loading || isListening) return;
+    if (loading || isVoiceActive) return;
     photoInputRef.current?.click();
   }
 
-  function handlePhotoUpload(event: React.ChangeEvent<HTMLInputElement>) {
+  function handlePhotoUpload(event: ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
     event.target.value = "";
 
@@ -1283,99 +1299,531 @@ export default function WidgetPage() {
     ]);
   }
 
-  function startVoiceInput() {
-    if (loading) return;
+  function setVoiceEnergy(level: number) {
+    const safeLevel = Math.max(0, Math.min(1, level));
+    const stage = voiceStageRef.current;
 
-    if (isListening) {
-      recognitionRef.current?.stop();
-      setIsListening(false);
+    if (!stage) return;
+
+    stage.style.setProperty("--voice-scale", (1 + safeLevel * 0.34).toFixed(3));
+    stage.style.setProperty("--voice-energy", safeLevel.toFixed(3));
+    stage.style.setProperty("--voice-glow", (0.24 + safeLevel * 0.68).toFixed(3));
+  }
+
+  function stopVoiceAnimation() {
+    if (voiceAnimationFrameRef.current !== null) {
+      window.cancelAnimationFrame(voiceAnimationFrameRef.current);
+      voiceAnimationFrameRef.current = null;
+    }
+
+    analyserRef.current = null;
+    setVoiceEnergy(0.08);
+  }
+
+  function closeVoiceAudioContext() {
+    const context = audioContextRef.current;
+    audioContextRef.current = null;
+
+    if (context && context.state !== "closed") {
+      void context.close().catch(() => undefined);
+    }
+  }
+
+  function stopMicrophoneTracks() {
+    mediaStreamRef.current?.getTracks().forEach((track) => track.stop());
+    mediaStreamRef.current = null;
+  }
+
+  function clearVoiceStopTimeout() {
+    if (voiceStopTimeoutRef.current) {
+      clearTimeout(voiceStopTimeoutRef.current);
+      voiceStopTimeoutRef.current = null;
+    }
+  }
+
+  function revokeVoiceAudioUrl() {
+    if (voiceAudioUrlRef.current) {
+      URL.revokeObjectURL(voiceAudioUrlRef.current);
+      voiceAudioUrlRef.current = null;
+    }
+  }
+
+  function stopVoicePlayback() {
+    const audio = voiceAudioRef.current;
+
+    if (audio) {
+      audio.onended = null;
+      audio.onerror = null;
+      audio.pause();
+      audio.removeAttribute("src");
+      audio.load();
+    }
+
+    voiceAudioRef.current = null;
+    revokeVoiceAudioUrl();
+    stopVoiceAnimation();
+    closeVoiceAudioContext();
+  }
+
+  function releaseVoiceResources() {
+    cancelVoiceRef.current = true;
+    clearVoiceStopTimeout();
+    voiceAbortControllerRef.current?.abort();
+    voiceAbortControllerRef.current = null;
+
+    const recorder = mediaRecorderRef.current;
+    mediaRecorderRef.current = null;
+
+    if (recorder && recorder.state !== "inactive") {
+      try {
+        recorder.stop();
+      } catch {
+        // Der Recorder wurde eventuell bereits beendet.
+      }
+    }
+
+    stopMicrophoneTracks();
+    stopVoicePlayback();
+    audioChunksRef.current = [];
+  }
+
+  function finishVoiceMode(delay = 520) {
+    clearVoiceStopTimeout();
+    voiceStopTimeoutRef.current = setTimeout(() => {
+      voiceStopTimeoutRef.current = null;
+      setVoicePhase("idle");
+      setVoiceTranscript("");
+      setVoiceError("");
+      setVoiceEnergy(0.08);
+    }, delay);
+  }
+
+  function showVoiceFailure(message: string) {
+    cancelVoiceRef.current = true;
+    clearVoiceStopTimeout();
+
+    const recorder = mediaRecorderRef.current;
+    mediaRecorderRef.current = null;
+
+    if (recorder && recorder.state !== "inactive") {
+      try {
+        recorder.stop();
+      } catch {
+        // Der Recorder wurde eventuell bereits beendet.
+      }
+    }
+
+    stopMicrophoneTracks();
+    stopVoicePlayback();
+    audioChunksRef.current = [];
+    setVoiceError(message);
+    setVoicePhase("error");
+  }
+
+  function getRecordingFormat() {
+    const formats = [
+      { mimeType: "audio/webm;codecs=opus", extension: "webm" },
+      { mimeType: "audio/mp4", extension: "m4a" },
+      { mimeType: "audio/webm", extension: "webm" },
+      { mimeType: "audio/ogg;codecs=opus", extension: "ogg" },
+    ];
+
+    return (
+      formats.find((format) => MediaRecorder.isTypeSupported(format.mimeType)) || {
+        mimeType: "",
+        extension: "webm",
+      }
+    );
+  }
+
+  function startMicrophoneVisualization(stream: MediaStream) {
+    stopVoiceAnimation();
+    closeVoiceAudioContext();
+
+    const context = new AudioContext();
+    const source = context.createMediaStreamSource(stream);
+    const analyser = context.createAnalyser();
+
+    analyser.fftSize = 512;
+    analyser.smoothingTimeConstant = 0.76;
+    const timeData = new Uint8Array(analyser.fftSize);
+    source.connect(analyser);
+
+    audioContextRef.current = context;
+    analyserRef.current = analyser;
+
+    const draw = () => {
+      const activeRecorder = mediaRecorderRef.current;
+
+      if (!activeRecorder || activeRecorder.state === "inactive") {
+        stopVoiceAnimation();
+        return;
+      }
+
+      analyser.getByteTimeDomainData(timeData);
+
+      let sum = 0;
+      for (let i = 0; i < timeData.length; i += 1) {
+        const sample = (timeData[i] - 128) / 128;
+        sum += sample * sample;
+      }
+
+      const rms = Math.sqrt(sum / timeData.length);
+      const normalizedLevel = Math.min(1, Math.max(0.04, rms * 7.6));
+      const now = performance.now();
+      const elapsed = now - voiceStartedAtRef.current;
+
+      setVoiceEnergy(normalizedLevel);
+
+      if (rms > 0.034) {
+        voiceDetectedRef.current = true;
+        silenceStartedAtRef.current = null;
+      } else if (voiceDetectedRef.current && elapsed > 1_000) {
+        if (silenceStartedAtRef.current === null) {
+          silenceStartedAtRef.current = now;
+        }
+
+        if (now - silenceStartedAtRef.current > 1_350) {
+          stopVoiceRecording();
+          return;
+        }
+      }
+
+      voiceAnimationFrameRef.current = window.requestAnimationFrame(draw);
+    };
+
+    voiceAnimationFrameRef.current = window.requestAnimationFrame(draw);
+  }
+
+  function startPlaybackVisualization(audio: HTMLAudioElement) {
+    stopVoiceAnimation();
+    closeVoiceAudioContext();
+
+    const context = new AudioContext();
+    const source = context.createMediaElementSource(audio);
+    const analyser = context.createAnalyser();
+
+    analyser.fftSize = 256;
+    analyser.smoothingTimeConstant = 0.82;
+    const frequencyData = new Uint8Array(analyser.frequencyBinCount);
+    source.connect(analyser);
+    analyser.connect(context.destination);
+
+    audioContextRef.current = context;
+    analyserRef.current = analyser;
+
+    const draw = () => {
+      if (audio.paused || audio.ended) {
+        setVoiceEnergy(0.08);
+        return;
+      }
+
+      analyser.getByteFrequencyData(frequencyData);
+      let sum = 0;
+
+      for (let i = 0; i < frequencyData.length; i += 1) {
+        sum += frequencyData[i];
+      }
+
+      const average = sum / frequencyData.length / 255;
+      setVoiceEnergy(Math.min(1, Math.max(0.08, average * 2.15)));
+      voiceAnimationFrameRef.current = window.requestAnimationFrame(draw);
+    };
+
+    voiceAnimationFrameRef.current = window.requestAnimationFrame(draw);
+  }
+
+  function stopVoiceRecording() {
+    const recorder = mediaRecorderRef.current;
+
+    if (!recorder || recorder.state === "inactive") return;
+
+    clearVoiceStopTimeout();
+    setVoicePhase("transcribing");
+    stopVoiceAnimation();
+
+    try {
+      recorder.requestData();
+      recorder.stop();
+    } catch {
+      showVoiceFailure("Die Aufnahme konnte nicht beendet werden. Versuch es bitte nochmal.");
+    }
+  }
+
+  async function playPreparedVoiceResponse() {
+    const audio = voiceAudioRef.current;
+
+    if (!audio) {
+      showVoiceFailure("Die Sprachantwort ist nicht mehr verfügbar. Versuch es bitte nochmal.");
       return;
     }
 
-    const SpeechRecognitionCtor = window.SpeechRecognition || window.webkitSpeechRecognition;
+    try {
+      setVoicePhase("speaking");
+      setVoiceError("");
+      await audio.play();
+      startPlaybackVisualization(audio);
 
-    if (!SpeechRecognitionCtor) {
+      if (audioContextRef.current?.state === "suspended") {
+        await audioContextRef.current.resume();
+      }
+    } catch (error) {
+      stopVoiceAnimation();
+
+      if (error instanceof DOMException && error.name === "NotAllowedError") {
+        setVoicePhase("ready");
+        setVoiceError("Tippe auf die Kugel, um die Antwort abzuspielen.");
+        return;
+      }
+
+      showVoiceFailure("Die Sprachantwort konnte nicht abgespielt werden.");
+    }
+  }
+
+  async function speakVoiceResponse(text: string, signal: AbortSignal) {
+    const response = await fetch("/api/voice/speak", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ text }),
+      signal,
+    });
+
+    if (!response.ok) {
+      const data = await response.json().catch(() => null);
+      throw new Error(data?.error || "Die Sprachantwort konnte nicht erzeugt werden.");
+    }
+
+    const audioBlob = await response.blob();
+
+    if (!audioBlob.size) {
+      throw new Error("Die Sprachantwort war leer.");
+    }
+
+    stopVoicePlayback();
+
+    const audioUrl = URL.createObjectURL(audioBlob);
+    const audio = new Audio(audioUrl);
+
+    audio.preload = "auto";
+    voiceAudioUrlRef.current = audioUrl;
+    voiceAudioRef.current = audio;
+
+    audio.onended = () => {
+      stopVoicePlayback();
+      finishVoiceMode();
+    };
+
+    audio.onerror = () => {
+      showVoiceFailure("Die Sprachantwort konnte nicht abgespielt werden.");
+    };
+
+    await playPreparedVoiceResponse();
+  }
+
+  async function processVoiceRecording(audioBlob: Blob, extension: string) {
+    const abortController = new AbortController();
+    voiceAbortControllerRef.current?.abort();
+    voiceAbortControllerRef.current = abortController;
+
+    try {
+      setVoicePhase("transcribing");
+      setVoiceError("");
+
+      const formData = new FormData();
+      formData.append("audio", audioBlob, `aufnahme.${extension}`);
+
+      const transcriptionResponse = await fetch("/api/voice/transcribe", {
+        method: "POST",
+        body: formData,
+        signal: abortController.signal,
+      });
+
+      const transcriptionData = await transcriptionResponse.json().catch(() => null);
+
+      if (!transcriptionResponse.ok) {
+        throw new Error(
+          transcriptionData?.error || "Deine Sprache konnte nicht verarbeitet werden."
+        );
+      }
+
+      const transcript = String(transcriptionData?.text || "").trim();
+
+      if (!transcript) {
+        throw new Error("Ich konnte keinen gesprochenen Text erkennen.");
+      }
+
+      setVoiceTranscript(transcript);
+      setInput(transcript);
+      setVoicePhase("thinking");
+      setVoiceEnergy(0.12);
+
+      const reply = await sendText(transcript, {
+        fromVoice: true,
+        signal: abortController.signal,
+      });
+
+      if (!reply) {
+        if (!abortController.signal.aborted) {
+          throw new Error("Die Antwort konnte nicht erstellt werden.");
+        }
+        return;
+      }
+
+      await speakVoiceResponse(reply, abortController.signal);
+    } catch (error) {
+      if (error instanceof DOMException && error.name === "AbortError") return;
+
+      const message =
+        error instanceof Error
+          ? error.message
+          : "Bei der Sprachverarbeitung ist ein technischer Fehler aufgetreten.";
+
+      showVoiceFailure(message);
+    } finally {
+      if (voiceAbortControllerRef.current === abortController) {
+        voiceAbortControllerRef.current = null;
+      }
+    }
+  }
+
+  async function startVoiceInput() {
+    if (loading || ["transcribing", "thinking", "speaking"].includes(voicePhase)) return;
+
+    if (voicePhase === "listening") {
+      stopVoiceRecording();
+      return;
+    }
+
+    if (voicePhase === "ready") {
+      await playPreparedVoiceResponse();
+      return;
+    }
+
+    if (!voiceSupported) {
       setMsgs((current) => [
         ...current,
         {
           role: "assistant",
           content:
-            isFahrwerkBInterface
-              ? "Spracheingabe wird auf diesem Gerät leider nicht unterstützt. Schreib kurz, welchen Führerschein du starten möchtest."
-              : isLinaInterface
-                ? "Spracheingabe wird auf diesem Gerät leider nicht unterstützt. Schreib deine Anfrage kurz als Text oder lade ein Beispielbild hoch."
-                : isMmWartungInterface
-                  ? "Spracheingabe wird auf diesem Gerät leider nicht unterstützt. Schreib dein Anliegen kurz als Text oder nutze ein Foto."
-                  : isTxbikesInterface
-                    ? "Spracheingabe wird auf diesem Gerät leider nicht unterstützt. Schreib dein Fahrradproblem kurz als Text oder nutze ein Foto."
-                    : isWilliInterface
-                      ? "Spracheingabe wird auf diesem Gerät leider nicht unterstützt. Schreib dein Anliegen kurz als Text oder nutze ein Bild."
-                      : "Spracheingabe wird auf diesem Gerät leider nicht unterstützt. Schreib dein Problem kurz als Text oder nutze ein Foto.",
+            "Die Audioaufnahme wird auf diesem Gerät oder in diesem Browser nicht unterstützt. Schreib deine Frage bitte als Text.",
         },
       ]);
       return;
     }
 
-    const recognition = new SpeechRecognitionCtor();
-    recognitionRef.current = recognition;
-
-    recognition.lang = "de-DE";
-    recognition.interimResults = false;
-    recognition.continuous = false;
-    recognition.maxAlternatives = 1;
-
-    recognition.onstart = () => {
-      setIsListening(true);
-      setInput("");
-    };
-
-    recognition.onend = () => {
-      setIsListening(false);
-    };
-
-    recognition.onerror = (event) => {
-      setIsListening(false);
-
-      const error = event.error || "";
-      const message =
-        error === "not-allowed" || error === "service-not-allowed"
-          ? "Das Mikrofon ist blockiert. Erlaube den Mikrofonzugriff im Browser oder schreibe deine Frage als Text."
-          : "Ich konnte dich gerade nicht sauber verstehen. Versuch es nochmal oder schreib dein Problem kurz als Text.";
-
-      setMsgs((current) => [...current, { role: "assistant", content: message }]);
-    };
-
-    recognition.onresult = (event) => {
-      const transcript = event.results?.[0]?.[0]?.transcript?.trim();
-      setIsListening(false);
-
-      if (!transcript) {
-        setMsgs((current) => [
-          ...current,
-          {
-            role: "assistant",
-            content: "Ich konnte daraus leider keinen Text erkennen. Versuch es nochmal etwas näher am Mikrofon.",
-          },
-        ]);
-        return;
-      }
-
-      setInput(transcript);
-      void sendText(transcript);
-    };
+    cancelVoiceRef.current = false;
+    voiceAbortControllerRef.current?.abort();
+    stopVoicePlayback();
+    setVoiceTranscript("");
+    setVoiceError("");
+    setInput("");
+    setVoicePhase("listening");
+    setVoiceEnergy(0.08);
 
     try {
-      recognition.start();
-    } catch {
-      setIsListening(false);
-      setMsgs((current) => [
-        ...current,
-        {
-          role: "assistant",
-          content: "Die Spracheingabe konnte nicht gestartet werden. Versuch es bitte nochmal.",
+      const stream = await navigator.mediaDevices.getUserMedia({
+        audio: {
+          echoCancellation: true,
+          noiseSuppression: true,
+          autoGainControl: true,
+          channelCount: 1,
         },
-      ]);
+        video: false,
+      });
+
+      const format = getRecordingFormat();
+      const recorder = format.mimeType
+        ? new MediaRecorder(stream, { mimeType: format.mimeType })
+        : new MediaRecorder(stream);
+
+      mediaStreamRef.current = stream;
+      mediaRecorderRef.current = recorder;
+      audioChunksRef.current = [];
+      voiceStartedAtRef.current = performance.now();
+      voiceDetectedRef.current = false;
+      silenceStartedAtRef.current = null;
+
+      recorder.ondataavailable = (event) => {
+        if (event.data.size > 0) {
+          audioChunksRef.current.push(event.data);
+        }
+      };
+
+      recorder.onerror = () => {
+        showVoiceFailure("Das Mikrofon konnte die Aufnahme nicht sauber verarbeiten.");
+      };
+
+      recorder.onstop = () => {
+        clearVoiceStopTimeout();
+        stopMicrophoneTracks();
+        stopVoiceAnimation();
+        closeVoiceAudioContext();
+        mediaRecorderRef.current = null;
+
+        if (cancelVoiceRef.current) {
+          audioChunksRef.current = [];
+          return;
+        }
+
+        const chunks = audioChunksRef.current;
+        audioChunksRef.current = [];
+        const blob = new Blob(chunks, {
+          type: recorder.mimeType || format.mimeType || "audio/webm",
+        });
+
+        if (blob.size < 900) {
+          showVoiceFailure("Ich habe keine verwertbare Aufnahme erkannt. Versuch es nochmal.");
+          return;
+        }
+
+        void processVoiceRecording(blob, format.extension);
+      };
+
+      startMicrophoneVisualization(stream);
+      recorder.start(220);
+
+      voiceStopTimeoutRef.current = setTimeout(() => {
+        stopVoiceRecording();
+      }, 25_000);
+    } catch (error) {
+      stopMicrophoneTracks();
+      stopVoiceAnimation();
+      closeVoiceAudioContext();
+
+      const message =
+        error instanceof DOMException &&
+        (error.name === "NotAllowedError" || error.name === "SecurityError")
+          ? "Das Mikrofon ist blockiert. Erlaube den Mikrofonzugriff im Browser und versuch es erneut."
+          : "Das Mikrofon konnte nicht gestartet werden. Versuch es bitte nochmal.";
+
+      showVoiceFailure(message);
     }
+  }
+
+  function cancelVoiceMode() {
+    if (!isVoiceActive && !mediaRecorderRef.current && !voiceAudioRef.current) return;
+
+    cancelVoiceRef.current = true;
+    clearVoiceStopTimeout();
+    voiceAbortControllerRef.current?.abort();
+    voiceAbortControllerRef.current = null;
+
+    const recorder = mediaRecorderRef.current;
+    if (recorder && recorder.state !== "inactive") {
+      try {
+        recorder.stop();
+      } catch {
+        // Ignorieren und Ressourcen unten freigeben.
+      }
+    }
+
+    mediaRecorderRef.current = null;
+    stopMicrophoneTracks();
+    stopVoicePlayback();
+    audioChunksRef.current = [];
+    setVoicePhase("idle");
+    setVoiceTranscript("");
+    setVoiceError("");
   }
 
   async function send() {
@@ -1383,8 +1831,7 @@ export default function WidgetPage() {
   }
 
   function resetChat() {
-    recognitionRef.current?.stop();
-    setIsListening(false);
+    cancelVoiceMode();
     setBookingOpen(false);
     setBookingSubmitting(false);
     setBookingForm({
@@ -1429,7 +1876,7 @@ export default function WidgetPage() {
     msgs.length === 1 &&
     msgs[0]?.role === "assistant" &&
     !loading &&
-    !isListening;
+    !isVoiceActive;
 
   const startCards = isFahrwerkBInterface
     ? FAHRWERK_B_START_CARDS
@@ -1444,6 +1891,53 @@ export default function WidgetPage() {
   const fahrwerkActiveStage = FAHRWERK_STAGES.find((stage) => stage.id === fahrwerkStage) || FAHRWERK_STAGES[0];
   const fahrwerkCompletedDocuments = FAHRWERK_DOCUMENT_ITEMS.filter((item) => Boolean(fahrwerkChecklist[item.id])).length;
   const fahrwerkDocumentProgress = Math.round((fahrwerkCompletedDocuments / FAHRWERK_DOCUMENT_ITEMS.length) * 100);
+
+  const voiceTitle =
+    voicePhase === "listening"
+      ? "Ich höre zu"
+      : voicePhase === "transcribing"
+        ? "Ich verstehe dich"
+        : voicePhase === "thinking"
+          ? "Einen Moment"
+          : voicePhase === "speaking"
+            ? `${displayBrandName} antwortet`
+            : voicePhase === "ready"
+              ? "Deine Antwort ist bereit"
+              : voicePhase === "error"
+                ? "Das hat nicht geklappt"
+                : "";
+
+  const voiceEyebrow =
+    voicePhase === "listening"
+      ? "Sprachmodus aktiv"
+      : voicePhase === "transcribing"
+        ? "ElevenLabs erkennt deine Sprache"
+        : voicePhase === "thinking"
+          ? "Das Interface bereitet die Antwort vor"
+          : voicePhase === "speaking"
+            ? "Gesprochene Antwort"
+            : voicePhase === "ready"
+              ? "Einmal tippen"
+              : voicePhase === "error"
+                ? "Sprachmodus"
+                : "";
+
+  const voiceDescription =
+    voicePhase === "listening"
+      ? isFahrwerkBInterface
+        ? "Sag zum Beispiel: Ich brauche in den Sommerferien einen Ferienkurs."
+        : "Sprich deine Anfrage ganz normal aus. Eine kurze Pause beendet die Aufnahme automatisch."
+      : voicePhase === "transcribing"
+        ? "Deine Aufnahme wird gerade sicher in Text umgewandelt."
+        : voicePhase === "thinking"
+          ? voiceTranscript || "Deine Anfrage wird verarbeitet."
+          : voicePhase === "speaking"
+            ? voiceTranscript || "Die Antwort wird jetzt vorgelesen."
+            : voicePhase === "ready"
+              ? voiceError || "Tippe auf die Kugel, um die Antwort zu hören."
+              : voicePhase === "error"
+                ? voiceError || "Versuch es bitte noch einmal."
+                : "";
 
   const wrapperBackground = isEmbedded
     ? "transparent"
@@ -1591,100 +2085,329 @@ export default function WidgetPage() {
           box-shadow: 0 16px 44px rgba(0,0,0,0.16), 0 0 0 1px rgba(${accentRgb}, 0.16) inset, 0 0 28px rgba(${accentRgb}, 0.28);
         }
 
-        @keyframes bt-voice-orb {
-          0% { transform: scale(0.92) rotate(0deg); border-radius: 42% 58% 55% 45%; }
-          33% { transform: scale(1.06) rotate(120deg); border-radius: 58% 42% 44% 56%; }
-          66% { transform: scale(0.98) rotate(240deg); border-radius: 46% 54% 62% 38%; }
-          100% { transform: scale(0.92) rotate(360deg); border-radius: 42% 58% 55% 45%; }
+        @keyframes bt-voice-stage-in {
+          0% { opacity: 0; transform: scale(1.025); filter: blur(14px); }
+          100% { opacity: 1; transform: scale(1); filter: blur(0); }
         }
 
-        @keyframes bt-voice-ring {
-          0% { transform: scale(0.76); opacity: 0.62; }
-          70% { transform: scale(1.35); opacity: 0; }
-          100% { transform: scale(1.35); opacity: 0; }
+        @keyframes bt-voice-ambient-a {
+          0%, 100% { transform: translate3d(-8%, -5%, 0) scale(1); }
+          50% { transform: translate3d(9%, 8%, 0) scale(1.13); }
         }
 
-        @keyframes bt-voice-bar {
-          0%, 100% { transform: scaleY(0.36); opacity: 0.56; }
-          50% { transform: scaleY(1); opacity: 1; }
+        @keyframes bt-voice-ambient-b {
+          0%, 100% { transform: translate3d(8%, 9%, 0) scale(1.08); }
+          50% { transform: translate3d(-10%, -7%, 0) scale(0.96); }
         }
 
-        .bt-voice-card {
-          align-self: center;
-          width: ${isEnhancedInterface ? "min(100%, 580px)" : "min(100%, 360px)"};
-          border-radius: ${isEnhancedInterface ? "28px" : "22px"};
-          padding: ${isEnhancedInterface ? "22px 22px" : "16px 14px"};
-          border: 1px solid rgba(255,255,255,0.38);
-          background:
-            radial-gradient(320px 180px at 20% 0%, rgba(${accentRgb}, 0.26), transparent 72%),
-            linear-gradient(180deg, rgba(255,255,255,0.78), rgba(255,255,255,0.46));
-          backdrop-filter: blur(24px) saturate(185%);
-          -webkit-backdrop-filter: blur(24px) saturate(185%);
-          box-shadow: 0 18px 54px rgba(0,0,0,0.13), inset 0 1px 0 rgba(255,255,255,0.40);
-          color: ${textPrimary};
-          display: flex;
-          align-items: center;
-          gap: 16px;
+        @keyframes bt-voice-halo-spin {
+          from { transform: rotate(0deg) scale(var(--voice-scale, 1.03)); }
+          to { transform: rotate(360deg) scale(var(--voice-scale, 1.03)); }
         }
 
-        .bt-voice-visual {
-          width: ${isEnhancedInterface ? "82px" : "66px"};
-          height: ${isEnhancedInterface ? "82px" : "66px"};
-          border-radius: 999px;
+        @keyframes bt-voice-halo-reverse {
+          from { transform: rotate(360deg) scale(var(--voice-scale, 1.03)); }
+          to { transform: rotate(0deg) scale(var(--voice-scale, 1.03)); }
+        }
+
+        @keyframes bt-voice-core-breathe {
+          0%, 100% { border-radius: 46% 54% 58% 42% / 44% 46% 54% 56%; }
+          33% { border-radius: 58% 42% 45% 55% / 51% 61% 39% 49%; }
+          66% { border-radius: 42% 58% 61% 39% / 58% 42% 58% 42%; }
+        }
+
+        @keyframes bt-voice-text-in {
+          from { opacity: 0; transform: translateY(10px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes bt-voice-dot {
+          0%, 100% { transform: translateY(0) scale(0.82); opacity: 0.42; }
+          50% { transform: translateY(-7px) scale(1); opacity: 1; }
+        }
+
+        .bt-voice-stage {
+          --voice-scale: 1.03;
+          --voice-energy: 0.08;
+          --voice-glow: 0.30;
+          position: absolute;
+          inset: 0;
+          z-index: 80;
+          overflow: hidden;
           display: grid;
           place-items: center;
-          position: relative;
-          flex: 0 0 auto;
+          padding: clamp(28px, 5vw, 64px);
+          border: 0;
+          border-radius: inherit;
+          color: #ffffff;
+          background:
+            radial-gradient(920px 620px at 50% 42%, rgba(${accentRgb}, 0.34), transparent 66%),
+            radial-gradient(680px 520px at 14% 4%, rgba(255,255,255,0.16), transparent 64%),
+            linear-gradient(145deg, rgba(7,10,17,0.86), rgba(18,9,15,0.90) 52%, rgba(7,10,17,0.92));
+          backdrop-filter: blur(32px) saturate(175%);
+          -webkit-backdrop-filter: blur(32px) saturate(175%);
+          animation: bt-voice-stage-in 420ms cubic-bezier(.16,1,.3,1) both;
+          isolation: isolate;
         }
 
-        .bt-voice-visual::before,
-        .bt-voice-visual::after {
+        .bt-voice-stage::before,
+        .bt-voice-stage::after {
           content: "";
           position: absolute;
-          inset: 8px;
+          width: 72%;
+          aspect-ratio: 1;
+          border-radius: 50%;
+          pointer-events: none;
+          filter: blur(62px);
+          opacity: calc(0.42 + var(--voice-energy, 0.08) * 0.34);
+          mix-blend-mode: screen;
+        }
+
+        .bt-voice-stage::before {
+          left: -20%;
+          top: -34%;
+          background: radial-gradient(circle, rgba(${accentRgb}, 0.84), transparent 66%);
+          animation: bt-voice-ambient-a 7s ease-in-out infinite;
+        }
+
+        .bt-voice-stage::after {
+          right: -24%;
+          bottom: -42%;
+          background: radial-gradient(circle, rgba(255,102,133,0.52), transparent 65%);
+          animation: bt-voice-ambient-b 8.5s ease-in-out infinite;
+        }
+
+        .bt-voice-grid {
+          position: absolute;
+          inset: -20%;
+          pointer-events: none;
+          opacity: 0.16;
+          background-image:
+            linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px);
+          background-size: 54px 54px;
+          mask-image: radial-gradient(circle at 50% 48%, #000 0%, transparent 67%);
+          -webkit-mask-image: radial-gradient(circle at 50% 48%, #000 0%, transparent 67%);
+          transform: perspective(700px) rotateX(58deg) translateY(30%);
+        }
+
+        .bt-voice-close {
+          position: absolute;
+          top: clamp(18px, 3vw, 28px);
+          right: clamp(18px, 3vw, 28px);
+          z-index: 4;
+          width: 44px;
+          height: 44px;
+          border: 0;
           border-radius: 999px;
-          border: 1px solid rgba(${accentRgb}, 0.36);
-          animation: bt-voice-ring 1.55s ease-out infinite;
+          color: rgba(255,255,255,0.86);
+          background: rgba(255,255,255,0.08);
+          backdrop-filter: blur(16px);
+          -webkit-backdrop-filter: blur(16px);
+          box-shadow: inset 0 1px 0 rgba(255,255,255,0.12), 0 14px 34px rgba(0,0,0,0.18);
+          cursor: pointer;
+          font-size: 24px;
+          line-height: 1;
+          transition: transform 180ms ease, background 180ms ease;
         }
 
-        .bt-voice-visual::after {
-          animation-delay: 0.55s;
+        .bt-voice-close:hover {
+          transform: scale(1.06);
+          background: rgba(255,255,255,0.14);
         }
 
-        .bt-voice-orb {
-          width: ${isEnhancedInterface ? "58px" : "46px"};
-          height: ${isEnhancedInterface ? "58px" : "46px"};
-          background:
-            radial-gradient(circle at 30% 24%, rgba(255,255,255,0.86), transparent 24%),
-            radial-gradient(circle at 70% 72%, rgba(${accentRgb}, 0.68), transparent 36%),
-            linear-gradient(135deg, rgba(${accentRgb}, 0.96), rgba(255,255,255,0.48));
-          filter: drop-shadow(0 12px 20px rgba(0,0,0,0.13));
-          animation: bt-voice-orb 2.4s ease-in-out infinite;
+        .bt-voice-center {
           position: relative;
-          z-index: 1;
+          z-index: 2;
+          width: min(100%, 720px);
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          text-align: center;
         }
 
-        .bt-voice-bars {
+        .bt-voice-orb-button {
+          position: relative;
+          width: clamp(230px, 34vw, 330px);
+          aspect-ratio: 1;
+          border: 0;
+          padding: 0;
+          border-radius: 50%;
+          background: transparent;
+          cursor: default;
+          display: grid;
+          place-items: center;
+          -webkit-tap-highlight-color: transparent;
+        }
+
+        .bt-voice-stage--listening .bt-voice-orb-button,
+        .bt-voice-stage--ready .bt-voice-orb-button,
+        .bt-voice-stage--error .bt-voice-orb-button {
+          cursor: pointer;
+        }
+
+        .bt-voice-halo {
+          position: absolute;
+          inset: 8%;
+          border-radius: 44% 56% 50% 50% / 46% 44% 56% 54%;
+          background:
+            conic-gradient(from 20deg,
+              rgba(255,255,255,0.04),
+              rgba(${accentRgb},0.76),
+              rgba(255,120,145,0.42),
+              rgba(255,255,255,0.12),
+              rgba(${accentRgb},0.76),
+              rgba(255,255,255,0.04));
+          filter: blur(18px);
+          opacity: var(--voice-glow, 0.3);
+          animation: bt-voice-halo-spin 6.4s linear infinite;
+          will-change: transform, opacity;
+        }
+
+        .bt-voice-halo:nth-child(2) {
+          inset: 15%;
+          filter: blur(11px);
+          opacity: calc(var(--voice-glow, 0.3) * 0.78);
+          animation: bt-voice-halo-reverse 4.8s linear infinite;
+        }
+
+        .bt-voice-core {
+          position: relative;
+          width: 52%;
+          aspect-ratio: 1;
+          transform: scale(var(--voice-scale, 1.03));
+          border-radius: 46% 54% 58% 42% / 44% 46% 54% 56%;
+          background:
+            radial-gradient(circle at 30% 23%, rgba(255,255,255,0.96), transparent 18%),
+            radial-gradient(circle at 68% 72%, rgba(255,116,145,0.78), transparent 34%),
+            radial-gradient(circle at 34% 70%, rgba(${accentRgb},0.94), transparent 48%),
+            linear-gradient(135deg, rgba(255,255,255,0.68), rgba(${accentRgb},0.94) 48%, rgba(98,11,30,0.92));
+          box-shadow:
+            0 0 34px rgba(${accentRgb}, calc(0.22 + var(--voice-energy, 0.08) * 0.40)),
+            0 0 110px rgba(${accentRgb}, calc(0.16 + var(--voice-energy, 0.08) * 0.34)),
+            inset 0 1px 0 rgba(255,255,255,0.72),
+            inset -18px -20px 46px rgba(40,0,10,0.24);
+          animation: bt-voice-core-breathe 3.8s ease-in-out infinite;
+          transition: transform 90ms linear, box-shadow 120ms linear;
+          will-change: transform, border-radius;
+        }
+
+        .bt-voice-core::before {
+          content: "";
+          position: absolute;
+          inset: 10%;
+          border-radius: inherit;
+          background: linear-gradient(130deg, rgba(255,255,255,0.24), transparent 44%, rgba(255,255,255,0.08));
+          mix-blend-mode: screen;
+          filter: blur(5px);
+        }
+
+        .bt-voice-stage--transcribing .bt-voice-core,
+        .bt-voice-stage--thinking .bt-voice-core {
+          transform: scale(0.94);
+          animation-duration: 2.1s;
+        }
+
+        .bt-voice-stage--speaking .bt-voice-core {
+          animation-duration: 2.7s;
+        }
+
+        .bt-voice-copy {
+          width: min(100%, 660px);
+          margin-top: clamp(4px, 1vw, 12px);
+          animation: bt-voice-text-in 380ms 100ms ease both;
+        }
+
+        .bt-voice-eyebrow {
+          font-size: 12px;
+          font-weight: 800;
+          letter-spacing: 0.18em;
+          text-transform: uppercase;
+          color: rgba(255,255,255,0.56);
+          margin-bottom: 10px;
+        }
+
+        .bt-voice-title {
+          font-size: clamp(28px, 4.2vw, 48px);
+          line-height: 1.08;
+          font-weight: 780;
+          letter-spacing: -0.035em;
+          text-wrap: balance;
+          text-shadow: 0 12px 44px rgba(0,0,0,0.24);
+        }
+
+        .bt-voice-transcript {
+          margin: 14px auto 0;
+          max-width: 620px;
+          min-height: 46px;
+          font-size: clamp(15px, 1.9vw, 19px);
+          line-height: 1.5;
+          color: rgba(255,255,255,0.70);
+          text-wrap: balance;
+        }
+
+        .bt-voice-dots {
+          height: 30px;
           display: inline-flex;
           align-items: center;
-          gap: 4px;
-          height: 22px;
-          margin-top: 7px;
+          gap: 7px;
+          margin-top: 8px;
         }
 
-        .bt-voice-bars span {
-          width: 4px;
-          height: 18px;
+        .bt-voice-dots span {
+          width: 7px;
+          height: 7px;
           border-radius: 999px;
-          background: rgba(${accentRgb}, 0.82);
-          transform-origin: center;
-          animation: bt-voice-bar 700ms ease-in-out infinite;
+          background: rgba(255,255,255,0.82);
+          animation: bt-voice-dot 900ms ease-in-out infinite;
         }
 
-        .bt-voice-bars span:nth-child(2) { animation-delay: 90ms; }
-        .bt-voice-bars span:nth-child(3) { animation-delay: 180ms; }
-        .bt-voice-bars span:nth-child(4) { animation-delay: 270ms; }
-        .bt-voice-bars span:nth-child(5) { animation-delay: 360ms; }
+        .bt-voice-dots span:nth-child(2) { animation-delay: 120ms; }
+        .bt-voice-dots span:nth-child(3) { animation-delay: 240ms; }
+
+        .bt-voice-action {
+          margin-top: 18px;
+          min-height: 46px;
+          padding: 0 18px;
+          border: 0;
+          border-radius: 999px;
+          color: #ffffff;
+          background: rgba(255,255,255,0.12);
+          backdrop-filter: blur(14px);
+          -webkit-backdrop-filter: blur(14px);
+          box-shadow: inset 0 1px 0 rgba(255,255,255,0.16), 0 16px 38px rgba(0,0,0,0.16);
+          cursor: pointer;
+          font-weight: 750;
+          font-size: 14px;
+          transition: transform 180ms ease, background 180ms ease;
+        }
+
+        .bt-voice-action:hover {
+          transform: translateY(-1px);
+          background: rgba(255,255,255,0.18);
+        }
+
+        .bt-voice-footer {
+          position: absolute;
+          left: 50%;
+          bottom: clamp(20px, 3vw, 30px);
+          transform: translateX(-50%);
+          z-index: 3;
+          width: calc(100% - 120px);
+          text-align: center;
+          color: rgba(255,255,255,0.44);
+          font-size: 12px;
+          line-height: 1.4;
+          pointer-events: none;
+        }
+
+        @media (max-width: 680px) {
+          .bt-voice-stage { padding: 26px 18px 68px; }
+          .bt-voice-orb-button { width: min(68vw, 260px); }
+          .bt-voice-title { font-size: clamp(27px, 9vw, 40px); }
+          .bt-voice-transcript { font-size: 15px; }
+          .bt-voice-footer { width: calc(100% - 64px); }
+        }
 
         .bt-image-preview-wrap {
           margin-top: 10px;
@@ -1888,10 +2611,13 @@ export default function WidgetPage() {
           .bt-panel { animation: none !important; }
           .bt-launcher::after { animation: none !important; }
           .bt-panel-liquid { animation: none !important; }
-          .bt-voice-orb,
-          .bt-voice-visual::before,
-          .bt-voice-visual::after,
-          .bt-voice-bars span { animation: none !important; }
+          .bt-voice-stage,
+          .bt-voice-stage::before,
+          .bt-voice-stage::after,
+          .bt-voice-halo,
+          .bt-voice-core,
+          .bt-voice-copy,
+          .bt-voice-dots span { animation: none !important; }
         }
       `}</style>
 
@@ -2077,7 +2803,7 @@ export default function WidgetPage() {
                         {displayBrandName} – {displayAssistantName}
                       </div>
                       <div style={{ fontSize: isEnhancedInterface ? 14 : 12.5, opacity: 0.9, marginTop: 3, color: textSecondary }}>
-                        {loading ? "Tippt…" : isListening ? "Hört zu…" : isFahrwerkBInterface ? "In 1 Minute zum passenden Einstieg" : "Online verfügbar"}
+                        {voicePhase === "listening" ? "Hört zu…" : voicePhase === "transcribing" ? "Versteht dich…" : voicePhase === "thinking" ? "Denkt nach…" : voicePhase === "speaking" || voicePhase === "ready" ? "Antwortet…" : loading ? "Tippt…" : isFahrwerkBInterface ? "In 1 Minute zum passenden Einstieg" : "Online verfügbar"}
                       </div>
                     </div>
                   </div>
@@ -2269,7 +2995,7 @@ export default function WidgetPage() {
                             key={card.title}
                             type="button"
                             className="bt-start-card"
-                            disabled={loading || isListening}
+                            disabled={loading || isVoiceActive}
                             onClick={() => {
                               if (card.action === "photo") {
                                 openPhotoPicker();
@@ -2277,7 +3003,7 @@ export default function WidgetPage() {
                               }
 
                               if (card.action === "voice") {
-                                startVoiceInput();
+                                void startVoiceInput();
                                 return;
                               }
 
@@ -2724,7 +3450,7 @@ export default function WidgetPage() {
                               </button>
                               <button
                                 type="button"
-                                onClick={startVoiceInput}
+                                onClick={() => void startVoiceInput()}
                                 style={{ height: 46, padding: "0 16px", borderRadius: 15, border: "1px solid rgba(22,49,38,0.10)", background: "rgba(255,255,255,0.66)", color: textPrimary, cursor: "pointer", fontWeight: 850 }}
                               >
                                 Anliegen einsprechen
@@ -3223,39 +3949,6 @@ export default function WidgetPage() {
                     </form>
                   )}
 
-                  {isListening && (
-                    <div className="bt-voice-card">
-                      <div className="bt-voice-visual" aria-hidden="true">
-                        <div className="bt-voice-orb" />
-                      </div>
-                      <div style={{ minWidth: 0 }}>
-                        <div style={{ fontSize: isEnhancedInterface ? 18 : 15, fontWeight: 800, marginBottom: 4 }}>
-                          Ich höre zu…
-                        </div>
-                        <div style={{ fontSize: isEnhancedInterface ? 14.5 : 13, lineHeight: 1.45, color: textSecondary }}>
-                          {isFahrwerkBInterface
-                            ? "Erzähl kurz, welche Klasse du starten möchtest und ob du schnell starten oder erst beraten werden willst. Danach wird deine Sprache automatisch gesendet."
-                            : isLinaInterface
-                              ? "Erzähl kurz, was du brauchst. Danach wird deine Sprache automatisch als Nachricht gesendet."
-                              : isMmWartungInterface
-                                ? "Erzähl kurz, ob es um ein Fahrzeugproblem, einen Termin oder ein Ersatzteil geht. Danach wird deine Sprache automatisch gesendet."
-                                : isTxbikesInterface
-                                  ? "Erzähl kurz, was mit dem Fahrrad los ist oder welchen Termin du brauchst. Danach wird deine Sprache automatisch als Nachricht gesendet."
-                                  : isWilliInterface
-                                    ? "Erzähl kurz dein Anliegen. Danach wird deine Sprache automatisch als Nachricht gesendet."
-                                    : "Erzähl kurz, worum es geht. Danach wird deine Sprache automatisch als Nachricht gesendet."}
-                        </div>
-                        <div className="bt-voice-bars" aria-hidden="true">
-                          <span />
-                          <span />
-                          <span />
-                          <span />
-                          <span />
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
                   {msgs.map((m, i) => {
                     const isUser = m.role === "user";
                     return (
@@ -3368,7 +4061,7 @@ export default function WidgetPage() {
                     type="button"
                     className="bt-round-action-button"
                     onClick={openPhotoPicker}
-                    disabled={loading || isListening}
+                    disabled={loading || isVoiceActive}
                     title="Foto hinzufügen"
                     aria-label="Foto hinzufügen"
                   >
@@ -3377,11 +4070,27 @@ export default function WidgetPage() {
 
                   <button
                     type="button"
-                    className={`bt-round-action-button ${isListening ? "bt-listening" : ""}`}
-                    onClick={startVoiceInput}
-                    disabled={loading}
-                    title={voiceSupported ? "Spracheingabe starten" : "Spracheingabe nicht unterstützt"}
-                    aria-label={voiceSupported ? "Spracheingabe starten" : "Spracheingabe nicht unterstützt"}
+                    className={`bt-round-action-button ${isVoiceActive ? "bt-listening" : ""}`}
+                    onClick={() => void startVoiceInput()}
+                    disabled={loading && !isVoiceActive}
+                    title={
+                      isListening
+                        ? "Aufnahme beenden"
+                        : voicePhase === "ready"
+                          ? "Antwort abspielen"
+                          : voiceSupported
+                            ? "Sprachmodus starten"
+                            : "Audioaufnahme nicht unterstützt"
+                    }
+                    aria-label={
+                      isListening
+                        ? "Aufnahme beenden"
+                        : voicePhase === "ready"
+                          ? "Antwort abspielen"
+                          : voiceSupported
+                            ? "Sprachmodus starten"
+                            : "Audioaufnahme nicht unterstützt"
+                    }
                   >
                     {isListening ? "■" : "🎙️"}
                   </button>
@@ -3396,8 +4105,8 @@ export default function WidgetPage() {
                       }
                     }}
                     placeholder={
-                      isListening
-                        ? "Sprich jetzt…"
+                      isVoiceActive
+                        ? "Sprachmodus aktiv…"
                         : isFahrwerkBInterface
                           ? "Schreib z. B. B197, BF17 oder Beratung…"
                           : isLinaInterface
@@ -3431,7 +4140,7 @@ export default function WidgetPage() {
 
                   <button
                     onClick={send}
-                    disabled={!input.trim() || loading || isListening}
+                    disabled={!input.trim() || loading || isVoiceActive}
                     style={{
                       height: isEnhancedInterface ? 60 : 46,
                       padding: isEnhancedInterface ? "0 24px" : "0 18px",
@@ -3441,7 +4150,7 @@ export default function WidgetPage() {
                         ? `linear-gradient(180deg, ${widgetAccent}F0, ${widgetAccent}A8)`
                         : "rgba(255,255,255,0.26)",
                       color: input.trim() ? "#ffffff" : isFahrwerkBInterface ? "rgba(127,29,29,0.62)" : "#5c7a6d",
-                      cursor: input.trim() && !loading && !isListening ? "pointer" : "not-allowed",
+                      cursor: input.trim() && !loading && !isVoiceActive ? "pointer" : "not-allowed",
                       opacity: loading ? 0.72 : 1,
                       fontWeight: isEnhancedInterface ? 700 : 500,
                       fontSize: isEnhancedInterface ? 16 : 14,
@@ -3454,6 +4163,104 @@ export default function WidgetPage() {
                   </button>
                 </div>
               </div>
+
+              {isVoiceActive && (
+                <div
+                  ref={voiceStageRef}
+                  className={`bt-voice-stage bt-voice-stage--${voicePhase}`}
+                  role="dialog"
+                  aria-modal="true"
+                  aria-live="polite"
+                  aria-label="Sprachmodus"
+                  style={{
+                    "--voice-scale": "1.03",
+                    "--voice-energy": "0.08",
+                    "--voice-glow": "0.30",
+                  } as CSSProperties}
+                >
+                  <div className="bt-voice-grid" aria-hidden="true" />
+
+                  <button
+                    type="button"
+                    className="bt-voice-close"
+                    onClick={cancelVoiceMode}
+                    aria-label="Sprachmodus schließen"
+                    title="Sprachmodus schließen"
+                  >
+                    ×
+                  </button>
+
+                  <div className="bt-voice-center">
+                    <button
+                      type="button"
+                      className="bt-voice-orb-button"
+                      onClick={() => {
+                        if (voicePhase === "listening") {
+                          stopVoiceRecording();
+                        } else if (voicePhase === "ready") {
+                          void playPreparedVoiceResponse();
+                        } else if (voicePhase === "error") {
+                          void startVoiceInput();
+                        }
+                      }}
+                      disabled={!["listening", "ready", "error"].includes(voicePhase)}
+                      aria-label={
+                        voicePhase === "listening"
+                          ? "Aufnahme beenden"
+                          : voicePhase === "ready"
+                            ? "Antwort abspielen"
+                            : voicePhase === "error"
+                              ? "Erneut versuchen"
+                              : voiceTitle
+                      }
+                    >
+                      <span className="bt-voice-halo" aria-hidden="true" />
+                      <span className="bt-voice-halo" aria-hidden="true" />
+                      <span className="bt-voice-core" aria-hidden="true" />
+                    </button>
+
+                    <div className="bt-voice-copy" key={voicePhase}>
+                      <div className="bt-voice-eyebrow">{voiceEyebrow}</div>
+                      <div className="bt-voice-title">{voiceTitle}</div>
+                      <div className="bt-voice-transcript">{voiceDescription}</div>
+
+                      {["transcribing", "thinking"].includes(voicePhase) && (
+                        <div className="bt-voice-dots" aria-hidden="true">
+                          <span />
+                          <span />
+                          <span />
+                        </div>
+                      )}
+
+                      {voicePhase === "listening" && (
+                        <button type="button" className="bt-voice-action" onClick={stopVoiceRecording}>
+                          Aufnahme beenden
+                        </button>
+                      )}
+
+                      {voicePhase === "ready" && (
+                        <button type="button" className="bt-voice-action" onClick={() => void playPreparedVoiceResponse()}>
+                          Antwort abspielen
+                        </button>
+                      )}
+
+                      {voicePhase === "error" && (
+                        <button type="button" className="bt-voice-action" onClick={() => void startVoiceInput()}>
+                          Erneut versuchen
+                        </button>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="bt-voice-footer">
+                    {voicePhase === "listening"
+                      ? "Eine kurze Pause beendet die Aufnahme automatisch. Du kannst auch auf die Kugel tippen."
+                      : voicePhase === "speaking"
+                        ? "Tippe oben rechts auf ×, um die Ausgabe zu beenden."
+                        : "Dein Mikrofon wird nur während des aktiven Sprachmodus verwendet."}
+                  </div>
+                </div>
+              )}
             </div>
           )}
         </>
