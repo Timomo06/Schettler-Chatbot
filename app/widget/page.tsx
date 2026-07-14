@@ -55,7 +55,7 @@ type StartCard = {
   title: string;
   description: string;
   message?: string;
-  action?: "photo" | "voice" | "booking" | "fahrwerkSignup" | "fahrwerkPanel";
+  action?: "photo" | "voice" | "booking" | "fahrwerkSignup" | "fahrwerkLiveSignup" | "fahrwerkPanel";
   fahrwerkPanel?: FahrwerkPanel;
   prefillLicenseClass?: string;
   prefillStartWish?: string;
@@ -135,6 +135,9 @@ const DEFAULT_FAHRWERK_SIGNUP_FORM: FahrwerkSignupFormState = {
   privacyAccepted: false,
 };
 
+const FAHRWERK_LIVE_SIGNUP_URL =
+  "https://start.fahrschule.live/WTd4L0ZsYzRRbkcycmRzV3gxczFGQT09OjrLg1cp9dg7zbbiRX6Flixr/st/reg";
+
 const FAHRWERK_LICENSE_CLASSES = [
   "Klasse B",
   "B197",
@@ -163,7 +166,7 @@ const FAHRWERK_STAGES: FahrwerkStage[] = [
   {
     id: "new",
     label: "Noch nicht angemeldet",
-    next: "Passende Klasse finden und Anmeldung vorbereiten.",
+    next: "Passende Klasse finden oder direkt online anmelden.",
     detail: "Starte mit Klasse B, B197, BF17 oder BE. Wenn du unsicher bist, führt dich das Interface über wenige Fragen zur passenden Richtung.",
   },
   {
@@ -411,9 +414,15 @@ const MM_WARTUNG_START_CARDS: StartCard[] = [
 
 const FAHRWERK_B_START_CARDS: StartCard[] = [
   {
+    icon: "🚀",
+    title: "Online anmelden",
+    description: "Offizielle Anmeldung bei Fahrwerk B über Fahrschule.live öffnen",
+    action: "fahrwerkLiveSignup",
+  },
+  {
     icon: "🧭",
-    title: "Ich will starten",
-    description: "Klasse finden, Anmeldung vorbereiten, nächsten Schritt sehen",
+    title: "Beratung & Start",
+    description: "Klasse finden, Fragen klären und nächsten Schritt sehen",
     action: "fahrwerkPanel",
     fahrwerkPanel: "start",
   },
@@ -470,6 +479,37 @@ function hexToRgb(hex: string) {
   const b = num & 255;
 
   return `${r}, ${g}, ${b}`;
+}
+
+const FAHRWERK_EMOJI_PATTERN = /[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/u;
+
+function ensureFahrwerkEmoji(content: string) {
+  if (!content || FAHRWERK_EMOJI_PATTERN.test(content)) return content;
+
+  const normalized = content.toLowerCase();
+  let emoji = "🚗";
+
+  if (/\b(hi|hallo|willkommen)\b/.test(normalized)) {
+    emoji = "👋";
+  } else if (/\b(fehler|problem|nicht möglich|technisch)\b/.test(normalized)) {
+    emoji = "⚠️";
+  } else if (/\b(anmeld|klasse b|b197|bf17|führerschein starten)\b/.test(normalized)) {
+    emoji = "📝";
+  } else if (/\b(unterlagen|dokument|sehtest|erste hilfe|passbild|antrag)\b/.test(normalized)) {
+    emoji = "📄";
+  } else if (/\b(theorie|lernen|prüfungsfragen)\b/.test(normalized)) {
+    emoji = "📚";
+  } else if (/\b(praxis|fahrstunde|sonderfahrt)\b/.test(normalized)) {
+    emoji = "🚘";
+  } else if (/\b(prüfung|checkliste|prüfungsangst)\b/.test(normalized)) {
+    emoji = "🎯";
+  } else if (/\b(rückruf|kontakt|telefon|erreichen)\b/.test(normalized)) {
+    emoji = "📞";
+  } else if (/\b(erledigt|perfekt|alles klar|okay)\b/.test(normalized)) {
+    emoji = "✅";
+  }
+
+  return `${emoji} ${content}`;
 }
 
 export default function WidgetPage() {
@@ -603,6 +643,7 @@ export default function WidgetPage() {
 
   const isEmbedClosed = isEmbedded && !open;
   const listRef = useRef<HTMLDivElement | null>(null);
+  const fahrwerkPanelRef = useRef<HTMLDivElement | null>(null);
   const photoInputRef = useRef<HTMLInputElement | null>(null);
   const recognitionRef = useRef<SpeechRecognitionLike | null>(null);
 
@@ -802,6 +843,40 @@ export default function WidgetPage() {
     }
   }
 
+  function openFahrwerkLiveSignup() {
+    if (!isFahrwerkBInterface || loading || isListening) return;
+
+    setShowBadge(false);
+
+    setMsgs((current) => {
+      const alreadyHasLiveSignupHint = current.some(
+        (msg) => msg.role === "assistant" && msg.content.includes("offizielle Online-Anmeldung"),
+      );
+
+      if (alreadyHasLiveSignupHint) return current;
+
+      return [
+        ...current,
+        {
+          role: "assistant",
+          content:
+            "Ich öffne jetzt die offizielle Online-Anmeldung von Fahrwerk B über Fahrschule.live in einem neuen Tab.",
+        },
+      ];
+    });
+
+    const signupWindow = window.open(FAHRWERK_LIVE_SIGNUP_URL, "_blank");
+
+    if (signupWindow) {
+      signupWindow.opener = null;
+      signupWindow.focus();
+      return;
+    }
+
+    // Falls der Browser neue Tabs blockiert, wird die Anmeldung im aktuellen Fenster geöffnet.
+    window.location.assign(FAHRWERK_LIVE_SIGNUP_URL);
+  }
+
   function openFahrwerkSignupForm(licenseClass?: string, startWish?: string) {
     if (!isFahrwerkBInterface || loading || isListening) return;
 
@@ -825,7 +900,7 @@ export default function WidgetPage() {
         {
           role: "assistant",
           content:
-            "Alles klar — ich öffne dir die Anmeldevorbereitung. Danach fehlen später nur noch die echte Fahrschule.live-Verknüpfung und der Mailversand an Fahrwerk B.",
+            "Alles klar — ich öffne dir die Beratungs- und Anfragevorbereitung. Für die verbindliche Anmeldung kannst du jederzeit direkt die offizielle Fahrschule.live-Anmeldung öffnen.",
         },
       ];
     });
@@ -847,7 +922,7 @@ export default function WidgetPage() {
         ...current,
         {
           role: "assistant",
-          content: "Für die Anmeldevorbereitung brauche ich mindestens deinen Namen.",
+          content: "Für die Anfragevorbereitung brauche ich mindestens deinen Namen.",
         },
       ]);
       return;
@@ -879,12 +954,12 @@ export default function WidgetPage() {
       ...current,
       {
         role: "user",
-        content: `Anmeldevorbereitung ausgefüllt:\nKlasse: ${fahrwerkSignupForm.licenseClass}\nWunsch: ${fahrwerkSignupForm.startWish}\nName: ${name}`,
+        content: `Anfragevorbereitung ausgefüllt:\nKlasse: ${fahrwerkSignupForm.licenseClass}\nWunsch: ${fahrwerkSignupForm.startWish}\nName: ${name}`,
       },
       {
         role: "assistant",
         content:
-          "Perfekt — optisch ist die Anmeldung jetzt vorbereitet. In Phase 2 senden wir diese Daten an Fahrwerk B und öffnen danach automatisch die offizielle Anmeldung über Fahrschule.live.",
+          "Die Anfrage ist im Interface vorbereitet. Die offizielle Online-Anmeldung ist bereits angebunden und kann über den Button „Online anmelden“ geöffnet werden. Der automatische Versand dieser Anfrage an Fahrwerk B folgt später.",
       },
     ]);
 
@@ -893,12 +968,34 @@ export default function WidgetPage() {
     setFahrwerkPanel("dashboard");
   }
 
+  function scrollFahrwerkPanelIntoView() {
+    window.requestAnimationFrame(() => {
+      window.requestAnimationFrame(() => {
+        const scrollContainer = listRef.current;
+        const panelElement = fahrwerkPanelRef.current;
+
+        if (!scrollContainer || !panelElement) return;
+
+        const containerRect = scrollContainer.getBoundingClientRect();
+        const panelRect = panelElement.getBoundingClientRect();
+        const targetTop =
+          scrollContainer.scrollTop + panelRect.top - containerRect.top - 12;
+
+        scrollContainer.scrollTo({
+          top: Math.max(0, targetTop),
+          behavior: "smooth",
+        });
+      });
+    });
+  }
+
   function openFahrwerkPanel(panel: FahrwerkPanel) {
     if (!isFahrwerkBInterface || loading || isListening) return;
 
     setFahrwerkPanel(panel);
     setFahrwerkSignupOpen(false);
     setShowBadge(false);
+    scrollFahrwerkPanelIntoView();
   }
 
   function toggleFahrwerkChecklistItem(itemId: string) {
@@ -2194,6 +2291,11 @@ export default function WidgetPage() {
                                 return;
                               }
 
+                              if (card.action === "fahrwerkLiveSignup") {
+                                openFahrwerkLiveSignup();
+                                return;
+                              }
+
                               if (card.action === "fahrwerkPanel" && card.fahrwerkPanel) {
                                 openFahrwerkPanel(card.fahrwerkPanel);
                                 return;
@@ -2256,6 +2358,7 @@ export default function WidgetPage() {
                   {isFahrwerkBInterface &&
                     (fahrwerkPanel !== "dashboard" || fahrwerkCompletedDocuments > 0 || fahrwerkStage !== "new") && (
                       <div
+                        ref={fahrwerkPanelRef}
                         style={{
                           alignSelf: "stretch",
                           borderRadius: isEnhancedInterface ? 30 : 20,
@@ -2356,7 +2459,53 @@ export default function WidgetPage() {
                         </div>
 
                         {fahrwerkPanel === "start" && (
-                          <div style={{ display: "grid", gridTemplateColumns: isEnhancedInterface ? "repeat(2, minmax(0, 1fr))" : "1fr", gap: 12 }}>
+                          <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                            <div
+                              style={{
+                                borderRadius: 22,
+                                border: `1px solid rgba(${accentRgb}, 0.28)`,
+                                background: `linear-gradient(135deg, rgba(${accentRgb}, 0.18), rgba(255,255,255,0.68))`,
+                                padding: 18,
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "space-between",
+                                gap: 14,
+                                flexWrap: "wrap",
+                              }}
+                            >
+                              <div style={{ flex: "1 1 360px" }}>
+                                <div style={{ fontSize: 20, fontWeight: 950, marginBottom: 5 }}>
+                                  Offizielle Online-Anmeldung
+                                </div>
+                                <div style={{ fontSize: 14, color: textSecondary, lineHeight: 1.5 }}>
+                                  Die Anmeldung läuft direkt über Fahrschule.live. Dort werden deine Daten erfasst; sofern die Mailvorlage eingerichtet ist, wird anschließend automatisch eine Bestätigung versendet.
+                                </div>
+                              </div>
+                              <button
+                                type="button"
+                                onClick={openFahrwerkLiveSignup}
+                                style={{
+                                  height: 48,
+                                  padding: "0 18px",
+                                  borderRadius: 16,
+                                  border: "1px solid rgba(255,255,255,0.24)",
+                                  background: `linear-gradient(180deg, ${widgetAccent}F0, ${widgetAccent}A8)`,
+                                  color: "#ffffff",
+                                  cursor: "pointer",
+                                  fontWeight: 950,
+                                  whiteSpace: "nowrap",
+                                  boxShadow: `0 14px 34px rgba(0,0,0,0.16), 0 0 0 1px rgba(${accentRgb}, 0.14) inset`,
+                                }}
+                              >
+                                Jetzt online anmelden ↗
+                              </button>
+                            </div>
+
+                            <div style={{ fontSize: 13.5, color: textSecondary, lineHeight: 1.45 }}>
+                              Noch unsicher? Wähle zuerst eine Führerscheinklasse aus und bereite eine Beratungsanfrage vor.
+                            </div>
+
+                            <div style={{ display: "grid", gridTemplateColumns: isEnhancedInterface ? "repeat(2, minmax(0, 1fr))" : "1fr", gap: 12 }}>
                             {[
                               ["Klasse B", "Auto-Führerschein starten", "Schnell starten"],
                               ["B197", "Schalten lernen, später flexibel fahren", "Schnell starten"],
@@ -2375,6 +2524,7 @@ export default function WidgetPage() {
                                 <div style={{ fontSize: 13.5, color: textSecondary, lineHeight: 1.4 }}>{description}</div>
                               </button>
                             ))}
+                            </div>
                           </div>
                         )}
 
@@ -2553,11 +2703,18 @@ export default function WidgetPage() {
                               gap: 10,
                             }}
                           >
-                            <div style={{ fontSize: 20, fontWeight: 950 }}>Fahrwerk B direkt einbinden</div>
+                            <div style={{ fontSize: 20, fontWeight: 950 }}>Anmeldung und persönliche Hilfe</div>
                             <div style={{ fontSize: 14, color: textSecondary, lineHeight: 1.5 }}>
-                              Wenn das Interface die Frage nicht sicher lösen kann, bereitet es eine Anfrage vor. Später senden wir diese per Mail oder über eine API an Fahrwerk B und öffnen danach Fahrschule.live.
+                              Die offizielle Online-Anmeldung über Fahrschule.live ist bereits angebunden. Falls du vorher Hilfe brauchst, kann das Interface zusätzlich eine Rückruf- oder Beratungsanfrage vorbereiten.
                             </div>
                             <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+                              <button
+                                type="button"
+                                onClick={openFahrwerkLiveSignup}
+                                style={{ height: 46, padding: "0 16px", borderRadius: 15, border: "1px solid rgba(255,255,255,0.22)", background: `linear-gradient(180deg, ${widgetAccent}F0, ${widgetAccent}A8)`, color: "#ffffff", cursor: "pointer", fontWeight: 900 }}
+                              >
+                                Online anmelden ↗
+                              </button>
                               <button
                                 type="button"
                                 onClick={() => openFahrwerkSignupForm("Ich bin noch unsicher", "Rückruf von Fahrwerk B")}
@@ -2601,10 +2758,10 @@ export default function WidgetPage() {
                       <div style={{ display: "flex", justifyContent: "space-between", gap: 12, alignItems: "flex-start" }}>
                         <div>
                           <div style={{ fontSize: isEnhancedInterface ? 22 : 17, fontWeight: 850, marginBottom: 4 }}>
-                            Anmeldung vorbereiten
+                            Beratung / Anfrage vorbereiten
                           </div>
                           <div style={{ fontSize: isEnhancedInterface ? 14.5 : 13, color: textSecondary, lineHeight: 1.45 }}>
-                            Optische Vorstufe: Später werden diese Daten an Fahrwerk B gesendet und danach Fahrschule.live geöffnet.
+                            Hier kannst du dein Anliegen vorstrukturieren. Die verbindliche Anmeldung läuft direkt über Fahrschule.live.
                           </div>
                         </div>
                         <button
@@ -2791,23 +2948,42 @@ export default function WidgetPage() {
                         <div style={{ fontSize: 12.5, color: textSecondary, lineHeight: 1.4 }}>
                           * Pflichtfeld. E-Mail oder Telefon muss angegeben werden.
                         </div>
-                        <button
-                          type="submit"
-                          style={{
-                            height: 48,
-                            padding: "0 18px",
-                            borderRadius: 16,
-                            border: "1px solid rgba(255,255,255,0.28)",
-                            background: `linear-gradient(180deg, ${widgetAccent}F0, ${widgetAccent}B8)`,
-                            color: "#ffffff",
-                            cursor: "pointer",
-                            fontWeight: 900,
-                            fontSize: 14.5,
-                            boxShadow: `0 14px 34px rgba(0,0,0,0.16), 0 0 0 1px ${widgetAccent}12 inset`,
-                          }}
-                        >
-                          Anmeldung vorbereiten
-                        </button>
+                        <div style={{ display: "flex", gap: 10, flexWrap: "wrap", justifyContent: "flex-end" }}>
+                          <button
+                            type="button"
+                            onClick={openFahrwerkLiveSignup}
+                            style={{
+                              height: 48,
+                              padding: "0 18px",
+                              borderRadius: 16,
+                              border: `1px solid rgba(${accentRgb}, 0.18)`,
+                              background: "rgba(255,255,255,0.72)",
+                              color: textPrimary,
+                              cursor: "pointer",
+                              fontWeight: 900,
+                              fontSize: 14,
+                            }}
+                          >
+                            Direkt online anmelden ↗
+                          </button>
+                          <button
+                            type="submit"
+                            style={{
+                              height: 48,
+                              padding: "0 18px",
+                              borderRadius: 16,
+                              border: "1px solid rgba(255,255,255,0.28)",
+                              background: `linear-gradient(180deg, ${widgetAccent}F0, ${widgetAccent}B8)`,
+                              color: "#ffffff",
+                              cursor: "pointer",
+                              fontWeight: 900,
+                              fontSize: 14.5,
+                              boxShadow: `0 14px 34px rgba(0,0,0,0.16), 0 0 0 1px ${widgetAccent}12 inset`,
+                            }}
+                          >
+                            Anfrage vorbereiten
+                          </button>
+                        </div>
                       </div>
                     </form>
                   )}
@@ -3111,7 +3287,9 @@ export default function WidgetPage() {
                             color: isUser ? "#ffffff" : textPrimary,
                           }}
                         >
-                          {m.content}
+                          {isFahrwerkBInterface && !isUser
+                            ? ensureFahrwerkEmoji(m.content)
+                            : m.content}
 
                           {m.imagePreviewUrl && (
                             <div className="bt-image-preview-wrap">
