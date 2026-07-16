@@ -132,7 +132,7 @@ const FAHRWERK_LICENSE_CLASSES = [
   "Klasse B",
   "B197",
   "BF17",
-  "BE Anhänger",
+  "BE AnhÃ¤nger",
   "Ich bin noch unsicher",
 ];
 
@@ -140,7 +140,7 @@ const FAHRWERK_START_WISHES = [
   "Schnell starten",
   "Erstmal beraten lassen",
   "Theorie-Einstieg finden",
-  "Rückruf von Fahrwerk B",
+  "RÃ¼ckruf von Fahrwerk B",
 ];
 
 const FAHRWERK_DOCUMENT_ITEMS: FahrwerkDocumentItem[] = [
@@ -152,22 +152,22 @@ const FAHRWERK_DOCUMENT_ITEMS: FahrwerkDocumentItem[] = [
   {
     id: "sehtest",
     label: "Sehtest",
-    hint: "Für Klasse B/B197/BF17 nötig. Gültigkeit beachten.",
+    hint: "FÃ¼r Klasse B/B197/BF17 nÃ¶tig. GÃ¼ltigkeit beachten.",
   },
   {
     id: "erstehilfe",
     label: "Erste-Hilfe-Kurs",
-    hint: "Bescheinigung für den Antrag sichern.",
+    hint: "Bescheinigung fÃ¼r den Antrag sichern.",
   },
   {
     id: "passbild",
     label: "Biometrisches Passbild",
-    hint: "Wird für den Führerscheinantrag benötigt.",
+    hint: "Wird fÃ¼r den FÃ¼hrerscheinantrag benÃ¶tigt.",
   },
   {
     id: "antrag",
     label: "Antrag beim Amt",
-    hint: "Erst danach kann die Prüfung später sauber laufen.",
+    hint: "Erst danach kann die PrÃ¼fung spÃ¤ter sauber laufen.",
   },
   {
     id: "bf17",
@@ -182,49 +182,49 @@ const FAHRWERK_STAGES: FahrwerkStage[] = [
     label: "Noch nicht angemeldet",
     next: "Passende Klasse finden oder direkt online anmelden.",
     detail:
-      "Starte mit Klasse B, B197, BF17 oder BE. Wenn du unsicher bist, führt dich das Interface über wenige Fragen zur passenden Richtung.",
+      "Starte mit Klasse B, B197, BF17 oder BE. Wenn du unsicher bist, fÃ¼hrt dich das Interface Ã¼ber wenige Fragen zur passenden Richtung.",
   },
   {
     id: "registered",
     label: "Angemeldet",
-    next: "Unterlagen vollständig machen.",
+    next: "Unterlagen vollstÃ¤ndig machen.",
     detail:
-      "Sehtest, Erste-Hilfe-Kurs, Passbild und Antrag sind meistens die nächsten Baustellen.",
+      "Sehtest, Erste-Hilfe-Kurs, Passbild und Antrag sind meistens die nÃ¤chsten Baustellen.",
   },
   {
     id: "documents",
     label: "Unterlagen laufen",
     next: "Theorie sauber starten und Antrag im Blick behalten.",
     detail:
-      "Wenn Unterlagen fehlen, dauert später oft die Prüfungsfreigabe länger. Deshalb zuerst den Dokumenten-Check erledigen.",
+      "Wenn Unterlagen fehlen, dauert spÃ¤ter oft die PrÃ¼fungsfreigabe lÃ¤nger. Deshalb zuerst den Dokumenten-Check erledigen.",
   },
   {
     id: "theory",
-    label: "Theorie läuft",
-    next: "Regelmäßig lernen und Theorieprüfung planen.",
+    label: "Theorie lÃ¤uft",
+    next: "RegelmÃ¤ÃŸig lernen und TheorieprÃ¼fung planen.",
     detail:
-      "Das Interface kann dir erklären, was in der Theoriephase wichtig ist. Konkrete Kurszeiten bleiben bei Fahrschule.live.",
+      "Das Interface kann dir erklÃ¤ren, was in der Theoriephase wichtig ist. Konkrete Kurszeiten bleiben bei Fahrschule.live.",
   },
   {
     id: "theory_exam",
-    label: "Theorieprüfung bestanden",
+    label: "TheorieprÃ¼fung bestanden",
     next: "Praxisphase und Fahrstunden fokussieren.",
     detail:
-      "Jetzt geht es stärker um Fahrpraxis, Sonderfahrten und Vorbereitung auf die praktische Prüfung.",
+      "Jetzt geht es stÃ¤rker um Fahrpraxis, Sonderfahrten und Vorbereitung auf die praktische PrÃ¼fung.",
   },
   {
     id: "practice",
-    label: "Praxis läuft",
-    next: "Fahrstunden, Sonderfahrten und Prüfungsreife klären.",
+    label: "Praxis lÃ¤uft",
+    next: "Fahrstunden, Sonderfahrten und PrÃ¼fungsreife klÃ¤ren.",
     detail:
-      "Wenn du unsicher bist, kann das Interface deine Frage vorstrukturieren, bevor Fahrwerk B sie prüft.",
+      "Wenn du unsicher bist, kann das Interface deine Frage vorstrukturieren, bevor Fahrwerk B sie prÃ¼ft.",
   },
   {
     id: "practical_exam",
-    label: "Prüfung steht an",
-    next: "Prüfungs-Checkliste durchgehen und ruhig bleiben.",
+    label: "PrÃ¼fung steht an",
+    next: "PrÃ¼fungs-Checkliste durchgehen und ruhig bleiben.",
     detail:
-      "Kurz vor der Prüfung helfen klare Checklisten mehr als lange Texte. Nutze den Prüfungsmodus im Interface.",
+      "Kurz vor der PrÃ¼fung helfen klare Checklisten mehr als lange Texte. Nutze den PrÃ¼fungsmodus im Interface.",
   },
 ];
 
@@ -241,17 +241,17 @@ const BTDESIGNS_BOOKING_SERVICES = [
   "AI Interface Beratung",
   "Werbemittel Anfrage",
   "Foto/Video Anfrage",
-  "Allgemeines Erstgespräch",
+  "Allgemeines ErstgesprÃ¤ch",
 ];
 
 const MM_WARTUNG_BOOKING_SERVICES = [
   "Werkstatt Termin",
-  "Ölwechsel / Wartung",
+  "Ã–lwechsel / Wartung",
   "Fehlerdiagnose",
   "Ersatzteil Anfrage",
   "Ultraschallreinigung",
   "Landmaschinen / alte Technik",
-  "Allgemeine Rückfrage",
+  "Allgemeine RÃ¼ckfrage",
 ];
 
 const TXBIKES_BOOKING_SERVICES = [
@@ -260,144 +260,144 @@ const TXBIKES_BOOKING_SERVICES = [
   "E-Bike Diagnose",
   "Reparatur Anfrage",
   "Kaufberatung Fahrrad / E-Bike",
-  "Zubehör Beratung",
-  "Allgemeine Rückfrage",
+  "ZubehÃ¶r Beratung",
+  "Allgemeine RÃ¼ckfrage",
 ];
 
 const WILLI_BOOKING_SERVICES = [
   "Beratung",
-  "Termin / Rückruf",
+  "Termin / RÃ¼ckruf",
   "Service Anfrage",
   "Angebot anfragen",
   "Projekt besprechen",
-  "Allgemeine Rückfrage",
+  "Allgemeine RÃ¼ckfrage",
 ];
 
 const TXBIKES_START_CARDS: StartCard[] = [
   {
-    icon: "📷",
+    icon: "ðŸ“·",
     title: "Problem mit Foto",
     description: "Foto machen oder hochladen",
     action: "photo",
   },
   {
-    icon: "🎙️",
-    title: "Problem erzählen",
+    icon: "ðŸŽ™ï¸",
+    title: "Problem erzÃ¤hlen",
     description: "Sprich direkt ins Interface",
     action: "voice",
   },
   {
-    icon: "🛠️",
+    icon: "ðŸ› ï¸",
     title: "Problem am Fahrrad",
-    description: "Geräusche, Defekte oder Fehler eingrenzen",
+    description: "GerÃ¤usche, Defekte oder Fehler eingrenzen",
     message:
-      "Ich habe ein Problem mit meinem Fahrrad und möchte den Fehler eingrenzen.",
+      "Ich habe ein Problem mit meinem Fahrrad und mÃ¶chte den Fehler eingrenzen.",
   },
   {
-    icon: "📅",
+    icon: "ðŸ“…",
     title: "Termin buchen",
     description: "Werkstatttermin direkt anfragen",
     action: "booking",
   },
   {
-    icon: "🚴",
+    icon: "ðŸš´",
     title: "Kaufberatung",
-    description: "E-Bike, Fahrrad oder Zubehör passend finden",
-    message: "Ich brauche Beratung zu einem Fahrrad, E-Bike oder Zubehör.",
+    description: "E-Bike, Fahrrad oder ZubehÃ¶r passend finden",
+    message: "Ich brauche Beratung zu einem Fahrrad, E-Bike oder ZubehÃ¶r.",
   },
   {
-    icon: "🔧",
+    icon: "ðŸ”§",
     title: "Wartung & Service",
     description: "Inspektion, Kette, Bremsen oder Pflege planen",
     message:
-      "Ich möchte wissen, welche Wartung oder welcher Service für mein Fahrrad sinnvoll ist.",
+      "Ich mÃ¶chte wissen, welche Wartung oder welcher Service fÃ¼r mein Fahrrad sinnvoll ist.",
   },
 ];
 
 const WILLI_START_CARDS: StartCard[] = [
   {
-    icon: "✨",
+    icon: "âœ¨",
     title: "Beratung",
     description: "Kurz schildern, worum es geht",
-    message: "Ich möchte mich beraten lassen und mein Anliegen kurz schildern.",
+    message: "Ich mÃ¶chte mich beraten lassen und mein Anliegen kurz schildern.",
   },
   {
-    icon: "📅",
+    icon: "ðŸ“…",
     title: "Termin buchen",
-    description: "Termin oder Rückruf direkt anfragen",
+    description: "Termin oder RÃ¼ckruf direkt anfragen",
     action: "booking",
   },
   {
-    icon: "🛠️",
+    icon: "ðŸ› ï¸",
     title: "Service Anfrage",
     description: "Problem, Wunsch oder Auftrag vorbereiten",
     message:
-      "Ich habe eine Service-Anfrage und möchte mein Anliegen vorbereiten.",
+      "Ich habe eine Service-Anfrage und mÃ¶chte mein Anliegen vorbereiten.",
   },
   {
-    icon: "💬",
-    title: "Kurz erzählen",
+    icon: "ðŸ’¬",
+    title: "Kurz erzÃ¤hlen",
     description: "Sprich deine Anfrage direkt ein",
     action: "voice",
   },
   {
-    icon: "📷",
+    icon: "ðŸ“·",
     title: "Bild zeigen",
     description: "Foto, Screenshot oder Beispiel hochladen",
     action: "photo",
   },
   {
-    icon: "📋",
+    icon: "ðŸ“‹",
     title: "Angebot anfragen",
     description: "Infos sammeln und Anfrage formulieren",
     message:
-      "Ich möchte ein Angebot anfragen und die wichtigsten Informationen sammeln.",
+      "Ich mÃ¶chte ein Angebot anfragen und die wichtigsten Informationen sammeln.",
   },
 ];
 
 const BTDESIGNS_START_CARDS: StartCard[] = [
   {
-    icon: "✨",
+    icon: "âœ¨",
     title: "Social Media",
-    description: "Pakete, Reels oder Betreuung einschätzen",
+    description: "Pakete, Reels oder Betreuung einschÃ¤tzen",
     message:
-      "Ich möchte wissen, welches Social-Media-Paket für mein Unternehmen sinnvoll ist.",
+      "Ich mÃ¶chte wissen, welches Social-Media-Paket fÃ¼r mein Unternehmen sinnvoll ist.",
   },
   {
-    icon: "🌐",
+    icon: "ðŸŒ",
     title: "Website",
     description: "Neue Website, Relaunch oder Shop besprechen",
     message:
-      "Ich interessiere mich für eine Website oder einen Online-Shop von BTDesigns.",
+      "Ich interessiere mich fÃ¼r eine Website oder einen Online-Shop von BTDesigns.",
   },
   {
-    icon: "🤖",
+    icon: "ðŸ¤–",
     title: "AI Interface",
     description: "LINA, Website-KI oder Automatisierung planen",
     message:
-      "Ich möchte wissen, wie ein AI Interface von BTDesigns meinem Unternehmen helfen kann.",
+      "Ich mÃ¶chte wissen, wie ein AI Interface von BTDesigns meinem Unternehmen helfen kann.",
   },
   {
-    icon: "🧢",
+    icon: "ðŸ§¢",
     title: "Werbemittel",
     description: "Textilien, Drucksachen oder Giveaways anfragen",
     message:
-      "Ich interessiere mich für Werbemittel von BTDesigns und möchte eine Anfrage stellen.",
+      "Ich interessiere mich fÃ¼r Werbemittel von BTDesigns und mÃ¶chte eine Anfrage stellen.",
   },
   {
-    icon: "📅",
+    icon: "ðŸ“…",
     title: "Termin buchen",
     description: "Beratung direkt in deinen Apple Kalender eintragen",
     action: "booking",
   },
   {
-    icon: "💬",
-    title: "Kurz erzählen",
+    icon: "ðŸ’¬",
+    title: "Kurz erzÃ¤hlen",
     description: "Sprich deine Anfrage direkt ein",
     action: "voice",
   },
   {
-    icon: "📷",
+    icon: "ðŸ“·",
     title: "Beispiel zeigen",
     description: "Bild, Screenshot oder Idee hochladen",
     action: "photo",
@@ -406,38 +406,38 @@ const BTDESIGNS_START_CARDS: StartCard[] = [
 
 const MM_WARTUNG_START_CARDS: StartCard[] = [
   {
-    icon: "🔧",
+    icon: "ðŸ”§",
     title: "Fahrzeugproblem",
-    description: "Geräusch, Warnlampe, Startproblem oder Aussetzer",
+    description: "GerÃ¤usch, Warnlampe, Startproblem oder Aussetzer",
     message: "Ich habe ein Problem mit meinem Fahrzeug.",
   },
   {
-    icon: "🚗",
+    icon: "ðŸš—",
     title: "Ersatzteil anfragen",
-    description: "Teil gesucht? Anfrage für Moritz vorbereiten",
+    description: "Teil gesucht? Anfrage fÃ¼r Moritz vorbereiten",
     message: "Ich suche ein bestimmtes Ersatzteil.",
   },
   {
-    icon: "📅",
+    icon: "ðŸ“…",
     title: "Termin anfragen",
-    description: "Prüfung, Service oder Rückmeldung planen",
+    description: "PrÃ¼fung, Service oder RÃ¼ckmeldung planen",
     action: "booking",
   },
   {
-    icon: "⚙️",
+    icon: "âš™ï¸",
     title: "Spezialleistung",
     description: "Ultraschallreinigung, alte Technik oder Landmaschinen",
     message: "Ich habe eine Frage zu einer Spezialleistung von MM Wartung.",
   },
   {
-    icon: "📷",
+    icon: "ðŸ“·",
     title: "Foto zeigen",
     description: "Bild vom Fahrzeug, Teil oder Problem hochladen",
     action: "photo",
   },
   {
-    icon: "🎙️",
-    title: "Kurz erzählen",
+    icon: "ðŸŽ™ï¸",
+    title: "Kurz erzÃ¤hlen",
     description: "Sprich dein Anliegen direkt ein",
     action: "voice",
   },
@@ -445,51 +445,51 @@ const MM_WARTUNG_START_CARDS: StartCard[] = [
 
 const FAHRWERK_B_START_CARDS: StartCard[] = [
   {
-    icon: "🚀",
+    icon: "ðŸš€",
     title: "Online anmelden",
     description:
-      "Offizielle Anmeldung bei Fahrwerk B über Fahrschule.live öffnen",
+      "Offizielle Anmeldung bei Fahrwerk B Ã¼ber Fahrschule.live Ã¶ffnen",
     action: "fahrwerkLiveSignup",
   },
   {
-    icon: "🧭",
+    icon: "ðŸ§­",
     title: "Beratung & Start",
-    description: "Klasse finden, Fragen klären und nächsten Schritt sehen",
+    description: "Klasse finden, Fragen klÃ¤ren und nÃ¤chsten Schritt sehen",
     action: "fahrwerkPanel",
     fahrwerkPanel: "start",
   },
   {
-    icon: "✅",
-    title: "Unterlagen prüfen",
+    icon: "âœ…",
+    title: "Unterlagen prÃ¼fen",
     description: "Sehtest, Erste Hilfe, Passbild, Antrag und BF17-Check",
     action: "fahrwerkPanel",
     fahrwerkPanel: "documents",
   },
   {
-    icon: "📚",
+    icon: "ðŸ“š",
     title: "Theorie begleiten",
-    description: "Theorie-Einstieg, Lernen und Prüfung besser einordnen",
+    description: "Theorie-Einstieg, Lernen und PrÃ¼fung besser einordnen",
     action: "fahrwerkPanel",
     fahrwerkPanel: "theory",
   },
   {
-    icon: "🚘",
+    icon: "ðŸš˜",
     title: "Praxisphase",
-    description: "Fahrstunden, Sonderfahrten und praktische Prüfung verstehen",
+    description: "Fahrstunden, Sonderfahrten und praktische PrÃ¼fung verstehen",
     action: "fahrwerkPanel",
     fahrwerkPanel: "practice",
   },
   {
-    icon: "🎯",
-    title: "Prüfungsmodus",
-    description: "Theorie- oder Praxisprüfung mit Checkliste vorbereiten",
+    icon: "ðŸŽ¯",
+    title: "PrÃ¼fungsmodus",
+    description: "Theorie- oder PraxisprÃ¼fung mit Checkliste vorbereiten",
     action: "fahrwerkPanel",
     fahrwerkPanel: "exam",
   },
   {
-    icon: "👤",
-    title: "Ich bin Fahrschüler",
-    description: "Stand auswählen und den nächsten sinnvollen Schritt sehen",
+    icon: "ðŸ‘¤",
+    title: "Ich bin FahrschÃ¼ler",
+    description: "Stand auswÃ¤hlen und den nÃ¤chsten sinnvollen Schritt sehen",
     action: "fahrwerkPanel",
     fahrwerkPanel: "student",
   },
@@ -519,32 +519,32 @@ function ensureFahrwerkEmoji(content: string) {
   if (!content || FAHRWERK_EMOJI_PATTERN.test(content)) return content;
 
   const normalized = content.toLowerCase();
-  let emoji = "🚗";
+  let emoji = "ðŸš—";
 
   if (/\b(hi|hallo|willkommen)\b/.test(normalized)) {
-    emoji = "👋";
-  } else if (/\b(fehler|problem|nicht möglich|technisch)\b/.test(normalized)) {
-    emoji = "⚠️";
+    emoji = "ðŸ‘‹";
+  } else if (/\b(fehler|problem|nicht mÃ¶glich|technisch)\b/.test(normalized)) {
+    emoji = "âš ï¸";
   } else if (
-    /\b(anmeld|klasse b|b197|bf17|führerschein starten)\b/.test(normalized)
+    /\b(anmeld|klasse b|b197|bf17|fÃ¼hrerschein starten)\b/.test(normalized)
   ) {
-    emoji = "📝";
+    emoji = "ðŸ“";
   } else if (
     /\b(unterlagen|dokument|sehtest|erste hilfe|passbild|antrag)\b/.test(
       normalized,
     )
   ) {
-    emoji = "📄";
-  } else if (/\b(theorie|lernen|prüfungsfragen)\b/.test(normalized)) {
-    emoji = "📚";
+    emoji = "ðŸ“„";
+  } else if (/\b(theorie|lernen|prÃ¼fungsfragen)\b/.test(normalized)) {
+    emoji = "ðŸ“š";
   } else if (/\b(praxis|fahrstunde|sonderfahrt)\b/.test(normalized)) {
-    emoji = "🚘";
-  } else if (/\b(prüfung|checkliste|prüfungsangst)\b/.test(normalized)) {
-    emoji = "🎯";
-  } else if (/\b(rückruf|kontakt|telefon|erreichen)\b/.test(normalized)) {
-    emoji = "📞";
+    emoji = "ðŸš˜";
+  } else if (/\b(prÃ¼fung|checkliste|prÃ¼fungsangst)\b/.test(normalized)) {
+    emoji = "ðŸŽ¯";
+  } else if (/\b(rÃ¼ckruf|kontakt|telefon|erreichen)\b/.test(normalized)) {
+    emoji = "ðŸ“ž";
   } else if (/\b(erledigt|perfekt|alles klar|okay)\b/.test(normalized)) {
-    emoji = "✅";
+    emoji = "âœ…";
   }
 
   return `${emoji} ${content}`;
@@ -612,6 +612,9 @@ export default function WidgetPage() {
     "fahrwerkbde",
     "fahrwerk",
   ].includes(normalizedTenantId);
+  // Die Sprachfunktion bleibt grundsÃ¤tzlich im Projekt erhalten, ist aber
+  // fÃ¼r Fahrwerk B vorerst vollstÃ¤ndig deaktiviert.
+  const voiceEnabled = !isFahrwerkBInterface;
   const isEnhancedInterface =
     isTxbikesInterface ||
     isWilliInterface ||
@@ -635,7 +638,7 @@ export default function WidgetPage() {
     : isTxbikesInterface
       ? "Werkstatttermin"
       : isWilliInterface
-        ? "Termin / Rückruf"
+        ? "Termin / RÃ¼ckruf"
         : "Website Beratung";
   const bookingDefaultDuration =
     isMmWartungInterface || isTxbikesInterface ? "60" : "30";
@@ -661,7 +664,7 @@ export default function WidgetPage() {
         ? "Willi"
         : cfg.brandName;
   const displayAssistantName = isFahrwerkBInterface
-    ? "Führerschein-Cockpit"
+    ? "FÃ¼hrerschein-Cockpit"
     : isTxbikesInterface
       ? "Bike-Service Interface"
       : isWilliInterface
@@ -793,7 +796,7 @@ export default function WidgetPage() {
         setFahrwerkChecklist({ ...DEFAULT_FAHRWERK_CHECKLIST, ...parsed });
       }
     } catch {
-      // Lokaler Fortschritt ist Komfort. Wenn localStorage blockiert ist, läuft das Interface trotzdem.
+      // Lokaler Fortschritt ist Komfort. Wenn localStorage blockiert ist, lÃ¤uft das Interface trotzdem.
     }
   }, [mounted, isFahrwerkBInterface]);
 
@@ -815,16 +818,16 @@ export default function WidgetPage() {
     if (!mounted) return;
 
     const firstMessage = isFahrwerkBInterface
-      ? "Hi — ich bin dein Fahrwerk B Führerschein-Cockpit. Wähle aus, wo du gerade stehst, und ich zeige dir den nächsten sinnvollen Schritt."
+      ? "Hi â€” ich bin dein Fahrwerk B FÃ¼hrerschein-Cockpit. WÃ¤hle aus, wo du gerade stehst, und ich zeige dir den nÃ¤chsten sinnvollen Schritt."
       : isLinaInterface
-        ? `Hi — ich bin ${displayAssistantName}. Wobei soll ich dir bei BTDesigns helfen?`
+        ? `Hi â€” ich bin ${displayAssistantName}. Wobei soll ich dir bei BTDesigns helfen?`
         : isMmWartungInterface
-          ? `Hi — ich bin ${displayAssistantName}. Was möchtest du bei MM Wartung machen?`
+          ? `Hi â€” ich bin ${displayAssistantName}. Was mÃ¶chtest du bei MM Wartung machen?`
           : isTxbikesInterface
-            ? `Hi — ich bin das ${displayAssistantName}. Was möchtest du bei TXBikes machen?`
+            ? `Hi â€” ich bin das ${displayAssistantName}. Was mÃ¶chtest du bei TXBikes machen?`
             : isWilliInterface
-              ? `Hi — ich bin das ${displayAssistantName} von Willi. Wobei soll ich helfen?`
-              : `Hi — ich bin ${displayAssistantName}. Worum geht’s?`;
+              ? `Hi â€” ich bin das ${displayAssistantName} von Willi. Wobei soll ich helfen?`
+              : `Hi â€” ich bin ${displayAssistantName}. Worum gehtâ€™s?`;
 
     setMsgs([{ role: "assistant", content: firstMessage }]);
 
@@ -834,7 +837,7 @@ export default function WidgetPage() {
 
     const hasMediaRecorder = typeof window.MediaRecorder !== "undefined";
 
-    setVoiceSupported(hasGetUserMedia && hasMediaRecorder);
+    setVoiceSupported(voiceEnabled && hasGetUserMedia && hasMediaRecorder);
   }, [
     mounted,
     displayAssistantName,
@@ -843,6 +846,7 @@ export default function WidgetPage() {
     isMmWartungInterface,
     isTxbikesInterface,
     isWilliInterface,
+    voiceEnabled,
   ]);
 
   useEffect(() => {
@@ -1002,7 +1006,7 @@ export default function WidgetPage() {
 
     const wantsBooking =
       isBookingInterface &&
-      /\b(termin|werkstatttermin|beratungsgespräch|erstgespräch|gespräch|meeting|call|buchen|anrufen|vereinbaren|rückruf|reparatur|inspektion|wartung|service)\b/i.test(
+      /\b(termin|werkstatttermin|beratungsgesprÃ¤ch|erstgesprÃ¤ch|gesprÃ¤ch|meeting|call|buchen|anrufen|vereinbaren|rÃ¼ckruf|reparatur|inspektion|wartung|service)\b/i.test(
         text,
       );
 
@@ -1018,25 +1022,25 @@ export default function WidgetPage() {
       ) {
         setFahrwerkPanel("documents");
       } else if (
-        /\b(theorie|theorieprüfung|lernen|app|prüfungsfragen)\b/i.test(text)
+        /\b(theorie|theorieprÃ¼fung|lernen|app|prÃ¼fungsfragen)\b/i.test(text)
       ) {
         setFahrwerkPanel("theory");
       } else if (
-        /\b(praxis|fahrstunde|sonderfahrt|praktische prüfung|prüfungsangst)\b/i.test(
+        /\b(praxis|fahrstunde|sonderfahrt|praktische prÃ¼fung|prÃ¼fungsangst)\b/i.test(
           text,
         )
       ) {
         setFahrwerkPanel("practice");
       } else if (
-        /\b(prüfung|prüfungsvorbereitung|durchgefallen)\b/i.test(text)
+        /\b(prÃ¼fung|prÃ¼fungsvorbereitung|durchgefallen)\b/i.test(text)
       ) {
         setFahrwerkPanel("exam");
       } else if (
-        /\b(angemeldet|fahrschüler|bin schon|mein stand)\b/i.test(text)
+        /\b(angemeldet|fahrschÃ¼ler|bin schon|mein stand)\b/i.test(text)
       ) {
         setFahrwerkPanel("student");
       } else if (
-        /\b(anmelden|starten|b197|bf17|klasse b|anhänger|be)\b/i.test(text)
+        /\b(anmelden|starten|b197|bf17|klasse b|anhÃ¤nger|be)\b/i.test(text)
       ) {
         setFahrwerkPanel("start");
       }
@@ -1088,7 +1092,7 @@ export default function WidgetPage() {
         ...next,
         {
           role: "assistant",
-          content: "Kurz ein technisches Problem — versuch’s nochmal.",
+          content: "Kurz ein technisches Problem â€” versuchâ€™s nochmal.",
         },
       ];
       msgsRef.current = failedConversation;
@@ -1119,7 +1123,7 @@ export default function WidgetPage() {
         {
           role: "assistant",
           content:
-            "Ich öffne jetzt die offizielle Online-Anmeldung von Fahrwerk B über Fahrschule.live in einem neuen Tab.",
+            "Ich Ã¶ffne jetzt die offizielle Online-Anmeldung von Fahrwerk B Ã¼ber Fahrschule.live in einem neuen Tab.",
         },
       ];
     });
@@ -1132,7 +1136,7 @@ export default function WidgetPage() {
       return;
     }
 
-    // Falls der Browser neue Tabs blockiert, wird die Anmeldung im aktuellen Fenster geöffnet.
+    // Falls der Browser neue Tabs blockiert, wird die Anmeldung im aktuellen Fenster geÃ¶ffnet.
     window.location.assign(FAHRWERK_LIVE_SIGNUP_URL);
   }
 
@@ -1161,7 +1165,7 @@ export default function WidgetPage() {
         {
           role: "assistant",
           content:
-            "Alles klar — ich öffne dir die Beratungs- und Anfragevorbereitung. Für die verbindliche Anmeldung kannst du jederzeit direkt die offizielle Fahrschule.live-Anmeldung öffnen.",
+            "Alles klar â€” ich Ã¶ffne dir die Beratungs- und Anfragevorbereitung. FÃ¼r die verbindliche Anmeldung kannst du jederzeit direkt die offizielle Fahrschule.live-Anmeldung Ã¶ffnen.",
         },
       ];
     });
@@ -1187,7 +1191,7 @@ export default function WidgetPage() {
         {
           role: "assistant",
           content:
-            "Für die Anfragevorbereitung brauche ich mindestens deinen Namen.",
+            "FÃ¼r die Anfragevorbereitung brauche ich mindestens deinen Namen.",
         },
       ]);
       return;
@@ -1211,7 +1215,7 @@ export default function WidgetPage() {
         {
           role: "assistant",
           content:
-            "Bitte bestätige kurz den Datenschutz-Hinweis. Erst danach sollte eine Anfrage an Fahrwerk B vorbereitet werden.",
+            "Bitte bestÃ¤tige kurz den Datenschutz-Hinweis. Erst danach sollte eine Anfrage an Fahrwerk B vorbereitet werden.",
         },
       ]);
       return;
@@ -1221,12 +1225,12 @@ export default function WidgetPage() {
       ...current,
       {
         role: "user",
-        content: `Anfragevorbereitung ausgefüllt:\nKlasse: ${fahrwerkSignupForm.licenseClass}\nWunsch: ${fahrwerkSignupForm.startWish}\nName: ${name}`,
+        content: `Anfragevorbereitung ausgefÃ¼llt:\nKlasse: ${fahrwerkSignupForm.licenseClass}\nWunsch: ${fahrwerkSignupForm.startWish}\nName: ${name}`,
       },
       {
         role: "assistant",
         content:
-          "Die Anfrage ist im Interface vorbereitet. Die offizielle Online-Anmeldung ist bereits angebunden und kann über den Button „Online anmelden“ geöffnet werden. Der automatische Versand dieser Anfrage an Fahrwerk B folgt später.",
+          "Die Anfrage ist im Interface vorbereitet. Die offizielle Online-Anmeldung ist bereits angebunden und kann Ã¼ber den Button â€žOnline anmeldenâ€œ geÃ¶ffnet werden. Der automatische Versand dieser Anfrage an Fahrwerk B folgt spÃ¤ter.",
       },
     ]);
 
@@ -1327,7 +1331,7 @@ export default function WidgetPage() {
         ...current,
         {
           role: "assistant",
-          content: `Klar — trag kurz die Termindaten ein. Danach wird der Termin direkt in den Apple Kalender von ${bookingBusinessName} geschrieben.`,
+          content: `Klar â€” trag kurz die Termindaten ein. Danach wird der Termin direkt in den Apple Kalender von ${bookingBusinessName} geschrieben.`,
         },
       ];
     });
@@ -1374,7 +1378,7 @@ export default function WidgetPage() {
         {
           role: "assistant",
           content:
-            "Für die Terminbuchung brauche ich mindestens Name, Datum und Uhrzeit.",
+            "FÃ¼r die Terminbuchung brauche ich mindestens Name, Datum und Uhrzeit.",
         },
       ]);
       return;
@@ -1399,7 +1403,7 @@ export default function WidgetPage() {
         {
           role: "assistant",
           content:
-            "Datum oder Uhrzeit konnte ich nicht lesen. Bitte prüfe die Eingabe nochmal.",
+            "Datum oder Uhrzeit konnte ich nicht lesen. Bitte prÃ¼fe die Eingabe nochmal.",
         },
       ]);
       return;
@@ -1446,7 +1450,7 @@ export default function WidgetPage() {
             role: "assistant",
             content:
               data?.error ||
-              "Der Termin konnte gerade nicht eingetragen werden. Bitte wähle eine andere Uhrzeit oder versuch es nochmal.",
+              "Der Termin konnte gerade nicht eingetragen werden. Bitte wÃ¤hle eine andere Uhrzeit oder versuch es nochmal.",
           },
         ]);
         return;
@@ -1483,9 +1487,9 @@ export default function WidgetPage() {
 
       const alternativeText =
         data?.wasAlternative && isBookingInterface
-          ? `\n\nDie gewünschte Zeit war nicht möglich. ${
+          ? `\n\nDie gewÃ¼nschte Zeit war nicht mÃ¶glich. ${
               data?.alternativeReason ||
-              "Ich habe automatisch den nächsten passenden freien Termin gewählt."
+              "Ich habe automatisch den nÃ¤chsten passenden freien Termin gewÃ¤hlt."
             }`
           : "";
 
@@ -1493,7 +1497,7 @@ export default function WidgetPage() {
         ...current,
         {
           role: "assistant",
-          content: `Erledigt — der Termin wurde in den ${calendarText} eingetragen.${alternativeText}\n\n${readableDate}–${readableEnd}\nLeistung: ${service}`,
+          content: `Erledigt â€” der Termin wurde in den ${calendarText} eingetragen.${alternativeText}\n\n${readableDate}â€“${readableEnd}\nLeistung: ${service}`,
         },
       ]);
 
@@ -1547,16 +1551,16 @@ export default function WidgetPage() {
       {
         role: "user",
         content: isFahrwerkBInterface
-          ? "📷 Bild zur Führerschein-Anfrage hinzugefügt"
+          ? "ðŸ“· Bild zur FÃ¼hrerschein-Anfrage hinzugefÃ¼gt"
           : isLinaInterface
-            ? "📷 Beispiel oder Projektbild hinzugefügt"
+            ? "ðŸ“· Beispiel oder Projektbild hinzugefÃ¼gt"
             : isMmWartungInterface
-              ? "📷 Foto zum Fahrzeug oder Ersatzteil hinzugefügt"
+              ? "ðŸ“· Foto zum Fahrzeug oder Ersatzteil hinzugefÃ¼gt"
               : isTxbikesInterface
-                ? "📷 Foto vom Fahrradproblem hinzugefügt"
+                ? "ðŸ“· Foto vom Fahrradproblem hinzugefÃ¼gt"
                 : isWilliInterface
-                  ? "📷 Bild zur Anfrage hinzugefügt"
-                  : "📷 Foto hinzugefügt",
+                  ? "ðŸ“· Bild zur Anfrage hinzugefÃ¼gt"
+                  : "ðŸ“· Foto hinzugefÃ¼gt",
         imagePreviewUrl,
         imageName: file.name,
       },
@@ -1886,7 +1890,7 @@ export default function WidgetPage() {
 
     if (!audio) {
       showVoiceFailure(
-        "Die Sprachantwort ist nicht mehr verfügbar. Versuch es bitte nochmal.",
+        "Die Sprachantwort ist nicht mehr verfÃ¼gbar. Versuch es bitte nochmal.",
       );
       return;
     }
@@ -2117,6 +2121,8 @@ export default function WidgetPage() {
   }
 
   async function startVoiceInput() {
+    if (!voiceEnabled) return;
+
     if (loadingRef.current || ["transcribing", "thinking"].includes(voicePhase))
       return;
 
@@ -2144,7 +2150,7 @@ export default function WidgetPage() {
         {
           role: "assistant",
           content:
-            "Die Audioaufnahme wird auf diesem Gerät oder in diesem Browser nicht unterstützt. Schreib deine Frage bitte als Text.",
+            "Die Audioaufnahme wird auf diesem GerÃ¤t oder in diesem Browser nicht unterstÃ¼tzt. Schreib deine Frage bitte als Text.",
         },
       ]);
       return;
@@ -2208,16 +2214,16 @@ export default function WidgetPage() {
       {
         role: "assistant",
         content: isFahrwerkBInterface
-          ? "Alles klar — wo stehst du gerade bei deinem Führerschein?"
+          ? "Alles klar â€” wo stehst du gerade bei deinem FÃ¼hrerschein?"
           : isLinaInterface
-            ? `Alles klar — wobei soll ich dir bei BTDesigns helfen?`
+            ? `Alles klar â€” wobei soll ich dir bei BTDesigns helfen?`
             : isMmWartungInterface
-              ? `Alles klar — was möchtest du bei MM Wartung machen?`
+              ? `Alles klar â€” was mÃ¶chtest du bei MM Wartung machen?`
               : isTxbikesInterface
-                ? `Alles klar — was möchtest du bei TXBikes machen?`
+                ? `Alles klar â€” was mÃ¶chtest du bei TXBikes machen?`
                 : isWilliInterface
-                  ? `Alles klar — wobei soll ich dir bei Willi helfen?`
-                  : `Alles klar — womit kann ich dir helfen?`,
+                  ? `Alles klar â€” wobei soll ich dir bei Willi helfen?`
+                  : `Alles klar â€” womit kann ich dir helfen?`,
       },
     ]);
     setInput("");
@@ -2274,7 +2280,7 @@ export default function WidgetPage() {
 
   const voiceTitle =
     voicePhase === "listening"
-      ? "Ich höre zu"
+      ? "Ich hÃ¶re zu"
       : voicePhase === "transcribing"
         ? "Ich verstehe dich"
         : voicePhase === "thinking"
@@ -2313,9 +2319,9 @@ export default function WidgetPage() {
           ? voiceTranscript || "Deine Anfrage wird verarbeitet."
           : voicePhase === "speaking"
             ? voiceTranscript ||
-              "Die Antwort wird jetzt vorgelesen. Danach höre ich automatisch wieder zu."
+              "Die Antwort wird jetzt vorgelesen. Danach hÃ¶re ich automatisch wieder zu."
             : voicePhase === "ready"
-              ? voiceError || "Tippe auf die Kugel, um die Antwort zu hören."
+              ? voiceError || "Tippe auf die Kugel, um die Antwort zu hÃ¶ren."
               : voicePhase === "error"
                 ? voiceError || "Versuch es bitte noch einmal."
                 : "";
@@ -2369,7 +2375,7 @@ export default function WidgetPage() {
         appearance: "none",
         WebkitAppearance: "none",
       }}
-      aria-label="Chat öffnen"
+      aria-label="Chat Ã¶ffnen"
       title={`${displayBrandName} Chat`}
     >
       {open ? (
@@ -2380,7 +2386,7 @@ export default function WidgetPage() {
             textShadow: `0 0 12px rgba(${accentRgb}, 0.20)`,
           }}
         >
-          ×
+          Ã—
         </span>
       ) : (
         <MessageCircle
@@ -3044,7 +3050,7 @@ export default function WidgetPage() {
                 <span className="bt-badge-dot" />
                 <span>
                   {isFahrwerkBInterface
-                    ? "Führerschein starten?"
+                    ? "FÃ¼hrerschein starten?"
                     : isTxbikesInterface
                       ? "Fahrrad-Frage?"
                       : isWilliInterface
@@ -3204,7 +3210,7 @@ export default function WidgetPage() {
                           color: textPrimary,
                         }}
                       >
-                        {displayBrandName} – {displayAssistantName}
+                        {displayBrandName} â€“ {displayAssistantName}
                       </div>
                       <div
                         style={{
@@ -3215,19 +3221,19 @@ export default function WidgetPage() {
                         }}
                       >
                         {voicePhase === "listening"
-                          ? "Hört zu…"
+                          ? "HÃ¶rt zuâ€¦"
                           : voicePhase === "transcribing"
-                            ? "Versteht dich…"
+                            ? "Versteht dichâ€¦"
                             : voicePhase === "thinking"
-                              ? "Denkt nach…"
+                              ? "Denkt nachâ€¦"
                               : voicePhase === "speaking" ||
                                   voicePhase === "ready"
-                                ? "Antwortet…"
+                                ? "Antwortetâ€¦"
                                 : loading
-                                  ? "Tippt…"
+                                  ? "Tipptâ€¦"
                                   : isFahrwerkBInterface
                                     ? "In 1 Minute zum passenden Einstieg"
-                                    : "Online verfügbar"}
+                                    : "Online verfÃ¼gbar"}
                       </div>
                     </div>
                   </div>
@@ -3360,8 +3366,8 @@ export default function WidgetPage() {
                           }}
                         >
                           {isFahrwerkBInterface
-                            ? "Dein Führerschein-Cockpit"
-                            : "Was möchtest du machen?"}
+                            ? "Dein FÃ¼hrerschein-Cockpit"
+                            : "Was mÃ¶chtest du machen?"}
                         </div>
                         <div
                           style={{
@@ -3371,16 +3377,16 @@ export default function WidgetPage() {
                           }}
                         >
                           {isFahrwerkBInterface
-                            ? "Wähle aus, wo du gerade stehst. Das Interface zeigt dir den nächsten Schritt, prüft Unterlagen und bereitet Anfragen sauber vor."
+                            ? "WÃ¤hle aus, wo du gerade stehst. Das Interface zeigt dir den nÃ¤chsten Schritt, prÃ¼ft Unterlagen und bereitet Anfragen sauber vor."
                             : isLinaInterface
-                              ? `Wähle einen Einstieg aus. Danach führt dich ${displayAssistantName} gezielt zur passenden Lösung.`
+                              ? `WÃ¤hle einen Einstieg aus. Danach fÃ¼hrt dich ${displayAssistantName} gezielt zur passenden LÃ¶sung.`
                               : isMmWartungInterface
-                                ? `Wähle aus, worum es geht. Danach nimmt ${displayAssistantName} dein Anliegen für Moritz sauber auf.`
+                                ? `WÃ¤hle aus, worum es geht. Danach nimmt ${displayAssistantName} dein Anliegen fÃ¼r Moritz sauber auf.`
                                 : isTxbikesInterface
-                                  ? `Wähle aus, worum es geht. Danach nimmt ${displayAssistantName} dein Anliegen für TXBikes sauber auf.`
+                                  ? `WÃ¤hle aus, worum es geht. Danach nimmt ${displayAssistantName} dein Anliegen fÃ¼r TXBikes sauber auf.`
                                   : isWilliInterface
-                                    ? `Wähle aus, worum es geht. Danach führt dich ${displayAssistantName} gezielt weiter.`
-                                    : `Wähle einen Einstieg aus. Danach führt dich ${displayAssistantName} gezielt weiter.`}
+                                    ? `WÃ¤hle aus, worum es geht. Danach fÃ¼hrt dich ${displayAssistantName} gezielt weiter.`
+                                    : `WÃ¤hle einen Einstieg aus. Danach fÃ¼hrt dich ${displayAssistantName} gezielt weiter.`}
                         </div>
 
                         {isFahrwerkBInterface && (
@@ -3564,7 +3570,7 @@ export default function WidgetPage() {
                                 marginBottom: 4,
                               }}
                             >
-                              Führerschein-Begleiter
+                              FÃ¼hrerschein-Begleiter
                             </div>
                             <div
                               style={{
@@ -3574,7 +3580,7 @@ export default function WidgetPage() {
                               }}
                             >
                               Aktueller Stand:{" "}
-                              <strong>{fahrwerkActiveStage.label}</strong> ·
+                              <strong>{fahrwerkActiveStage.label}</strong> Â·
                               Unterlagen: {fahrwerkCompletedDocuments}/
                               {FAHRWERK_DOCUMENT_ITEMS.length} erledigt
                             </div>
@@ -3594,7 +3600,7 @@ export default function WidgetPage() {
                               fontWeight: 800,
                             }}
                           >
-                            Fortschritt zurücksetzen
+                            Fortschritt zurÃ¼cksetzen
                           </button>
                         </div>
 
@@ -3627,7 +3633,7 @@ export default function WidgetPage() {
                             ["documents", "Unterlagen"],
                             ["theory", "Theorie"],
                             ["practice", "Praxis"],
-                            ["exam", "Prüfung"],
+                            ["exam", "PrÃ¼fung"],
                             ["student", "Mein Stand"],
                             ["contact", "Hilfe"],
                           ].map(([panel, label]) => (
@@ -3694,11 +3700,11 @@ export default function WidgetPage() {
                                     lineHeight: 1.5,
                                   }}
                                 >
-                                  Die Anmeldung läuft direkt über
+                                  Die Anmeldung lÃ¤uft direkt Ã¼ber
                                   Fahrschule.live. Dort werden deine Daten
                                   erfasst; sofern die Mailvorlage eingerichtet
-                                  ist, wird anschließend automatisch eine
-                                  Bestätigung versendet.
+                                  ist, wird anschlieÃŸend automatisch eine
+                                  BestÃ¤tigung versendet.
                                 </div>
                               </div>
                               <button
@@ -3717,7 +3723,7 @@ export default function WidgetPage() {
                                   boxShadow: `0 14px 34px rgba(0,0,0,0.16), 0 0 0 1px rgba(${accentRgb}, 0.14) inset`,
                                 }}
                               >
-                                Jetzt online anmelden ↗
+                                Jetzt online anmelden â†—
                               </button>
                             </div>
 
@@ -3728,8 +3734,8 @@ export default function WidgetPage() {
                                 lineHeight: 1.45,
                               }}
                             >
-                              Noch unsicher? Wähle zuerst eine
-                              Führerscheinklasse aus und bereite eine
+                              Noch unsicher? WÃ¤hle zuerst eine
+                              FÃ¼hrerscheinklasse aus und bereite eine
                               Beratungsanfrage vor.
                             </div>
 
@@ -3745,12 +3751,12 @@ export default function WidgetPage() {
                               {[
                                 [
                                   "Klasse B",
-                                  "Auto-Führerschein starten",
+                                  "Auto-FÃ¼hrerschein starten",
                                   "Schnell starten",
                                 ],
                                 [
                                   "B197",
-                                  "Schalten lernen, später flexibel fahren",
+                                  "Schalten lernen, spÃ¤ter flexibel fahren",
                                   "Schnell starten",
                                 ],
                                 [
@@ -3759,8 +3765,8 @@ export default function WidgetPage() {
                                   "Schnell starten",
                                 ],
                                 [
-                                  "BE Anhänger",
-                                  "Anhänger-Führerschein anfragen",
+                                  "BE AnhÃ¤nger",
+                                  "AnhÃ¤nger-FÃ¼hrerschein anfragen",
                                   "Erstmal beraten lassen",
                                 ],
                                 [
@@ -3818,7 +3824,7 @@ export default function WidgetPage() {
                               }}
                             >
                               Hake ab, was schon erledigt ist. Der Stand wird
-                              nur lokal im Browser gespeichert, bis wir später
+                              nur lokal im Browser gespeichert, bis wir spÃ¤ter
                               eine echte Account-/Fahrschule.live-Anbindung
                               bauen.
                             </div>
@@ -3874,7 +3880,7 @@ export default function WidgetPage() {
                                         fontWeight: 900,
                                       }}
                                     >
-                                      {fahrwerkChecklist[item.id] ? "✓" : ""}
+                                      {fahrwerkChecklist[item.id] ? "âœ“" : ""}
                                     </span>
                                     <strong>{item.label}</strong>
                                   </div>
@@ -3894,7 +3900,7 @@ export default function WidgetPage() {
                               type="button"
                               onClick={() =>
                                 sendFahrwerkGuidedMessage(
-                                  "Welche Unterlagen brauche ich für meinen Führerschein bei Fahrwerk B?",
+                                  "Welche Unterlagen brauche ich fÃ¼r meinen FÃ¼hrerschein bei Fahrwerk B?",
                                 )
                               }
                               style={{
@@ -3909,7 +3915,7 @@ export default function WidgetPage() {
                                 fontWeight: 900,
                               }}
                             >
-                              Unterlagen kurz erklären
+                              Unterlagen kurz erklÃ¤ren
                             </button>
                           </div>
                         )}
@@ -3972,7 +3978,7 @@ export default function WidgetPage() {
                                   fontWeight: 850,
                                 }}
                               >
-                                Nächster sinnvoller Schritt
+                                NÃ¤chster sinnvoller Schritt
                               </div>
                               <div style={{ fontSize: 20, fontWeight: 950 }}>
                                 {fahrwerkActiveStage.next}
@@ -4006,14 +4012,14 @@ export default function WidgetPage() {
                                     fontWeight: 850,
                                   }}
                                 >
-                                  Unterlagen prüfen
+                                  Unterlagen prÃ¼fen
                                 </button>
                                 <button
                                   type="button"
                                   onClick={() =>
                                     openFahrwerkSignupForm(
-                                      "Ich bin schon Fahrschüler",
-                                      "Rückruf von Fahrwerk B",
+                                      "Ich bin schon FahrschÃ¼ler",
+                                      "RÃ¼ckruf von Fahrwerk B",
                                     )
                                   }
                                   style={{
@@ -4046,18 +4052,18 @@ export default function WidgetPage() {
                             {[
                               [
                                 "Theorie-Einstieg",
-                                "Aktuelle Termine laufen später sauber über Fahrschule.live.",
-                                "Ich möchte den passenden Theorie-Einstieg bei Fahrwerk B finden.",
+                                "Aktuelle Termine laufen spÃ¤ter sauber Ã¼ber Fahrschule.live.",
+                                "Ich mÃ¶chte den passenden Theorie-Einstieg bei Fahrwerk B finden.",
                               ],
                               [
-                                "Theorieprüfung",
-                                "Ablauf, Vorbereitung und typische Fehler kurz erklären.",
-                                "Wie bereite ich mich auf die Theorieprüfung vor?",
+                                "TheorieprÃ¼fung",
+                                "Ablauf, Vorbereitung und typische Fehler kurz erklÃ¤ren.",
+                                "Wie bereite ich mich auf die TheorieprÃ¼fung vor?",
                               ],
                               [
                                 "Durchgefallen",
-                                "Ruhig einordnen und den nächsten Versuch planen.",
-                                "Ich bin bei der Theorieprüfung durchgefallen. Was ist jetzt sinnvoll?",
+                                "Ruhig einordnen und den nÃ¤chsten Versuch planen.",
+                                "Ich bin bei der TheorieprÃ¼fung durchgefallen. Was ist jetzt sinnvoll?",
                               ],
                             ].map(([title, description, message]) => (
                               <button
@@ -4110,16 +4116,16 @@ export default function WidgetPage() {
                               ],
                               [
                                 "Sonderfahrten",
-                                "Autobahn, Nachtfahrt und Überland verständlich erklärt.",
+                                "Autobahn, Nachtfahrt und Ãœberland verstÃ¤ndlich erklÃ¤rt.",
                                 "Was sind Sonderfahrten und wann kommen sie dran?",
                               ],
                               [
-                                "Prüfungsangst",
+                                "PrÃ¼fungsangst",
                                 "Kurze, praktische Tipps statt langer Theorie.",
-                                "Ich habe Angst vor der praktischen Prüfung. Was hilft?",
+                                "Ich habe Angst vor der praktischen PrÃ¼fung. Was hilft?",
                               ],
                               [
-                                "Fahrstunde klären",
+                                "Fahrstunde klÃ¤ren",
                                 "Anfrage an Fahrwerk B vorbereiten.",
                                 "Ich habe eine Frage zu meinen Fahrstunden bei Fahrwerk B.",
                               ],
@@ -4171,7 +4177,7 @@ export default function WidgetPage() {
                               className="bt-start-card"
                               onClick={() =>
                                 sendFahrwerkGuidedMessage(
-                                  "Gib mir eine kurze Checkliste für die Theorieprüfung.",
+                                  "Gib mir eine kurze Checkliste fÃ¼r die TheorieprÃ¼fung.",
                                 )
                               }
                               style={{ minHeight: 0 }}
@@ -4183,7 +4189,7 @@ export default function WidgetPage() {
                                   marginBottom: 6,
                                 }}
                               >
-                                Theorieprüfung-Check
+                                TheorieprÃ¼fung-Check
                               </div>
                               <div
                                 style={{
@@ -4192,7 +4198,7 @@ export default function WidgetPage() {
                                   lineHeight: 1.4,
                                 }}
                               >
-                                Was du vorher prüfen solltest und wie du ruhig
+                                Was du vorher prÃ¼fen solltest und wie du ruhig
                                 bleibst.
                               </div>
                             </button>
@@ -4201,7 +4207,7 @@ export default function WidgetPage() {
                               className="bt-start-card"
                               onClick={() =>
                                 sendFahrwerkGuidedMessage(
-                                  "Gib mir eine kurze Checkliste für die praktische Prüfung.",
+                                  "Gib mir eine kurze Checkliste fÃ¼r die praktische PrÃ¼fung.",
                                 )
                               }
                               style={{ minHeight: 0 }}
@@ -4213,7 +4219,7 @@ export default function WidgetPage() {
                                   marginBottom: 6,
                                 }}
                               >
-                                Praktische Prüfung-Check
+                                Praktische PrÃ¼fung-Check
                               </div>
                               <div
                                 style={{
@@ -4222,7 +4228,7 @@ export default function WidgetPage() {
                                   lineHeight: 1.4,
                                 }}
                               >
-                                Ausweis, Ruhe, typische Prüfungsfehler und
+                                Ausweis, Ruhe, typische PrÃ¼fungsfehler und
                                 Ablauf.
                               </div>
                             </button>
@@ -4242,7 +4248,7 @@ export default function WidgetPage() {
                             }}
                           >
                             <div style={{ fontSize: 20, fontWeight: 950 }}>
-                              Anmeldung und persönliche Hilfe
+                              Anmeldung und persÃ¶nliche Hilfe
                             </div>
                             <div
                               style={{
@@ -4251,10 +4257,10 @@ export default function WidgetPage() {
                                 lineHeight: 1.5,
                               }}
                             >
-                              Die offizielle Online-Anmeldung über
+                              Die offizielle Online-Anmeldung Ã¼ber
                               Fahrschule.live ist bereits angebunden. Falls du
                               vorher Hilfe brauchst, kann das Interface
-                              zusätzlich eine Rückruf- oder Beratungsanfrage
+                              zusÃ¤tzlich eine RÃ¼ckruf- oder Beratungsanfrage
                               vorbereiten.
                             </div>
                             <div
@@ -4278,14 +4284,14 @@ export default function WidgetPage() {
                                   fontWeight: 900,
                                 }}
                               >
-                                Online anmelden ↗
+                                Online anmelden â†—
                               </button>
                               <button
                                 type="button"
                                 onClick={() =>
                                   openFahrwerkSignupForm(
                                     "Ich bin noch unsicher",
-                                    "Rückruf von Fahrwerk B",
+                                    "RÃ¼ckruf von Fahrwerk B",
                                   )
                                 }
                                 style={{
@@ -4299,24 +4305,26 @@ export default function WidgetPage() {
                                   fontWeight: 900,
                                 }}
                               >
-                                Rückruf / Anfrage vorbereiten
+                                RÃ¼ckruf / Anfrage vorbereiten
                               </button>
-                              <button
-                                type="button"
-                                onClick={() => void startVoiceInput()}
-                                style={{
-                                  height: 46,
-                                  padding: "0 16px",
-                                  borderRadius: 15,
-                                  border: "1px solid rgba(22,49,38,0.10)",
-                                  background: "rgba(255,255,255,0.66)",
-                                  color: textPrimary,
-                                  cursor: "pointer",
-                                  fontWeight: 850,
-                                }}
-                              >
-                                Anliegen einsprechen
-                              </button>
+                              {voiceEnabled && (
+                                <button
+                                  type="button"
+                                  onClick={() => void startVoiceInput()}
+                                  style={{
+                                    height: 46,
+                                    padding: "0 16px",
+                                    borderRadius: 15,
+                                    border: "1px solid rgba(22,49,38,0.10)",
+                                    background: "rgba(255,255,255,0.66)",
+                                    color: textPrimary,
+                                    cursor: "pointer",
+                                    fontWeight: 850,
+                                  }}
+                                >
+                                  Anliegen einsprechen
+                                </button>
+                              )}
                             </div>
                           </div>
                         )}
@@ -4369,7 +4377,7 @@ export default function WidgetPage() {
                             }}
                           >
                             Hier kannst du dein Anliegen vorstrukturieren. Die
-                            verbindliche Anmeldung läuft direkt über
+                            verbindliche Anmeldung lÃ¤uft direkt Ã¼ber
                             Fahrschule.live.
                           </div>
                         </div>
@@ -4387,10 +4395,10 @@ export default function WidgetPage() {
                             fontSize: 20,
                             lineHeight: "30px",
                           }}
-                          aria-label="Anmeldeformular schließen"
-                          title="Schließen"
+                          aria-label="Anmeldeformular schlieÃŸen"
+                          title="SchlieÃŸen"
                         >
-                          ×
+                          Ã—
                         </button>
                       </div>
 
@@ -4412,7 +4420,7 @@ export default function WidgetPage() {
                             fontWeight: 700,
                           }}
                         >
-                          Führerscheinklasse
+                          FÃ¼hrerscheinklasse
                           <select
                             value={fahrwerkSignupForm.licenseClass}
                             onChange={(e) =>
@@ -4584,7 +4592,7 @@ export default function WidgetPage() {
                                 e.target.value,
                               )
                             }
-                            placeholder="z. B. Ich möchte möglichst schnell anfangen"
+                            placeholder="z. B. Ich mÃ¶chte mÃ¶glichst schnell anfangen"
                             style={{
                               height: 46,
                               borderRadius: 14,
@@ -4673,7 +4681,7 @@ export default function WidgetPage() {
                               fontSize: 14,
                             }}
                           >
-                            Direkt online anmelden ↗
+                            Direkt online anmelden â†—
                           </button>
                           <button
                             type="submit"
@@ -4742,8 +4750,8 @@ export default function WidgetPage() {
                               lineHeight: 1.45,
                             }}
                           >
-                            Der Termin wird direkt in den Apple Kalender „
-                            {bookingCalendarLabel}“ eingetragen.
+                            Der Termin wird direkt in den Apple Kalender â€ž
+                            {bookingCalendarLabel}â€œ eingetragen.
                           </div>
                         </div>
                         <button
@@ -4763,10 +4771,10 @@ export default function WidgetPage() {
                             fontSize: 20,
                             lineHeight: "30px",
                           }}
-                          aria-label="Terminformular schließen"
-                          title="Schließen"
+                          aria-label="Terminformular schlieÃŸen"
+                          title="SchlieÃŸen"
                         >
-                          ×
+                          Ã—
                         </button>
                       </div>
 
@@ -4983,7 +4991,7 @@ export default function WidgetPage() {
                               : isTxbikesInterface
                                 ? "Fahrrad, E-Bike, Problem oder Wunsch kurz beschreiben"
                                 : isWilliInterface
-                                  ? "Anliegen, Wunsch oder Rückrufgrund kurz beschreiben"
+                                  ? "Anliegen, Wunsch oder RÃ¼ckrufgrund kurz beschreiben"
                                   : "Worum soll es gehen?"
                           }
                           rows={3}
@@ -5040,7 +5048,7 @@ export default function WidgetPage() {
                           }}
                         >
                           {bookingSubmitting
-                            ? "Wird eingetragen…"
+                            ? "Wird eingetragenâ€¦"
                             : "Termin eintragen"}
                         </button>
                       </div>
@@ -5090,7 +5098,7 @@ export default function WidgetPage() {
                                 src={m.imagePreviewUrl}
                                 alt={
                                   isFahrwerkBInterface
-                                    ? "Hochgeladenes Bild zur Führerschein-Anfrage"
+                                    ? "Hochgeladenes Bild zur FÃ¼hrerschein-Anfrage"
                                     : isLinaInterface
                                       ? "Hochgeladenes Beispielbild"
                                       : isMmWartungInterface
@@ -5105,7 +5113,7 @@ export default function WidgetPage() {
                               <div className="bt-image-preview-label">
                                 {m.imageName
                                   ? `Foto: ${m.imageName}`
-                                  : "Foto hinzugefügt"}
+                                  : "Foto hinzugefÃ¼gt"}
                               </div>
                             </div>
                           )}
@@ -5138,7 +5146,7 @@ export default function WidgetPage() {
                           boxShadow: "0 10px 24px rgba(0,0,0,0.08)",
                         }}
                       >
-                        <span style={{ letterSpacing: 3 }}>•••</span>
+                        <span style={{ letterSpacing: 3 }}>â€¢â€¢â€¢</span>
                       </div>
                     </div>
                   )}
@@ -5175,38 +5183,40 @@ export default function WidgetPage() {
                     className="bt-round-action-button"
                     onClick={openPhotoPicker}
                     disabled={loading || isVoiceActive}
-                    title="Foto hinzufügen"
-                    aria-label="Foto hinzufügen"
+                    title="Foto hinzufÃ¼gen"
+                    aria-label="Foto hinzufÃ¼gen"
                   >
-                    📷
+                    ðŸ“·
                   </button>
 
-                  <button
-                    type="button"
-                    className={`bt-round-action-button ${isVoiceActive ? "bt-listening" : ""}`}
-                    onClick={() => void startVoiceInput()}
-                    disabled={loading && !isVoiceActive}
-                    title={
-                      isListening
-                        ? "Aufnahme beenden"
-                        : voicePhase === "ready"
-                          ? "Antwort abspielen"
-                          : voiceSupported
-                            ? "Sprachmodus starten"
-                            : "Audioaufnahme nicht unterstützt"
-                    }
-                    aria-label={
-                      isListening
-                        ? "Aufnahme beenden"
-                        : voicePhase === "ready"
-                          ? "Antwort abspielen"
-                          : voiceSupported
-                            ? "Sprachmodus starten"
-                            : "Audioaufnahme nicht unterstützt"
-                    }
-                  >
-                    {isListening ? "■" : "🎙️"}
-                  </button>
+                  {voiceEnabled && (
+                    <button
+                      type="button"
+                      className={`bt-round-action-button ${isVoiceActive ? "bt-listening" : ""}`}
+                      onClick={() => void startVoiceInput()}
+                      disabled={loading && !isVoiceActive}
+                      title={
+                        isListening
+                          ? "Aufnahme beenden"
+                          : voicePhase === "ready"
+                            ? "Antwort abspielen"
+                            : voiceSupported
+                              ? "Sprachmodus starten"
+                              : "Audioaufnahme nicht unterstÃ¼tzt"
+                      }
+                      aria-label={
+                        isListening
+                          ? "Aufnahme beenden"
+                          : voicePhase === "ready"
+                            ? "Antwort abspielen"
+                            : voiceSupported
+                              ? "Sprachmodus starten"
+                              : "Audioaufnahme nicht unterstÃ¼tzt"
+                      }
+                    >
+                      {isListening ? "â– " : "ðŸŽ™ï¸"}
+                    </button>
+                  )}
 
                   <input
                     value={input}
@@ -5219,18 +5229,18 @@ export default function WidgetPage() {
                     }}
                     placeholder={
                       isVoiceActive
-                        ? "Sprachmodus aktiv…"
+                        ? "Sprachmodus aktivâ€¦"
                         : isFahrwerkBInterface
-                          ? "Schreib z. B. B197, BF17 oder Beratung…"
+                          ? "Schreib z. B. B197, BF17 oder Beratungâ€¦"
                           : isLinaInterface
-                            ? "Schreib kurz, was du brauchst…"
+                            ? "Schreib kurz, was du brauchstâ€¦"
                             : isMmWartungInterface
-                              ? "Schreib dein Anliegen…"
+                              ? "Schreib dein Anliegenâ€¦"
                               : isTxbikesInterface
-                                ? "Schreib z. B. Reparatur, E-Bike oder Termin…"
+                                ? "Schreib z. B. Reparatur, E-Bike oder Terminâ€¦"
                                 : isWilliInterface
-                                  ? "Schreib kurz dein Anliegen…"
-                                  : "Schreib eine Frage…"
+                                  ? "Schreib kurz dein Anliegenâ€¦"
+                                  : "Schreib eine Frageâ€¦"
                     }
                     style={{
                       flex: 1,
@@ -5284,7 +5294,7 @@ export default function WidgetPage() {
                 </div>
               </div>
 
-              {isVoiceActive && (
+              {voiceEnabled && isVoiceActive && (
                 <div
                   ref={voiceStageRef}
                   className={`bt-voice-stage bt-voice-stage--${voicePhase}`}
@@ -5306,10 +5316,10 @@ export default function WidgetPage() {
                     type="button"
                     className="bt-voice-close"
                     onClick={cancelVoiceMode}
-                    aria-label="Sprachmodus schließen"
-                    title="Sprachmodus schließen"
+                    aria-label="Sprachmodus schlieÃŸen"
+                    title="Sprachmodus schlieÃŸen"
                   >
-                    ×
+                    Ã—
                   </button>
 
                   <div className="bt-voice-center">
@@ -5388,10 +5398,10 @@ export default function WidgetPage() {
 
                   <div className="bt-voice-footer">
                     {voicePhase === "listening"
-                      ? "Eine kurze Pause reicht – deine Frage wird automatisch gesendet."
+                      ? "Eine kurze Pause reicht â€“ deine Frage wird automatisch gesendet."
                       : voicePhase === "speaking"
-                        ? "Nach der Antwort hört das Interface automatisch wieder zu."
-                        : "Der Sprachmodus bleibt aktiv, bis du ihn oben rechts schließt."}
+                        ? "Nach der Antwort hÃ¶rt das Interface automatisch wieder zu."
+                        : "Der Sprachmodus bleibt aktiv, bis du ihn oben rechts schlieÃŸt."}
                   </div>
                 </div>
               )}
