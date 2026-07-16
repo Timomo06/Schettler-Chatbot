@@ -29,10 +29,7 @@ type VoicePhase =
   | "ready"
   | "error";
 
-type SendTextOptions = {
-  fromVoice?: boolean;
-  signal?: AbortSignal;
-};
+type SendTextOptions = { fromVoice?: boolean; signal?: AbortSignal };
 
 type StartCard = {
   icon: string;
@@ -91,11 +88,7 @@ type FahrwerkStageId =
   | "practice"
   | "practical_exam";
 
-type FahrwerkDocumentItem = {
-  id: string;
-  label: string;
-  hint: string;
-};
+type FahrwerkDocumentItem = { id: string; label: string; hint: string };
 
 type FahrwerkStage = {
   id: FahrwerkStageId;
@@ -132,7 +125,7 @@ const FAHRWERK_LICENSE_CLASSES = [
   "Klasse B",
   "B197",
   "BF17",
-  "BE AnhÃ¤nger",
+  "BE Anhänger",
   "Ich bin noch unsicher",
 ];
 
@@ -140,7 +133,7 @@ const FAHRWERK_START_WISHES = [
   "Schnell starten",
   "Erstmal beraten lassen",
   "Theorie-Einstieg finden",
-  "RÃ¼ckruf von Fahrwerk B",
+  "Rückruf von Fahrwerk B",
 ];
 
 const FAHRWERK_DOCUMENT_ITEMS: FahrwerkDocumentItem[] = [
@@ -152,22 +145,22 @@ const FAHRWERK_DOCUMENT_ITEMS: FahrwerkDocumentItem[] = [
   {
     id: "sehtest",
     label: "Sehtest",
-    hint: "FÃ¼r Klasse B/B197/BF17 nÃ¶tig. GÃ¼ltigkeit beachten.",
+    hint: "Für Klasse B/B197/BF17 nötig. Gültigkeit beachten.",
   },
   {
     id: "erstehilfe",
     label: "Erste-Hilfe-Kurs",
-    hint: "Bescheinigung fÃ¼r den Antrag sichern.",
+    hint: "Bescheinigung für den Antrag sichern.",
   },
   {
     id: "passbild",
     label: "Biometrisches Passbild",
-    hint: "Wird fÃ¼r den FÃ¼hrerscheinantrag benÃ¶tigt.",
+    hint: "Wird für den Führerscheinantrag benötigt.",
   },
   {
     id: "antrag",
     label: "Antrag beim Amt",
-    hint: "Erst danach kann die PrÃ¼fung spÃ¤ter sauber laufen.",
+    hint: "Erst danach kann die Prüfung später sauber laufen.",
   },
   {
     id: "bf17",
@@ -182,49 +175,49 @@ const FAHRWERK_STAGES: FahrwerkStage[] = [
     label: "Noch nicht angemeldet",
     next: "Passende Klasse finden oder direkt online anmelden.",
     detail:
-      "Starte mit Klasse B, B197, BF17 oder BE. Wenn du unsicher bist, fÃ¼hrt dich das Interface Ã¼ber wenige Fragen zur passenden Richtung.",
+      "Starte mit Klasse B, B197, BF17 oder BE. Wenn du unsicher bist, führt dich das Interface über wenige Fragen zur passenden Richtung.",
   },
   {
     id: "registered",
     label: "Angemeldet",
-    next: "Unterlagen vollstÃ¤ndig machen.",
+    next: "Unterlagen vollständig machen.",
     detail:
-      "Sehtest, Erste-Hilfe-Kurs, Passbild und Antrag sind meistens die nÃ¤chsten Baustellen.",
+      "Sehtest, Erste-Hilfe-Kurs, Passbild und Antrag sind meistens die nächsten Baustellen.",
   },
   {
     id: "documents",
     label: "Unterlagen laufen",
     next: "Theorie sauber starten und Antrag im Blick behalten.",
     detail:
-      "Wenn Unterlagen fehlen, dauert spÃ¤ter oft die PrÃ¼fungsfreigabe lÃ¤nger. Deshalb zuerst den Dokumenten-Check erledigen.",
+      "Wenn Unterlagen fehlen, dauert später oft die Prüfungsfreigabe länger. Deshalb zuerst den Dokumenten-Check erledigen.",
   },
   {
     id: "theory",
-    label: "Theorie lÃ¤uft",
-    next: "RegelmÃ¤ÃŸig lernen und TheorieprÃ¼fung planen.",
+    label: "Theorie läuft",
+    next: "Regelmäßig lernen und Theorieprüfung planen.",
     detail:
-      "Das Interface kann dir erklÃ¤ren, was in der Theoriephase wichtig ist. Konkrete Kurszeiten bleiben bei Fahrschule.live.",
+      "Das Interface kann dir erklären, was in der Theoriephase wichtig ist. Konkrete Kurszeiten bleiben bei Fahrschule.live.",
   },
   {
     id: "theory_exam",
-    label: "TheorieprÃ¼fung bestanden",
+    label: "Theorieprüfung bestanden",
     next: "Praxisphase und Fahrstunden fokussieren.",
     detail:
-      "Jetzt geht es stÃ¤rker um Fahrpraxis, Sonderfahrten und Vorbereitung auf die praktische PrÃ¼fung.",
+      "Jetzt geht es stärker um Fahrpraxis, Sonderfahrten und Vorbereitung auf die praktische Prüfung.",
   },
   {
     id: "practice",
-    label: "Praxis lÃ¤uft",
-    next: "Fahrstunden, Sonderfahrten und PrÃ¼fungsreife klÃ¤ren.",
+    label: "Praxis läuft",
+    next: "Fahrstunden, Sonderfahrten und Prüfungsreife klären.",
     detail:
-      "Wenn du unsicher bist, kann das Interface deine Frage vorstrukturieren, bevor Fahrwerk B sie prÃ¼ft.",
+      "Wenn du unsicher bist, kann das Interface deine Frage vorstrukturieren, bevor Fahrwerk B sie prüft.",
   },
   {
     id: "practical_exam",
-    label: "PrÃ¼fung steht an",
-    next: "PrÃ¼fungs-Checkliste durchgehen und ruhig bleiben.",
+    label: "Prüfung steht an",
+    next: "Prüfungs-Checkliste durchgehen und ruhig bleiben.",
     detail:
-      "Kurz vor der PrÃ¼fung helfen klare Checklisten mehr als lange Texte. Nutze den PrÃ¼fungsmodus im Interface.",
+      "Kurz vor der Prüfung helfen klare Checklisten mehr als lange Texte. Nutze den Prüfungsmodus im Interface.",
   },
 ];
 
@@ -241,17 +234,17 @@ const BTDESIGNS_BOOKING_SERVICES = [
   "AI Interface Beratung",
   "Werbemittel Anfrage",
   "Foto/Video Anfrage",
-  "Allgemeines ErstgesprÃ¤ch",
+  "Allgemeines Erstgespräch",
 ];
 
 const MM_WARTUNG_BOOKING_SERVICES = [
   "Werkstatt Termin",
-  "Ã–lwechsel / Wartung",
+  "Ölwechsel / Wartung",
   "Fehlerdiagnose",
   "Ersatzteil Anfrage",
   "Ultraschallreinigung",
   "Landmaschinen / alte Technik",
-  "Allgemeine RÃ¼ckfrage",
+  "Allgemeine Rückfrage",
 ];
 
 const TXBIKES_BOOKING_SERVICES = [
@@ -260,144 +253,144 @@ const TXBIKES_BOOKING_SERVICES = [
   "E-Bike Diagnose",
   "Reparatur Anfrage",
   "Kaufberatung Fahrrad / E-Bike",
-  "ZubehÃ¶r Beratung",
-  "Allgemeine RÃ¼ckfrage",
+  "Zubehör Beratung",
+  "Allgemeine Rückfrage",
 ];
 
 const WILLI_BOOKING_SERVICES = [
   "Beratung",
-  "Termin / RÃ¼ckruf",
+  "Termin / Rückruf",
   "Service Anfrage",
   "Angebot anfragen",
   "Projekt besprechen",
-  "Allgemeine RÃ¼ckfrage",
+  "Allgemeine Rückfrage",
 ];
 
 const TXBIKES_START_CARDS: StartCard[] = [
   {
-    icon: "ðŸ“·",
+    icon: "📷",
     title: "Problem mit Foto",
     description: "Foto machen oder hochladen",
     action: "photo",
   },
   {
-    icon: "ðŸŽ™ï¸",
-    title: "Problem erzÃ¤hlen",
+    icon: "🎙️",
+    title: "Problem erzählen",
     description: "Sprich direkt ins Interface",
     action: "voice",
   },
   {
-    icon: "ðŸ› ï¸",
+    icon: "🛠️",
     title: "Problem am Fahrrad",
-    description: "GerÃ¤usche, Defekte oder Fehler eingrenzen",
+    description: "Geräusche, Defekte oder Fehler eingrenzen",
     message:
-      "Ich habe ein Problem mit meinem Fahrrad und mÃ¶chte den Fehler eingrenzen.",
+      "Ich habe ein Problem mit meinem Fahrrad und möchte den Fehler eingrenzen.",
   },
   {
-    icon: "ðŸ“…",
+    icon: "📅",
     title: "Termin buchen",
     description: "Werkstatttermin direkt anfragen",
     action: "booking",
   },
   {
-    icon: "ðŸš´",
+    icon: "🚴",
     title: "Kaufberatung",
-    description: "E-Bike, Fahrrad oder ZubehÃ¶r passend finden",
-    message: "Ich brauche Beratung zu einem Fahrrad, E-Bike oder ZubehÃ¶r.",
+    description: "E-Bike, Fahrrad oder Zubehör passend finden",
+    message: "Ich brauche Beratung zu einem Fahrrad, E-Bike oder Zubehör.",
   },
   {
-    icon: "ðŸ”§",
+    icon: "🔧",
     title: "Wartung & Service",
     description: "Inspektion, Kette, Bremsen oder Pflege planen",
     message:
-      "Ich mÃ¶chte wissen, welche Wartung oder welcher Service fÃ¼r mein Fahrrad sinnvoll ist.",
+      "Ich möchte wissen, welche Wartung oder welcher Service für mein Fahrrad sinnvoll ist.",
   },
 ];
 
 const WILLI_START_CARDS: StartCard[] = [
   {
-    icon: "âœ¨",
+    icon: "✨",
     title: "Beratung",
     description: "Kurz schildern, worum es geht",
-    message: "Ich mÃ¶chte mich beraten lassen und mein Anliegen kurz schildern.",
+    message: "Ich möchte mich beraten lassen und mein Anliegen kurz schildern.",
   },
   {
-    icon: "ðŸ“…",
+    icon: "📅",
     title: "Termin buchen",
-    description: "Termin oder RÃ¼ckruf direkt anfragen",
+    description: "Termin oder Rückruf direkt anfragen",
     action: "booking",
   },
   {
-    icon: "ðŸ› ï¸",
+    icon: "🛠️",
     title: "Service Anfrage",
     description: "Problem, Wunsch oder Auftrag vorbereiten",
     message:
-      "Ich habe eine Service-Anfrage und mÃ¶chte mein Anliegen vorbereiten.",
+      "Ich habe eine Service-Anfrage und möchte mein Anliegen vorbereiten.",
   },
   {
-    icon: "ðŸ’¬",
-    title: "Kurz erzÃ¤hlen",
+    icon: "💬",
+    title: "Kurz erzählen",
     description: "Sprich deine Anfrage direkt ein",
     action: "voice",
   },
   {
-    icon: "ðŸ“·",
+    icon: "📷",
     title: "Bild zeigen",
     description: "Foto, Screenshot oder Beispiel hochladen",
     action: "photo",
   },
   {
-    icon: "ðŸ“‹",
+    icon: "📋",
     title: "Angebot anfragen",
     description: "Infos sammeln und Anfrage formulieren",
     message:
-      "Ich mÃ¶chte ein Angebot anfragen und die wichtigsten Informationen sammeln.",
+      "Ich möchte ein Angebot anfragen und die wichtigsten Informationen sammeln.",
   },
 ];
 
 const BTDESIGNS_START_CARDS: StartCard[] = [
   {
-    icon: "âœ¨",
+    icon: "✨",
     title: "Social Media",
-    description: "Pakete, Reels oder Betreuung einschÃ¤tzen",
+    description: "Pakete, Reels oder Betreuung einschätzen",
     message:
-      "Ich mÃ¶chte wissen, welches Social-Media-Paket fÃ¼r mein Unternehmen sinnvoll ist.",
+      "Ich möchte wissen, welches Social-Media-Paket für mein Unternehmen sinnvoll ist.",
   },
   {
-    icon: "ðŸŒ",
+    icon: "🌐",
     title: "Website",
     description: "Neue Website, Relaunch oder Shop besprechen",
     message:
-      "Ich interessiere mich fÃ¼r eine Website oder einen Online-Shop von BTDesigns.",
+      "Ich interessiere mich für eine Website oder einen Online-Shop von BTDesigns.",
   },
   {
-    icon: "ðŸ¤–",
+    icon: "🤖",
     title: "AI Interface",
     description: "LINA, Website-KI oder Automatisierung planen",
     message:
-      "Ich mÃ¶chte wissen, wie ein AI Interface von BTDesigns meinem Unternehmen helfen kann.",
+      "Ich möchte wissen, wie ein AI Interface von BTDesigns meinem Unternehmen helfen kann.",
   },
   {
-    icon: "ðŸ§¢",
+    icon: "🧢",
     title: "Werbemittel",
     description: "Textilien, Drucksachen oder Giveaways anfragen",
     message:
-      "Ich interessiere mich fÃ¼r Werbemittel von BTDesigns und mÃ¶chte eine Anfrage stellen.",
+      "Ich interessiere mich für Werbemittel von BTDesigns und möchte eine Anfrage stellen.",
   },
   {
-    icon: "ðŸ“…",
+    icon: "📅",
     title: "Termin buchen",
     description: "Beratung direkt in deinen Apple Kalender eintragen",
     action: "booking",
   },
   {
-    icon: "ðŸ’¬",
-    title: "Kurz erzÃ¤hlen",
+    icon: "💬",
+    title: "Kurz erzählen",
     description: "Sprich deine Anfrage direkt ein",
     action: "voice",
   },
   {
-    icon: "ðŸ“·",
+    icon: "📷",
     title: "Beispiel zeigen",
     description: "Bild, Screenshot oder Idee hochladen",
     action: "photo",
@@ -406,38 +399,38 @@ const BTDESIGNS_START_CARDS: StartCard[] = [
 
 const MM_WARTUNG_START_CARDS: StartCard[] = [
   {
-    icon: "ðŸ”§",
+    icon: "🔧",
     title: "Fahrzeugproblem",
-    description: "GerÃ¤usch, Warnlampe, Startproblem oder Aussetzer",
+    description: "Geräusch, Warnlampe, Startproblem oder Aussetzer",
     message: "Ich habe ein Problem mit meinem Fahrzeug.",
   },
   {
-    icon: "ðŸš—",
+    icon: "🚗",
     title: "Ersatzteil anfragen",
-    description: "Teil gesucht? Anfrage fÃ¼r Moritz vorbereiten",
+    description: "Teil gesucht? Anfrage für Moritz vorbereiten",
     message: "Ich suche ein bestimmtes Ersatzteil.",
   },
   {
-    icon: "ðŸ“…",
+    icon: "📅",
     title: "Termin anfragen",
-    description: "PrÃ¼fung, Service oder RÃ¼ckmeldung planen",
+    description: "Prüfung, Service oder Rückmeldung planen",
     action: "booking",
   },
   {
-    icon: "âš™ï¸",
+    icon: "⚙️",
     title: "Spezialleistung",
     description: "Ultraschallreinigung, alte Technik oder Landmaschinen",
     message: "Ich habe eine Frage zu einer Spezialleistung von MM Wartung.",
   },
   {
-    icon: "ðŸ“·",
+    icon: "📷",
     title: "Foto zeigen",
     description: "Bild vom Fahrzeug, Teil oder Problem hochladen",
     action: "photo",
   },
   {
-    icon: "ðŸŽ™ï¸",
-    title: "Kurz erzÃ¤hlen",
+    icon: "🎙️",
+    title: "Kurz erzählen",
     description: "Sprich dein Anliegen direkt ein",
     action: "voice",
   },
@@ -445,51 +438,51 @@ const MM_WARTUNG_START_CARDS: StartCard[] = [
 
 const FAHRWERK_B_START_CARDS: StartCard[] = [
   {
-    icon: "ðŸš€",
+    icon: "🚀",
     title: "Online anmelden",
     description:
-      "Offizielle Anmeldung bei Fahrwerk B Ã¼ber Fahrschule.live Ã¶ffnen",
+      "Offizielle Anmeldung bei Fahrwerk B über Fahrschule.live öffnen",
     action: "fahrwerkLiveSignup",
   },
   {
-    icon: "ðŸ§­",
+    icon: "🧭",
     title: "Beratung & Start",
-    description: "Klasse finden, Fragen klÃ¤ren und nÃ¤chsten Schritt sehen",
+    description: "Klasse finden, Fragen klären und nächsten Schritt sehen",
     action: "fahrwerkPanel",
     fahrwerkPanel: "start",
   },
   {
-    icon: "âœ…",
-    title: "Unterlagen prÃ¼fen",
+    icon: "✅",
+    title: "Unterlagen prüfen",
     description: "Sehtest, Erste Hilfe, Passbild, Antrag und BF17-Check",
     action: "fahrwerkPanel",
     fahrwerkPanel: "documents",
   },
   {
-    icon: "ðŸ“š",
+    icon: "📚",
     title: "Theorie begleiten",
-    description: "Theorie-Einstieg, Lernen und PrÃ¼fung besser einordnen",
+    description: "Theorie-Einstieg, Lernen und Prüfung besser einordnen",
     action: "fahrwerkPanel",
     fahrwerkPanel: "theory",
   },
   {
-    icon: "ðŸš˜",
+    icon: "🚘",
     title: "Praxisphase",
-    description: "Fahrstunden, Sonderfahrten und praktische PrÃ¼fung verstehen",
+    description: "Fahrstunden, Sonderfahrten und praktische Prüfung verstehen",
     action: "fahrwerkPanel",
     fahrwerkPanel: "practice",
   },
   {
-    icon: "ðŸŽ¯",
-    title: "PrÃ¼fungsmodus",
-    description: "Theorie- oder PraxisprÃ¼fung mit Checkliste vorbereiten",
+    icon: "🎯",
+    title: "Prüfungsmodus",
+    description: "Theorie- oder Praxisprüfung mit Checkliste vorbereiten",
     action: "fahrwerkPanel",
     fahrwerkPanel: "exam",
   },
   {
-    icon: "ðŸ‘¤",
-    title: "Ich bin FahrschÃ¼ler",
-    description: "Stand auswÃ¤hlen und den nÃ¤chsten sinnvollen Schritt sehen",
+    icon: "👤",
+    title: "Ich bin Fahrschüler",
+    description: "Stand auswählen und den nächsten sinnvollen Schritt sehen",
     action: "fahrwerkPanel",
     fahrwerkPanel: "student",
   },
@@ -519,32 +512,32 @@ function ensureFahrwerkEmoji(content: string) {
   if (!content || FAHRWERK_EMOJI_PATTERN.test(content)) return content;
 
   const normalized = content.toLowerCase();
-  let emoji = "ðŸš—";
+  let emoji = "🚗";
 
   if (/\b(hi|hallo|willkommen)\b/.test(normalized)) {
-    emoji = "ðŸ‘‹";
-  } else if (/\b(fehler|problem|nicht mÃ¶glich|technisch)\b/.test(normalized)) {
-    emoji = "âš ï¸";
+    emoji = "👋";
+  } else if (/\b(fehler|problem|nicht möglich|technisch)\b/.test(normalized)) {
+    emoji = "⚠️";
   } else if (
-    /\b(anmeld|klasse b|b197|bf17|fÃ¼hrerschein starten)\b/.test(normalized)
+    /\b(anmeld|klasse b|b197|bf17|führerschein starten)\b/.test(normalized)
   ) {
-    emoji = "ðŸ“";
+    emoji = "📝";
   } else if (
     /\b(unterlagen|dokument|sehtest|erste hilfe|passbild|antrag)\b/.test(
       normalized,
     )
   ) {
-    emoji = "ðŸ“„";
-  } else if (/\b(theorie|lernen|prÃ¼fungsfragen)\b/.test(normalized)) {
-    emoji = "ðŸ“š";
+    emoji = "📄";
+  } else if (/\b(theorie|lernen|prüfungsfragen)\b/.test(normalized)) {
+    emoji = "📚";
   } else if (/\b(praxis|fahrstunde|sonderfahrt)\b/.test(normalized)) {
-    emoji = "ðŸš˜";
-  } else if (/\b(prÃ¼fung|checkliste|prÃ¼fungsangst)\b/.test(normalized)) {
-    emoji = "ðŸŽ¯";
-  } else if (/\b(rÃ¼ckruf|kontakt|telefon|erreichen)\b/.test(normalized)) {
-    emoji = "ðŸ“ž";
+    emoji = "🚘";
+  } else if (/\b(prüfung|checkliste|prüfungsangst)\b/.test(normalized)) {
+    emoji = "🎯";
+  } else if (/\b(rückruf|kontakt|telefon|erreichen)\b/.test(normalized)) {
+    emoji = "📞";
   } else if (/\b(erledigt|perfekt|alles klar|okay)\b/.test(normalized)) {
-    emoji = "âœ…";
+    emoji = "✅";
   }
 
   return `${emoji} ${content}`;
@@ -612,9 +605,6 @@ export default function WidgetPage() {
     "fahrwerkbde",
     "fahrwerk",
   ].includes(normalizedTenantId);
-  // Die Sprachfunktion bleibt grundsÃ¤tzlich im Projekt erhalten, ist aber
-  // fÃ¼r Fahrwerk B vorerst vollstÃ¤ndig deaktiviert.
-  const voiceEnabled = !isFahrwerkBInterface;
   const isEnhancedInterface =
     isTxbikesInterface ||
     isWilliInterface ||
@@ -638,7 +628,7 @@ export default function WidgetPage() {
     : isTxbikesInterface
       ? "Werkstatttermin"
       : isWilliInterface
-        ? "Termin / RÃ¼ckruf"
+        ? "Termin / Rückruf"
         : "Website Beratung";
   const bookingDefaultDuration =
     isMmWartungInterface || isTxbikesInterface ? "60" : "30";
@@ -664,7 +654,7 @@ export default function WidgetPage() {
         ? "Willi"
         : cfg.brandName;
   const displayAssistantName = isFahrwerkBInterface
-    ? "FÃ¼hrerschein-Cockpit"
+    ? "Führerschein-Cockpit"
     : isTxbikesInterface
       ? "Bike-Service Interface"
       : isWilliInterface
@@ -796,7 +786,7 @@ export default function WidgetPage() {
         setFahrwerkChecklist({ ...DEFAULT_FAHRWERK_CHECKLIST, ...parsed });
       }
     } catch {
-      // Lokaler Fortschritt ist Komfort. Wenn localStorage blockiert ist, lÃ¤uft das Interface trotzdem.
+      // Lokaler Fortschritt ist Komfort. Wenn localStorage blockiert ist, läuft das Interface trotzdem.
     }
   }, [mounted, isFahrwerkBInterface]);
 
@@ -818,16 +808,16 @@ export default function WidgetPage() {
     if (!mounted) return;
 
     const firstMessage = isFahrwerkBInterface
-      ? "Hi â€” ich bin dein Fahrwerk B FÃ¼hrerschein-Cockpit. WÃ¤hle aus, wo du gerade stehst, und ich zeige dir den nÃ¤chsten sinnvollen Schritt."
+      ? "Hi — ich bin dein Fahrwerk B Führerschein-Cockpit. Wähle aus, wo du gerade stehst, und ich zeige dir den nächsten sinnvollen Schritt."
       : isLinaInterface
-        ? `Hi â€” ich bin ${displayAssistantName}. Wobei soll ich dir bei BTDesigns helfen?`
+        ? `Hi — ich bin ${displayAssistantName}. Wobei soll ich dir bei BTDesigns helfen?`
         : isMmWartungInterface
-          ? `Hi â€” ich bin ${displayAssistantName}. Was mÃ¶chtest du bei MM Wartung machen?`
+          ? `Hi — ich bin ${displayAssistantName}. Was möchtest du bei MM Wartung machen?`
           : isTxbikesInterface
-            ? `Hi â€” ich bin das ${displayAssistantName}. Was mÃ¶chtest du bei TXBikes machen?`
+            ? `Hi — ich bin das ${displayAssistantName}. Was möchtest du bei TXBikes machen?`
             : isWilliInterface
-              ? `Hi â€” ich bin das ${displayAssistantName} von Willi. Wobei soll ich helfen?`
-              : `Hi â€” ich bin ${displayAssistantName}. Worum gehtâ€™s?`;
+              ? `Hi — ich bin das ${displayAssistantName} von Willi. Wobei soll ich helfen?`
+              : `Hi — ich bin ${displayAssistantName}. Worum geht’s?`;
 
     setMsgs([{ role: "assistant", content: firstMessage }]);
 
@@ -837,7 +827,7 @@ export default function WidgetPage() {
 
     const hasMediaRecorder = typeof window.MediaRecorder !== "undefined";
 
-    setVoiceSupported(voiceEnabled && hasGetUserMedia && hasMediaRecorder);
+    setVoiceSupported(hasGetUserMedia && hasMediaRecorder);
   }, [
     mounted,
     displayAssistantName,
@@ -846,7 +836,6 @@ export default function WidgetPage() {
     isMmWartungInterface,
     isTxbikesInterface,
     isWilliInterface,
-    voiceEnabled,
   ]);
 
   useEffect(() => {
@@ -1006,7 +995,7 @@ export default function WidgetPage() {
 
     const wantsBooking =
       isBookingInterface &&
-      /\b(termin|werkstatttermin|beratungsgesprÃ¤ch|erstgesprÃ¤ch|gesprÃ¤ch|meeting|call|buchen|anrufen|vereinbaren|rÃ¼ckruf|reparatur|inspektion|wartung|service)\b/i.test(
+      /\b(termin|werkstatttermin|beratungsgespräch|erstgespräch|gespräch|meeting|call|buchen|anrufen|vereinbaren|rückruf|reparatur|inspektion|wartung|service)\b/i.test(
         text,
       );
 
@@ -1022,25 +1011,25 @@ export default function WidgetPage() {
       ) {
         setFahrwerkPanel("documents");
       } else if (
-        /\b(theorie|theorieprÃ¼fung|lernen|app|prÃ¼fungsfragen)\b/i.test(text)
+        /\b(theorie|theorieprüfung|lernen|app|prüfungsfragen)\b/i.test(text)
       ) {
         setFahrwerkPanel("theory");
       } else if (
-        /\b(praxis|fahrstunde|sonderfahrt|praktische prÃ¼fung|prÃ¼fungsangst)\b/i.test(
+        /\b(praxis|fahrstunde|sonderfahrt|praktische prüfung|prüfungsangst)\b/i.test(
           text,
         )
       ) {
         setFahrwerkPanel("practice");
       } else if (
-        /\b(prÃ¼fung|prÃ¼fungsvorbereitung|durchgefallen)\b/i.test(text)
+        /\b(prüfung|prüfungsvorbereitung|durchgefallen)\b/i.test(text)
       ) {
         setFahrwerkPanel("exam");
       } else if (
-        /\b(angemeldet|fahrschÃ¼ler|bin schon|mein stand)\b/i.test(text)
+        /\b(angemeldet|fahrschüler|bin schon|mein stand)\b/i.test(text)
       ) {
         setFahrwerkPanel("student");
       } else if (
-        /\b(anmelden|starten|b197|bf17|klasse b|anhÃ¤nger|be)\b/i.test(text)
+        /\b(anmelden|starten|b197|bf17|klasse b|anhänger|be)\b/i.test(text)
       ) {
         setFahrwerkPanel("start");
       }
@@ -1092,7 +1081,7 @@ export default function WidgetPage() {
         ...next,
         {
           role: "assistant",
-          content: "Kurz ein technisches Problem â€” versuchâ€™s nochmal.",
+          content: "Kurz ein technisches Problem — versuch’s nochmal.",
         },
       ];
       msgsRef.current = failedConversation;
@@ -1123,7 +1112,7 @@ export default function WidgetPage() {
         {
           role: "assistant",
           content:
-            "Ich Ã¶ffne jetzt die offizielle Online-Anmeldung von Fahrwerk B Ã¼ber Fahrschule.live in einem neuen Tab.",
+            "Ich öffne jetzt die offizielle Online-Anmeldung von Fahrwerk B über Fahrschule.live in einem neuen Tab.",
         },
       ];
     });
@@ -1136,7 +1125,7 @@ export default function WidgetPage() {
       return;
     }
 
-    // Falls der Browser neue Tabs blockiert, wird die Anmeldung im aktuellen Fenster geÃ¶ffnet.
+    // Falls der Browser neue Tabs blockiert, wird die Anmeldung im aktuellen Fenster geöffnet.
     window.location.assign(FAHRWERK_LIVE_SIGNUP_URL);
   }
 
@@ -1165,7 +1154,7 @@ export default function WidgetPage() {
         {
           role: "assistant",
           content:
-            "Alles klar â€” ich Ã¶ffne dir die Beratungs- und Anfragevorbereitung. FÃ¼r die verbindliche Anmeldung kannst du jederzeit direkt die offizielle Fahrschule.live-Anmeldung Ã¶ffnen.",
+            "Alles klar — ich öffne dir die Beratungs- und Anfragevorbereitung. Für die verbindliche Anmeldung kannst du jederzeit direkt die offizielle Fahrschule.live-Anmeldung öffnen.",
         },
       ];
     });
@@ -1191,7 +1180,7 @@ export default function WidgetPage() {
         {
           role: "assistant",
           content:
-            "FÃ¼r die Anfragevorbereitung brauche ich mindestens deinen Namen.",
+            "Für die Anfragevorbereitung brauche ich mindestens deinen Namen.",
         },
       ]);
       return;
@@ -1215,7 +1204,7 @@ export default function WidgetPage() {
         {
           role: "assistant",
           content:
-            "Bitte bestÃ¤tige kurz den Datenschutz-Hinweis. Erst danach sollte eine Anfrage an Fahrwerk B vorbereitet werden.",
+            "Bitte bestätige kurz den Datenschutz-Hinweis. Erst danach sollte eine Anfrage an Fahrwerk B vorbereitet werden.",
         },
       ]);
       return;
@@ -1225,12 +1214,12 @@ export default function WidgetPage() {
       ...current,
       {
         role: "user",
-        content: `Anfragevorbereitung ausgefÃ¼llt:\nKlasse: ${fahrwerkSignupForm.licenseClass}\nWunsch: ${fahrwerkSignupForm.startWish}\nName: ${name}`,
+        content: `Anfragevorbereitung ausgefüllt:\nKlasse: ${fahrwerkSignupForm.licenseClass}\nWunsch: ${fahrwerkSignupForm.startWish}\nName: ${name}`,
       },
       {
         role: "assistant",
         content:
-          "Die Anfrage ist im Interface vorbereitet. Die offizielle Online-Anmeldung ist bereits angebunden und kann Ã¼ber den Button â€žOnline anmeldenâ€œ geÃ¶ffnet werden. Der automatische Versand dieser Anfrage an Fahrwerk B folgt spÃ¤ter.",
+          "Die Anfrage ist im Interface vorbereitet. Die offizielle Online-Anmeldung ist bereits angebunden und kann über den Button „Online anmelden“ geöffnet werden. Der automatische Versand dieser Anfrage an Fahrwerk B folgt später.",
       },
     ]);
 
@@ -1331,7 +1320,7 @@ export default function WidgetPage() {
         ...current,
         {
           role: "assistant",
-          content: `Klar â€” trag kurz die Termindaten ein. Danach wird der Termin direkt in den Apple Kalender von ${bookingBusinessName} geschrieben.`,
+          content: `Klar — trag kurz die Termindaten ein. Danach wird der Termin direkt in den Apple Kalender von ${bookingBusinessName} geschrieben.`,
         },
       ];
     });
@@ -1378,7 +1367,7 @@ export default function WidgetPage() {
         {
           role: "assistant",
           content:
-            "FÃ¼r die Terminbuchung brauche ich mindestens Name, Datum und Uhrzeit.",
+            "Für die Terminbuchung brauche ich mindestens Name, Datum und Uhrzeit.",
         },
       ]);
       return;
@@ -1403,7 +1392,7 @@ export default function WidgetPage() {
         {
           role: "assistant",
           content:
-            "Datum oder Uhrzeit konnte ich nicht lesen. Bitte prÃ¼fe die Eingabe nochmal.",
+            "Datum oder Uhrzeit konnte ich nicht lesen. Bitte prüfe die Eingabe nochmal.",
         },
       ]);
       return;
@@ -1450,7 +1439,7 @@ export default function WidgetPage() {
             role: "assistant",
             content:
               data?.error ||
-              "Der Termin konnte gerade nicht eingetragen werden. Bitte wÃ¤hle eine andere Uhrzeit oder versuch es nochmal.",
+              "Der Termin konnte gerade nicht eingetragen werden. Bitte wähle eine andere Uhrzeit oder versuch es nochmal.",
           },
         ]);
         return;
@@ -1487,9 +1476,9 @@ export default function WidgetPage() {
 
       const alternativeText =
         data?.wasAlternative && isBookingInterface
-          ? `\n\nDie gewÃ¼nschte Zeit war nicht mÃ¶glich. ${
+          ? `\n\nDie gewünschte Zeit war nicht möglich. ${
               data?.alternativeReason ||
-              "Ich habe automatisch den nÃ¤chsten passenden freien Termin gewÃ¤hlt."
+              "Ich habe automatisch den nächsten passenden freien Termin gewählt."
             }`
           : "";
 
@@ -1497,7 +1486,7 @@ export default function WidgetPage() {
         ...current,
         {
           role: "assistant",
-          content: `Erledigt â€” der Termin wurde in den ${calendarText} eingetragen.${alternativeText}\n\n${readableDate}â€“${readableEnd}\nLeistung: ${service}`,
+          content: `Erledigt — der Termin wurde in den ${calendarText} eingetragen.${alternativeText}\n\n${readableDate}–${readableEnd}\nLeistung: ${service}`,
         },
       ]);
 
@@ -1551,16 +1540,16 @@ export default function WidgetPage() {
       {
         role: "user",
         content: isFahrwerkBInterface
-          ? "ðŸ“· Bild zur FÃ¼hrerschein-Anfrage hinzugefÃ¼gt"
+          ? "📷 Bild zur Führerschein-Anfrage hinzugefügt"
           : isLinaInterface
-            ? "ðŸ“· Beispiel oder Projektbild hinzugefÃ¼gt"
+            ? "📷 Beispiel oder Projektbild hinzugefügt"
             : isMmWartungInterface
-              ? "ðŸ“· Foto zum Fahrzeug oder Ersatzteil hinzugefÃ¼gt"
+              ? "📷 Foto zum Fahrzeug oder Ersatzteil hinzugefügt"
               : isTxbikesInterface
-                ? "ðŸ“· Foto vom Fahrradproblem hinzugefÃ¼gt"
+                ? "📷 Foto vom Fahrradproblem hinzugefügt"
                 : isWilliInterface
-                  ? "ðŸ“· Bild zur Anfrage hinzugefÃ¼gt"
-                  : "ðŸ“· Foto hinzugefÃ¼gt",
+                  ? "📷 Bild zur Anfrage hinzugefügt"
+                  : "📷 Foto hinzugefügt",
         imagePreviewUrl,
         imageName: file.name,
       },
@@ -1762,10 +1751,7 @@ export default function WidgetPage() {
     return (
       formats.find((format) =>
         MediaRecorder.isTypeSupported(format.mimeType),
-      ) || {
-        mimeType: "",
-        extension: "webm",
-      }
+      ) || { mimeType: "", extension: "webm" }
     );
   }
 
@@ -1890,7 +1876,7 @@ export default function WidgetPage() {
 
     if (!audio) {
       showVoiceFailure(
-        "Die Sprachantwort ist nicht mehr verfÃ¼gbar. Versuch es bitte nochmal.",
+        "Die Sprachantwort ist nicht mehr verfügbar. Versuch es bitte nochmal.",
       );
       return;
     }
@@ -2121,8 +2107,6 @@ export default function WidgetPage() {
   }
 
   async function startVoiceInput() {
-    if (!voiceEnabled) return;
-
     if (loadingRef.current || ["transcribing", "thinking"].includes(voicePhase))
       return;
 
@@ -2150,7 +2134,7 @@ export default function WidgetPage() {
         {
           role: "assistant",
           content:
-            "Die Audioaufnahme wird auf diesem GerÃ¤t oder in diesem Browser nicht unterstÃ¼tzt. Schreib deine Frage bitte als Text.",
+            "Die Audioaufnahme wird auf diesem Gerät oder in diesem Browser nicht unterstützt. Schreib deine Frage bitte als Text.",
         },
       ]);
       return;
@@ -2214,16 +2198,16 @@ export default function WidgetPage() {
       {
         role: "assistant",
         content: isFahrwerkBInterface
-          ? "Alles klar â€” wo stehst du gerade bei deinem FÃ¼hrerschein?"
+          ? "Alles klar — wo stehst du gerade bei deinem Führerschein?"
           : isLinaInterface
-            ? `Alles klar â€” wobei soll ich dir bei BTDesigns helfen?`
+            ? "Alles klar — wobei soll ich dir bei BTDesigns helfen?"
             : isMmWartungInterface
-              ? `Alles klar â€” was mÃ¶chtest du bei MM Wartung machen?`
+              ? "Alles klar — was möchtest du bei MM Wartung machen?"
               : isTxbikesInterface
-                ? `Alles klar â€” was mÃ¶chtest du bei TXBikes machen?`
+                ? "Alles klar — was möchtest du bei TXBikes machen?"
                 : isWilliInterface
-                  ? `Alles klar â€” wobei soll ich dir bei Willi helfen?`
-                  : `Alles klar â€” womit kann ich dir helfen?`,
+                  ? "Alles klar — wobei soll ich dir bei Willi helfen?"
+                  : "Alles klar — womit kann ich dir helfen?",
       },
     ]);
     setInput("");
@@ -2280,7 +2264,7 @@ export default function WidgetPage() {
 
   const voiceTitle =
     voicePhase === "listening"
-      ? "Ich hÃ¶re zu"
+      ? "Ich höre zu"
       : voicePhase === "transcribing"
         ? "Ich verstehe dich"
         : voicePhase === "thinking"
@@ -2319,22 +2303,16 @@ export default function WidgetPage() {
           ? voiceTranscript || "Deine Anfrage wird verarbeitet."
           : voicePhase === "speaking"
             ? voiceTranscript ||
-              "Die Antwort wird jetzt vorgelesen. Danach hÃ¶re ich automatisch wieder zu."
+              "Die Antwort wird jetzt vorgelesen. Danach höre ich automatisch wieder zu."
             : voicePhase === "ready"
-              ? voiceError || "Tippe auf die Kugel, um die Antwort zu hÃ¶ren."
+              ? voiceError || "Tippe auf die Kugel, um die Antwort zu hören."
               : voicePhase === "error"
                 ? voiceError || "Versuch es bitte noch einmal."
                 : "";
 
   const wrapperBackground = isEmbedded
     ? "transparent"
-    : `
-        radial-gradient(1200px 900px at 70% 12%, ${widgetAccent}18 0%, transparent 60%),
-        radial-gradient(900px 700px at 12% 78%, ${widgetAccent}10 0%, transparent 62%),
-        radial-gradient(700px 520px at 55% 55%, rgba(255,255,255,0.04) 0%, transparent 72%),
-        linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)),
-        ${widgetBackground}
-      `;
+    : `radial-gradient(1200px 900px at 70% 12%, ${widgetAccent}18 0%, transparent 60%),radial-gradient(900px 700px at 12% 78%, ${widgetAccent}10 0%, transparent 62%),radial-gradient(700px 520px at 55% 55%, rgba(255,255,255,0.04) 0%, transparent 72%),linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)),${widgetBackground}`;
 
   const launcherButton = (
     <button
@@ -2351,14 +2329,8 @@ export default function WidgetPage() {
           ? `1px solid rgba(${accentRgb}, 0.34)`
           : `1px solid rgba(${accentRgb}, 0.56)`,
         background: open
-          ? `
-              radial-gradient(150px 96px at 35% 25%, rgba(${accentRgb}, 0.34) 0%, transparent 65%),
-              linear-gradient(180deg, rgba(255,255,255,0.28), rgba(${accentRgb}, 0.16))
-            `
-          : `
-              radial-gradient(150px 96px at 35% 25%, rgba(${accentRgb}, 0.72) 0%, transparent 65%),
-              linear-gradient(180deg, rgba(255,255,255,0.30), rgba(${accentRgb}, 0.26))
-            `,
+          ? `radial-gradient(150px 96px at 35% 25%, rgba(${accentRgb}, 0.34) 0%, transparent 65%), linear-gradient(180deg, rgba(255,255,255,0.28), rgba(${accentRgb}, 0.16))`
+          : `radial-gradient(150px 96px at 35% 25%, rgba(${accentRgb}, 0.72) 0%, transparent 65%), linear-gradient(180deg, rgba(255,255,255,0.30), rgba(${accentRgb}, 0.26))`,
         backdropFilter: "blur(18px) saturate(175%)",
         WebkitBackdropFilter: "blur(18px) saturate(175%)",
         boxShadow: open
@@ -2375,7 +2347,7 @@ export default function WidgetPage() {
         appearance: "none",
         WebkitAppearance: "none",
       }}
-      aria-label="Chat Ã¶ffnen"
+      aria-label="Chat öffnen"
       title={`${displayBrandName} Chat`}
     >
       {open ? (
@@ -2386,7 +2358,7 @@ export default function WidgetPage() {
             textShadow: `0 0 12px rgba(${accentRgb}, 0.20)`,
           }}
         >
-          Ã—
+          ×
         </span>
       ) : (
         <MessageCircle
@@ -2414,599 +2386,594 @@ export default function WidgetPage() {
         pointerEvents: isEmbedClosed ? "none" : "auto",
       }}
     >
-      <style>{`
-        html, body {
-          background: transparent !important;
-          margin: 0 !important;
-          padding: 0 !important;
-          overflow: visible !important;
-        }
-
-        body::before,
-        body::after {
-          display: none !important;
-          content: none !important;
-        }
-
-        .bt-hidden-file-input {
-          display: none !important;
-        }
-
-        .bt-round-action-button {
-          height: ${isEnhancedInterface ? "56px" : "46px"};
-          width: ${isEnhancedInterface ? "56px" : "46px"};
-          border-radius: ${isEnhancedInterface ? "18px" : "14px"};
-          border: 1px solid rgba(255,255,255,0.26);
-          background: linear-gradient(180deg, rgba(255,255,255,0.82), rgba(255,255,255,0.58));
-          color: ${textPrimary};
-          display: grid;
-          place-items: center;
-          cursor: pointer;
-          font-size: ${isEnhancedInterface ? "22px" : "19px"};
-          box-shadow: 0 10px 24px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.26);
-          backdrop-filter: blur(14px) saturate(145%);
-          -webkit-backdrop-filter: blur(14px) saturate(145%);
-          flex: 0 0 auto;
-          transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease, background 180ms ease;
-          position: relative;
-          overflow: hidden;
-        }
-
-        .bt-round-action-button:hover:not(:disabled) {
-          transform: translateY(-1px);
-          border-color: rgba(${accentRgb}, 0.38);
-          box-shadow: 0 14px 32px rgba(0,0,0,0.12), 0 0 0 1px rgba(${accentRgb}, 0.10) inset;
-        }
-
-        .bt-round-action-button:disabled {
-          cursor: not-allowed;
-          opacity: 0.58;
-        }
-
-        .bt-round-action-button.bt-listening {
-          color: #ffffff;
-          border-color: rgba(${accentRgb}, 0.46);
-          background:
-            radial-gradient(90px 70px at 50% 30%, rgba(255,255,255,0.34), transparent 64%),
-            linear-gradient(180deg, ${widgetAccent}F0, ${widgetAccent}A6);
-          box-shadow: 0 16px 44px rgba(0,0,0,0.16), 0 0 0 1px rgba(${accentRgb}, 0.16) inset, 0 0 28px rgba(${accentRgb}, 0.28);
-        }
-
-        @keyframes bt-voice-stage-in {
-          0% { opacity: 0; transform: scale(1.025); filter: blur(14px); }
-          100% { opacity: 1; transform: scale(1); filter: blur(0); }
-        }
-
-        @keyframes bt-voice-ambient-a {
-          0%, 100% { transform: translate3d(-8%, -5%, 0) scale(1); }
-          50% { transform: translate3d(9%, 8%, 0) scale(1.13); }
-        }
-
-        @keyframes bt-voice-ambient-b {
-          0%, 100% { transform: translate3d(8%, 9%, 0) scale(1.08); }
-          50% { transform: translate3d(-10%, -7%, 0) scale(0.96); }
-        }
-
-        @keyframes bt-voice-halo-spin {
-          from { transform: rotate(0deg) scale(var(--voice-scale, 1.03)); }
-          to { transform: rotate(360deg) scale(var(--voice-scale, 1.03)); }
-        }
-
-        @keyframes bt-voice-halo-reverse {
-          from { transform: rotate(360deg) scale(var(--voice-scale, 1.03)); }
-          to { transform: rotate(0deg) scale(var(--voice-scale, 1.03)); }
-        }
-
-        @keyframes bt-voice-core-breathe {
-          0%, 100% { border-radius: 46% 54% 58% 42% / 44% 46% 54% 56%; }
-          33% { border-radius: 58% 42% 45% 55% / 51% 61% 39% 49%; }
-          66% { border-radius: 42% 58% 61% 39% / 58% 42% 58% 42%; }
-        }
-
-        @keyframes bt-voice-text-in {
-          from { opacity: 0; transform: translateY(10px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-
-        @keyframes bt-voice-dot {
-          0%, 100% { transform: translateY(0) scale(0.82); opacity: 0.42; }
-          50% { transform: translateY(-7px) scale(1); opacity: 1; }
-        }
-
-        .bt-voice-stage {
-          --voice-scale: 1.03;
-          --voice-energy: 0.08;
-          --voice-glow: 0.30;
-          position: absolute;
-          inset: 0;
-          z-index: 80;
-          overflow: hidden;
-          display: grid;
-          place-items: center;
-          padding: clamp(28px, 5vw, 64px);
-          border: 0;
-          border-radius: inherit;
-          color: #ffffff;
-          background:
-            radial-gradient(920px 620px at 50% 42%, rgba(${accentRgb}, 0.34), transparent 66%),
-            radial-gradient(680px 520px at 14% 4%, rgba(255,255,255,0.16), transparent 64%),
-            linear-gradient(145deg, rgba(7,10,17,0.86), rgba(18,9,15,0.90) 52%, rgba(7,10,17,0.92));
-          backdrop-filter: blur(32px) saturate(175%);
-          -webkit-backdrop-filter: blur(32px) saturate(175%);
-          animation: bt-voice-stage-in 420ms cubic-bezier(.16,1,.3,1) both;
-          isolation: isolate;
-        }
-
-        .bt-voice-stage::before,
-        .bt-voice-stage::after {
-          content: "";
-          position: absolute;
-          width: 72%;
-          aspect-ratio: 1;
-          border-radius: 50%;
-          pointer-events: none;
-          filter: blur(62px);
-          opacity: calc(0.42 + var(--voice-energy, 0.08) * 0.34);
-          mix-blend-mode: screen;
-        }
-
-        .bt-voice-stage::before {
-          left: -20%;
-          top: -34%;
-          background: radial-gradient(circle, rgba(${accentRgb}, 0.84), transparent 66%);
-          animation: bt-voice-ambient-a 7s ease-in-out infinite;
-        }
-
-        .bt-voice-stage::after {
-          right: -24%;
-          bottom: -42%;
-          background: radial-gradient(circle, rgba(255,102,133,0.52), transparent 65%);
-          animation: bt-voice-ambient-b 8.5s ease-in-out infinite;
-        }
-
-        .bt-voice-grid {
-          position: absolute;
-          inset: -20%;
-          pointer-events: none;
-          opacity: 0.16;
-          background-image:
-            linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px);
-          background-size: 54px 54px;
-          mask-image: radial-gradient(circle at 50% 48%, #000 0%, transparent 67%);
-          -webkit-mask-image: radial-gradient(circle at 50% 48%, #000 0%, transparent 67%);
-          transform: perspective(700px) rotateX(58deg) translateY(30%);
-        }
-
-        .bt-voice-close {
-          position: absolute;
-          top: clamp(18px, 3vw, 28px);
-          right: clamp(18px, 3vw, 28px);
-          z-index: 4;
-          width: 44px;
-          height: 44px;
-          border: 0;
-          border-radius: 999px;
-          color: rgba(255,255,255,0.86);
-          background: rgba(255,255,255,0.08);
-          backdrop-filter: blur(16px);
-          -webkit-backdrop-filter: blur(16px);
-          box-shadow: inset 0 1px 0 rgba(255,255,255,0.12), 0 14px 34px rgba(0,0,0,0.18);
-          cursor: pointer;
-          font-size: 24px;
-          line-height: 1;
-          transition: transform 180ms ease, background 180ms ease;
-        }
-
-        .bt-voice-close:hover {
-          transform: scale(1.06);
-          background: rgba(255,255,255,0.14);
-        }
-
-        .bt-voice-center {
-          position: relative;
-          z-index: 2;
-          width: min(100%, 720px);
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          text-align: center;
-        }
-
-        .bt-voice-orb-button {
-          position: relative;
-          width: clamp(230px, 34vw, 330px);
-          aspect-ratio: 1;
-          border: 0;
-          padding: 0;
-          border-radius: 50%;
-          background: transparent;
-          cursor: default;
-          display: grid;
-          place-items: center;
-          -webkit-tap-highlight-color: transparent;
-        }
-
-        .bt-voice-stage--listening .bt-voice-orb-button,
-        .bt-voice-stage--ready .bt-voice-orb-button,
-        .bt-voice-stage--error .bt-voice-orb-button {
-          cursor: pointer;
-        }
-
-        .bt-voice-halo {
-          position: absolute;
-          inset: 8%;
-          border-radius: 44% 56% 50% 50% / 46% 44% 56% 54%;
-          background:
-            conic-gradient(from 20deg,
-              rgba(255,255,255,0.04),
-              rgba(${accentRgb},0.76),
-              rgba(255,120,145,0.42),
-              rgba(255,255,255,0.12),
-              rgba(${accentRgb},0.76),
-              rgba(255,255,255,0.04));
-          filter: blur(18px);
-          opacity: var(--voice-glow, 0.3);
-          animation: bt-voice-halo-spin 6.4s linear infinite;
-          will-change: transform, opacity;
-        }
-
-        .bt-voice-halo:nth-child(2) {
-          inset: 15%;
-          filter: blur(11px);
-          opacity: calc(var(--voice-glow, 0.3) * 0.78);
-          animation: bt-voice-halo-reverse 4.8s linear infinite;
-        }
-
-        .bt-voice-core {
-          position: relative;
-          width: 52%;
-          aspect-ratio: 1;
-          transform: scale(var(--voice-scale, 1.03));
-          border-radius: 46% 54% 58% 42% / 44% 46% 54% 56%;
-          background:
-            radial-gradient(circle at 30% 23%, rgba(255,255,255,0.96), transparent 18%),
-            radial-gradient(circle at 68% 72%, rgba(255,116,145,0.78), transparent 34%),
-            radial-gradient(circle at 34% 70%, rgba(${accentRgb},0.94), transparent 48%),
-            linear-gradient(135deg, rgba(255,255,255,0.68), rgba(${accentRgb},0.94) 48%, rgba(98,11,30,0.92));
-          box-shadow:
-            0 0 34px rgba(${accentRgb}, calc(0.22 + var(--voice-energy, 0.08) * 0.40)),
-            0 0 110px rgba(${accentRgb}, calc(0.16 + var(--voice-energy, 0.08) * 0.34)),
-            inset 0 1px 0 rgba(255,255,255,0.72),
-            inset -18px -20px 46px rgba(40,0,10,0.24);
-          animation: bt-voice-core-breathe 3.8s ease-in-out infinite;
-          transition: transform 90ms linear, box-shadow 120ms linear;
-          will-change: transform, border-radius;
-        }
-
-        .bt-voice-core::before {
-          content: "";
-          position: absolute;
-          inset: 10%;
-          border-radius: inherit;
-          background: linear-gradient(130deg, rgba(255,255,255,0.24), transparent 44%, rgba(255,255,255,0.08));
-          mix-blend-mode: screen;
-          filter: blur(5px);
-        }
-
-        .bt-voice-stage--transcribing .bt-voice-core,
-        .bt-voice-stage--thinking .bt-voice-core {
-          transform: scale(0.94);
-          animation-duration: 2.1s;
-        }
-
-        .bt-voice-stage--speaking .bt-voice-core {
-          animation-duration: 2.7s;
-        }
-
-        .bt-voice-copy {
-          width: min(100%, 660px);
-          margin-top: clamp(4px, 1vw, 12px);
-          animation: bt-voice-text-in 380ms 100ms ease both;
-        }
-
-        .bt-voice-eyebrow {
-          font-size: 12px;
-          font-weight: 800;
-          letter-spacing: 0.18em;
-          text-transform: uppercase;
-          color: rgba(255,255,255,0.56);
-          margin-bottom: 10px;
-        }
-
-        .bt-voice-title {
-          font-size: clamp(28px, 4.2vw, 48px);
-          line-height: 1.08;
-          font-weight: 780;
-          letter-spacing: -0.035em;
-          text-wrap: balance;
-          text-shadow: 0 12px 44px rgba(0,0,0,0.24);
-        }
-
-        .bt-voice-transcript {
-          margin: 14px auto 0;
-          max-width: 620px;
-          min-height: 46px;
-          font-size: clamp(15px, 1.9vw, 19px);
-          line-height: 1.5;
-          color: rgba(255,255,255,0.70);
-          text-wrap: balance;
-        }
-
-        .bt-voice-dots {
-          height: 30px;
-          display: inline-flex;
-          align-items: center;
-          gap: 7px;
-          margin-top: 8px;
-        }
-
-        .bt-voice-dots span {
-          width: 7px;
-          height: 7px;
-          border-radius: 999px;
-          background: rgba(255,255,255,0.82);
-          animation: bt-voice-dot 900ms ease-in-out infinite;
-        }
-
-        .bt-voice-dots span:nth-child(2) { animation-delay: 120ms; }
-        .bt-voice-dots span:nth-child(3) { animation-delay: 240ms; }
-
-        .bt-voice-action {
-          margin-top: 18px;
-          min-height: 46px;
-          padding: 0 18px;
-          border: 0;
-          border-radius: 999px;
-          color: #ffffff;
-          background: rgba(255,255,255,0.12);
-          backdrop-filter: blur(14px);
-          -webkit-backdrop-filter: blur(14px);
-          box-shadow: inset 0 1px 0 rgba(255,255,255,0.16), 0 16px 38px rgba(0,0,0,0.16);
-          cursor: pointer;
-          font-weight: 750;
-          font-size: 14px;
-          transition: transform 180ms ease, background 180ms ease;
-        }
-
-        .bt-voice-action:hover {
-          transform: translateY(-1px);
-          background: rgba(255,255,255,0.18);
-        }
-
-        .bt-voice-footer {
-          position: absolute;
-          left: 50%;
-          bottom: clamp(20px, 3vw, 30px);
-          transform: translateX(-50%);
-          z-index: 3;
-          width: calc(100% - 120px);
-          text-align: center;
-          color: rgba(255,255,255,0.44);
-          font-size: 12px;
-          line-height: 1.4;
-          pointer-events: none;
-        }
-
-        @media (max-width: 680px) {
-          .bt-voice-stage { padding: 26px 18px 68px; }
-          .bt-voice-orb-button { width: min(68vw, 260px); }
-          .bt-voice-title { font-size: clamp(27px, 9vw, 40px); }
-          .bt-voice-transcript { font-size: 15px; }
-          .bt-voice-footer { width: calc(100% - 64px); }
-        }
-
-        .bt-image-preview-wrap {
-          margin-top: 10px;
-          overflow: hidden;
-          border-radius: 14px;
-          border: 1px solid rgba(255,255,255,0.30);
-          background: rgba(255,255,255,0.18);
-          box-shadow: inset 0 1px 0 rgba(255,255,255,0.18);
-        }
-
-        .bt-image-preview-wrap img {
-          display: block;
-          width: 100%;
-          max-height: ${isEnhancedInterface ? "340px" : "260px"};
-          object-fit: cover;
-        }
-
-        .bt-image-preview-label {
-          padding: 8px 10px;
-          font-size: 12px;
-          line-height: 1.3;
-          opacity: 0.9;
-        }
-
-        @keyframes bt-pulse {
-          0% { transform: scale(1); opacity: .9; }
-          70% { transform: scale(1.26); opacity: 0; }
-          100% { transform: scale(1.26); opacity: 0; }
-        }
-
-        @keyframes bt-dock-bounce {
-          0%   { transform: translateY(0) scale(1); }
-          10%  { transform: translateY(-12px) scale(1.04); }
-          22%  { transform: translateY(0) scale(0.99); }
-          34%  { transform: translateY(-7px) scale(1.025); }
-          46%  { transform: translateY(0) scale(1); }
-          100% { transform: translateY(0) scale(1); }
-        }
-
-        @keyframes bt-badge-in {
-          0% { opacity: 0; transform: translateY(6px) scale(.98); }
-          100% { opacity: 1; transform: translateY(0) scale(1); }
-        }
-
-        @keyframes bt-badge-out {
-          0% { opacity: 1; transform: translateY(0) scale(1); }
-          100% { opacity: 0; transform: translateY(6px) scale(.98); }
-        }
-
-        @keyframes bt-liquid {
-          0% { transform: translate3d(-6%, -4%, 0) scale(1); opacity: .36; }
-          50% { transform: translate3d(6%, 3%, 0) scale(1.03); opacity: .48; }
-          100% { transform: translate3d(-6%, -4%, 0) scale(1); opacity: .36; }
-        }
-
-        @keyframes bt-launcher-arrive {
-          0% { opacity: 0; transform: translate3d(22px, 26px, 0) scale(0.62); filter: blur(8px); }
-          58% { opacity: 1; transform: translate3d(-3px, -5px, 0) scale(1.06); filter: blur(0); }
-          78% { transform: translate3d(0, 0, 0) scale(0.97); }
-          100% { opacity: 1; transform: translate3d(0, 0, 0) scale(1); filter: blur(0); }
-        }
-
-        @keyframes bt-panel-pop-in {
-          0% { opacity: 0; transform: translate3d(28px, 34px, 0) scale(0.82); filter: blur(14px); }
-          52% { opacity: 1; transform: translate3d(-4px, -6px, 0) scale(1.025); filter: blur(0); }
-          72% { transform: translate3d(0, 0, 0) scale(0.988); }
-          100% { opacity: 1; transform: translate3d(0, 0, 0) scale(1); filter: blur(0); }
-        }
-
-        .bt-launcher {
-          position: relative;
-          overflow: visible;
-          will-change: transform;
-          transform: translateZ(0);
-          animation: bt-launcher-arrive 680ms cubic-bezier(.16,1,.3,1) both;
-          transform-origin: right bottom;
-          background-clip: padding-box;
-        }
-
-        .bt-launcher::before {
-          content: "";
-          position: absolute;
-          inset: -14px;
-          border-radius: 999px;
-          background: radial-gradient(circle, rgba(${accentRgb}, 0.36) 0%, rgba(${accentRgb}, 0.13) 42%, transparent 72%);
-          filter: blur(3px);
-          opacity: 1;
-          pointer-events: none;
-        }
-
-        .bt-launcher::after {
-          content: "";
-          position: absolute;
-          inset: -18px;
-          border-radius: 999px;
-          border: 1px solid rgba(${accentRgb}, 0.32);
-          animation: bt-pulse 2.4s ease-out infinite;
-          pointer-events: none;
-        }
-
-        .bt-bouncing {
-          animation: bt-dock-bounce 920ms cubic-bezier(.2,.9,.2,1) 1;
-        }
-
-        .bt-badge {
-          position: absolute;
-          right: 68px;
-          bottom: 10px;
-          display: inline-flex;
-          align-items: center;
-          gap: 8px;
-          padding: 9px 11px;
-          border-radius: 999px;
-          border: 1px solid rgba(255,255,255,0.20);
-          background: linear-gradient(180deg, rgba(255,255,255,0.32), rgba(255,255,255,0.18));
-          backdrop-filter: blur(14px) saturate(140%);
-          -webkit-backdrop-filter: blur(14px) saturate(140%);
-          box-shadow: 0 16px 50px rgba(0,0,0,0.16);
-          color: ${textPrimary};
-          font-size: 12px;
-          white-space: nowrap;
-          pointer-events: none;
-          animation: bt-badge-in 260ms ease-out;
-        }
-
-        .bt-badge-dot {
-          width: 8px;
-          height: 8px;
-          border-radius: 999px;
-          background: ${widgetAccent};
-          box-shadow: 0 0 0 6px rgba(${accentRgb}, 0.16);
-        }
-
-        .bt-badge-hide {
-          animation: bt-badge-out 240ms ease-in forwards;
-        }
-
-        .bt-panel {
-          border-radius: ${panelRadius}px;
-          overflow: hidden;
-          transform: translateZ(0);
-          transform-origin: right bottom;
-          animation: bt-panel-pop-in 520ms cubic-bezier(.16,1,.3,1) both;
-          -webkit-mask-image: -webkit-radial-gradient(white, black);
-          isolation: isolate;
-        }
-
-        .bt-panel-layer {
-          border-radius: ${panelRadius}px;
-        }
-
-        .bt-start-card {
-          width: 100%;
-          min-height: ${isEnhancedInterface ? "138px" : "auto"};
-          border: 1px solid rgba(255,255,255,0.38);
-          border-radius: ${isEnhancedInterface ? "24px" : "16px"};
-          padding: ${isEnhancedInterface ? "20px" : "12px"};
-          text-align: left;
-          background:
-            radial-gradient(160px 90px at 12% 0%, rgba(${accentRgb}, 0.18), transparent 72%),
-            linear-gradient(180deg, rgba(255,255,255,0.74), rgba(255,255,255,0.42));
-          backdrop-filter: blur(22px) saturate(180%);
-          -webkit-backdrop-filter: blur(22px) saturate(180%);
-          box-shadow: 0 14px 34px rgba(0,0,0,0.10), inset 0 1px 0 rgba(255,255,255,0.42);
-          cursor: pointer;
-          color: ${textPrimary};
-          transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease, background 180ms ease;
-        }
-
-        .bt-start-card:hover {
-          transform: translateY(-2px);
-          border-color: rgba(${accentRgb}, 0.42);
-          box-shadow: 0 18px 44px rgba(0,0,0,0.14), 0 0 0 1px rgba(${accentRgb}, 0.10) inset;
-          background:
-            radial-gradient(180px 110px at 12% 0%, rgba(${accentRgb}, 0.26), transparent 72%),
-            linear-gradient(180deg, rgba(255,255,255,0.86), rgba(255,255,255,0.52));
-        }
-
-        .bt-start-card:disabled {
-          cursor: not-allowed;
-          opacity: 0.62;
-        }
-
-        @media (max-width: 900px) {
-          .bt-start-card {
-            min-height: 124px;
-          }
-        }
-
-        @media (max-width: 680px) {
-          .bt-start-card {
-            min-height: auto;
-            padding: 14px;
-            border-radius: 18px;
-          }
-        }
-
-        @media (prefers-reduced-motion: reduce) {
-          .bt-bouncing { animation: none !important; }
-          .bt-launcher { animation: none !important; }
-          .bt-panel { animation: none !important; }
-          .bt-launcher::after { animation: none !important; }
-          .bt-panel-liquid { animation: none !important; }
-          .bt-voice-stage,
-          .bt-voice-stage::before,
-          .bt-voice-stage::after,
-          .bt-voice-halo,
-          .bt-voice-core,
-          .bt-voice-copy,
-          .bt-voice-dots span { animation: none !important; }
-        }
-      `}</style>
+      <style>{`html, body {background: transparent !important;margin: 0 !important;padding: 0 !important;overflow: visible !important;}
+
+body::before,
+body::after {
+  display: none !important;
+  content: none !important;
+}
+
+.bt-hidden-file-input {
+  display: none !important;
+}
+
+.bt-round-action-button {
+  height: ${isEnhancedInterface ? "56px" : "46px"};
+  width: ${isEnhancedInterface ? "56px" : "46px"};
+  border-radius: ${isEnhancedInterface ? "18px" : "14px"};
+  border: 1px solid rgba(255,255,255,0.26);
+  background: linear-gradient(180deg, rgba(255,255,255,0.82), rgba(255,255,255,0.58));
+  color: ${textPrimary};
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  font-size: ${isEnhancedInterface ? "22px" : "19px"};
+  box-shadow: 0 10px 24px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.26);
+  backdrop-filter: blur(14px) saturate(145%);
+  -webkit-backdrop-filter: blur(14px) saturate(145%);
+  flex: 0 0 auto;
+  transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease, background 180ms ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.bt-round-action-button:hover:not(:disabled) {
+  transform: translateY(-1px);
+  border-color: rgba(${accentRgb}, 0.38);
+  box-shadow: 0 14px 32px rgba(0,0,0,0.12), 0 0 0 1px rgba(${accentRgb}, 0.10) inset;
+}
+
+.bt-round-action-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.58;
+}
+
+.bt-round-action-button.bt-listening {
+  color: #ffffff;
+  border-color: rgba(${accentRgb}, 0.46);
+  background:
+    radial-gradient(90px 70px at 50% 30%, rgba(255,255,255,0.34), transparent 64%),
+    linear-gradient(180deg, ${widgetAccent}F0, ${widgetAccent}A6);
+  box-shadow: 0 16px 44px rgba(0,0,0,0.16), 0 0 0 1px rgba(${accentRgb}, 0.16) inset, 0 0 28px rgba(${accentRgb}, 0.28);
+}
+
+@keyframes bt-voice-stage-in {
+  0% { opacity: 0; transform: scale(1.025); filter: blur(14px); }
+  100% { opacity: 1; transform: scale(1); filter: blur(0); }
+}
+
+@keyframes bt-voice-ambient-a {
+  0%, 100% { transform: translate3d(-8%, -5%, 0) scale(1); }
+  50% { transform: translate3d(9%, 8%, 0) scale(1.13); }
+}
+
+@keyframes bt-voice-ambient-b {
+  0%, 100% { transform: translate3d(8%, 9%, 0) scale(1.08); }
+  50% { transform: translate3d(-10%, -7%, 0) scale(0.96); }
+}
+
+@keyframes bt-voice-halo-spin {
+  from { transform: rotate(0deg) scale(var(--voice-scale, 1.03)); }
+  to { transform: rotate(360deg) scale(var(--voice-scale, 1.03)); }
+}
+
+@keyframes bt-voice-halo-reverse {
+  from { transform: rotate(360deg) scale(var(--voice-scale, 1.03)); }
+  to { transform: rotate(0deg) scale(var(--voice-scale, 1.03)); }
+}
+
+@keyframes bt-voice-core-breathe {
+  0%, 100% { border-radius: 46% 54% 58% 42% / 44% 46% 54% 56%; }
+  33% { border-radius: 58% 42% 45% 55% / 51% 61% 39% 49%; }
+  66% { border-radius: 42% 58% 61% 39% / 58% 42% 58% 42%; }
+}
+
+@keyframes bt-voice-text-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes bt-voice-dot {
+  0%, 100% { transform: translateY(0) scale(0.82); opacity: 0.42; }
+  50% { transform: translateY(-7px) scale(1); opacity: 1; }
+}
+
+.bt-voice-stage {
+  --voice-scale: 1.03;
+  --voice-energy: 0.08;
+  --voice-glow: 0.30;
+  position: absolute;
+  inset: 0;
+  z-index: 80;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  padding: clamp(28px, 5vw, 64px);
+  border: 0;
+  border-radius: inherit;
+  color: #ffffff;
+  background:
+    radial-gradient(920px 620px at 50% 42%, rgba(${accentRgb}, 0.34), transparent 66%),
+    radial-gradient(680px 520px at 14% 4%, rgba(255,255,255,0.16), transparent 64%),
+    linear-gradient(145deg, rgba(7,10,17,0.86), rgba(18,9,15,0.90) 52%, rgba(7,10,17,0.92));
+  backdrop-filter: blur(32px) saturate(175%);
+  -webkit-backdrop-filter: blur(32px) saturate(175%);
+  animation: bt-voice-stage-in 420ms cubic-bezier(.16,1,.3,1) both;
+  isolation: isolate;
+}
+
+.bt-voice-stage::before,
+.bt-voice-stage::after {
+  content: "";
+  position: absolute;
+  width: 72%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  pointer-events: none;
+  filter: blur(62px);
+  opacity: calc(0.42 + var(--voice-energy, 0.08) * 0.34);
+  mix-blend-mode: screen;
+}
+
+.bt-voice-stage::before {
+  left: -20%;
+  top: -34%;
+  background: radial-gradient(circle, rgba(${accentRgb}, 0.84), transparent 66%);
+  animation: bt-voice-ambient-a 7s ease-in-out infinite;
+}
+
+.bt-voice-stage::after {
+  right: -24%;
+  bottom: -42%;
+  background: radial-gradient(circle, rgba(255,102,133,0.52), transparent 65%);
+  animation: bt-voice-ambient-b 8.5s ease-in-out infinite;
+}
+
+.bt-voice-grid {
+  position: absolute;
+  inset: -20%;
+  pointer-events: none;
+  opacity: 0.16;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px);
+  background-size: 54px 54px;
+  mask-image: radial-gradient(circle at 50% 48%, #000 0%, transparent 67%);
+  -webkit-mask-image: radial-gradient(circle at 50% 48%, #000 0%, transparent 67%);
+  transform: perspective(700px) rotateX(58deg) translateY(30%);
+}
+
+.bt-voice-close {
+  position: absolute;
+  top: clamp(18px, 3vw, 28px);
+  right: clamp(18px, 3vw, 28px);
+  z-index: 4;
+  width: 44px;
+  height: 44px;
+  border: 0;
+  border-radius: 999px;
+  color: rgba(255,255,255,0.86);
+  background: rgba(255,255,255,0.08);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.12), 0 14px 34px rgba(0,0,0,0.18);
+  cursor: pointer;
+  font-size: 24px;
+  line-height: 1;
+  transition: transform 180ms ease, background 180ms ease;
+}
+
+.bt-voice-close:hover {
+  transform: scale(1.06);
+  background: rgba(255,255,255,0.14);
+}
+
+.bt-voice-center {
+  position: relative;
+  z-index: 2;
+  width: min(100%, 720px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.bt-voice-orb-button {
+  position: relative;
+  width: clamp(230px, 34vw, 330px);
+  aspect-ratio: 1;
+  border: 0;
+  padding: 0;
+  border-radius: 50%;
+  background: transparent;
+  cursor: default;
+  display: grid;
+  place-items: center;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.bt-voice-stage--listening .bt-voice-orb-button,
+.bt-voice-stage--ready .bt-voice-orb-button,
+.bt-voice-stage--error .bt-voice-orb-button {
+  cursor: pointer;
+}
+
+.bt-voice-halo {
+  position: absolute;
+  inset: 8%;
+  border-radius: 44% 56% 50% 50% / 46% 44% 56% 54%;
+  background:
+    conic-gradient(from 20deg,
+      rgba(255,255,255,0.04),
+      rgba(${accentRgb},0.76),
+      rgba(255,120,145,0.42),
+      rgba(255,255,255,0.12),
+      rgba(${accentRgb},0.76),
+      rgba(255,255,255,0.04));
+  filter: blur(18px);
+  opacity: var(--voice-glow, 0.3);
+  animation: bt-voice-halo-spin 6.4s linear infinite;
+  will-change: transform, opacity;
+}
+
+.bt-voice-halo:nth-child(2) {
+  inset: 15%;
+  filter: blur(11px);
+  opacity: calc(var(--voice-glow, 0.3) * 0.78);
+  animation: bt-voice-halo-reverse 4.8s linear infinite;
+}
+
+.bt-voice-core {
+  position: relative;
+  width: 52%;
+  aspect-ratio: 1;
+  transform: scale(var(--voice-scale, 1.03));
+  border-radius: 46% 54% 58% 42% / 44% 46% 54% 56%;
+  background:
+    radial-gradient(circle at 30% 23%, rgba(255,255,255,0.96), transparent 18%),
+    radial-gradient(circle at 68% 72%, rgba(255,116,145,0.78), transparent 34%),
+    radial-gradient(circle at 34% 70%, rgba(${accentRgb},0.94), transparent 48%),
+    linear-gradient(135deg, rgba(255,255,255,0.68), rgba(${accentRgb},0.94) 48%, rgba(98,11,30,0.92));
+  box-shadow:
+    0 0 34px rgba(${accentRgb}, calc(0.22 + var(--voice-energy, 0.08) * 0.40)),
+    0 0 110px rgba(${accentRgb}, calc(0.16 + var(--voice-energy, 0.08) * 0.34)),
+    inset 0 1px 0 rgba(255,255,255,0.72),
+    inset -18px -20px 46px rgba(40,0,10,0.24);
+  animation: bt-voice-core-breathe 3.8s ease-in-out infinite;
+  transition: transform 90ms linear, box-shadow 120ms linear;
+  will-change: transform, border-radius;
+}
+
+.bt-voice-core::before {
+  content: "";
+  position: absolute;
+  inset: 10%;
+  border-radius: inherit;
+  background: linear-gradient(130deg, rgba(255,255,255,0.24), transparent 44%, rgba(255,255,255,0.08));
+  mix-blend-mode: screen;
+  filter: blur(5px);
+}
+
+.bt-voice-stage--transcribing .bt-voice-core,
+.bt-voice-stage--thinking .bt-voice-core {
+  transform: scale(0.94);
+  animation-duration: 2.1s;
+}
+
+.bt-voice-stage--speaking .bt-voice-core {
+  animation-duration: 2.7s;
+}
+
+.bt-voice-copy {
+  width: min(100%, 660px);
+  margin-top: clamp(4px, 1vw, 12px);
+  animation: bt-voice-text-in 380ms 100ms ease both;
+}
+
+.bt-voice-eyebrow {
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.56);
+  margin-bottom: 10px;
+}
+
+.bt-voice-title {
+  font-size: clamp(28px, 4.2vw, 48px);
+  line-height: 1.08;
+  font-weight: 780;
+  letter-spacing: -0.035em;
+  text-wrap: balance;
+  text-shadow: 0 12px 44px rgba(0,0,0,0.24);
+}
+
+.bt-voice-transcript {
+  margin: 14px auto 0;
+  max-width: 620px;
+  min-height: 46px;
+  font-size: clamp(15px, 1.9vw, 19px);
+  line-height: 1.5;
+  color: rgba(255,255,255,0.70);
+  text-wrap: balance;
+}
+
+.bt-voice-dots {
+  height: 30px;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin-top: 8px;
+}
+
+.bt-voice-dots span {
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.82);
+  animation: bt-voice-dot 900ms ease-in-out infinite;
+}
+
+.bt-voice-dots span:nth-child(2) { animation-delay: 120ms; }
+.bt-voice-dots span:nth-child(3) { animation-delay: 240ms; }
+
+.bt-voice-action {
+  margin-top: 18px;
+  min-height: 46px;
+  padding: 0 18px;
+  border: 0;
+  border-radius: 999px;
+  color: #ffffff;
+  background: rgba(255,255,255,0.12);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.16), 0 16px 38px rgba(0,0,0,0.16);
+  cursor: pointer;
+  font-weight: 750;
+  font-size: 14px;
+  transition: transform 180ms ease, background 180ms ease;
+}
+
+.bt-voice-action:hover {
+  transform: translateY(-1px);
+  background: rgba(255,255,255,0.18);
+}
+
+.bt-voice-footer {
+  position: absolute;
+  left: 50%;
+  bottom: clamp(20px, 3vw, 30px);
+  transform: translateX(-50%);
+  z-index: 3;
+  width: calc(100% - 120px);
+  text-align: center;
+  color: rgba(255,255,255,0.44);
+  font-size: 12px;
+  line-height: 1.4;
+  pointer-events: none;
+}
+
+@media (max-width: 680px) {
+  .bt-voice-stage { padding: 26px 18px 68px; }
+  .bt-voice-orb-button { width: min(68vw, 260px); }
+  .bt-voice-title { font-size: clamp(27px, 9vw, 40px); }
+  .bt-voice-transcript { font-size: 15px; }
+  .bt-voice-footer { width: calc(100% - 64px); }
+}
+
+.bt-image-preview-wrap {
+  margin-top: 10px;
+  overflow: hidden;
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,0.30);
+  background: rgba(255,255,255,0.18);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.18);
+}
+
+.bt-image-preview-wrap img {
+  display: block;
+  width: 100%;
+  max-height: ${isEnhancedInterface ? "340px" : "260px"};
+  object-fit: cover;
+}
+
+.bt-image-preview-label {
+  padding: 8px 10px;
+  font-size: 12px;
+  line-height: 1.3;
+  opacity: 0.9;
+}
+
+@keyframes bt-pulse {
+  0% { transform: scale(1); opacity: .9; }
+  70% { transform: scale(1.26); opacity: 0; }
+  100% { transform: scale(1.26); opacity: 0; }
+}
+
+@keyframes bt-dock-bounce {
+  0%   { transform: translateY(0) scale(1); }
+  10%  { transform: translateY(-12px) scale(1.04); }
+  22%  { transform: translateY(0) scale(0.99); }
+  34%  { transform: translateY(-7px) scale(1.025); }
+  46%  { transform: translateY(0) scale(1); }
+  100% { transform: translateY(0) scale(1); }
+}
+
+@keyframes bt-badge-in {
+  0% { opacity: 0; transform: translateY(6px) scale(.98); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes bt-badge-out {
+  0% { opacity: 1; transform: translateY(0) scale(1); }
+  100% { opacity: 0; transform: translateY(6px) scale(.98); }
+}
+
+@keyframes bt-liquid {
+  0% { transform: translate3d(-6%, -4%, 0) scale(1); opacity: .36; }
+  50% { transform: translate3d(6%, 3%, 0) scale(1.03); opacity: .48; }
+  100% { transform: translate3d(-6%, -4%, 0) scale(1); opacity: .36; }
+}
+
+@keyframes bt-launcher-arrive {
+  0% { opacity: 0; transform: translate3d(22px, 26px, 0) scale(0.62); filter: blur(8px); }
+  58% { opacity: 1; transform: translate3d(-3px, -5px, 0) scale(1.06); filter: blur(0); }
+  78% { transform: translate3d(0, 0, 0) scale(0.97); }
+  100% { opacity: 1; transform: translate3d(0, 0, 0) scale(1); filter: blur(0); }
+}
+
+@keyframes bt-panel-pop-in {
+  0% { opacity: 0; transform: translate3d(28px, 34px, 0) scale(0.82); filter: blur(14px); }
+  52% { opacity: 1; transform: translate3d(-4px, -6px, 0) scale(1.025); filter: blur(0); }
+  72% { transform: translate3d(0, 0, 0) scale(0.988); }
+  100% { opacity: 1; transform: translate3d(0, 0, 0) scale(1); filter: blur(0); }
+}
+
+.bt-launcher {
+  position: relative;
+  overflow: visible;
+  will-change: transform;
+  transform: translateZ(0);
+  animation: bt-launcher-arrive 680ms cubic-bezier(.16,1,.3,1) both;
+  transform-origin: right bottom;
+  background-clip: padding-box;
+}
+
+.bt-launcher::before {
+  content: "";
+  position: absolute;
+  inset: -14px;
+  border-radius: 999px;
+  background: radial-gradient(circle, rgba(${accentRgb}, 0.36) 0%, rgba(${accentRgb}, 0.13) 42%, transparent 72%);
+  filter: blur(3px);
+  opacity: 1;
+  pointer-events: none;
+}
+
+.bt-launcher::after {
+  content: "";
+  position: absolute;
+  inset: -18px;
+  border-radius: 999px;
+  border: 1px solid rgba(${accentRgb}, 0.32);
+  animation: bt-pulse 2.4s ease-out infinite;
+  pointer-events: none;
+}
+
+.bt-bouncing {
+  animation: bt-dock-bounce 920ms cubic-bezier(.2,.9,.2,1) 1;
+}
+
+.bt-badge {
+  position: absolute;
+  right: 68px;
+  bottom: 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 11px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.20);
+  background: linear-gradient(180deg, rgba(255,255,255,0.32), rgba(255,255,255,0.18));
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  box-shadow: 0 16px 50px rgba(0,0,0,0.16);
+  color: ${textPrimary};
+  font-size: 12px;
+  white-space: nowrap;
+  pointer-events: none;
+  animation: bt-badge-in 260ms ease-out;
+}
+
+.bt-badge-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: ${widgetAccent};
+  box-shadow: 0 0 0 6px rgba(${accentRgb}, 0.16);
+}
+
+.bt-badge-hide {
+  animation: bt-badge-out 240ms ease-in forwards;
+}
+
+.bt-panel {
+  border-radius: ${panelRadius}px;
+  overflow: hidden;
+  transform: translateZ(0);
+  transform-origin: right bottom;
+  animation: bt-panel-pop-in 520ms cubic-bezier(.16,1,.3,1) both;
+  -webkit-mask-image: -webkit-radial-gradient(white, black);
+  isolation: isolate;
+}
+
+.bt-panel-layer {
+  border-radius: ${panelRadius}px;
+}
+
+.bt-start-card {
+  width: 100%;
+  min-height: ${isEnhancedInterface ? "138px" : "auto"};
+  border: 1px solid rgba(255,255,255,0.38);
+  border-radius: ${isEnhancedInterface ? "24px" : "16px"};
+  padding: ${isEnhancedInterface ? "20px" : "12px"};
+  text-align: left;
+  background:
+    radial-gradient(160px 90px at 12% 0%, rgba(${accentRgb}, 0.18), transparent 72%),
+    linear-gradient(180deg, rgba(255,255,255,0.74), rgba(255,255,255,0.42));
+  backdrop-filter: blur(22px) saturate(180%);
+  -webkit-backdrop-filter: blur(22px) saturate(180%);
+  box-shadow: 0 14px 34px rgba(0,0,0,0.10), inset 0 1px 0 rgba(255,255,255,0.42);
+  cursor: pointer;
+  color: ${textPrimary};
+  transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease, background 180ms ease;
+}
+
+.bt-start-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(${accentRgb}, 0.42);
+  box-shadow: 0 18px 44px rgba(0,0,0,0.14), 0 0 0 1px rgba(${accentRgb}, 0.10) inset;
+  background:
+    radial-gradient(180px 110px at 12% 0%, rgba(${accentRgb}, 0.26), transparent 72%),
+    linear-gradient(180deg, rgba(255,255,255,0.86), rgba(255,255,255,0.52));
+}
+
+.bt-start-card:disabled {
+  cursor: not-allowed;
+  opacity: 0.62;
+}
+
+@media (max-width: 900px) {
+  .bt-start-card {
+    min-height: 124px;
+  }
+}
+
+@media (max-width: 680px) {
+  .bt-start-card {
+    min-height: auto;
+    padding: 14px;
+    border-radius: 18px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bt-bouncing { animation: none !important; }
+  .bt-launcher { animation: none !important; }
+  .bt-panel { animation: none !important; }
+  .bt-launcher::after { animation: none !important; }
+  .bt-panel-liquid { animation: none !important; }
+  .bt-voice-stage,
+  .bt-voice-stage::before,
+  .bt-voice-stage::after,
+  .bt-voice-halo,
+  .bt-voice-core,
+  .bt-voice-copy,
+  .bt-voice-dots span { animation: none !important; }
+}
+
+`}</style>
 
       {isEmbedClosed ? (
         <div
@@ -3050,7 +3017,7 @@ export default function WidgetPage() {
                 <span className="bt-badge-dot" />
                 <span>
                   {isFahrwerkBInterface
-                    ? "FÃ¼hrerschein starten?"
+                    ? "Führerschein starten?"
                     : isTxbikesInterface
                       ? "Fahrrad-Frage?"
                       : isWilliInterface
@@ -3080,11 +3047,11 @@ export default function WidgetPage() {
                   : "calc(100vh - 122px)",
                 border: "1px solid rgba(255,255,255,0.46)",
                 background: `
-                  radial-gradient(980px 520px at 18% -10%, ${widgetAccent}26 0%, transparent 62%),
-                  radial-gradient(780px 520px at 95% 8%, rgba(255,255,255,0.18) 0%, transparent 55%),
-                  radial-gradient(620px 400px at 52% 110%, rgba(${accentRgb}, 0.12) 0%, transparent 72%),
-                  linear-gradient(180deg, rgba(255,255,255,0.88), rgba(255,255,255,0.70))
-                `,
+          radial-gradient(980px 520px at 18% -10%, ${widgetAccent}26 0%, transparent 62%),
+          radial-gradient(780px 520px at 95% 8%, rgba(255,255,255,0.18) 0%, transparent 55%),
+          radial-gradient(620px 400px at 52% 110%, rgba(${accentRgb}, 0.12) 0%, transparent 72%),
+          linear-gradient(180deg, rgba(255,255,255,0.88), rgba(255,255,255,0.70))
+        `,
                 backdropFilter: "blur(34px) saturate(180%)",
                 WebkitBackdropFilter: "blur(34px) saturate(180%)",
                 boxShadow: `0 28px 110px rgba(17,12,31,0.22), 0 0 0 1px rgba(255,255,255,0.18) inset, 0 0 58px rgba(${accentRgb},0.13)`,
@@ -3100,10 +3067,10 @@ export default function WidgetPage() {
                   filter: "blur(28px)",
                   animation: "bt-liquid 8.5s ease-in-out infinite",
                   background: `
-                    radial-gradient(520px 220px at 18% 12%, ${widgetAccent}18 0%, transparent 72%),
-                    radial-gradient(520px 240px at 80% 20%, rgba(255,255,255,0.10) 0%, transparent 75%),
-                    radial-gradient(520px 320px at 42% 78%, rgba(255,255,255,0.08) 0%, transparent 70%)
-                  `,
+            radial-gradient(520px 220px at 18% 12%, ${widgetAccent}18 0%, transparent 72%),
+            radial-gradient(520px 240px at 80% 20%, rgba(255,255,255,0.10) 0%, transparent 75%),
+            radial-gradient(520px 320px at 42% 78%, rgba(255,255,255,0.08) 0%, transparent 70%)
+          `,
                   mixBlendMode: "screen",
                   opacity: 0.42,
                 }}
@@ -3173,9 +3140,9 @@ export default function WidgetPage() {
                     minHeight: isEnhancedInterface ? 116 : 86,
                     flex: "0 0 auto",
                     background: `
-                      radial-gradient(520px 180px at 18% 0%, ${widgetAccent}14 0%, transparent 72%),
-                      linear-gradient(180deg, rgba(255,255,255,0.34), rgba(255,255,255,0.14))
-                    `,
+              radial-gradient(520px 180px at 18% 0%, ${widgetAccent}14 0%, transparent 72%),
+              linear-gradient(180deg, rgba(255,255,255,0.34), rgba(255,255,255,0.14))
+            `,
                     boxShadow: "0 1px 0 rgba(255,255,255,0.22) inset",
                   }}
                 >
@@ -3210,7 +3177,7 @@ export default function WidgetPage() {
                           color: textPrimary,
                         }}
                       >
-                        {displayBrandName} â€“ {displayAssistantName}
+                        {displayBrandName} – {displayAssistantName}
                       </div>
                       <div
                         style={{
@@ -3221,19 +3188,19 @@ export default function WidgetPage() {
                         }}
                       >
                         {voicePhase === "listening"
-                          ? "HÃ¶rt zuâ€¦"
+                          ? "Hört zu…"
                           : voicePhase === "transcribing"
-                            ? "Versteht dichâ€¦"
+                            ? "Versteht dich…"
                             : voicePhase === "thinking"
-                              ? "Denkt nachâ€¦"
+                              ? "Denkt nach…"
                               : voicePhase === "speaking" ||
                                   voicePhase === "ready"
-                                ? "Antwortetâ€¦"
+                                ? "Antwortet…"
                                 : loading
-                                  ? "Tipptâ€¦"
+                                  ? "Tippt…"
                                   : isFahrwerkBInterface
                                     ? "In 1 Minute zum passenden Einstieg"
-                                    : "Online verfÃ¼gbar"}
+                                    : "Online verfügbar"}
                       </div>
                     </div>
                   </div>
@@ -3366,8 +3333,8 @@ export default function WidgetPage() {
                           }}
                         >
                           {isFahrwerkBInterface
-                            ? "Dein FÃ¼hrerschein-Cockpit"
-                            : "Was mÃ¶chtest du machen?"}
+                            ? "Dein Führerschein-Cockpit"
+                            : "Was möchtest du machen?"}
                         </div>
                         <div
                           style={{
@@ -3377,16 +3344,16 @@ export default function WidgetPage() {
                           }}
                         >
                           {isFahrwerkBInterface
-                            ? "WÃ¤hle aus, wo du gerade stehst. Das Interface zeigt dir den nÃ¤chsten Schritt, prÃ¼ft Unterlagen und bereitet Anfragen sauber vor."
+                            ? "Wähle aus, wo du gerade stehst. Das Interface zeigt dir den nächsten Schritt, prüft Unterlagen und bereitet Anfragen sauber vor."
                             : isLinaInterface
-                              ? `WÃ¤hle einen Einstieg aus. Danach fÃ¼hrt dich ${displayAssistantName} gezielt zur passenden LÃ¶sung.`
+                              ? `Wähle einen Einstieg aus. Danach führt dich ${displayAssistantName} gezielt zur passenden Lösung.`
                               : isMmWartungInterface
-                                ? `WÃ¤hle aus, worum es geht. Danach nimmt ${displayAssistantName} dein Anliegen fÃ¼r Moritz sauber auf.`
+                                ? `Wähle aus, worum es geht. Danach nimmt ${displayAssistantName} dein Anliegen für Moritz sauber auf.`
                                 : isTxbikesInterface
-                                  ? `WÃ¤hle aus, worum es geht. Danach nimmt ${displayAssistantName} dein Anliegen fÃ¼r TXBikes sauber auf.`
+                                  ? `Wähle aus, worum es geht. Danach nimmt ${displayAssistantName} dein Anliegen für TXBikes sauber auf.`
                                   : isWilliInterface
-                                    ? `WÃ¤hle aus, worum es geht. Danach fÃ¼hrt dich ${displayAssistantName} gezielt weiter.`
-                                    : `WÃ¤hle einen Einstieg aus. Danach fÃ¼hrt dich ${displayAssistantName} gezielt weiter.`}
+                                    ? `Wähle aus, worum es geht. Danach führt dich ${displayAssistantName} gezielt weiter.`
+                                    : `Wähle einen Einstieg aus. Danach führt dich ${displayAssistantName} gezielt weiter.`}
                         </div>
 
                         {isFahrwerkBInterface && (
@@ -3570,7 +3537,7 @@ export default function WidgetPage() {
                                 marginBottom: 4,
                               }}
                             >
-                              FÃ¼hrerschein-Begleiter
+                              Führerschein-Begleiter
                             </div>
                             <div
                               style={{
@@ -3580,7 +3547,7 @@ export default function WidgetPage() {
                               }}
                             >
                               Aktueller Stand:{" "}
-                              <strong>{fahrwerkActiveStage.label}</strong> Â·
+                              <strong>{fahrwerkActiveStage.label}</strong> ·
                               Unterlagen: {fahrwerkCompletedDocuments}/
                               {FAHRWERK_DOCUMENT_ITEMS.length} erledigt
                             </div>
@@ -3600,7 +3567,7 @@ export default function WidgetPage() {
                               fontWeight: 800,
                             }}
                           >
-                            Fortschritt zurÃ¼cksetzen
+                            Fortschritt zurücksetzen
                           </button>
                         </div>
 
@@ -3633,7 +3600,7 @@ export default function WidgetPage() {
                             ["documents", "Unterlagen"],
                             ["theory", "Theorie"],
                             ["practice", "Praxis"],
-                            ["exam", "PrÃ¼fung"],
+                            ["exam", "Prüfung"],
                             ["student", "Mein Stand"],
                             ["contact", "Hilfe"],
                           ].map(([panel, label]) => (
@@ -3700,11 +3667,11 @@ export default function WidgetPage() {
                                     lineHeight: 1.5,
                                   }}
                                 >
-                                  Die Anmeldung lÃ¤uft direkt Ã¼ber
+                                  Die Anmeldung läuft direkt über
                                   Fahrschule.live. Dort werden deine Daten
                                   erfasst; sofern die Mailvorlage eingerichtet
-                                  ist, wird anschlieÃŸend automatisch eine
-                                  BestÃ¤tigung versendet.
+                                  ist, wird anschließend automatisch eine
+                                  Bestätigung versendet.
                                 </div>
                               </div>
                               <button
@@ -3723,7 +3690,7 @@ export default function WidgetPage() {
                                   boxShadow: `0 14px 34px rgba(0,0,0,0.16), 0 0 0 1px rgba(${accentRgb}, 0.14) inset`,
                                 }}
                               >
-                                Jetzt online anmelden â†—
+                                Jetzt online anmelden ↗
                               </button>
                             </div>
 
@@ -3734,8 +3701,8 @@ export default function WidgetPage() {
                                 lineHeight: 1.45,
                               }}
                             >
-                              Noch unsicher? WÃ¤hle zuerst eine
-                              FÃ¼hrerscheinklasse aus und bereite eine
+                              Noch unsicher? Wähle zuerst eine
+                              Führerscheinklasse aus und bereite eine
                               Beratungsanfrage vor.
                             </div>
 
@@ -3751,12 +3718,12 @@ export default function WidgetPage() {
                               {[
                                 [
                                   "Klasse B",
-                                  "Auto-FÃ¼hrerschein starten",
+                                  "Auto-Führerschein starten",
                                   "Schnell starten",
                                 ],
                                 [
                                   "B197",
-                                  "Schalten lernen, spÃ¤ter flexibel fahren",
+                                  "Schalten lernen, später flexibel fahren",
                                   "Schnell starten",
                                 ],
                                 [
@@ -3765,8 +3732,8 @@ export default function WidgetPage() {
                                   "Schnell starten",
                                 ],
                                 [
-                                  "BE AnhÃ¤nger",
-                                  "AnhÃ¤nger-FÃ¼hrerschein anfragen",
+                                  "BE Anhänger",
+                                  "Anhänger-Führerschein anfragen",
                                   "Erstmal beraten lassen",
                                 ],
                                 [
@@ -3824,7 +3791,7 @@ export default function WidgetPage() {
                               }}
                             >
                               Hake ab, was schon erledigt ist. Der Stand wird
-                              nur lokal im Browser gespeichert, bis wir spÃ¤ter
+                              nur lokal im Browser gespeichert, bis wir später
                               eine echte Account-/Fahrschule.live-Anbindung
                               bauen.
                             </div>
@@ -3880,7 +3847,7 @@ export default function WidgetPage() {
                                         fontWeight: 900,
                                       }}
                                     >
-                                      {fahrwerkChecklist[item.id] ? "âœ“" : ""}
+                                      {fahrwerkChecklist[item.id] ? "✓" : ""}
                                     </span>
                                     <strong>{item.label}</strong>
                                   </div>
@@ -3900,7 +3867,7 @@ export default function WidgetPage() {
                               type="button"
                               onClick={() =>
                                 sendFahrwerkGuidedMessage(
-                                  "Welche Unterlagen brauche ich fÃ¼r meinen FÃ¼hrerschein bei Fahrwerk B?",
+                                  "Welche Unterlagen brauche ich für meinen Führerschein bei Fahrwerk B?",
                                 )
                               }
                               style={{
@@ -3915,7 +3882,7 @@ export default function WidgetPage() {
                                 fontWeight: 900,
                               }}
                             >
-                              Unterlagen kurz erklÃ¤ren
+                              Unterlagen kurz erklären
                             </button>
                           </div>
                         )}
@@ -3978,7 +3945,7 @@ export default function WidgetPage() {
                                   fontWeight: 850,
                                 }}
                               >
-                                NÃ¤chster sinnvoller Schritt
+                                Nächster sinnvoller Schritt
                               </div>
                               <div style={{ fontSize: 20, fontWeight: 950 }}>
                                 {fahrwerkActiveStage.next}
@@ -4012,14 +3979,14 @@ export default function WidgetPage() {
                                     fontWeight: 850,
                                   }}
                                 >
-                                  Unterlagen prÃ¼fen
+                                  Unterlagen prüfen
                                 </button>
                                 <button
                                   type="button"
                                   onClick={() =>
                                     openFahrwerkSignupForm(
-                                      "Ich bin schon FahrschÃ¼ler",
-                                      "RÃ¼ckruf von Fahrwerk B",
+                                      "Ich bin schon Fahrschüler",
+                                      "Rückruf von Fahrwerk B",
                                     )
                                   }
                                   style={{
@@ -4052,18 +4019,18 @@ export default function WidgetPage() {
                             {[
                               [
                                 "Theorie-Einstieg",
-                                "Aktuelle Termine laufen spÃ¤ter sauber Ã¼ber Fahrschule.live.",
-                                "Ich mÃ¶chte den passenden Theorie-Einstieg bei Fahrwerk B finden.",
+                                "Aktuelle Termine laufen später sauber über Fahrschule.live.",
+                                "Ich möchte den passenden Theorie-Einstieg bei Fahrwerk B finden.",
                               ],
                               [
-                                "TheorieprÃ¼fung",
-                                "Ablauf, Vorbereitung und typische Fehler kurz erklÃ¤ren.",
-                                "Wie bereite ich mich auf die TheorieprÃ¼fung vor?",
+                                "Theorieprüfung",
+                                "Ablauf, Vorbereitung und typische Fehler kurz erklären.",
+                                "Wie bereite ich mich auf die Theorieprüfung vor?",
                               ],
                               [
                                 "Durchgefallen",
-                                "Ruhig einordnen und den nÃ¤chsten Versuch planen.",
-                                "Ich bin bei der TheorieprÃ¼fung durchgefallen. Was ist jetzt sinnvoll?",
+                                "Ruhig einordnen und den nächsten Versuch planen.",
+                                "Ich bin bei der Theorieprüfung durchgefallen. Was ist jetzt sinnvoll?",
                               ],
                             ].map(([title, description, message]) => (
                               <button
@@ -4116,16 +4083,16 @@ export default function WidgetPage() {
                               ],
                               [
                                 "Sonderfahrten",
-                                "Autobahn, Nachtfahrt und Ãœberland verstÃ¤ndlich erklÃ¤rt.",
+                                "Autobahn, Nachtfahrt und Überland verständlich erklärt.",
                                 "Was sind Sonderfahrten und wann kommen sie dran?",
                               ],
                               [
-                                "PrÃ¼fungsangst",
+                                "Prüfungsangst",
                                 "Kurze, praktische Tipps statt langer Theorie.",
-                                "Ich habe Angst vor der praktischen PrÃ¼fung. Was hilft?",
+                                "Ich habe Angst vor der praktischen Prüfung. Was hilft?",
                               ],
                               [
-                                "Fahrstunde klÃ¤ren",
+                                "Fahrstunde klären",
                                 "Anfrage an Fahrwerk B vorbereiten.",
                                 "Ich habe eine Frage zu meinen Fahrstunden bei Fahrwerk B.",
                               ],
@@ -4177,7 +4144,7 @@ export default function WidgetPage() {
                               className="bt-start-card"
                               onClick={() =>
                                 sendFahrwerkGuidedMessage(
-                                  "Gib mir eine kurze Checkliste fÃ¼r die TheorieprÃ¼fung.",
+                                  "Gib mir eine kurze Checkliste für die Theorieprüfung.",
                                 )
                               }
                               style={{ minHeight: 0 }}
@@ -4189,7 +4156,7 @@ export default function WidgetPage() {
                                   marginBottom: 6,
                                 }}
                               >
-                                TheorieprÃ¼fung-Check
+                                Theorieprüfung-Check
                               </div>
                               <div
                                 style={{
@@ -4198,7 +4165,7 @@ export default function WidgetPage() {
                                   lineHeight: 1.4,
                                 }}
                               >
-                                Was du vorher prÃ¼fen solltest und wie du ruhig
+                                Was du vorher prüfen solltest und wie du ruhig
                                 bleibst.
                               </div>
                             </button>
@@ -4207,7 +4174,7 @@ export default function WidgetPage() {
                               className="bt-start-card"
                               onClick={() =>
                                 sendFahrwerkGuidedMessage(
-                                  "Gib mir eine kurze Checkliste fÃ¼r die praktische PrÃ¼fung.",
+                                  "Gib mir eine kurze Checkliste für die praktische Prüfung.",
                                 )
                               }
                               style={{ minHeight: 0 }}
@@ -4219,7 +4186,7 @@ export default function WidgetPage() {
                                   marginBottom: 6,
                                 }}
                               >
-                                Praktische PrÃ¼fung-Check
+                                Praktische Prüfung-Check
                               </div>
                               <div
                                 style={{
@@ -4228,7 +4195,7 @@ export default function WidgetPage() {
                                   lineHeight: 1.4,
                                 }}
                               >
-                                Ausweis, Ruhe, typische PrÃ¼fungsfehler und
+                                Ausweis, Ruhe, typische Prüfungsfehler und
                                 Ablauf.
                               </div>
                             </button>
@@ -4248,7 +4215,7 @@ export default function WidgetPage() {
                             }}
                           >
                             <div style={{ fontSize: 20, fontWeight: 950 }}>
-                              Anmeldung und persÃ¶nliche Hilfe
+                              Anmeldung und persönliche Hilfe
                             </div>
                             <div
                               style={{
@@ -4257,10 +4224,10 @@ export default function WidgetPage() {
                                 lineHeight: 1.5,
                               }}
                             >
-                              Die offizielle Online-Anmeldung Ã¼ber
+                              Die offizielle Online-Anmeldung über
                               Fahrschule.live ist bereits angebunden. Falls du
                               vorher Hilfe brauchst, kann das Interface
-                              zusÃ¤tzlich eine RÃ¼ckruf- oder Beratungsanfrage
+                              zusätzlich eine Rückruf- oder Beratungsanfrage
                               vorbereiten.
                             </div>
                             <div
@@ -4284,14 +4251,14 @@ export default function WidgetPage() {
                                   fontWeight: 900,
                                 }}
                               >
-                                Online anmelden â†—
+                                Online anmelden ↗
                               </button>
                               <button
                                 type="button"
                                 onClick={() =>
                                   openFahrwerkSignupForm(
                                     "Ich bin noch unsicher",
-                                    "RÃ¼ckruf von Fahrwerk B",
+                                    "Rückruf von Fahrwerk B",
                                   )
                                 }
                                 style={{
@@ -4305,26 +4272,8 @@ export default function WidgetPage() {
                                   fontWeight: 900,
                                 }}
                               >
-                                RÃ¼ckruf / Anfrage vorbereiten
+                                Rückruf / Anfrage vorbereiten
                               </button>
-                              {voiceEnabled && (
-                                <button
-                                  type="button"
-                                  onClick={() => void startVoiceInput()}
-                                  style={{
-                                    height: 46,
-                                    padding: "0 16px",
-                                    borderRadius: 15,
-                                    border: "1px solid rgba(22,49,38,0.10)",
-                                    background: "rgba(255,255,255,0.66)",
-                                    color: textPrimary,
-                                    cursor: "pointer",
-                                    fontWeight: 850,
-                                  }}
-                                >
-                                  Anliegen einsprechen
-                                </button>
-                              )}
                             </div>
                           </div>
                         )}
@@ -4377,7 +4326,7 @@ export default function WidgetPage() {
                             }}
                           >
                             Hier kannst du dein Anliegen vorstrukturieren. Die
-                            verbindliche Anmeldung lÃ¤uft direkt Ã¼ber
+                            verbindliche Anmeldung läuft direkt über
                             Fahrschule.live.
                           </div>
                         </div>
@@ -4395,10 +4344,10 @@ export default function WidgetPage() {
                             fontSize: 20,
                             lineHeight: "30px",
                           }}
-                          aria-label="Anmeldeformular schlieÃŸen"
-                          title="SchlieÃŸen"
+                          aria-label="Anmeldeformular schließen"
+                          title="Schließen"
                         >
-                          Ã—
+                          ×
                         </button>
                       </div>
 
@@ -4420,7 +4369,7 @@ export default function WidgetPage() {
                             fontWeight: 700,
                           }}
                         >
-                          FÃ¼hrerscheinklasse
+                          Führerscheinklasse
                           <select
                             value={fahrwerkSignupForm.licenseClass}
                             onChange={(e) =>
@@ -4592,7 +4541,7 @@ export default function WidgetPage() {
                                 e.target.value,
                               )
                             }
-                            placeholder="z. B. Ich mÃ¶chte mÃ¶glichst schnell anfangen"
+                            placeholder="z. B. Ich möchte möglichst schnell anfangen"
                             style={{
                               height: 46,
                               borderRadius: 14,
@@ -4681,7 +4630,7 @@ export default function WidgetPage() {
                               fontSize: 14,
                             }}
                           >
-                            Direkt online anmelden â†—
+                            Direkt online anmelden ↗
                           </button>
                           <button
                             type="submit"
@@ -4750,8 +4699,8 @@ export default function WidgetPage() {
                               lineHeight: 1.45,
                             }}
                           >
-                            Der Termin wird direkt in den Apple Kalender â€ž
-                            {bookingCalendarLabel}â€œ eingetragen.
+                            Der Termin wird direkt in den Apple Kalender „
+                            {bookingCalendarLabel}“ eingetragen.
                           </div>
                         </div>
                         <button
@@ -4771,10 +4720,10 @@ export default function WidgetPage() {
                             fontSize: 20,
                             lineHeight: "30px",
                           }}
-                          aria-label="Terminformular schlieÃŸen"
-                          title="SchlieÃŸen"
+                          aria-label="Terminformular schließen"
+                          title="Schließen"
                         >
-                          Ã—
+                          ×
                         </button>
                       </div>
 
@@ -4991,7 +4940,7 @@ export default function WidgetPage() {
                               : isTxbikesInterface
                                 ? "Fahrrad, E-Bike, Problem oder Wunsch kurz beschreiben"
                                 : isWilliInterface
-                                  ? "Anliegen, Wunsch oder RÃ¼ckrufgrund kurz beschreiben"
+                                  ? "Anliegen, Wunsch oder Rückrufgrund kurz beschreiben"
                                   : "Worum soll es gehen?"
                           }
                           rows={3}
@@ -5048,7 +4997,7 @@ export default function WidgetPage() {
                           }}
                         >
                           {bookingSubmitting
-                            ? "Wird eingetragenâ€¦"
+                            ? "Wird eingetragen…"
                             : "Termin eintragen"}
                         </button>
                       </div>
@@ -5098,7 +5047,7 @@ export default function WidgetPage() {
                                 src={m.imagePreviewUrl}
                                 alt={
                                   isFahrwerkBInterface
-                                    ? "Hochgeladenes Bild zur FÃ¼hrerschein-Anfrage"
+                                    ? "Hochgeladenes Bild zur Führerschein-Anfrage"
                                     : isLinaInterface
                                       ? "Hochgeladenes Beispielbild"
                                       : isMmWartungInterface
@@ -5113,7 +5062,7 @@ export default function WidgetPage() {
                               <div className="bt-image-preview-label">
                                 {m.imageName
                                   ? `Foto: ${m.imageName}`
-                                  : "Foto hinzugefÃ¼gt"}
+                                  : "Foto hinzugefügt"}
                               </div>
                             </div>
                           )}
@@ -5146,7 +5095,7 @@ export default function WidgetPage() {
                           boxShadow: "0 10px 24px rgba(0,0,0,0.08)",
                         }}
                       >
-                        <span style={{ letterSpacing: 3 }}>â€¢â€¢â€¢</span>
+                        <span style={{ letterSpacing: 3 }}>•••</span>
                       </div>
                     </div>
                   )}
@@ -5183,13 +5132,13 @@ export default function WidgetPage() {
                     className="bt-round-action-button"
                     onClick={openPhotoPicker}
                     disabled={loading || isVoiceActive}
-                    title="Foto hinzufÃ¼gen"
-                    aria-label="Foto hinzufÃ¼gen"
+                    title="Foto hinzufügen"
+                    aria-label="Foto hinzufügen"
                   >
-                    ðŸ“·
+                    📷
                   </button>
 
-                  {voiceEnabled && (
+                  {!isFahrwerkBInterface && (
                     <button
                       type="button"
                       className={`bt-round-action-button ${isVoiceActive ? "bt-listening" : ""}`}
@@ -5202,7 +5151,7 @@ export default function WidgetPage() {
                             ? "Antwort abspielen"
                             : voiceSupported
                               ? "Sprachmodus starten"
-                              : "Audioaufnahme nicht unterstÃ¼tzt"
+                              : "Audioaufnahme nicht unterstützt"
                       }
                       aria-label={
                         isListening
@@ -5211,10 +5160,10 @@ export default function WidgetPage() {
                             ? "Antwort abspielen"
                             : voiceSupported
                               ? "Sprachmodus starten"
-                              : "Audioaufnahme nicht unterstÃ¼tzt"
+                              : "Audioaufnahme nicht unterstützt"
                       }
                     >
-                      {isListening ? "â– " : "ðŸŽ™ï¸"}
+                      {isListening ? "■" : "🎙️"}
                     </button>
                   )}
 
@@ -5229,18 +5178,18 @@ export default function WidgetPage() {
                     }}
                     placeholder={
                       isVoiceActive
-                        ? "Sprachmodus aktivâ€¦"
+                        ? "Sprachmodus aktiv…"
                         : isFahrwerkBInterface
-                          ? "Schreib z. B. B197, BF17 oder Beratungâ€¦"
+                          ? "Schreib z. B. B197, BF17 oder Beratung…"
                           : isLinaInterface
-                            ? "Schreib kurz, was du brauchstâ€¦"
+                            ? "Schreib kurz, was du brauchst…"
                             : isMmWartungInterface
-                              ? "Schreib dein Anliegenâ€¦"
+                              ? "Schreib dein Anliegen…"
                               : isTxbikesInterface
-                                ? "Schreib z. B. Reparatur, E-Bike oder Terminâ€¦"
+                                ? "Schreib z. B. Reparatur, E-Bike oder Termin…"
                                 : isWilliInterface
-                                  ? "Schreib kurz dein Anliegenâ€¦"
-                                  : "Schreib eine Frageâ€¦"
+                                  ? "Schreib kurz dein Anliegen…"
+                                  : "Schreib eine Frage…"
                     }
                     style={{
                       flex: 1,
@@ -5294,7 +5243,7 @@ export default function WidgetPage() {
                 </div>
               </div>
 
-              {voiceEnabled && isVoiceActive && (
+              {isVoiceActive && (
                 <div
                   ref={voiceStageRef}
                   className={`bt-voice-stage bt-voice-stage--${voicePhase}`}
@@ -5316,10 +5265,10 @@ export default function WidgetPage() {
                     type="button"
                     className="bt-voice-close"
                     onClick={cancelVoiceMode}
-                    aria-label="Sprachmodus schlieÃŸen"
-                    title="Sprachmodus schlieÃŸen"
+                    aria-label="Sprachmodus schließen"
+                    title="Sprachmodus schließen"
                   >
-                    Ã—
+                    ×
                   </button>
 
                   <div className="bt-voice-center">
@@ -5398,10 +5347,10 @@ export default function WidgetPage() {
 
                   <div className="bt-voice-footer">
                     {voicePhase === "listening"
-                      ? "Eine kurze Pause reicht â€“ deine Frage wird automatisch gesendet."
+                      ? "Eine kurze Pause reicht – deine Frage wird automatisch gesendet."
                       : voicePhase === "speaking"
-                        ? "Nach der Antwort hÃ¶rt das Interface automatisch wieder zu."
-                        : "Der Sprachmodus bleibt aktiv, bis du ihn oben rechts schlieÃŸt."}
+                        ? "Nach der Antwort hört das Interface automatisch wieder zu."
+                        : "Der Sprachmodus bleibt aktiv, bis du ihn oben rechts schließt."}
                   </div>
                 </div>
               )}
