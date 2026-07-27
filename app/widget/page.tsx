@@ -5138,34 +5138,32 @@ body::after {
                     📷
                   </button>
 
-                  {!isFahrwerkBInterface && (
-                    <button
-                      type="button"
-                      className={`bt-round-action-button ${isVoiceActive ? "bt-listening" : ""}`}
-                      onClick={() => void startVoiceInput()}
-                      disabled={loading && !isVoiceActive}
-                      title={
-                        isListening
-                          ? "Aufnahme beenden"
-                          : voicePhase === "ready"
-                            ? "Antwort abspielen"
-                            : voiceSupported
-                              ? "Sprachmodus starten"
-                              : "Audioaufnahme nicht unterstützt"
-                      }
-                      aria-label={
-                        isListening
-                          ? "Aufnahme beenden"
-                          : voicePhase === "ready"
-                            ? "Antwort abspielen"
-                            : voiceSupported
-                              ? "Sprachmodus starten"
-                              : "Audioaufnahme nicht unterstützt"
-                      }
-                    >
-                      {isListening ? "■" : "🎙️"}
-                    </button>
-                  )}
+                  <button
+                    type="button"
+                    className={`bt-round-action-button ${isVoiceActive ? "bt-listening" : ""}`}
+                    onClick={() => void startVoiceInput()}
+                    disabled={loading && !isVoiceActive}
+                    title={
+                      isListening
+                        ? "Aufnahme beenden"
+                        : voicePhase === "ready"
+                          ? "Antwort abspielen"
+                          : voiceSupported
+                            ? "Sprachmodus starten"
+                            : "Audioaufnahme nicht unterstützt"
+                    }
+                    aria-label={
+                      isListening
+                        ? "Aufnahme beenden"
+                        : voicePhase === "ready"
+                          ? "Antwort abspielen"
+                          : voiceSupported
+                            ? "Sprachmodus starten"
+                            : "Audioaufnahme nicht unterstützt"
+                    }
+                  >
+                    {isListening ? "■" : "🎙️"}
+                  </button>
 
                   <input
                     value={input}
