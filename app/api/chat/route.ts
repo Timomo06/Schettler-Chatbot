@@ -168,7 +168,9 @@ function queueChatLog(params: {
   });
 }
 
-async function getCachedTenantKnowledge(tenantId: string) {
+async function getCachedTenantKnowledge(
+  tenantId: Parameters<typeof loadTenantKnowledge>[0],
+) {
   const cached = tenantKnowledgeCache.get(tenantId);
 
   if (cached && cached.expiresAt > Date.now()) {
