@@ -192,31 +192,6 @@ function isFahrwerkTenant(tenantId: string) {
   );
 }
 
-function getFastFahrwerkVoiceReply(text: string): string | null {
-  const normalized = text.toLowerCase().trim();
-
-  if (/^(hi|hallo|hey|moin|guten tag)[!. ]*$/.test(normalized)) {
-    return "Hallo! Wobei kann ich dir rund um deinen Führerschein helfen?";
-  }
-
-  if (/^(danke|dankeschön|super danke|alles klar danke)[!. ]*$/.test(normalized)) {
-    return "Gerne. Hast du noch eine Frage?";
-  }
-
-  if (/kannst du mich hören|hörst du mich|funktioniert das mikrofon/.test(normalized)) {
-    return "Ja, ich höre dich. Stell deine Frage einfach direkt.";
-  }
-
-  if (/wie.*anmeld|online anmeld|wo.*anmeld/.test(normalized)) {
-    return "Nutze im Führerschein-Cockpit den Button Online anmelden. Dann öffnet sich direkt die offizielle Anmeldung von Fahrwerk B.";
-  }
-
-  if (/welche.*unterlagen|was.*unterlagen|sehtest.*erste hilfe/.test(normalized)) {
-    return "Für die Anmeldung brauchst du typischerweise Ausweis, Sehtest, Erste-Hilfe-Nachweis und ein biometrisches Passbild. Im Cockpit findest du dafür den Bereich Unterlagen prüfen.";
-  }
-
-  return null;
-}
 
 async function extractBookingData(
   history: ChatMessage[]
@@ -396,7 +371,7 @@ export async function POST(req: NextRequest) {
           (m.role === "user" || m.role === "assistant") &&
           typeof m.content === "string"
       )
-      .slice(voiceMode ? -6 : -10);
+      .slice(-10);
 
     const lastUserMessage =
       [...history].reverse().find((m) => m.role === "user")?.content?.trim() ||
@@ -418,24 +393,6 @@ export async function POST(req: NextRequest) {
 
     const tenant = getTenant(tenantParam);
     const sessionId = body.sessionId || crypto.randomUUID();
-
-    if (voiceMode && isFahrwerkTenant(tenant.id)) {
-      const fastReply = getFastFahrwerkVoiceReply(lastUserMessage);
-
-      if (fastReply) {
-        queueChatLog({
-          tenantId: tenant.id,
-          sessionId,
-          userMessage: lastUserMessage,
-          assistantMessage: fastReply,
-        });
-
-        return NextResponse.json(
-          { ok: true, reply: fastReply, sessionId },
-          { headers: corsHeaders(origin) },
-        );
-      }
-    }
 
     const calendarBookingEnabled = ["btdesigns", "demo", "lina", "mm-wartung"].includes(
       tenant.id
@@ -610,6 +567,18 @@ Sage niemals "Ich trage ihn jetzt ein" oder "Einen Moment", wenn du den Termin n
 `
       : "";
 
+    const tenantIdentityPrompt = isFahrwerkTenant(tenant.id)
+      ? `
+Feste Identität:
+- Du bist das digitale Führerschein-Cockpit der Fahrschule Fahrwerk B.
+- Du arbeitest ausschließlich für Fahrwerk B.
+- Wenn du gefragt wirst, für wen du arbeitest, antworte eindeutig: Fahrwerk B.
+- Verwende im Text- und Sprachmodus immer dasselbe Fahrwerk-B-Wissen und dieselben Regeln.
+- Erfinde keine anderen Fahrschulen, Standorte, Preise, Öffnungszeiten oder Leistungen.
+- Wenn eine Information nicht im Fahrwerk-B-Wissen steht, sage das offen und verweise auf Fahrwerk B.
+`
+      : "";
+
     const voicePromptAddOn = voiceMode
       ? `
 Sprachmodus:
@@ -623,6 +592,8 @@ Sprachmodus:
 
     const systemPrompt =
       buildSystemPrompt(tenant, knowledgeText) +
+      "\n\n" +
+      tenantIdentityPrompt +
       "\n\n" +
       bookingPromptAddOn +
       "\n\n" +

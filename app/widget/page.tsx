@@ -544,8 +544,22 @@ function ensureFahrwerkEmoji(content: string) {
 }
 
 const VOICE_SILENCE_MS = 600;
-const VOICE_FILLER_DELAY_MS = 650;
+const VOICE_FILLER_DELAY_MS = 850;
 const VOICE_MAX_SPEECH_TEXT = 900;
+
+const VOICE_FILLER_PHRASES = [
+  "Alles klar, ich habe deine Frage verstanden. Lass mich das kurz mit den Informationen von Fahrwerk B abgleichen, damit ich dir direkt die passende Antwort geben kann.",
+  "Verstanden. Ich ordne deine Frage gerade ein und prüfe kurz die passenden Informationen von Fahrwerk B, damit du gleich eine klare Antwort von mir bekommst.",
+  "Einen kleinen Moment bitte. Ich gehe deine Frage kurz Schritt für Schritt durch und schaue nach, welche Antwort für deine Situation am besten passt.",
+  "Danke, ich habe dich verstanden. Ich prüfe gerade die wichtigsten Informationen und formuliere dir direkt eine kurze und passende Antwort.",
+  "Alles klar, ich schaue mir das kurz genauer an und gleiche deine Frage mit den Informationen von Fahrwerk B ab. Gleich habe ich die passende Antwort für dich.",
+] as const;
+
+const VOICE_FILLER_CONTINUATIONS = [
+  "Ich bin gleich soweit. Ich prüfe nur noch einen letzten Punkt, dann bekommst du direkt die Antwort.",
+  "Einen kurzen Augenblick noch. Ich gleiche die Antwort gerade noch einmal sauber ab.",
+  "Fast geschafft. Ich prüfe noch kurz, ob alle wichtigen Informationen für dich enthalten sind.",
+] as const;
 const SILENT_AUDIO_DATA_URI =
   "data:audio/wav;base64,UklGRqQCAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YYACAACAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA";
 
@@ -765,8 +779,10 @@ export default function WidgetPage() {
   const voiceFillerTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
     null,
   );
-  const voiceFillerUtteranceRef =
-    useRef<SpeechSynthesisUtterance | null>(null);
+  const voiceFillerLoopPromiseRef = useRef<Promise<void> | null>(null);
+  const voiceFillerStopRef = useRef(false);
+  const voiceAnswerReadyRef = useRef(false);
+  const lastVoiceFillerRef = useRef("");
   const voiceStageRef = useRef<HTMLDivElement | null>(null);
   const voiceConversationActiveRef = useRef(false);
   const voiceRestartTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
@@ -1055,13 +1071,15 @@ export default function WidgetPage() {
     setLoading(true);
 
     try {
+      const activeTenantId = cfg.id;
+
       const res = await fetch(
-        `/api/chat?tenant=${encodeURIComponent(tenantId)}`,
+        `/api/chat?tenant=${encodeURIComponent(activeTenantId)}`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            tenant: tenantId,
+            tenant: activeTenantId,
             voiceMode: options.fromVoice === true,
             messages: next.map(({ role, content }) => ({ role, content })),
           }),
@@ -1673,63 +1691,179 @@ export default function WidgetPage() {
     }
   }
 
+  function createVoiceSpeechUrl(text: string) {
+    return `/api/voice/speak?text=${encodeURIComponent(
+      text,
+    )}&stream=${Date.now()}`;
+  }
+
+  function pickVoiceFiller(
+    phrases: readonly string[],
+  ) {
+    const alternatives = phrases.filter(
+      (phrase) => phrase !== lastVoiceFillerRef.current,
+    );
+    const pool = alternatives.length > 0 ? alternatives : [...phrases];
+    const fallback =
+      phrases[0] ||
+      "Einen kleinen Moment bitte. Ich prüfe deine Frage gerade kurz.";
+    const selected =
+      pool[Math.floor(Math.random() * pool.length)] || fallback;
+
+    lastVoiceFillerRef.current = selected;
+    return selected;
+  }
+
   function clearVoiceFiller() {
     if (voiceFillerTimeoutRef.current) {
       clearTimeout(voiceFillerTimeoutRef.current);
       voiceFillerTimeoutRef.current = null;
     }
 
-    if (typeof window !== "undefined" && "speechSynthesis" in window) {
-      window.speechSynthesis.cancel();
-    }
-
-    voiceFillerUtteranceRef.current = null;
+    voiceFillerStopRef.current = true;
+    voiceFillerLoopPromiseRef.current = null;
+    voiceAnswerReadyRef.current = false;
   }
 
-  function scheduleVoiceFiller() {
+  function stopCurrentVoiceAudio() {
+    const audio = voiceAudioRef.current;
+
+    if (!audio) return;
+
+    audio.onended = null;
+    audio.onerror = null;
+    audio.onplaying = null;
+    audio.pause();
+    audio.removeAttribute("src");
+    audio.load();
+  }
+
+  async function playVoiceClipAndWait(
+    source: string,
+    signal: AbortSignal,
+    phase: "thinking" | "speaking",
+  ) {
+    if (signal.aborted) return;
+
+    const audio = getOrCreateVoiceAudio();
+
+    await new Promise<void>((resolve, reject) => {
+      let settled = false;
+
+      const cleanup = () => {
+        audio.onended = null;
+        audio.onerror = null;
+        audio.onplaying = null;
+        signal.removeEventListener("abort", handleAbort);
+      };
+
+      const finish = () => {
+        if (settled) return;
+        settled = true;
+        cleanup();
+        resolve();
+      };
+
+      const fail = (error: unknown) => {
+        if (settled) return;
+        settled = true;
+        cleanup();
+        reject(error);
+      };
+
+      const handleAbort = () => {
+        audio.pause();
+        finish();
+      };
+
+      audio.onplaying = () => {
+        setVoicePhase(phase);
+        setVoiceError("");
+        startPlaybackVisualization(audio);
+      };
+
+      audio.onended = () => {
+        stopVoiceAnimation();
+        finish();
+      };
+
+      audio.onerror = () => {
+        fail(new Error("Die Sprachausgabe konnte nicht geladen werden."));
+      };
+
+      signal.addEventListener("abort", handleAbort, { once: true });
+
+      audio.preload = "auto";
+      audio.autoplay = true;
+      audio.src = source;
+      audio.load();
+
+      void audio.play().catch(fail);
+    });
+  }
+
+  async function runVoiceFillerLoop(signal: AbortSignal) {
+    voiceFillerStopRef.current = false;
+    let firstFiller = true;
+
+    try {
+      while (
+        !signal.aborted &&
+        !voiceFillerStopRef.current &&
+        !voiceAnswerReadyRef.current &&
+        voiceConversationActiveRef.current
+      ) {
+        const fillerText = pickVoiceFiller(
+          firstFiller
+            ? VOICE_FILLER_PHRASES
+            : VOICE_FILLER_CONTINUATIONS,
+        );
+
+        firstFiller = false;
+
+        await playVoiceClipAndWait(
+          createVoiceSpeechUrl(fillerText),
+          signal,
+          "thinking",
+        );
+      }
+    } catch (error) {
+      if (
+        !(error instanceof DOMException && error.name === "NotAllowedError")
+      ) {
+        console.warn("ElevenLabs-Füllsatz konnte nicht abgespielt werden:", error);
+      }
+    } finally {
+      voiceFillerLoopPromiseRef.current = null;
+      stopVoiceAnimation();
+    }
+  }
+
+  function scheduleVoiceFiller(signal: AbortSignal) {
     clearVoiceFiller();
+    voiceFillerStopRef.current = false;
+    voiceAnswerReadyRef.current = false;
 
     voiceFillerTimeoutRef.current = setTimeout(() => {
       voiceFillerTimeoutRef.current = null;
 
       if (
+        signal.aborted ||
         cancelVoiceRef.current ||
         !voiceConversationActiveRef.current ||
-        typeof window === "undefined" ||
-        !("speechSynthesis" in window)
+        voiceAnswerReadyRef.current
       ) {
         return;
       }
 
-      const utterance = new SpeechSynthesisUtterance("Einen Moment.");
-      const germanVoice = window.speechSynthesis
-        .getVoices()
-        .find((voice) => voice.lang.toLowerCase().startsWith("de"));
-
-      if (germanVoice) utterance.voice = germanVoice;
-      utterance.lang = "de-DE";
-      utterance.rate = 1.08;
-      utterance.pitch = 1;
-      utterance.volume = 0.8;
-      voiceFillerUtteranceRef.current = utterance;
-      window.speechSynthesis.speak(utterance);
+      const fillerLoop = runVoiceFillerLoop(signal);
+      voiceFillerLoopPromiseRef.current = fillerLoop;
     }, VOICE_FILLER_DELAY_MS);
   }
 
   function stopVoicePlayback() {
     clearVoiceFiller();
-
-    const audio = voiceAudioRef.current;
-
-    if (audio) {
-      audio.onended = null;
-      audio.onerror = null;
-      audio.onplaying = null;
-      audio.pause();
-      audio.removeAttribute("src");
-      audio.load();
-    }
-
+    stopCurrentVoiceAudio();
     revokeVoiceAudioUrl();
     stopVoiceAnimation();
     closeVoiceAudioContext();
@@ -1756,7 +1890,6 @@ export default function WidgetPage() {
 
     stopMicrophoneTracks();
     stopVoicePlayback();
-    clearVoiceFiller();
     voiceAudioRef.current = null;
     voiceAudioUnlockedRef.current = false;
     audioChunksRef.current = [];
@@ -1788,6 +1921,8 @@ export default function WidgetPage() {
     voiceConversationActiveRef.current = false;
     clearVoiceStopTimeout();
     clearVoiceRestartTimeout();
+    voiceAbortControllerRef.current?.abort();
+    voiceAbortControllerRef.current = null;
 
     const recorder = mediaRecorderRef.current;
     mediaRecorderRef.current = null;
@@ -1955,7 +2090,6 @@ export default function WidgetPage() {
     }
 
     try {
-      clearVoiceFiller();
       setVoicePhase("speaking");
       setVoiceError("");
       startPlaybackVisualization(audio);
@@ -1975,17 +2109,64 @@ export default function WidgetPage() {
     }
   }
 
+  async function prepareVoiceResponseAudio(
+    text: string,
+    signal: AbortSignal,
+  ) {
+    const safeText = text.trim().slice(0, VOICE_MAX_SPEECH_TEXT);
+
+    const response = await fetch("/api/voice/speak", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ text: safeText }),
+      signal,
+    });
+
+    if (!response.ok) {
+      const data = await response.json().catch(() => null);
+      throw new Error(
+        data?.error || "Die Sprachantwort konnte nicht erzeugt werden.",
+      );
+    }
+
+    const audioBlob = await response.blob();
+
+    if (!audioBlob.size) {
+      throw new Error("Die Sprachantwort war leer.");
+    }
+
+    revokeVoiceAudioUrl();
+
+    const audioUrl = URL.createObjectURL(audioBlob);
+    voiceAudioUrlRef.current = audioUrl;
+    voiceAnswerReadyRef.current = true;
+
+    return audioUrl;
+  }
+
   async function speakVoiceResponse(text: string, signal: AbortSignal) {
     if (signal.aborted) return;
 
-    clearVoiceFiller();
-    stopVoicePlayback();
+    const answerAudioUrl = await prepareVoiceResponseAudio(text, signal);
+
+    if (voiceFillerTimeoutRef.current) {
+      clearTimeout(voiceFillerTimeoutRef.current);
+      voiceFillerTimeoutRef.current = null;
+    }
+
+    voiceAnswerReadyRef.current = true;
+
+    const runningFiller = voiceFillerLoopPromiseRef.current;
+
+    if (runningFiller) {
+      await runningFiller;
+    }
+
+    if (signal.aborted || cancelVoiceRef.current) return;
+
+    voiceFillerStopRef.current = true;
 
     const audio = getOrCreateVoiceAudio();
-    const safeText = text.trim().slice(0, VOICE_MAX_SPEECH_TEXT);
-    const speechUrl = `/api/voice/speak?text=${encodeURIComponent(
-      safeText,
-    )}&stream=${Date.now()}`;
 
     const handleAbort = () => {
       stopVoicePlayback();
@@ -1995,17 +2176,19 @@ export default function WidgetPage() {
 
     audio.preload = "auto";
     audio.autoplay = true;
-    audio.src = speechUrl;
+    audio.src = answerAudioUrl;
+    audio.load();
 
     audio.onplaying = () => {
       setVoicePhase("speaking");
+      setVoiceError("");
       startPlaybackVisualization(audio);
     };
 
     audio.onended = () => {
       signal.removeEventListener("abort", handleAbort);
       stopVoicePlayback();
-      finishVoiceMode(120);
+      finishVoiceMode(90);
     };
 
     audio.onerror = () => {
@@ -2013,7 +2196,19 @@ export default function WidgetPage() {
       showVoiceFailure("Die Sprachantwort konnte nicht abgespielt werden.");
     };
 
-    await playPreparedVoiceResponse();
+    try {
+      await audio.play();
+    } catch (error) {
+      if (error instanceof DOMException && error.name === "NotAllowedError") {
+        setVoicePhase("ready");
+        setVoiceError(
+          "Der Browser hat die automatische Wiedergabe blockiert. Tippe einmal auf die Kugel.",
+        );
+        return;
+      }
+
+      throw error;
+    }
   }
 
   async function processVoiceRecording(audioBlob: Blob, extension: string) {
@@ -2024,7 +2219,7 @@ export default function WidgetPage() {
     try {
       setVoicePhase("transcribing");
       setVoiceError("");
-      scheduleVoiceFiller();
+      scheduleVoiceFiller(abortController.signal);
 
       const formData = new FormData();
       formData.append("audio", audioBlob, `aufnahme.${extension}`);
