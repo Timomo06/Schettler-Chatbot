@@ -47,6 +47,12 @@ const supabase = createClient(supabaseUrl, supabaseServiceRoleKey, {
   auth: { persistSession: false },
 });
 
+const TENANT_KNOWLEDGE_TTL_MS = 5 * 60 * 1000;
+const tenantKnowledgeCache = new Map<
+  string,
+  { value: string; expiresAt: number }
+>();
+
 type ChatMessage = {
   role: "user" | "assistant";
   content: string;
@@ -55,6 +61,7 @@ type ChatMessage = {
 type ChatBody = {
   tenant?: string;
   sessionId?: string;
+  voiceMode?: boolean;
   messages?: ChatMessage[];
 };
 
@@ -148,6 +155,65 @@ async function logChat(params: {
   });
 
   if (error) console.error("SUPABASE INSERT ERROR:", error);
+}
+
+function queueChatLog(params: {
+  tenantId: string;
+  sessionId: string;
+  userMessage: string;
+  assistantMessage: string;
+}) {
+  void logChat(params).catch((error) => {
+    console.error("SUPABASE INSERT ERROR:", error);
+  });
+}
+
+async function getCachedTenantKnowledge(tenantId: string) {
+  const cached = tenantKnowledgeCache.get(tenantId);
+
+  if (cached && cached.expiresAt > Date.now()) {
+    return cached.value;
+  }
+
+  const value = await loadTenantKnowledge(tenantId);
+  tenantKnowledgeCache.set(tenantId, {
+    value,
+    expiresAt: Date.now() + TENANT_KNOWLEDGE_TTL_MS,
+  });
+
+  return value;
+}
+
+function isFahrwerkTenant(tenantId: string) {
+  return ["fahrwerk-b", "fahrwerkb", "fahrwerk"].includes(
+    tenantId.toLowerCase(),
+  );
+}
+
+function getFastFahrwerkVoiceReply(text: string): string | null {
+  const normalized = text.toLowerCase().trim();
+
+  if (/^(hi|hallo|hey|moin|guten tag)[!. ]*$/.test(normalized)) {
+    return "Hallo! Wobei kann ich dir rund um deinen Führerschein helfen?";
+  }
+
+  if (/^(danke|dankeschön|super danke|alles klar danke)[!. ]*$/.test(normalized)) {
+    return "Gerne. Hast du noch eine Frage?";
+  }
+
+  if (/kannst du mich hören|hörst du mich|funktioniert das mikrofon/.test(normalized)) {
+    return "Ja, ich höre dich. Stell deine Frage einfach direkt.";
+  }
+
+  if (/wie.*anmeld|online anmeld|wo.*anmeld/.test(normalized)) {
+    return "Nutze im Führerschein-Cockpit den Button Online anmelden. Dann öffnet sich direkt die offizielle Anmeldung von Fahrwerk B.";
+  }
+
+  if (/welche.*unterlagen|was.*unterlagen|sehtest.*erste hilfe/.test(normalized)) {
+    return "Für die Anmeldung brauchst du typischerweise Ausweis, Sehtest, Erste-Hilfe-Nachweis und ein biometrisches Passbild. Im Cockpit findest du dafür den Bereich Unterlagen prüfen.";
+  }
+
+  return null;
 }
 
 async function extractBookingData(
@@ -298,6 +364,7 @@ export async function POST(req: NextRequest) {
 
     const body = (await req.json()) as ChatBody;
     const messages = body.messages ?? [];
+    const voiceMode = body.voiceMode === true;
 
     if (!Array.isArray(messages)) {
       return NextResponse.json(
@@ -327,7 +394,7 @@ export async function POST(req: NextRequest) {
           (m.role === "user" || m.role === "assistant") &&
           typeof m.content === "string"
       )
-      .slice(-10);
+      .slice(voiceMode ? -6 : -10);
 
     const lastUserMessage =
       [...history].reverse().find((m) => m.role === "user")?.content?.trim() ||
@@ -349,6 +416,24 @@ export async function POST(req: NextRequest) {
 
     const tenant = getTenant(tenantParam);
     const sessionId = body.sessionId || crypto.randomUUID();
+
+    if (voiceMode && isFahrwerkTenant(tenant.id)) {
+      const fastReply = getFastFahrwerkVoiceReply(lastUserMessage);
+
+      if (fastReply) {
+        queueChatLog({
+          tenantId: tenant.id,
+          sessionId,
+          userMessage: lastUserMessage,
+          assistantMessage: fastReply,
+        });
+
+        return NextResponse.json(
+          { ok: true, reply: fastReply, sessionId },
+          { headers: corsHeaders(origin) },
+        );
+      }
+    }
 
     const calendarBookingEnabled = ["btdesigns", "demo", "lina", "mm-wartung"].includes(
       tenant.id
@@ -423,7 +508,7 @@ export async function POST(req: NextRequest) {
             "Der Termin konnte gerade technisch nicht eingetragen werden. Bitte versuche es noch einmal oder kontaktiere uns direkt. ⚠️";
         }
 
-        await logChat({
+        queueChatLog({
           tenantId: tenant.id,
           sessionId,
           userMessage: lastUserMessage,
@@ -468,7 +553,7 @@ export async function POST(req: NextRequest) {
         }
 
         if (reply) {
-          await logChat({
+          queueChatLog({
             tenantId: tenant.id,
             sessionId,
             userMessage: lastUserMessage,
@@ -483,7 +568,7 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    const knowledgeText = await loadTenantKnowledge(tenant.id);
+    const knowledgeText = await getCachedTenantKnowledge(tenant.id);
 
     const bookingPromptAddOn = calendarBookingEnabled
       ? `
@@ -523,13 +608,28 @@ Sage niemals "Ich trage ihn jetzt ein" oder "Einen Moment", wenn du den Termin n
 `
       : "";
 
+    const voicePromptAddOn = voiceMode
+      ? `
+Sprachmodus:
+- Antworte sofort und direkt.
+- Höchstens zwei kurze Sätze und möglichst unter 45 Wörtern.
+- Keine Listen, Überschriften, Tabellen oder Markdown-Zeichen.
+- Beginne nicht mit langen Einleitungen.
+- Stelle nur dann eine Rückfrage, wenn sie wirklich nötig ist.
+`
+      : "";
+
     const systemPrompt =
-      buildSystemPrompt(tenant, knowledgeText) + "\n\n" + bookingPromptAddOn;
+      buildSystemPrompt(tenant, knowledgeText) +
+      "\n\n" +
+      bookingPromptAddOn +
+      "\n\n" +
+      voicePromptAddOn;
 
     const completion = await openai.chat.completions.create({
       model: "gpt-4o-mini",
-      max_tokens: 400,
-      temperature: 0.4,
+      max_tokens: voiceMode ? 110 : 400,
+      temperature: voiceMode ? 0.25 : 0.4,
       messages: [
         { role: "system", content: systemPrompt },
         ...history.map((m) => ({
@@ -545,7 +645,7 @@ Sage niemals "Ich trage ihn jetzt ein" oder "Einen Moment", wenn du den Termin n
 
     const cleanReply = stripMarkdown(reply);
 
-    await logChat({
+    queueChatLog({
       tenantId: tenant.id,
       sessionId,
       userMessage: lastUserMessage,

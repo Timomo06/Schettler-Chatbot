@@ -543,6 +543,12 @@ function ensureFahrwerkEmoji(content: string) {
   return `${emoji} ${content}`;
 }
 
+const VOICE_SILENCE_MS = 600;
+const VOICE_FILLER_DELAY_MS = 650;
+const VOICE_MAX_SPEECH_TEXT = 900;
+const SILENT_AUDIO_DATA_URI =
+  "data:audio/wav;base64,UklGRqQCAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YYACAACAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA";
+
 export default function WidgetPage() {
   const [mounted, setMounted] = useState(false);
   const [tenantId, setTenantId] = useState("demo");
@@ -755,6 +761,12 @@ export default function WidgetPage() {
   const voiceAbortControllerRef = useRef<AbortController | null>(null);
   const voiceAudioRef = useRef<HTMLAudioElement | null>(null);
   const voiceAudioUrlRef = useRef<string | null>(null);
+  const voiceAudioUnlockedRef = useRef(false);
+  const voiceFillerTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
+    null,
+  );
+  const voiceFillerUtteranceRef =
+    useRef<SpeechSynthesisUtterance | null>(null);
   const voiceStageRef = useRef<HTMLDivElement | null>(null);
   const voiceConversationActiveRef = useRef(false);
   const voiceRestartTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
@@ -1050,6 +1062,7 @@ export default function WidgetPage() {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             tenant: tenantId,
+            voiceMode: options.fromVoice === true,
             messages: next.map(({ role, content }) => ({ role, content })),
           }),
           signal: options.signal,
@@ -1629,18 +1642,95 @@ export default function WidgetPage() {
     }
   }
 
+  function getOrCreateVoiceAudio() {
+    if (voiceAudioRef.current) return voiceAudioRef.current;
+
+    const audio = new Audio();
+    audio.preload = "auto";
+    audio.autoplay = false;
+    audio.playsInline = true;
+    voiceAudioRef.current = audio;
+    return audio;
+  }
+
+  async function unlockVoiceAudio() {
+    if (voiceAudioUnlockedRef.current) return;
+
+    const audio = getOrCreateVoiceAudio();
+
+    try {
+      audio.src = SILENT_AUDIO_DATA_URI;
+      audio.volume = 0.001;
+      await audio.play();
+      audio.pause();
+      audio.currentTime = 0;
+      voiceAudioUnlockedRef.current = true;
+    } catch {
+      // Der normale Wiedergabeversuch folgt später.
+    } finally {
+      audio.removeAttribute("src");
+      audio.load();
+      audio.volume = 1;
+    }
+  }
+
+  function clearVoiceFiller() {
+    if (voiceFillerTimeoutRef.current) {
+      clearTimeout(voiceFillerTimeoutRef.current);
+      voiceFillerTimeoutRef.current = null;
+    }
+
+    if (typeof window !== "undefined" && "speechSynthesis" in window) {
+      window.speechSynthesis.cancel();
+    }
+
+    voiceFillerUtteranceRef.current = null;
+  }
+
+  function scheduleVoiceFiller() {
+    clearVoiceFiller();
+
+    voiceFillerTimeoutRef.current = setTimeout(() => {
+      voiceFillerTimeoutRef.current = null;
+
+      if (
+        cancelVoiceRef.current ||
+        !voiceConversationActiveRef.current ||
+        typeof window === "undefined" ||
+        !("speechSynthesis" in window)
+      ) {
+        return;
+      }
+
+      const utterance = new SpeechSynthesisUtterance("Einen Moment.");
+      const germanVoice = window.speechSynthesis
+        .getVoices()
+        .find((voice) => voice.lang.toLowerCase().startsWith("de"));
+
+      if (germanVoice) utterance.voice = germanVoice;
+      utterance.lang = "de-DE";
+      utterance.rate = 1.08;
+      utterance.pitch = 1;
+      utterance.volume = 0.8;
+      voiceFillerUtteranceRef.current = utterance;
+      window.speechSynthesis.speak(utterance);
+    }, VOICE_FILLER_DELAY_MS);
+  }
+
   function stopVoicePlayback() {
+    clearVoiceFiller();
+
     const audio = voiceAudioRef.current;
 
     if (audio) {
       audio.onended = null;
       audio.onerror = null;
+      audio.onplaying = null;
       audio.pause();
       audio.removeAttribute("src");
       audio.load();
     }
 
-    voiceAudioRef.current = null;
     revokeVoiceAudioUrl();
     stopVoiceAnimation();
     closeVoiceAudioContext();
@@ -1667,6 +1757,9 @@ export default function WidgetPage() {
 
     stopMicrophoneTracks();
     stopVoicePlayback();
+    clearVoiceFiller();
+    voiceAudioRef.current = null;
+    voiceAudioUnlockedRef.current = false;
     audioChunksRef.current = [];
   }
 
@@ -1691,6 +1784,7 @@ export default function WidgetPage() {
   }
 
   function showVoiceFailure(message: string) {
+    clearVoiceFiller();
     cancelVoiceRef.current = true;
     voiceConversationActiveRef.current = false;
     clearVoiceStopTimeout();
@@ -1802,7 +1896,7 @@ export default function WidgetPage() {
           silenceStartedAtRef.current = now;
         }
 
-        if (now - silenceStartedAtRef.current > 850) {
+        if (now - silenceStartedAtRef.current > VOICE_SILENCE_MS) {
           stopVoiceRecording();
           return;
         }
@@ -1818,34 +1912,14 @@ export default function WidgetPage() {
     stopVoiceAnimation();
     closeVoiceAudioContext();
 
-    const context = new AudioContext();
-    const source = context.createMediaElementSource(audio);
-    const analyser = context.createAnalyser();
-
-    analyser.fftSize = 256;
-    analyser.smoothingTimeConstant = 0.82;
-    const frequencyData = new Uint8Array(analyser.frequencyBinCount);
-    source.connect(analyser);
-    analyser.connect(context.destination);
-
-    audioContextRef.current = context;
-    analyserRef.current = analyser;
-
     const draw = () => {
       if (audio.paused || audio.ended) {
         setVoiceEnergy(0.08);
         return;
       }
 
-      analyser.getByteFrequencyData(frequencyData);
-      let sum = 0;
-
-      for (let i = 0; i < frequencyData.length; i += 1) {
-        sum += frequencyData[i];
-      }
-
-      const average = sum / frequencyData.length / 255;
-      setVoiceEnergy(Math.min(1, Math.max(0.08, average * 2.15)));
+      const wave = (Math.sin(performance.now() / 115) + 1) / 2;
+      setVoiceEnergy(0.24 + wave * 0.26);
       voiceAnimationFrameRef.current = window.requestAnimationFrame(draw);
     };
 
@@ -1882,20 +1956,19 @@ export default function WidgetPage() {
     }
 
     try {
+      clearVoiceFiller();
       setVoicePhase("speaking");
       setVoiceError("");
-      await audio.play();
       startPlaybackVisualization(audio);
-
-      if (audioContextRef.current?.state === "suspended") {
-        await audioContextRef.current.resume();
-      }
+      await audio.play();
     } catch (error) {
       stopVoiceAnimation();
 
       if (error instanceof DOMException && error.name === "NotAllowedError") {
         setVoicePhase("ready");
-        setVoiceError("Tippe auf die Kugel, um die Antwort abzuspielen.");
+        setVoiceError(
+          "Der Browser hat die automatische Wiedergabe blockiert. Tippe einmal auf die Kugel.",
+        );
         return;
       }
 
@@ -1904,41 +1977,40 @@ export default function WidgetPage() {
   }
 
   async function speakVoiceResponse(text: string, signal: AbortSignal) {
-    const response = await fetch("/api/voice/speak", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ text }),
-      signal,
-    });
+    if (signal.aborted) return;
 
-    if (!response.ok) {
-      const data = await response.json().catch(() => null);
-      throw new Error(
-        data?.error || "Die Sprachantwort konnte nicht erzeugt werden.",
-      );
-    }
-
-    const audioBlob = await response.blob();
-
-    if (!audioBlob.size) {
-      throw new Error("Die Sprachantwort war leer.");
-    }
-
+    clearVoiceFiller();
     stopVoicePlayback();
 
-    const audioUrl = URL.createObjectURL(audioBlob);
-    const audio = new Audio(audioUrl);
+    const audio = getOrCreateVoiceAudio();
+    const safeText = text.trim().slice(0, VOICE_MAX_SPEECH_TEXT);
+    const speechUrl = `/api/voice/speak?text=${encodeURIComponent(
+      safeText,
+    )}&stream=${Date.now()}`;
+
+    const handleAbort = () => {
+      stopVoicePlayback();
+    };
+
+    signal.addEventListener("abort", handleAbort, { once: true });
 
     audio.preload = "auto";
-    voiceAudioUrlRef.current = audioUrl;
-    voiceAudioRef.current = audio;
+    audio.autoplay = true;
+    audio.src = speechUrl;
+
+    audio.onplaying = () => {
+      setVoicePhase("speaking");
+      startPlaybackVisualization(audio);
+    };
 
     audio.onended = () => {
+      signal.removeEventListener("abort", handleAbort);
       stopVoicePlayback();
-      finishVoiceMode();
+      finishVoiceMode(120);
     };
 
     audio.onerror = () => {
+      signal.removeEventListener("abort", handleAbort);
       showVoiceFailure("Die Sprachantwort konnte nicht abgespielt werden.");
     };
 
@@ -1953,6 +2025,7 @@ export default function WidgetPage() {
     try {
       setVoicePhase("transcribing");
       setVoiceError("");
+      scheduleVoiceFiller();
 
       const formData = new FormData();
       formData.append("audio", audioBlob, `aufnahme.${extension}`);
@@ -2008,6 +2081,10 @@ export default function WidgetPage() {
 
       showVoiceFailure(message);
     } finally {
+      if (abortController.signal.aborted) {
+        clearVoiceFiller();
+      }
+
       if (voiceAbortControllerRef.current === abortController) {
         voiceAbortControllerRef.current = null;
       }
@@ -2107,6 +2184,8 @@ export default function WidgetPage() {
   }
 
   async function startVoiceInput() {
+    const unlockPromise = unlockVoiceAudio();
+
     if (loadingRef.current || ["transcribing", "thinking"].includes(voicePhase))
       return;
 
@@ -2124,6 +2203,7 @@ export default function WidgetPage() {
     }
 
     if (voicePhase === "ready") {
+      await unlockPromise;
       await playPreparedVoiceResponse();
       return;
     }
@@ -2140,6 +2220,8 @@ export default function WidgetPage() {
       return;
     }
 
+    await unlockPromise;
+
     voiceConversationActiveRef.current = true;
     cancelVoiceRef.current = false;
     voiceAbortControllerRef.current?.abort();
@@ -2150,6 +2232,8 @@ export default function WidgetPage() {
   }
 
   function cancelVoiceMode() {
+    clearVoiceFiller();
+
     if (!isVoiceActive && !mediaRecorderRef.current && !voiceAudioRef.current)
       return;
 
