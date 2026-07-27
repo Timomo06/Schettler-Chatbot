@@ -1648,7 +1648,6 @@ export default function WidgetPage() {
     const audio = new Audio();
     audio.preload = "auto";
     audio.autoplay = false;
-    audio.playsInline = true;
     voiceAudioRef.current = audio;
     return audio;
   }
