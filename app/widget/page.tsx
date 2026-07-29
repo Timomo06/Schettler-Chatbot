@@ -567,6 +567,7 @@ export default function WidgetPage() {
   const [mounted, setMounted] = useState(false);
   const [tenantId, setTenantId] = useState("demo");
   const [isEmbedded, setIsEmbedded] = useState(false);
+  const [isMobileViewport, setIsMobileViewport] = useState(false);
 
   useEffect(() => {
     setMounted(true);
@@ -578,6 +579,31 @@ export default function WidgetPage() {
     setTenantId(t);
     setIsEmbedded(embedded);
   }, []);
+
+  useEffect(() => {
+    if (!mounted) return;
+
+    const updateViewportMode = () => {
+      const screenWidth = window.screen?.width || window.innerWidth;
+      const visualWidth = window.visualViewport?.width || window.innerWidth;
+      const narrowScreen = Math.min(screenWidth, visualWidth) <= 700;
+      const compactTouchDevice =
+        window.matchMedia("(pointer: coarse)").matches && screenWidth <= 900;
+
+      setIsMobileViewport(narrowScreen || compactTouchDevice);
+    };
+
+    updateViewportMode();
+    window.addEventListener("resize", updateViewportMode);
+    window.addEventListener("orientationchange", updateViewportMode);
+    window.visualViewport?.addEventListener("resize", updateViewportMode);
+
+    return () => {
+      window.removeEventListener("resize", updateViewportMode);
+      window.removeEventListener("orientationchange", updateViewportMode);
+      window.visualViewport?.removeEventListener("resize", updateViewportMode);
+    };
+  }, [mounted]);
 
   const cfg = useMemo(() => {
     try {
@@ -922,20 +948,35 @@ export default function WidgetPage() {
   useEffect(() => {
     if (!isEmbedded) return;
 
+    const mobileWidth = Math.max(
+      320,
+      Math.min(window.screen?.width || 430, 560),
+    );
+    const mobileHeight = Math.max(
+      560,
+      Math.min((window.screen?.height || 820) - 12, 900),
+    );
+
     const size = open
-      ? {
-          type: "bt-chat-resize",
-          width: isBookingInterface
-            ? 1080
-            : isTxbikesInterface || isFahrwerkBInterface
-              ? 980
-              : 500,
-          height: isBookingInterface
-            ? 920
-            : isTxbikesInterface || isFahrwerkBInterface
-              ? 880
-              : 760,
-        }
+      ? isMobileViewport
+        ? {
+            type: "bt-chat-resize",
+            width: mobileWidth,
+            height: mobileHeight,
+          }
+        : {
+            type: "bt-chat-resize",
+            width: isBookingInterface
+              ? 1080
+              : isTxbikesInterface || isFahrwerkBInterface
+                ? 980
+                : 500,
+            height: isBookingInterface
+              ? 920
+              : isTxbikesInterface || isFahrwerkBInterface
+                ? 880
+                : 760,
+          }
       : {
           type: "bt-chat-resize",
           width: embedClosedSize,
@@ -946,6 +987,7 @@ export default function WidgetPage() {
   }, [
     open,
     isEmbedded,
+    isMobileViewport,
     isBookingInterface,
     isTxbikesInterface,
     isFahrwerkBInterface,
@@ -2505,7 +2547,11 @@ export default function WidgetPage() {
       : isEmbedded
         ? 660
         : 720;
-  const panelRadius = isEnhancedInterface ? 38 : 28;
+  const panelRadius = isEnhancedInterface
+    ? isMobileViewport
+      ? 28
+      : 38
+    : 28;
   const GLOBAL_LOGO_SRC = "/brand/btai-logo.png";
 
   if (!mounted) return null;
@@ -2652,6 +2698,9 @@ export default function WidgetPage() {
 
   return (
     <div
+      className={`${isMobileViewport ? "bt-mobile-viewport" : ""} ${
+        isVoiceActive ? "bt-voice-mode-open" : ""
+      }`.trim()}
       style={{
         minHeight: isEmbedded ? embedClosedSize : "100vh",
         width: isEmbedded && !open ? embedClosedSize : undefined,
@@ -3236,6 +3285,236 @@ body::after {
   }
 }
 
+/* Mobile layout is class-driven as well as media-query-driven.
+   This is important for embedded iframes that were previously opened at 980px. */
+.bt-mobile-viewport {
+  min-height: 100dvh !important;
+  width: 100% !important;
+  height: 100dvh !important;
+  overflow: hidden !important;
+}
+
+.bt-mobile-viewport .bt-panel {
+  left: 8px !important;
+  right: 8px !important;
+  top: max(8px, env(safe-area-inset-top)) !important;
+  bottom: max(8px, env(safe-area-inset-bottom)) !important;
+  width: auto !important;
+  height: auto !important;
+  max-width: none !important;
+  max-height: none !important;
+  border-radius: 28px !important;
+  transform-origin: center bottom !important;
+}
+
+
+.bt-mobile-viewport .bt-launcher-shell--open {
+  top: calc(max(8px, env(safe-area-inset-top)) + 10px) !important;
+  right: 18px !important;
+  bottom: auto !important;
+  width: 46px !important;
+  height: 46px !important;
+  z-index: 1000002 !important;
+}
+
+.bt-mobile-viewport .bt-launcher-shell--open .bt-launcher {
+  width: 44px !important;
+  height: 44px !important;
+  box-shadow: 0 10px 28px rgba(0,0,0,0.18), 0 0 0 1px rgba(${accentRgb},0.18) inset !important;
+}
+
+.bt-mobile-viewport .bt-launcher-shell--open .bt-launcher::before,
+.bt-mobile-viewport .bt-launcher-shell--open .bt-launcher::after {
+  display: none !important;
+}
+
+.bt-mobile-viewport.bt-voice-mode-open .bt-launcher-shell--open {
+  display: none !important;
+}
+
+.bt-mobile-viewport .bt-panel-header {
+  padding: 15px 62px 14px 16px !important;
+  min-height: 88px !important;
+  gap: 10px !important;
+}
+
+.bt-mobile-viewport .bt-brand-block {
+  min-width: 0 !important;
+  flex: 1 1 auto !important;
+}
+
+.bt-mobile-viewport .bt-brand-title {
+  max-width: 245px !important;
+  font-size: 17px !important;
+  line-height: 1.18 !important;
+  letter-spacing: -0.01em !important;
+  overflow-wrap: anywhere !important;
+}
+
+.bt-mobile-viewport .bt-brand-subtitle {
+  font-size: 12.5px !important;
+  line-height: 1.3 !important;
+}
+
+.bt-mobile-viewport .bt-header-actions {
+  flex: 0 0 auto !important;
+}
+
+.bt-mobile-viewport .bt-powered-logo,
+.bt-mobile-viewport .bt-primary-cta {
+  display: none !important;
+}
+
+.bt-mobile-viewport .bt-reset-button {
+  min-width: 44px !important;
+  height: 36px !important;
+  padding: 0 10px !important;
+  border-radius: 12px !important;
+  font-size: 12px !important;
+}
+
+.bt-mobile-viewport .bt-panel-scroll {
+  padding: 12px !important;
+  gap: 12px !important;
+  overscroll-behavior: contain !important;
+  -webkit-overflow-scrolling: touch !important;
+  scroll-padding-bottom: 90px !important;
+}
+
+.bt-mobile-viewport input:not(.bt-hidden-file-input),
+.bt-mobile-viewport select,
+.bt-mobile-viewport textarea {
+  font-size: 16px !important;
+}
+
+.bt-mobile-viewport .bt-start-intro {
+  padding: 10px 5px 4px !important;
+}
+
+.bt-mobile-viewport .bt-start-title {
+  font-size: 24px !important;
+  line-height: 1.08 !important;
+  letter-spacing: -0.025em !important;
+}
+
+.bt-mobile-viewport .bt-start-description {
+  font-size: 14px !important;
+  line-height: 1.45 !important;
+}
+
+.bt-mobile-viewport .bt-fahrwerk-steps {
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: 7px !important;
+  margin-top: 14px !important;
+}
+
+.bt-mobile-viewport .bt-fahrwerk-steps > div {
+  min-width: 0 !important;
+  padding: 8px 6px !important;
+  font-size: 11px !important;
+  line-height: 1.2 !important;
+  white-space: normal !important;
+}
+
+.bt-mobile-viewport .bt-start-grid {
+  grid-template-columns: 1fr !important;
+  gap: 10px !important;
+}
+
+.bt-mobile-viewport .bt-start-card {
+  min-height: 0 !important;
+  padding: 14px !important;
+  border-radius: 20px !important;
+  touch-action: manipulation !important;
+}
+
+.bt-mobile-viewport .bt-fahrwerk-panel {
+  padding: 15px !important;
+  border-radius: 24px !important;
+  gap: 13px !important;
+}
+
+.bt-mobile-viewport .bt-composer {
+  padding: 10px !important;
+  padding-bottom: calc(10px + env(safe-area-inset-bottom)) !important;
+  gap: 8px !important;
+}
+
+.bt-mobile-viewport .bt-round-action-button {
+  width: 48px !important;
+  height: 48px !important;
+  border-radius: 15px !important;
+  font-size: 19px !important;
+}
+
+.bt-mobile-viewport .bt-message-input {
+  min-width: 0 !important;
+  height: 50px !important;
+  padding: 0 13px !important;
+  border-radius: 16px !important;
+  font-size: 16px !important;
+}
+
+.bt-mobile-viewport .bt-send-button {
+  flex: 0 0 50px !important;
+  width: 50px !important;
+  height: 50px !important;
+  padding: 0 !important;
+  border-radius: 16px !important;
+  font-size: 0 !important;
+}
+
+.bt-mobile-viewport .bt-send-button::after {
+  content: "↑";
+  font-size: 22px;
+  line-height: 1;
+  font-weight: 900;
+}
+
+.bt-mobile-viewport .bt-voice-stage {
+  padding: 52px 18px 76px !important;
+  border-radius: 28px !important;
+}
+
+.bt-mobile-viewport .bt-voice-close {
+  top: 14px !important;
+  right: 14px !important;
+  width: 42px !important;
+  height: 42px !important;
+}
+
+.bt-mobile-viewport .bt-voice-orb-button {
+  width: min(58vw, 220px) !important;
+}
+
+.bt-mobile-viewport .bt-voice-title {
+  font-size: clamp(28px, 9vw, 36px) !important;
+}
+
+.bt-mobile-viewport .bt-voice-transcript {
+  font-size: 14px !important;
+  line-height: 1.45 !important;
+}
+
+.bt-mobile-viewport .bt-voice-footer {
+  bottom: calc(14px + env(safe-area-inset-bottom)) !important;
+  width: calc(100% - 44px) !important;
+  font-size: 11px !important;
+}
+
+@media (max-width: 680px) {
+  .bt-panel {
+    left: 8px !important;
+    right: 8px !important;
+    top: max(8px, env(safe-area-inset-top)) !important;
+    bottom: max(8px, env(safe-area-inset-bottom)) !important;
+    width: auto !important;
+    height: auto !important;
+    max-width: none !important;
+    max-height: none !important;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .bt-bouncing { animation: none !important; }
   .bt-launcher { animation: none !important; }
@@ -3255,6 +3534,7 @@ body::after {
 
       {isEmbedClosed ? (
         <div
+          className="bt-launcher-shell"
           style={{
             position: "fixed",
             right: launcherOffset,
@@ -3275,6 +3555,7 @@ body::after {
       ) : (
         <>
           <div
+            className={`bt-launcher-shell ${open ? "bt-launcher-shell--open" : ""}`}
             style={{
               position: "fixed",
               right: launcherOffset,
@@ -3313,16 +3594,20 @@ body::after {
               className="bt-panel"
               style={{
                 position: "fixed",
-                right: launcherOffset,
-                bottom: panelOffsetBottom,
-                width: panelW,
-                maxWidth: isEnhancedInterface
-                  ? "calc(100vw - 28px)"
+                right: isMobileViewport ? 8 : launcherOffset,
+                left: isMobileViewport ? 8 : undefined,
+                top: isMobileViewport ? 8 : undefined,
+                bottom: isMobileViewport ? 8 : panelOffsetBottom,
+                width: isMobileViewport ? "auto" : panelW,
+                maxWidth: isMobileViewport
+                  ? "none"
                   : "calc(100vw - 28px)",
-                height: panelH,
-                maxHeight: isEnhancedInterface
-                  ? "calc(100vh - 96px)"
-                  : "calc(100vh - 122px)",
+                height: isMobileViewport ? "auto" : panelH,
+                maxHeight: isMobileViewport
+                  ? "none"
+                  : isEnhancedInterface
+                    ? "calc(100vh - 96px)"
+                    : "calc(100vh - 122px)",
                 border: "1px solid rgba(255,255,255,0.46)",
                 background: `
           radial-gradient(980px 520px at 18% -10%, ${widgetAccent}26 0%, transparent 62%),
@@ -3406,16 +3691,23 @@ body::after {
                 }}
               >
                 <div
+                  className="bt-panel-header"
                   style={{
-                    padding: isEnhancedInterface
-                      ? "24px 28px 22px"
-                      : "16px 14px 14px",
+                    padding: isMobileViewport
+                      ? "15px 62px 14px 16px"
+                      : isEnhancedInterface
+                        ? "24px 28px 22px"
+                        : "16px 14px 14px",
                     borderBottom: "1px solid rgba(22,49,38,0.12)",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "space-between",
                     gap: isEnhancedInterface ? 16 : 10,
-                    minHeight: isEnhancedInterface ? 116 : 86,
+                    minHeight: isMobileViewport
+                      ? 88
+                      : isEnhancedInterface
+                        ? 116
+                        : 86,
                     flex: "0 0 auto",
                     background: `
               radial-gradient(520px 180px at 18% 0%, ${widgetAccent}14 0%, transparent 72%),
@@ -3425,10 +3717,12 @@ body::after {
                   }}
                 >
                   <div
+                    className="bt-brand-block"
                     style={{
                       display: "flex",
                       alignItems: "center",
                       gap: isEnhancedInterface ? 12 : 10,
+                      minWidth: 0,
                     }}
                   >
                     <div
@@ -3447,8 +3741,13 @@ body::after {
                     />
                     <div style={{ lineHeight: 1.2 }}>
                       <div
+                        className="bt-brand-title"
                         style={{
-                          fontSize: isEnhancedInterface ? 20 : 17,
+                          fontSize: isMobileViewport
+                            ? 17
+                            : isEnhancedInterface
+                              ? 20
+                              : 17,
                           fontWeight: 700,
                           letterSpacing: 0.3,
                           opacity: 0.96,
@@ -3458,8 +3757,13 @@ body::after {
                         {displayBrandName} – {displayAssistantName}
                       </div>
                       <div
+                        className="bt-brand-subtitle"
                         style={{
-                          fontSize: isEnhancedInterface ? 14 : 12.5,
+                          fontSize: isMobileViewport
+                            ? 12.5
+                            : isEnhancedInterface
+                              ? 14
+                              : 12.5,
                           opacity: 0.9,
                           marginTop: 3,
                           color: textSecondary,
@@ -3484,9 +3788,11 @@ body::after {
                   </div>
 
                   <div
+                    className="bt-header-actions"
                     style={{ display: "flex", gap: 8, alignItems: "center" }}
                   >
                     <div
+                      className="bt-powered-logo"
                       style={{
                         display: "flex",
                         alignItems: "center",
@@ -3525,6 +3831,7 @@ body::after {
 
                     {cfg.primaryCta?.url && (
                       <a
+                        className="bt-primary-cta"
                         href={cfg.primaryCta.url}
                         target="_blank"
                         rel="noreferrer"
@@ -3548,6 +3855,7 @@ body::after {
                     )}
 
                     <button
+                      className="bt-reset-button"
                       onClick={resetChat}
                       style={{
                         fontSize: isEnhancedInterface ? 12.5 : 11.5,
@@ -3570,11 +3878,16 @@ body::after {
 
                 <div
                   ref={listRef}
+                  className="bt-panel-scroll"
                   style={{
                     flex: "1 1 auto",
                     minHeight: 0,
                     overflowY: "auto",
-                    padding: isEnhancedInterface ? 26 : 14,
+                    padding: isMobileViewport
+                      ? 12
+                      : isEnhancedInterface
+                        ? 26
+                        : 14,
                     display: "flex",
                     flexDirection: "column",
                     gap: isEnhancedInterface ? 16 : 10,
@@ -3595,16 +3908,24 @@ body::after {
                       }}
                     >
                       <div
+                        className="bt-start-intro"
                         style={{
-                          padding: isEnhancedInterface
-                            ? "22px 22px 10px"
-                            : "14px 14px 4px",
+                          padding: isMobileViewport
+                            ? "12px 6px 4px"
+                            : isEnhancedInterface
+                              ? "22px 22px 10px"
+                              : "14px 14px 4px",
                           color: textPrimary,
                         }}
                       >
                         <div
+                          className="bt-start-title"
                           style={{
-                            fontSize: isEnhancedInterface ? 30 : 18,
+                            fontSize: isMobileViewport
+                              ? 24
+                              : isEnhancedInterface
+                                ? 30
+                                : 18,
                             fontWeight: 800,
                             letterSpacing: 0.2,
                             marginBottom: 6,
@@ -3615,8 +3936,13 @@ body::after {
                             : "Was möchtest du machen?"}
                         </div>
                         <div
+                          className="bt-start-description"
                           style={{
-                            fontSize: isEnhancedInterface ? 16 : 13,
+                            fontSize: isMobileViewport
+                              ? 14
+                              : isEnhancedInterface
+                                ? 16
+                                : 13,
                             lineHeight: 1.5,
                             color: textSecondary,
                           }}
@@ -3636,9 +3962,12 @@ body::after {
 
                         {isFahrwerkBInterface && (
                           <div
+                            className="bt-fahrwerk-steps"
                             style={{
                               display: "grid",
-                              gridTemplateColumns: "repeat(4, minmax(0, 1fr))",
+                              gridTemplateColumns: isMobileViewport
+                                ? "repeat(2, minmax(0, 1fr))"
+                                : "repeat(4, minmax(0, 1fr))",
                               gap: 8,
                               marginTop: 18,
                             }}
@@ -3670,12 +3999,19 @@ body::after {
                       </div>
 
                       <div
+                        className="bt-start-grid"
                         style={{
                           display: "grid",
-                          gridTemplateColumns: isEnhancedInterface
-                            ? "repeat(3, minmax(0, 1fr))"
-                            : "1fr 1fr",
-                          gap: isEnhancedInterface ? 16 : 10,
+                          gridTemplateColumns: isMobileViewport
+                            ? "1fr"
+                            : isEnhancedInterface
+                              ? "repeat(3, minmax(0, 1fr))"
+                              : "1fr 1fr",
+                          gap: isMobileViewport
+                            ? 10
+                            : isEnhancedInterface
+                              ? 16
+                              : 10,
                         }}
                       >
                         {startCards.map((card) => (
@@ -3781,6 +4117,7 @@ body::after {
                       fahrwerkStage !== "new") && (
                       <div
                         ref={fahrwerkPanelRef}
+                        className="bt-fahrwerk-panel"
                         style={{
                           alignSelf: "stretch",
                           borderRadius: isEnhancedInterface ? 30 : 20,
@@ -3987,8 +4324,9 @@ body::after {
                             <div
                               style={{
                                 display: "grid",
-                                gridTemplateColumns: isEnhancedInterface
-                                  ? "repeat(2, minmax(0, 1fr))"
+                                gridTemplateColumns:
+                                  isEnhancedInterface && !isMobileViewport
+                                    ? "repeat(2, minmax(0, 1fr))"
                                   : "1fr",
                                 gap: 12,
                               }}
@@ -4076,8 +4414,9 @@ body::after {
                             <div
                               style={{
                                 display: "grid",
-                                gridTemplateColumns: isEnhancedInterface
-                                  ? "repeat(2, minmax(0, 1fr))"
+                                gridTemplateColumns:
+                                  isEnhancedInterface && !isMobileViewport
+                                    ? "repeat(2, minmax(0, 1fr))"
                                   : "1fr",
                                 gap: 10,
                               }}
@@ -4169,8 +4508,9 @@ body::after {
                           <div
                             style={{
                               display: "grid",
-                              gridTemplateColumns: isEnhancedInterface
-                                ? "1fr 1.15fr"
+                              gridTemplateColumns:
+                                isEnhancedInterface && !isMobileViewport
+                                  ? "1fr 1.15fr"
                                 : "1fr",
                               gap: 14,
                             }}
@@ -4288,8 +4628,9 @@ body::after {
                           <div
                             style={{
                               display: "grid",
-                              gridTemplateColumns: isEnhancedInterface
-                                ? "repeat(3, minmax(0, 1fr))"
+                              gridTemplateColumns:
+                                isEnhancedInterface && !isMobileViewport
+                                  ? "repeat(3, minmax(0, 1fr))"
                                 : "1fr",
                               gap: 12,
                             }}
@@ -4347,8 +4688,9 @@ body::after {
                           <div
                             style={{
                               display: "grid",
-                              gridTemplateColumns: isEnhancedInterface
-                                ? "repeat(2, minmax(0, 1fr))"
+                              gridTemplateColumns:
+                                isEnhancedInterface && !isMobileViewport
+                                  ? "repeat(2, minmax(0, 1fr))"
                                 : "1fr",
                               gap: 12,
                             }}
@@ -4411,8 +4753,9 @@ body::after {
                           <div
                             style={{
                               display: "grid",
-                              gridTemplateColumns: isEnhancedInterface
-                                ? "repeat(2, minmax(0, 1fr))"
+                              gridTemplateColumns:
+                                isEnhancedInterface && !isMobileViewport
+                                  ? "repeat(2, minmax(0, 1fr))"
                                 : "1fr",
                               gap: 12,
                             }}
@@ -4632,8 +4975,9 @@ body::after {
                       <div
                         style={{
                           display: "grid",
-                          gridTemplateColumns: isEnhancedInterface
-                            ? "repeat(2, minmax(0, 1fr))"
+                          gridTemplateColumns:
+                            isEnhancedInterface && !isMobileViewport
+                              ? "repeat(2, minmax(0, 1fr))"
                             : "1fr",
                           gap: 12,
                         }}
@@ -5008,8 +5352,9 @@ body::after {
                       <div
                         style={{
                           display: "grid",
-                          gridTemplateColumns: isEnhancedInterface
-                            ? "repeat(2, minmax(0, 1fr))"
+                          gridTemplateColumns:
+                            isEnhancedInterface && !isMobileViewport
+                              ? "repeat(2, minmax(0, 1fr))"
                             : "1fr",
                           gap: 12,
                         }}
@@ -5380,11 +5725,18 @@ body::after {
                 </div>
 
                 <div
+                  className="bt-composer"
                   style={{
-                    padding: isEnhancedInterface ? 22 : 14,
-                    paddingBottom: isEnhancedInterface
-                      ? "calc(22px + env(safe-area-inset-bottom))"
-                      : "calc(16px + env(safe-area-inset-bottom))",
+                    padding: isMobileViewport
+                      ? 10
+                      : isEnhancedInterface
+                        ? 22
+                        : 14,
+                    paddingBottom: isMobileViewport
+                      ? "calc(10px + env(safe-area-inset-bottom))"
+                      : isEnhancedInterface
+                        ? "calc(22px + env(safe-area-inset-bottom))"
+                        : "calc(16px + env(safe-area-inset-bottom))",
                     borderTop: "1px solid rgba(22,49,38,0.12)",
                     display: "flex",
                     gap: isEnhancedInterface ? 12 : 10,
@@ -5444,6 +5796,7 @@ body::after {
                   </button>
 
                   <input
+                    className="bt-message-input"
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
                     onKeyDown={(e) => {
@@ -5487,6 +5840,7 @@ body::after {
                   />
 
                   <button
+                    className="bt-send-button"
                     onClick={send}
                     disabled={!input.trim() || loading || isVoiceActive}
                     style={{
