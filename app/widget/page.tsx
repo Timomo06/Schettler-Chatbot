@@ -42,8 +42,12 @@ type StartCard = {
     | "booking"
     | "fahrwerkSignup"
     | "fahrwerkLiveSignup"
-    | "fahrwerkPanel";
+    | "fahrwerkPanel"
+    | "abgefahrenPanel"
+    | "hohenbadenPanel";
   fahrwerkPanel?: FahrwerkPanel;
+  abgefahrenPanel?: AbgefahrenPanel;
+  hohenbadenPanel?: HohenbadenPanel;
   prefillLicenseClass?: string;
   prefillStartWish?: string;
 };
@@ -436,6 +440,122 @@ const MM_WARTUNG_START_CARDS: StartCard[] = [
   },
 ];
 
+const ABGEFAHREN_START_CARDS: StartCard[] = [
+  {
+    icon: "🔗",
+    title: "Als Fahrschüler verbinden",
+    description: "Persönlichen Stand, Termine und Fortschritt öffnen",
+    action: "abgefahrenPanel",
+    abgefahrenPanel: "connect",
+  },
+  {
+    icon: "⚡",
+    title: "Nächsten Kurs buchen",
+    description: "Freie Kurse nach Startwunsch und Zeitplan finden",
+    action: "abgefahrenPanel",
+    abgefahrenPanel: "courses",
+  },
+  {
+    icon: "🪪",
+    title: "Mein Führerschein",
+    description: "Persönliches Cockpit mit den nächsten Schritten",
+    action: "abgefahrenPanel",
+    abgefahrenPanel: "dashboard",
+  },
+  {
+    icon: "📅",
+    title: "Fahrstunden planen",
+    description: "Freie Zeiten sehen und einen passenden Slot vormerken",
+    action: "abgefahrenPanel",
+    abgefahrenPanel: "schedule",
+  },
+  {
+    icon: "✅",
+    title: "Unterlagen & Status",
+    description: "Dokumente hochladen und den Antragsstand verfolgen",
+    action: "abgefahrenPanel",
+    abgefahrenPanel: "documents",
+  },
+  {
+    icon: "✨",
+    title: "Persönlicher Begleiter",
+    description: "Antworten passend zu deinem aktuellen Ausbildungsstand",
+    action: "abgefahrenPanel",
+    abgefahrenPanel: "coach",
+  },
+  {
+    icon: "🧭",
+    title: "Führerschein finden",
+    description: "Mit wenigen Fragen zur passenden Führerscheinklasse",
+    message:
+      "Ich weiß noch nicht genau, welche Führerscheinklasse zu mir passt. Bitte finde sie mit mir gemeinsam heraus.",
+  },
+  {
+    icon: "🎙️",
+    title: "Frage einsprechen",
+    description: "Anliegen einfach erzählen statt tippen",
+    action: "voice",
+  },
+];
+
+const HOHENBADEN_START_CARDS: StartCard[] = [
+  {
+    icon: "🔗",
+    title: "Als Fahrschüler verbinden",
+    description: "Lernstand, Termine und Ausbildungsfortschritt öffnen",
+    action: "hohenbadenPanel",
+    hohenbadenPanel: "connect",
+  },
+  {
+    icon: "⚡",
+    title: "Intensivkurs finden",
+    description: "Freie in7Days-Kurse passend zu Urlaub und Standort",
+    action: "hohenbadenPanel",
+    hohenbadenPanel: "courses",
+  },
+  {
+    icon: "🪪",
+    title: "Mein Führerschein",
+    description: "Persönliches Cockpit mit den nächsten Schritten",
+    action: "hohenbadenPanel",
+    hohenbadenPanel: "dashboard",
+  },
+  {
+    icon: "📅",
+    title: "Fahrstunden planen",
+    description: "Freie Zeiten sehen und passend zum Kurs vormerken",
+    action: "hohenbadenPanel",
+    hohenbadenPanel: "schedule",
+  },
+  {
+    icon: "📱",
+    title: "THEO-Lernbegleiter",
+    description: "Lernstand, Prüfungssimulation und Tagesplan bündeln",
+    action: "hohenbadenPanel",
+    hohenbadenPanel: "coach",
+  },
+  {
+    icon: "✅",
+    title: "Unterlagen & Behörde",
+    description: "Dokumente hochladen und Freigabestatus verfolgen",
+    action: "hohenbadenPanel",
+    hohenbadenPanel: "documents",
+  },
+  {
+    icon: "🌍",
+    title: "Führerschein umschreiben",
+    description: "Ausländischen Führerschein und Sprache einordnen",
+    message:
+      "Ich möchte meinen ausländischen Führerschein umschreiben lassen. Bitte führe mich durch die nächsten Schritte und frage nach Herkunftsland, Führerscheinklasse und gewünschter Sprache.",
+  },
+  {
+    icon: "🎙️",
+    title: "Frage einsprechen",
+    description: "Anliegen einfach erzählen statt tippen",
+    action: "voice",
+  },
+];
+
 const FAHRWERK_B_START_CARDS: StartCard[] = [
   {
     icon: "🚀",
@@ -548,11 +668,11 @@ const VOICE_FILLER_DELAY_MS = 850;
 const VOICE_MAX_SPEECH_TEXT = 900;
 
 const VOICE_FILLER_PHRASES = [
-  "Alles klar, ich habe deine Frage verstanden. Lass mich das kurz mit den Informationen von Fahrwerk B abgleichen, damit ich dir direkt die passende Antwort geben kann.",
-  "Verstanden. Ich ordne deine Frage gerade ein und prüfe kurz die passenden Informationen von Fahrwerk B, damit du gleich eine klare Antwort von mir bekommst.",
-  "Einen kleinen Moment bitte. Ich gehe deine Frage kurz Schritt für Schritt durch und schaue nach, welche Antwort für deine Situation am besten passt.",
-  "Danke, ich habe dich verstanden. Ich prüfe gerade die wichtigsten Informationen und formuliere dir direkt eine kurze und passende Antwort.",
-  "Alles klar, ich schaue mir das kurz genauer an und gleiche deine Frage mit den Informationen von Fahrwerk B ab. Gleich habe ich die passende Antwort für dich.",
+  "Alles klar, ich habe deine Frage verstanden. Lass mich das kurz mit den hinterlegten Informationen abgleichen, damit ich dir direkt passend antworten kann.",
+  "Verstanden. Ich ordne deine Frage gerade ein und prüfe kurz die wichtigsten Informationen für deine Situation.",
+  "Einen kleinen Moment bitte. Ich gehe deine Frage kurz Schritt für Schritt durch und schaue nach, welche Antwort am besten passt.",
+  "Danke, ich habe dich verstanden. Ich prüfe gerade die wichtigsten Informationen und formuliere dir direkt eine kurze und klare Antwort.",
+  "Alles klar, ich schaue mir das kurz genauer an und gleiche deine Frage mit den vorhandenen Informationen ab. Gleich habe ich die passende Antwort für dich.",
 ] as const;
 
 const VOICE_FILLER_CONTINUATIONS = [
@@ -562,6 +682,3433 @@ const VOICE_FILLER_CONTINUATIONS = [
 ] as const;
 const SILENT_AUDIO_DATA_URI =
   "data:audio/wav;base64,UklGRqQCAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YYACAACAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA";
+
+
+type AbgefahrenPanel =
+  | "home"
+  | "connect"
+  | "dashboard"
+  | "courses"
+  | "schedule"
+  | "documents"
+  | "coach";
+
+type AbgefahrenCourse = {
+  id: string;
+  title: string;
+  location: string;
+  start: string;
+  time: string;
+  seats: number;
+  tag: string;
+  match: string;
+};
+
+type AbgefahrenFutureDemoProps = {
+  panel: AbgefahrenPanel;
+  onPanelChange: (panel: AbgefahrenPanel) => void;
+  accent: string;
+  accentRgb: string;
+  textPrimary: string;
+  textSecondary: string;
+  isMobile: boolean;
+  onAsk: (message: string) => void;
+};
+
+const ABGEFAHREN_DEMO_COURSES: AbgefahrenCourse[] = [
+  {
+    id: "theorie-12-08",
+    title: "7-Tage-Theoriekurs",
+    location: "Schwerin",
+    start: "12. August 2026",
+    time: "17:30–20:30 Uhr",
+    seats: 3,
+    tag: "Nächster freier Kurs",
+    match: "Passt zu: werktags ab 16 Uhr",
+  },
+  {
+    id: "ferien-18-08",
+    title: "Ferien-Intensivkurs",
+    location: "Schwerin",
+    start: "18. August 2026",
+    time: "09:00–12:00 Uhr",
+    seats: 5,
+    tag: "Schnellster Abschluss",
+    match: "Passt zu: vormittags verfügbar",
+  },
+  {
+    id: "sternberg-25-08",
+    title: "7-Tage-Theoriekurs",
+    location: "Sternberg",
+    start: "25. August 2026",
+    time: "17:30–20:30 Uhr",
+    seats: 6,
+    tag: "Standort-Alternative",
+    match: "Passt zu: Sternberg möglich",
+  },
+];
+
+const ABGEFAHREN_DEMO_DOCUMENTS = [
+  { id: "ausweis", label: "Ausweis", detail: "Geprüft", initial: true },
+  { id: "sehtest", label: "Sehtest", detail: "Gültig bis 03/2028", initial: true },
+  { id: "erstehilfe", label: "Erste-Hilfe-Kurs", detail: "Bescheinigung vorhanden", initial: true },
+  { id: "passbild", label: "Biometrisches Passbild", detail: "Noch hochladen", initial: false },
+  { id: "antrag", label: "Führerscheinantrag", detail: "Digital vorbereitet", initial: true },
+] as const;
+
+function AbgefahrenFutureDemo({
+  panel,
+  onPanelChange,
+  accent,
+  accentRgb,
+  textPrimary,
+  textSecondary,
+  isMobile,
+  onAsk,
+}: AbgefahrenFutureDemoProps) {
+  const [studentCode, setStudentCode] = useState("");
+  const [birthDate, setBirthDate] = useState("");
+  const [connecting, setConnecting] = useState(false);
+  const [connected, setConnected] = useState(false);
+  const [courseMode, setCourseMode] = useState<"fast" | "time">("fast");
+  const [coursePreference, setCoursePreference] = useState(
+    "Werktags ab 16 Uhr",
+  );
+  const [reservedCourseId, setReservedCourseId] = useState<string | null>(null);
+  const [selectedDrivingSlot, setSelectedDrivingSlot] = useState<string | null>(
+    null,
+  );
+  const [drivingSlotReserved, setDrivingSlotReserved] = useState(false);
+  const [documents, setDocuments] = useState<Record<string, boolean>>(() =>
+    ABGEFAHREN_DEMO_DOCUMENTS.reduce<Record<string, boolean>>((acc, item) => {
+      acc[item.id] = item.initial;
+      return acc;
+    }, {}),
+  );
+
+  if (panel === "home") return null;
+
+  const completedDocuments = ABGEFAHREN_DEMO_DOCUMENTS.filter(
+    (item) => documents[item.id],
+  ).length;
+  const documentProgress = Math.round(
+    (completedDocuments / ABGEFAHREN_DEMO_DOCUMENTS.length) * 100,
+  );
+  const reservedCourse = ABGEFAHREN_DEMO_COURSES.find(
+    (course) => course.id === reservedCourseId,
+  );
+
+  const glassCard: CSSProperties = {
+    borderRadius: isMobile ? 22 : 26,
+    border: "1px solid rgba(255,255,255,0.52)",
+    background:
+      "linear-gradient(180deg, rgba(255,255,255,0.92), rgba(255,255,255,0.66))",
+    boxShadow:
+      "0 18px 54px rgba(34,18,27,0.10), inset 0 1px 0 rgba(255,255,255,0.70)",
+    backdropFilter: "blur(22px) saturate(170%)",
+    WebkitBackdropFilter: "blur(22px) saturate(170%)",
+  };
+
+  const softCard: CSSProperties = {
+    borderRadius: 20,
+    border: `1px solid rgba(${accentRgb}, 0.16)`,
+    background: `linear-gradient(145deg, rgba(${accentRgb}, 0.10), rgba(255,255,255,0.66))`,
+  };
+
+  const primaryButton: CSSProperties = {
+    minHeight: 46,
+    border: "1px solid rgba(255,255,255,0.34)",
+    borderRadius: 15,
+    background: `linear-gradient(180deg, ${accent}, ${accent}C7)`,
+    color: "#fff",
+    padding: "0 17px",
+    fontWeight: 900,
+    cursor: "pointer",
+    boxShadow: `0 12px 30px rgba(${accentRgb}, 0.23), inset 0 1px 0 rgba(255,255,255,0.24)`,
+  };
+
+  const secondaryButton: CSSProperties = {
+    minHeight: 43,
+    border: `1px solid rgba(${accentRgb}, 0.18)`,
+    borderRadius: 14,
+    background: "rgba(255,255,255,0.66)",
+    color: textPrimary,
+    padding: "0 15px",
+    fontWeight: 850,
+    cursor: "pointer",
+  };
+
+  const inputStyle: CSSProperties = {
+    width: "100%",
+    height: 48,
+    borderRadius: 14,
+    border: `1px solid rgba(${accentRgb}, 0.20)`,
+    background: "rgba(255,255,255,0.78)",
+    color: textPrimary,
+    padding: "0 14px",
+    outline: "none",
+    fontSize: 14,
+    boxSizing: "border-box",
+  };
+
+  const navItems: Array<{ id: AbgefahrenPanel; label: string; icon: string }> = [
+    { id: "dashboard", label: "Cockpit", icon: "🪪" },
+    { id: "courses", label: "Kurse", icon: "⚡" },
+    { id: "schedule", label: "Fahrstunden", icon: "📅" },
+    { id: "documents", label: "Unterlagen", icon: "✅" },
+    { id: "coach", label: "Begleiter", icon: "✨" },
+  ];
+
+  function connectDemoStudent(useDemoData = false) {
+    if (connecting) return;
+
+    if (useDemoData) {
+      setStudentCode("ABG-2048");
+      setBirthDate("2007-06-12");
+    }
+
+    setConnecting(true);
+    window.setTimeout(() => {
+      setConnecting(false);
+      setConnected(true);
+      onPanelChange("dashboard");
+    }, 720);
+  }
+
+  function reserveCourse(courseId: string) {
+    setReservedCourseId(courseId);
+  }
+
+  return (
+    <section
+      style={{
+        ...glassCard,
+        alignSelf: "stretch",
+        padding: isMobile ? 14 : 20,
+        display: "flex",
+        flexDirection: "column",
+        gap: 16,
+        color: textPrimary,
+        position: "relative",
+        overflow: "hidden",
+      }}
+    >
+      <div
+        aria-hidden="true"
+        style={{
+          position: "absolute",
+          width: 280,
+          height: 280,
+          borderRadius: 999,
+          right: -100,
+          top: -145,
+          background: `rgba(${accentRgb}, 0.13)`,
+          filter: "blur(6px)",
+          pointerEvents: "none",
+        }}
+      />
+
+      <div
+        style={{
+          position: "relative",
+          display: "flex",
+          justifyContent: "space-between",
+          gap: 12,
+          alignItems: "center",
+          flexWrap: "wrap",
+        }}
+      >
+        <button
+          type="button"
+          onClick={() => onPanelChange("home")}
+          style={{
+            ...secondaryButton,
+            minHeight: 38,
+            padding: "0 12px",
+            fontSize: 12.5,
+          }}
+        >
+          ← Übersicht
+        </button>
+
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 8,
+            borderRadius: 999,
+            border: `1px solid rgba(${accentRgb}, 0.18)`,
+            background: `rgba(${accentRgb}, 0.08)`,
+            padding: "8px 11px",
+            color: textSecondary,
+            fontSize: 11.5,
+            fontWeight: 900,
+            letterSpacing: 0.35,
+          }}
+        >
+          <span
+            style={{
+              width: 7,
+              height: 7,
+              borderRadius: 999,
+              background: accent,
+              boxShadow: `0 0 0 5px rgba(${accentRgb}, 0.10)`,
+            }}
+          />
+          BETA-VORSCHAU · BEISPIELDATEN
+        </div>
+      </div>
+
+      {connected && (
+        <div
+          style={{
+            position: "relative",
+            display: "flex",
+            gap: 8,
+            flexWrap: "wrap",
+          }}
+        >
+          {navItems.map((item) => (
+            <button
+              key={item.id}
+              type="button"
+              onClick={() => onPanelChange(item.id)}
+              style={{
+                borderRadius: 999,
+                border: `1px solid rgba(${accentRgb}, ${panel === item.id ? 0.34 : 0.14})`,
+                background:
+                  panel === item.id
+                    ? `rgba(${accentRgb}, 0.15)`
+                    : "rgba(255,255,255,0.54)",
+                color: textPrimary,
+                padding: "9px 12px",
+                fontSize: 12.5,
+                fontWeight: 850,
+                cursor: "pointer",
+              }}
+            >
+              {item.icon} {item.label}
+            </button>
+          ))}
+        </div>
+      )}
+
+      {panel === "connect" && (
+        <div
+          style={{
+            position: "relative",
+            display: "grid",
+            gridTemplateColumns: isMobile ? "1fr" : "1.05fr 0.95fr",
+            gap: 16,
+          }}
+        >
+          <div
+            style={{
+              ...softCard,
+              padding: isMobile ? 18 : 24,
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "space-between",
+              minHeight: 330,
+              gap: 22,
+            }}
+          >
+            <div>
+              <div
+                style={{
+                  width: 58,
+                  height: 58,
+                  display: "grid",
+                  placeItems: "center",
+                  borderRadius: 20,
+                  background: `rgba(${accentRgb}, 0.15)`,
+                  fontSize: 28,
+                  marginBottom: 18,
+                }}
+              >
+                🔗
+              </div>
+              <div style={{ fontSize: isMobile ? 25 : 31, fontWeight: 950 }}>
+                Mit deiner Fahrschule verbinden
+              </div>
+              <div
+                style={{
+                  marginTop: 9,
+                  color: textSecondary,
+                  fontSize: 14.5,
+                  lineHeight: 1.55,
+                }}
+              >
+                Nach der Verknüpfung wird das Interface zu deinem persönlichen
+                Führerscheinbegleiter. Es kennt deinen Ausbildungsstand,
+                Unterlagen, Termine und die nächsten sinnvollen Schritte.
+              </div>
+            </div>
+
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
+                gap: 8,
+              }}
+            >
+              {[
+                ["62 %", "Fortschritt"],
+                ["4/5", "Unterlagen"],
+                ["2", "Termine"],
+              ].map(([value, label]) => (
+                <div
+                  key={label}
+                  style={{
+                    borderRadius: 16,
+                    background: "rgba(255,255,255,0.60)",
+                    border: "1px solid rgba(255,255,255,0.62)",
+                    padding: "12px 8px",
+                    textAlign: "center",
+                  }}
+                >
+                  <div style={{ fontSize: 18, fontWeight: 950 }}>{value}</div>
+                  <div
+                    style={{
+                      marginTop: 3,
+                      fontSize: 10.5,
+                      color: textSecondary,
+                      fontWeight: 800,
+                    }}
+                  >
+                    {label}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div
+            style={{
+              ...glassCard,
+              padding: isMobile ? 18 : 24,
+              display: "flex",
+              flexDirection: "column",
+              gap: 13,
+            }}
+          >
+            <div style={{ fontSize: 20, fontWeight: 950 }}>
+              Fahrschüler-Zugang
+            </div>
+            <div style={{ fontSize: 13.5, color: textSecondary }}>
+              Später per Fahrschülernummer, QR-Code oder Fahrschul-App.
+            </div>
+
+            <label style={{ fontSize: 12.5, fontWeight: 850 }}>
+              Fahrschülernummer
+            </label>
+            <input
+              value={studentCode}
+              onChange={(event) => setStudentCode(event.target.value)}
+              placeholder="z. B. ABG-2048"
+              style={inputStyle}
+            />
+
+            <label style={{ fontSize: 12.5, fontWeight: 850 }}>
+              Geburtsdatum
+            </label>
+            <input
+              value={birthDate}
+              onChange={(event) => setBirthDate(event.target.value)}
+              type="date"
+              style={inputStyle}
+            />
+
+            <button
+              type="button"
+              onClick={() => connectDemoStudent(false)}
+              style={primaryButton}
+            >
+              {connecting ? "Wird sicher verbunden…" : "Persönliches Cockpit öffnen"}
+            </button>
+            <button
+              type="button"
+              onClick={() => connectDemoStudent(true)}
+              style={secondaryButton}
+            >
+              Demo-Zugang verwenden
+            </button>
+
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 8,
+                color: textSecondary,
+                fontSize: 11.5,
+                lineHeight: 1.4,
+              }}
+            >
+              <span>🔒</span>
+              Die echte Version kann mit der Fahrschulsoftware verbunden werden.
+            </div>
+          </div>
+        </div>
+      )}
+
+      {panel === "dashboard" && (
+        <div
+          style={{
+            position: "relative",
+            display: "flex",
+            flexDirection: "column",
+            gap: 14,
+          }}
+        >
+          {!connected && (
+            <div
+              style={{
+                ...softCard,
+                padding: 16,
+                display: "flex",
+                justifyContent: "space-between",
+                gap: 12,
+                alignItems: "center",
+                flexWrap: "wrap",
+              }}
+            >
+              <div>
+                <div style={{ fontWeight: 950 }}>Demo-Fahrschüler aktiv</div>
+                <div
+                  style={{
+                    color: textSecondary,
+                    fontSize: 12.5,
+                    marginTop: 3,
+                  }}
+                >
+                  Hier wird gezeigt, wie das persönliche Cockpit später aussieht.
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => onPanelChange("connect")}
+                style={secondaryButton}
+              >
+                Eigenen Zugang verbinden
+              </button>
+            </div>
+          )}
+
+          <div
+            style={{
+              ...softCard,
+              padding: isMobile ? 18 : 22,
+              display: "flex",
+              justifyContent: "space-between",
+              gap: 18,
+              alignItems: "center",
+              flexWrap: "wrap",
+            }}
+          >
+            <div>
+              <div
+                style={{
+                  fontSize: 12,
+                  color: textSecondary,
+                  fontWeight: 900,
+                  letterSpacing: 0.5,
+                  textTransform: "uppercase",
+                }}
+              >
+                Persönlicher Führerscheinbegleiter
+              </div>
+              <div
+                style={{
+                  fontSize: isMobile ? 25 : 32,
+                  fontWeight: 950,
+                  marginTop: 4,
+                }}
+              >
+                Moin Max, du bist auf Kurs.
+              </div>
+              <div
+                style={{
+                  color: textSecondary,
+                  fontSize: 14,
+                  lineHeight: 1.5,
+                  marginTop: 7,
+                }}
+              >
+                Dein nächster sinnvoller Schritt: Passbild hochladen und danach
+                die Theorieprüfung vormerken.
+              </div>
+            </div>
+
+            <div
+              style={{
+                width: 116,
+                height: 116,
+                borderRadius: 999,
+                display: "grid",
+                placeItems: "center",
+                background: `conic-gradient(${accent} 0 62%, rgba(${accentRgb}, 0.12) 62% 100%)`,
+                boxShadow: `0 18px 38px rgba(${accentRgb}, 0.18)`,
+              }}
+            >
+              <div
+                style={{
+                  width: 88,
+                  height: 88,
+                  borderRadius: 999,
+                  display: "grid",
+                  placeItems: "center",
+                  background: "rgba(255,255,255,0.92)",
+                  textAlign: "center",
+                }}
+              >
+                <div>
+                  <div style={{ fontSize: 24, fontWeight: 950 }}>62 %</div>
+                  <div style={{ fontSize: 10.5, color: textSecondary }}>
+                    Gesamtstand
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: isMobile
+                ? "1fr"
+                : "repeat(3, minmax(0, 1fr))",
+              gap: 10,
+            }}
+          >
+            {[
+              ["📚", "Theorie", "10 von 14 Themen", "71 %"],
+              ["✅", "Unterlagen", "4 von 5 vollständig", "80 %"],
+              ["🚘", "Praxis", "8 Fahrstunden", "Im Plan"],
+            ].map(([icon, title, detail, value]) => (
+              <button
+                key={title}
+                type="button"
+                onClick={() =>
+                  onPanelChange(title === "Unterlagen" ? "documents" : "coach")
+                }
+                style={{
+                  ...glassCard,
+                  padding: 16,
+                  color: textPrimary,
+                  textAlign: "left",
+                  cursor: "pointer",
+                }}
+              >
+                <div style={{ fontSize: 22 }}>{icon}</div>
+                <div style={{ fontWeight: 950, marginTop: 8 }}>{title}</div>
+                <div
+                  style={{
+                    color: textSecondary,
+                    fontSize: 12.5,
+                    marginTop: 4,
+                  }}
+                >
+                  {detail}
+                </div>
+                <div
+                  style={{
+                    color: accent,
+                    fontSize: 12.5,
+                    fontWeight: 950,
+                    marginTop: 9,
+                  }}
+                >
+                  {value} →
+                </div>
+              </button>
+            ))}
+          </div>
+
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: isMobile ? "1fr" : "1.15fr 0.85fr",
+              gap: 12,
+            }}
+          >
+            <div style={{ ...glassCard, padding: 18 }}>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  gap: 10,
+                  alignItems: "center",
+                }}
+              >
+                <div>
+                  <div style={{ fontSize: 18, fontWeight: 950 }}>
+                    Dein nächster Termin
+                  </div>
+                  <div
+                    style={{
+                      fontSize: 12.5,
+                      color: textSecondary,
+                      marginTop: 3,
+                    }}
+                  >
+                    Automatisch aus deinem Fahrschulkalender
+                  </div>
+                </div>
+                <span
+                  style={{
+                    borderRadius: 999,
+                    padding: "7px 10px",
+                    background: `rgba(${accentRgb}, 0.11)`,
+                    color: accent,
+                    fontSize: 11,
+                    fontWeight: 950,
+                  }}
+                >
+                  MORGEN
+                </span>
+              </div>
+
+              <div
+                style={{
+                  ...softCard,
+                  padding: 16,
+                  marginTop: 14,
+                  display: "flex",
+                  justifyContent: "space-between",
+                  gap: 12,
+                  alignItems: "center",
+                  flexWrap: "wrap",
+                }}
+              >
+                <div>
+                  <div style={{ fontWeight: 950 }}>🚘 Fahrstunde · Stadtverkehr</div>
+                  <div
+                    style={{
+                      color: textSecondary,
+                      fontSize: 13,
+                      marginTop: 5,
+                    }}
+                  >
+                    Mittwoch, 5. August · 16:30–17:15 Uhr
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => onPanelChange("schedule")}
+                  style={secondaryButton}
+                >
+                  Termin verwalten
+                </button>
+              </div>
+            </div>
+
+            <div
+              style={{
+                ...glassCard,
+                padding: 18,
+                background: `linear-gradient(145deg, rgba(${accentRgb}, 0.18), rgba(255,255,255,0.74))`,
+              }}
+            >
+              <div style={{ fontSize: 18, fontWeight: 950 }}>
+                ✨ Dein Begleiter empfiehlt
+              </div>
+              <div
+                style={{
+                  color: textSecondary,
+                  fontSize: 13.5,
+                  lineHeight: 1.5,
+                  marginTop: 8,
+                }}
+              >
+                Heute noch 15 Minuten Vorfahrt und Geschwindigkeit üben. Das
+                passt zu deiner nächsten Fahrstunde.
+              </div>
+              <button
+                type="button"
+                onClick={() => onPanelChange("coach")}
+                style={{ ...primaryButton, width: "100%", marginTop: 14 }}
+              >
+                Persönlichen Plan öffnen
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {panel === "courses" && (
+        <div
+          style={{
+            position: "relative",
+            display: "flex",
+            flexDirection: "column",
+            gap: 14,
+          }}
+        >
+          <div>
+            <div style={{ fontSize: isMobile ? 25 : 31, fontWeight: 950 }}>
+              In wenigen Klicks zum passenden Kurs
+            </div>
+            <div
+              style={{
+                color: textSecondary,
+                fontSize: 14,
+                lineHeight: 1.5,
+                marginTop: 6,
+              }}
+            >
+              Das Interface gleicht Klasse, Standort und freie Zeit automatisch
+              mit den nächsten Kursen ab.
+            </div>
+          </div>
+
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: isMobile
+                ? "1fr"
+                : "repeat(3, minmax(0, 1fr))",
+              gap: 8,
+            }}
+          >
+            {[
+              ["1", "Klasse", "B / B197"],
+              ["2", "Deine Zeit", coursePreference],
+              ["3", "Kurs", reservedCourse ? "Vorgemerkt" : "Auswählen"],
+            ].map(([number, label, value]) => (
+              <div key={number} style={{ ...softCard, padding: 13 }}>
+                <div
+                  style={{
+                    color: accent,
+                    fontSize: 11,
+                    fontWeight: 950,
+                    textTransform: "uppercase",
+                  }}
+                >
+                  Schritt {number}
+                </div>
+                <div style={{ fontWeight: 950, marginTop: 4 }}>{label}</div>
+                <div
+                  style={{
+                    color: textSecondary,
+                    fontSize: 11.5,
+                    marginTop: 3,
+                  }}
+                >
+                  {value}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div style={{ ...glassCard, padding: 16 }}>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                gap: 12,
+                alignItems: "center",
+                flexWrap: "wrap",
+              }}
+            >
+              <div>
+                <div style={{ fontWeight: 950 }}>Wie möchtest du starten?</div>
+                <div
+                  style={{
+                    color: textSecondary,
+                    fontSize: 12.5,
+                    marginTop: 3,
+                  }}
+                >
+                  Die Vorschläge sortieren sich sofort neu.
+                </div>
+              </div>
+              <div style={{ display: "flex", gap: 7, flexWrap: "wrap" }}>
+                <button
+                  type="button"
+                  onClick={() => setCourseMode("fast")}
+                  style={{
+                    ...secondaryButton,
+                    background:
+                      courseMode === "fast"
+                        ? `rgba(${accentRgb}, 0.16)`
+                        : "rgba(255,255,255,0.62)",
+                  }}
+                >
+                  ⚡ So schnell wie möglich
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setCourseMode("time")}
+                  style={{
+                    ...secondaryButton,
+                    background:
+                      courseMode === "time"
+                        ? `rgba(${accentRgb}, 0.16)`
+                        : "rgba(255,255,255,0.62)",
+                  }}
+                >
+                  🕒 Nach meiner Zeit
+                </button>
+              </div>
+            </div>
+
+            <div
+              style={{
+                display: "flex",
+                flexWrap: "wrap",
+                gap: 8,
+                marginTop: 14,
+              }}
+            >
+              {[
+                "Werktags ab 16 Uhr",
+                "Ferien vormittags",
+                "Nur Schwerin",
+                "Sternberg möglich",
+              ].map((preference) => (
+                <button
+                  key={preference}
+                  type="button"
+                  onClick={() => setCoursePreference(preference)}
+                  style={{
+                    borderRadius: 999,
+                    border: `1px solid rgba(${accentRgb}, ${coursePreference === preference ? 0.34 : 0.14})`,
+                    background:
+                      coursePreference === preference
+                        ? `rgba(${accentRgb}, 0.14)`
+                        : "rgba(255,255,255,0.54)",
+                    color: textPrimary,
+                    padding: "9px 12px",
+                    fontSize: 12.5,
+                    fontWeight: 850,
+                    cursor: "pointer",
+                  }}
+                >
+                  {preference}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {reservedCourse ? (
+            <div
+              style={{
+                ...softCard,
+                padding: isMobile ? 18 : 22,
+                border: `1px solid rgba(${accentRgb}, 0.30)`,
+              }}
+            >
+              <div
+                style={{
+                  display: "flex",
+                  gap: 12,
+                  alignItems: "flex-start",
+                }}
+              >
+                <div
+                  style={{
+                    width: 46,
+                    height: 46,
+                    borderRadius: 16,
+                    display: "grid",
+                    placeItems: "center",
+                    background: `rgba(${accentRgb}, 0.17)`,
+                    fontSize: 23,
+                  }}
+                >
+                  ✓
+                </div>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: 20, fontWeight: 950 }}>
+                    Platz ist vorgemerkt
+                  </div>
+                  <div
+                    style={{
+                      color: textSecondary,
+                      fontSize: 13.5,
+                      lineHeight: 1.5,
+                      marginTop: 5,
+                    }}
+                  >
+                    {reservedCourse.title} in {reservedCourse.location} · Start
+                    am {reservedCourse.start}. In der echten Version würde der
+                    Platz jetzt kurz reserviert und die Anmeldung direkt
+                    abgeschlossen.
+                  </div>
+                  <div
+                    style={{
+                      display: "flex",
+                      gap: 8,
+                      flexWrap: "wrap",
+                      marginTop: 14,
+                    }}
+                  >
+                    <button
+                      type="button"
+                      onClick={() => onPanelChange("connect")}
+                      style={primaryButton}
+                    >
+                      Anmeldung in 60 Sekunden abschließen
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setReservedCourseId(null)}
+                      style={secondaryButton}
+                    >
+                      Anderen Kurs wählen
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: isMobile
+                  ? "1fr"
+                  : "repeat(3, minmax(0, 1fr))",
+                gap: 11,
+              }}
+            >
+              {ABGEFAHREN_DEMO_COURSES.map((course, index) => (
+                <div
+                  key={course.id}
+                  style={{
+                    ...glassCard,
+                    padding: 17,
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: 12,
+                    border:
+                      index === 0
+                        ? `1px solid rgba(${accentRgb}, 0.34)`
+                        : glassCard.border,
+                  }}
+                >
+                  <div
+                    style={{
+                      alignSelf: "flex-start",
+                      borderRadius: 999,
+                      background:
+                        index === 0
+                          ? `rgba(${accentRgb}, 0.15)`
+                          : "rgba(17,24,39,0.06)",
+                      color: index === 0 ? accent : textSecondary,
+                      padding: "7px 9px",
+                      fontSize: 10.5,
+                      fontWeight: 950,
+                    }}
+                  >
+                    {course.tag}
+                  </div>
+                  <div>
+                    <div style={{ fontSize: 18, fontWeight: 950 }}>
+                      {course.title}
+                    </div>
+                    <div
+                      style={{
+                        color: textSecondary,
+                        fontSize: 12.5,
+                        lineHeight: 1.5,
+                        marginTop: 6,
+                      }}
+                    >
+                      📍 {course.location}
+                      <br />📆 {course.start}
+                      <br />🕒 {course.time}
+                    </div>
+                  </div>
+                  <div
+                    style={{
+                      ...softCard,
+                      padding: 11,
+                      fontSize: 11.5,
+                      color: textSecondary,
+                    }}
+                  >
+                    ✓ {course.match}
+                  </div>
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      gap: 8,
+                      marginTop: "auto",
+                    }}
+                  >
+                    <span
+                      style={{
+                        fontSize: 11.5,
+                        color: course.seats <= 3 ? accent : textSecondary,
+                        fontWeight: 900,
+                      }}
+                    >
+                      {course.seats} Beispielplätze frei
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => reserveCourse(course.id)}
+                      style={{
+                        ...primaryButton,
+                        minHeight: 40,
+                        padding: "0 13px",
+                        fontSize: 12,
+                      }}
+                    >
+                      Auswählen
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
+      {panel === "schedule" && (
+        <div
+          style={{
+            position: "relative",
+            display: "flex",
+            flexDirection: "column",
+            gap: 14,
+          }}
+        >
+          <div>
+            <div style={{ fontSize: isMobile ? 25 : 31, fontWeight: 950 }}>
+              Fahrstunden passend zu deinem Alltag
+            </div>
+            <div
+              style={{
+                color: textSecondary,
+                fontSize: 14,
+                lineHeight: 1.5,
+                marginTop: 6,
+              }}
+            >
+              Freie Zeiten werden später automatisch mit deinem Fahrlehrer,
+              Ausbildungsstand und deinen Verfügbarkeiten abgeglichen.
+            </div>
+          </div>
+
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: isMobile ? "1fr" : "0.75fr 1.25fr",
+              gap: 12,
+            }}
+          >
+            <div style={{ ...glassCard, padding: 17 }}>
+              <div style={{ fontWeight: 950 }}>Deine Verfügbarkeit</div>
+              <div
+                style={{
+                  color: textSecondary,
+                  fontSize: 12.5,
+                  marginTop: 4,
+                }}
+              >
+                Einmal hinterlegen, automatisch berücksichtigen.
+              </div>
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: 8,
+                  marginTop: 14,
+                }}
+              >
+                {[
+                  "Mo–Fr ab 16:00 Uhr",
+                  "Mittwoch ab 14:00 Uhr",
+                  "Samstag flexibel",
+                ].map((time, index) => (
+                  <label
+                    key={time}
+                    style={{
+                      ...softCard,
+                      padding: 12,
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 10,
+                      fontSize: 12.5,
+                      fontWeight: 800,
+                    }}
+                  >
+                    <input type="checkbox" defaultChecked={index < 2} />
+                    {time}
+                  </label>
+                ))}
+              </div>
+              <button
+                type="button"
+                style={{ ...secondaryButton, width: "100%", marginTop: 13 }}
+              >
+                Verfügbarkeit bearbeiten
+              </button>
+            </div>
+
+            <div style={{ ...glassCard, padding: 17 }}>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  gap: 10,
+                  alignItems: "center",
+                  flexWrap: "wrap",
+                }}
+              >
+                <div>
+                  <div style={{ fontWeight: 950 }}>Passende freie Zeiten</div>
+                  <div
+                    style={{
+                      color: textSecondary,
+                      fontSize: 12.5,
+                      marginTop: 4,
+                    }}
+                  >
+                    Sortiert nach deiner Verfügbarkeit
+                  </div>
+                </div>
+                <span
+                  style={{
+                    color: accent,
+                    fontSize: 11.5,
+                    fontWeight: 950,
+                  }}
+                >
+                  LIVE-ANSICHT ALS DEMO
+                </span>
+              </div>
+
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: isMobile
+                    ? "1fr"
+                    : "repeat(3, minmax(0, 1fr))",
+                  gap: 8,
+                  marginTop: 14,
+                }}
+              >
+                {[
+                  ["Heute", "17:15", "Grundfahraufgaben"],
+                  ["Mittwoch", "16:30", "Stadtverkehr"],
+                  ["Freitag", "18:00", "Überlandfahrt"],
+                ].map(([day, time, topic]) => {
+                  const slotId = `${day}-${time}`;
+                  const selected = selectedDrivingSlot === slotId;
+                  return (
+                    <button
+                      key={slotId}
+                      type="button"
+                      onClick={() => {
+                        setSelectedDrivingSlot(slotId);
+                        setDrivingSlotReserved(false);
+                      }}
+                      style={{
+                        ...softCard,
+                        padding: 14,
+                        color: textPrimary,
+                        textAlign: "left",
+                        cursor: "pointer",
+                        border: `1px solid rgba(${accentRgb}, ${selected ? 0.40 : 0.14})`,
+                        background: selected
+                          ? `rgba(${accentRgb}, 0.16)`
+                          : softCard.background,
+                      }}
+                    >
+                      <div
+                        style={{
+                          color: textSecondary,
+                          fontSize: 11.5,
+                          fontWeight: 850,
+                        }}
+                      >
+                        {day}
+                      </div>
+                      <div
+                        style={{
+                          fontSize: 23,
+                          fontWeight: 950,
+                          marginTop: 2,
+                        }}
+                      >
+                        {time}
+                      </div>
+                      <div
+                        style={{
+                          color: textSecondary,
+                          fontSize: 11.5,
+                          marginTop: 5,
+                        }}
+                      >
+                        {topic}
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+
+              {selectedDrivingSlot && (
+                <div
+                  style={{
+                    ...softCard,
+                    padding: 14,
+                    marginTop: 12,
+                    display: "flex",
+                    justifyContent: "space-between",
+                    gap: 12,
+                    alignItems: "center",
+                    flexWrap: "wrap",
+                  }}
+                >
+                  <div>
+                    <div style={{ fontWeight: 950 }}>
+                      {drivingSlotReserved
+                        ? "✓ Fahrstunde vorgemerkt"
+                        : "Zeit passt zu deinem Profil"}
+                    </div>
+                    <div
+                      style={{
+                        color: textSecondary,
+                        fontSize: 12.5,
+                        marginTop: 3,
+                      }}
+                    >
+                      {drivingSlotReserved
+                        ? "In der echten Version folgt direkt die Bestätigung."
+                        : "Ein Klick würde den Slot verbindlich anfragen."}
+                    </div>
+                  </div>
+                  {!drivingSlotReserved && (
+                    <button
+                      type="button"
+                      onClick={() => setDrivingSlotReserved(true)}
+                      style={primaryButton}
+                    >
+                      Fahrstunde vormerken
+                    </button>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {panel === "documents" && (
+        <div
+          style={{
+            position: "relative",
+            display: "flex",
+            flexDirection: "column",
+            gap: 14,
+          }}
+        >
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              gap: 16,
+              alignItems: "flex-end",
+              flexWrap: "wrap",
+            }}
+          >
+            <div>
+              <div style={{ fontSize: isMobile ? 25 : 31, fontWeight: 950 }}>
+                Unterlagen ohne Papierchaos
+              </div>
+              <div
+                style={{
+                  color: textSecondary,
+                  fontSize: 14,
+                  lineHeight: 1.5,
+                  marginTop: 6,
+                }}
+              >
+                Hochladen, prüfen lassen und jederzeit sehen, was noch fehlt.
+              </div>
+            </div>
+            <div style={{ minWidth: 150 }}>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  fontSize: 11.5,
+                  fontWeight: 900,
+                  marginBottom: 7,
+                }}
+              >
+                <span>Vollständigkeit</span>
+                <span>{documentProgress} %</span>
+              </div>
+              <div
+                style={{
+                  height: 9,
+                  borderRadius: 999,
+                  overflow: "hidden",
+                  background: `rgba(${accentRgb}, 0.10)`,
+                }}
+              >
+                <div
+                  style={{
+                    width: `${documentProgress}%`,
+                    height: "100%",
+                    borderRadius: 999,
+                    background: accent,
+                    transition: "width 220ms ease",
+                  }}
+                />
+              </div>
+            </div>
+          </div>
+
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: isMobile ? "1fr" : "1.2fr 0.8fr",
+              gap: 12,
+            }}
+          >
+            <div
+              style={{
+                ...glassCard,
+                padding: 16,
+                display: "flex",
+                flexDirection: "column",
+                gap: 9,
+              }}
+            >
+              {ABGEFAHREN_DEMO_DOCUMENTS.map((item) => {
+                const done = documents[item.id];
+                return (
+                  <div
+                    key={item.id}
+                    style={{
+                      ...softCard,
+                      padding: 13,
+                      display: "flex",
+                      justifyContent: "space-between",
+                      gap: 12,
+                      alignItems: "center",
+                    }}
+                  >
+                    <div
+                      style={{
+                        display: "flex",
+                        gap: 11,
+                        alignItems: "center",
+                      }}
+                    >
+                      <div
+                        style={{
+                          width: 34,
+                          height: 34,
+                          borderRadius: 12,
+                          display: "grid",
+                          placeItems: "center",
+                          background: done
+                            ? `rgba(${accentRgb}, 0.15)`
+                            : "rgba(17,24,39,0.06)",
+                          fontWeight: 950,
+                          color: done ? accent : textSecondary,
+                        }}
+                      >
+                        {done ? "✓" : "!"}
+                      </div>
+                      <div>
+                        <div style={{ fontSize: 13.5, fontWeight: 950 }}>
+                          {item.label}
+                        </div>
+                        <div
+                          style={{
+                            color: textSecondary,
+                            fontSize: 11.5,
+                            marginTop: 3,
+                          }}
+                        >
+                          {done ? item.detail : "Wird noch benötigt"}
+                        </div>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setDocuments((current) => ({
+                          ...current,
+                          [item.id]: !current[item.id],
+                        }))
+                      }
+                      style={{
+                        ...secondaryButton,
+                        minHeight: 36,
+                        padding: "0 11px",
+                        fontSize: 11.5,
+                      }}
+                    >
+                      {done ? "Öffnen" : "Hochladen"}
+                    </button>
+                  </div>
+                );
+              })}
+            </div>
+
+            <div
+              style={{
+                ...glassCard,
+                padding: 18,
+                display: "flex",
+                flexDirection: "column",
+                gap: 13,
+              }}
+            >
+              <div style={{ fontSize: 18, fontWeight: 950 }}>
+                🏛️ Antrag & Behörde
+              </div>
+              <div
+                style={{
+                  color: textSecondary,
+                  fontSize: 13.5,
+                  lineHeight: 1.5,
+                }}
+              >
+                Das Interface könnte den Antrag vorbereiten, fehlende Angaben
+                erkennen und den Status bis zur Prüfungsfreigabe anzeigen.
+              </div>
+              <div style={{ ...softCard, padding: 14 }}>
+                <div
+                  style={{
+                    color: textSecondary,
+                    fontSize: 11.5,
+                    fontWeight: 850,
+                  }}
+                >
+                  AKTUELLER DEMO-STATUS
+                </div>
+                <div style={{ fontWeight: 950, marginTop: 5 }}>
+                  Antrag vorbereitet
+                </div>
+                <div
+                  style={{
+                    color: textSecondary,
+                    fontSize: 12,
+                    marginTop: 4,
+                  }}
+                >
+                  Noch nicht an die Behörde übermittelt
+                </div>
+              </div>
+              <button type="button" style={primaryButton}>
+                Antrag digital vervollständigen
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {panel === "coach" && (
+        <div
+          style={{
+            position: "relative",
+            display: "flex",
+            flexDirection: "column",
+            gap: 14,
+          }}
+        >
+          <div
+            style={{
+              ...softCard,
+              padding: isMobile ? 18 : 24,
+              display: "grid",
+              gridTemplateColumns: isMobile ? "1fr" : "1.15fr 0.85fr",
+              gap: 18,
+              alignItems: "center",
+            }}
+          >
+            <div>
+              <div
+                style={{
+                  color: accent,
+                  fontSize: 11.5,
+                  fontWeight: 950,
+                  letterSpacing: 0.5,
+                }}
+              >
+                DEIN PERSÖNLICHER BEGLEITER
+              </div>
+              <div
+                style={{
+                  fontSize: isMobile ? 26 : 34,
+                  fontWeight: 950,
+                  marginTop: 5,
+                }}
+              >
+                Er kennt deinen Stand – nicht nur deine Frage.
+              </div>
+              <div
+                style={{
+                  color: textSecondary,
+                  fontSize: 14,
+                  lineHeight: 1.55,
+                  marginTop: 9,
+                }}
+              >
+                Antworten, Lernempfehlungen und nächste Schritte werden passend
+                zu deiner Klasse, deinem Fortschritt und deinen Terminen
+                vorbereitet.
+              </div>
+            </div>
+            <div
+              style={{
+                width: isMobile ? 150 : 180,
+                height: isMobile ? 150 : 180,
+                margin: "0 auto",
+                borderRadius: 999,
+                display: "grid",
+                placeItems: "center",
+                background: `radial-gradient(circle at 35% 30%, rgba(255,255,255,0.90), rgba(${accentRgb}, 0.24) 48%, rgba(${accentRgb}, 0.10) 72%)`,
+                boxShadow: `0 24px 70px rgba(${accentRgb}, 0.24), inset 0 1px 0 rgba(255,255,255,0.80)`,
+                fontSize: 54,
+              }}
+            >
+              ✨
+            </div>
+          </div>
+
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: isMobile ? "1fr" : "0.85fr 1.15fr",
+              gap: 12,
+            }}
+          >
+            <div style={{ ...glassCard, padding: 17 }}>
+              <div style={{ fontWeight: 950 }}>Was der Begleiter weiß</div>
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: 8,
+                  marginTop: 13,
+                }}
+              >
+                {[
+                  ["🪪", "Klasse B197"],
+                  ["📚", "10 von 14 Theoriethemen"],
+                  ["✅", "Passbild fehlt noch"],
+                  ["📅", "Nächste Fahrstunde morgen"],
+                ].map(([icon, value]) => (
+                  <div
+                    key={value}
+                    style={{
+                      ...softCard,
+                      padding: 11,
+                      fontSize: 12.5,
+                      fontWeight: 850,
+                    }}
+                  >
+                    {icon} {value}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div style={{ ...glassCard, padding: 17 }}>
+              <div style={{ fontWeight: 950 }}>Direkt ausprobieren</div>
+              <div
+                style={{
+                  color: textSecondary,
+                  fontSize: 12.5,
+                  marginTop: 4,
+                }}
+              >
+                Die Frage wird in den normalen Chat übernommen.
+              </div>
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr",
+                  gap: 8,
+                  marginTop: 13,
+                }}
+              >
+                {[
+                  "Was soll ich heute für die Theorie lernen?",
+                  "Was fehlt mir noch für die Prüfungsfreigabe?",
+                  "Bin ich bereit für die Theorieprüfung?",
+                  "Welche Fahrstunde passt als Nächstes zu mir?",
+                ].map((question) => (
+                  <button
+                    key={question}
+                    type="button"
+                    onClick={() => onAsk(question)}
+                    style={{
+                      ...softCard,
+                      color: textPrimary,
+                      padding: 13,
+                      textAlign: "left",
+                      cursor: "pointer",
+                      fontSize: 12.5,
+                      lineHeight: 1.4,
+                      fontWeight: 850,
+                    }}
+                  >
+                    {question} →
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <div
+            style={{
+              ...glassCard,
+              padding: 17,
+              display: "flex",
+              justifyContent: "space-between",
+              gap: 14,
+              alignItems: "center",
+              flexWrap: "wrap",
+            }}
+          >
+            <div>
+              <div style={{ fontWeight: 950 }}>Dein Plan für heute</div>
+              <div
+                style={{
+                  color: textSecondary,
+                  fontSize: 12.5,
+                  marginTop: 4,
+                }}
+              >
+                15 Minuten Vorfahrt · 10 Prüfungsfragen · Passbild hochladen
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={() => onAsk("Erstelle mir meinen persönlichen Lernplan für heute.")}
+              style={primaryButton}
+            >
+              Tagesplan starten
+            </button>
+          </div>
+        </div>
+      )}
+    </section>
+  );
+}
+
+type HohenbadenPanel =
+  | "home"
+  | "connect"
+  | "dashboard"
+  | "courses"
+  | "schedule"
+  | "documents"
+  | "coach";
+
+type HohenbadenCourse = {
+  id: string;
+  title: string;
+  location: string;
+  start: string;
+  time: string;
+  seats: number;
+  tag: string;
+  match: string;
+};
+
+type HohenbadenFutureDemoProps = {
+  panel: HohenbadenPanel;
+  onPanelChange: (panel: HohenbadenPanel) => void;
+  accent: string;
+  accentRgb: string;
+  textPrimary: string;
+  textSecondary: string;
+  isMobile: boolean;
+  onAsk: (message: string) => void;
+};
+
+const HOHENBADEN_DEMO_COURSES: HohenbadenCourse[] = [
+  {
+    id: "intensiv-17-08",
+    title: "Klasse B / B197 Intensiv",
+    location: "Baden-Baden",
+    start: "17. August 2026",
+    time: "Mo.–Fr. nach Intensivplan",
+    seats: 3,
+    tag: "Nächster Intensivstart",
+    match: "Passt zu: etwa 2 Wochen Urlaub",
+  },
+  {
+    id: "intensiv-31-08",
+    title: "Klasse B / B197 Intensiv",
+    location: "Bühl",
+    start: "31. August 2026",
+    time: "Theorie und Praxis kompakt",
+    seats: 4,
+    tag: "Standort-Alternative",
+    match: "Passt zu: Bühl und flexible Zeiten",
+  },
+  {
+    id: "motorrad-14-09",
+    title: "Motorrad Intensiv A / A2 / A1",
+    location: "Baden-Baden",
+    start: "14. September 2026",
+    time: "7–10 Tage · wetterabhängig",
+    seats: 2,
+    tag: "Motorrad-Intensiv",
+    match: "Passt zu: frühzeitig geplant",
+  },
+];
+
+const HOHENBADEN_DEMO_DOCUMENTS = [
+  { id: "ausweis", label: "Ausweiskopie", detail: "Geprüft", initial: true },
+  { id: "sehtest", label: "Sehtest", detail: "Gültig bis 03/2028", initial: true },
+  { id: "erstehilfe", label: "Erste-Hilfe-Kurs", detail: "Bei in7Days absolviert", initial: true },
+  { id: "passbild", label: "Biometrisches Passbild", detail: "Noch hochladen", initial: false },
+  { id: "antrag", label: "Fahrerlaubnisantrag", detail: "Digital vorbereitet", initial: true },
+] as const;
+
+function HohenbadenFutureDemo({
+  panel,
+  onPanelChange,
+  accent,
+  accentRgb,
+  textPrimary,
+  textSecondary,
+  isMobile,
+  onAsk,
+}: HohenbadenFutureDemoProps) {
+  const [studentCode, setStudentCode] = useState("");
+  const [birthDate, setBirthDate] = useState("");
+  const [connecting, setConnecting] = useState(false);
+  const [connected, setConnected] = useState(false);
+  const [courseMode, setCourseMode] = useState<"fast" | "time">("fast");
+  const [coursePreference, setCoursePreference] = useState(
+    "Etwa 2 Wochen Urlaub",
+  );
+  const [reservedCourseId, setReservedCourseId] = useState<string | null>(null);
+  const [selectedDrivingSlot, setSelectedDrivingSlot] = useState<string | null>(
+    null,
+  );
+  const [drivingSlotReserved, setDrivingSlotReserved] = useState(false);
+  const [documents, setDocuments] = useState<Record<string, boolean>>(() =>
+    HOHENBADEN_DEMO_DOCUMENTS.reduce<Record<string, boolean>>((acc, item) => {
+      acc[item.id] = item.initial;
+      return acc;
+    }, {}),
+  );
+
+  if (panel === "home") return null;
+
+  const completedDocuments = HOHENBADEN_DEMO_DOCUMENTS.filter(
+    (item) => documents[item.id],
+  ).length;
+  const documentProgress = Math.round(
+    (completedDocuments / HOHENBADEN_DEMO_DOCUMENTS.length) * 100,
+  );
+  const reservedCourse = HOHENBADEN_DEMO_COURSES.find(
+    (course) => course.id === reservedCourseId,
+  );
+
+  const glassCard: CSSProperties = {
+    borderRadius: isMobile ? 22 : 26,
+    border: "1px solid rgba(255,255,255,0.52)",
+    background:
+      "linear-gradient(180deg, rgba(255,255,255,0.92), rgba(255,255,255,0.66))",
+    boxShadow:
+      "0 18px 54px rgba(34,18,27,0.10), inset 0 1px 0 rgba(255,255,255,0.70)",
+    backdropFilter: "blur(22px) saturate(170%)",
+    WebkitBackdropFilter: "blur(22px) saturate(170%)",
+  };
+
+  const softCard: CSSProperties = {
+    borderRadius: 20,
+    border: `1px solid rgba(${accentRgb}, 0.16)`,
+    background: `linear-gradient(145deg, rgba(${accentRgb}, 0.10), rgba(255,255,255,0.66))`,
+  };
+
+  const primaryButton: CSSProperties = {
+    minHeight: 46,
+    border: "1px solid rgba(255,255,255,0.34)",
+    borderRadius: 15,
+    background: `linear-gradient(180deg, ${accent}, ${accent}C7)`,
+    color: "#fff",
+    padding: "0 17px",
+    fontWeight: 900,
+    cursor: "pointer",
+    boxShadow: `0 12px 30px rgba(${accentRgb}, 0.23), inset 0 1px 0 rgba(255,255,255,0.24)`,
+  };
+
+  const secondaryButton: CSSProperties = {
+    minHeight: 43,
+    border: `1px solid rgba(${accentRgb}, 0.18)`,
+    borderRadius: 14,
+    background: "rgba(255,255,255,0.66)",
+    color: textPrimary,
+    padding: "0 15px",
+    fontWeight: 850,
+    cursor: "pointer",
+  };
+
+  const inputStyle: CSSProperties = {
+    width: "100%",
+    height: 48,
+    borderRadius: 14,
+    border: `1px solid rgba(${accentRgb}, 0.20)`,
+    background: "rgba(255,255,255,0.78)",
+    color: textPrimary,
+    padding: "0 14px",
+    outline: "none",
+    fontSize: 14,
+    boxSizing: "border-box",
+  };
+
+  const navItems: Array<{ id: HohenbadenPanel; label: string; icon: string }> = [
+    { id: "dashboard", label: "Cockpit", icon: "🪪" },
+    { id: "courses", label: "Kurse", icon: "⚡" },
+    { id: "schedule", label: "Fahrstunden", icon: "📅" },
+    { id: "documents", label: "Unterlagen", icon: "✅" },
+    { id: "coach", label: "Begleiter", icon: "✨" },
+  ];
+
+  function connectDemoStudent(useDemoData = false) {
+    if (connecting) return;
+
+    if (useDemoData) {
+      setStudentCode("HOB-2048");
+      setBirthDate("2007-06-12");
+    }
+
+    setConnecting(true);
+    window.setTimeout(() => {
+      setConnecting(false);
+      setConnected(true);
+      onPanelChange("dashboard");
+    }, 720);
+  }
+
+  function reserveCourse(courseId: string) {
+    setReservedCourseId(courseId);
+  }
+
+  return (
+    <section
+      style={{
+        ...glassCard,
+        alignSelf: "stretch",
+        padding: isMobile ? 14 : 20,
+        display: "flex",
+        flexDirection: "column",
+        gap: 16,
+        color: textPrimary,
+        position: "relative",
+        overflow: "hidden",
+      }}
+    >
+      <div
+        aria-hidden="true"
+        style={{
+          position: "absolute",
+          width: 280,
+          height: 280,
+          borderRadius: 999,
+          right: -100,
+          top: -145,
+          background: `rgba(${accentRgb}, 0.13)`,
+          filter: "blur(6px)",
+          pointerEvents: "none",
+        }}
+      />
+
+      <div
+        style={{
+          position: "relative",
+          display: "flex",
+          justifyContent: "space-between",
+          gap: 12,
+          alignItems: "center",
+          flexWrap: "wrap",
+        }}
+      >
+        <button
+          type="button"
+          onClick={() => onPanelChange("home")}
+          style={{
+            ...secondaryButton,
+            minHeight: 38,
+            padding: "0 12px",
+            fontSize: 12.5,
+          }}
+        >
+          ← Übersicht
+        </button>
+
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 8,
+            borderRadius: 999,
+            border: `1px solid rgba(${accentRgb}, 0.18)`,
+            background: `rgba(${accentRgb}, 0.08)`,
+            padding: "8px 11px",
+            color: textSecondary,
+            fontSize: 11.5,
+            fontWeight: 900,
+            letterSpacing: 0.35,
+          }}
+        >
+          <span
+            style={{
+              width: 7,
+              height: 7,
+              borderRadius: 999,
+              background: accent,
+              boxShadow: `0 0 0 5px rgba(${accentRgb}, 0.10)`,
+            }}
+          />
+          BETA-VORSCHAU · BEISPIELDATEN
+        </div>
+      </div>
+
+      {connected && (
+        <div
+          style={{
+            position: "relative",
+            display: "flex",
+            gap: 8,
+            flexWrap: "wrap",
+          }}
+        >
+          {navItems.map((item) => (
+            <button
+              key={item.id}
+              type="button"
+              onClick={() => onPanelChange(item.id)}
+              style={{
+                borderRadius: 999,
+                border: `1px solid rgba(${accentRgb}, ${panel === item.id ? 0.34 : 0.14})`,
+                background:
+                  panel === item.id
+                    ? `rgba(${accentRgb}, 0.15)`
+                    : "rgba(255,255,255,0.54)",
+                color: textPrimary,
+                padding: "9px 12px",
+                fontSize: 12.5,
+                fontWeight: 850,
+                cursor: "pointer",
+              }}
+            >
+              {item.icon} {item.label}
+            </button>
+          ))}
+        </div>
+      )}
+
+      {panel === "connect" && (
+        <div
+          style={{
+            position: "relative",
+            display: "grid",
+            gridTemplateColumns: isMobile ? "1fr" : "1.05fr 0.95fr",
+            gap: 16,
+          }}
+        >
+          <div
+            style={{
+              ...softCard,
+              padding: isMobile ? 18 : 24,
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "space-between",
+              minHeight: 330,
+              gap: 22,
+            }}
+          >
+            <div>
+              <div
+                style={{
+                  width: 58,
+                  height: 58,
+                  display: "grid",
+                  placeItems: "center",
+                  borderRadius: 20,
+                  background: `rgba(${accentRgb}, 0.15)`,
+                  fontSize: 28,
+                  marginBottom: 18,
+                }}
+              >
+                🔗
+              </div>
+              <div style={{ fontSize: isMobile ? 25 : 31, fontWeight: 950 }}>
+                Mit deiner Fahrschule verbinden
+              </div>
+              <div
+                style={{
+                  marginTop: 9,
+                  color: textSecondary,
+                  fontSize: 14.5,
+                  lineHeight: 1.55,
+                }}
+              >
+                Nach der Verknüpfung wird das Interface zu deinem persönlichen
+                Führerscheinbegleiter. Es kennt deinen Ausbildungsstand,
+                Unterlagen, Termine und die nächsten sinnvollen Schritte.
+              </div>
+            </div>
+
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
+                gap: 8,
+              }}
+            >
+              {[
+                ["62 %", "Fortschritt"],
+                ["4/5", "Unterlagen"],
+                ["2", "Termine"],
+              ].map(([value, label]) => (
+                <div
+                  key={label}
+                  style={{
+                    borderRadius: 16,
+                    background: "rgba(255,255,255,0.60)",
+                    border: "1px solid rgba(255,255,255,0.62)",
+                    padding: "12px 8px",
+                    textAlign: "center",
+                  }}
+                >
+                  <div style={{ fontSize: 18, fontWeight: 950 }}>{value}</div>
+                  <div
+                    style={{
+                      marginTop: 3,
+                      fontSize: 10.5,
+                      color: textSecondary,
+                      fontWeight: 800,
+                    }}
+                  >
+                    {label}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div
+            style={{
+              ...glassCard,
+              padding: isMobile ? 18 : 24,
+              display: "flex",
+              flexDirection: "column",
+              gap: 13,
+            }}
+          >
+            <div style={{ fontSize: 20, fontWeight: 950 }}>
+              Fahrschüler-Zugang
+            </div>
+            <div style={{ fontSize: 13.5, color: textSecondary }}>
+              Später per Fahrschülernummer, QR-Code oder Verknüpfung mit Fahrschulsoftware und THEO App.
+            </div>
+
+            <label style={{ fontSize: 12.5, fontWeight: 850 }}>
+              Fahrschülernummer
+            </label>
+            <input
+              value={studentCode}
+              onChange={(event) => setStudentCode(event.target.value)}
+              placeholder="z. B. HOB-2048"
+              style={inputStyle}
+            />
+
+            <label style={{ fontSize: 12.5, fontWeight: 850 }}>
+              Geburtsdatum
+            </label>
+            <input
+              value={birthDate}
+              onChange={(event) => setBirthDate(event.target.value)}
+              type="date"
+              style={inputStyle}
+            />
+
+            <button
+              type="button"
+              onClick={() => connectDemoStudent(false)}
+              style={primaryButton}
+            >
+              {connecting ? "Wird sicher verbunden…" : "Persönliches Cockpit öffnen"}
+            </button>
+            <button
+              type="button"
+              onClick={() => connectDemoStudent(true)}
+              style={secondaryButton}
+            >
+              Demo-Zugang verwenden
+            </button>
+
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 8,
+                color: textSecondary,
+                fontSize: 11.5,
+                lineHeight: 1.4,
+              }}
+            >
+              <span>🔒</span>
+              Die echte Version kann Fahrschulsoftware, THEO-Lernstand und Kursplanung verbinden.
+            </div>
+          </div>
+        </div>
+      )}
+
+      {panel === "dashboard" && (
+        <div
+          style={{
+            position: "relative",
+            display: "flex",
+            flexDirection: "column",
+            gap: 14,
+          }}
+        >
+          {!connected && (
+            <div
+              style={{
+                ...softCard,
+                padding: 16,
+                display: "flex",
+                justifyContent: "space-between",
+                gap: 12,
+                alignItems: "center",
+                flexWrap: "wrap",
+              }}
+            >
+              <div>
+                <div style={{ fontWeight: 950 }}>Demo-Fahrschüler aktiv</div>
+                <div
+                  style={{
+                    color: textSecondary,
+                    fontSize: 12.5,
+                    marginTop: 3,
+                  }}
+                >
+                  Hier wird gezeigt, wie das persönliche Cockpit später aussieht.
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => onPanelChange("connect")}
+                style={secondaryButton}
+              >
+                Eigenen Zugang verbinden
+              </button>
+            </div>
+          )}
+
+          <div
+            style={{
+              ...softCard,
+              padding: isMobile ? 18 : 22,
+              display: "flex",
+              justifyContent: "space-between",
+              gap: 18,
+              alignItems: "center",
+              flexWrap: "wrap",
+            }}
+          >
+            <div>
+              <div
+                style={{
+                  fontSize: 12,
+                  color: textSecondary,
+                  fontWeight: 900,
+                  letterSpacing: 0.5,
+                  textTransform: "uppercase",
+                }}
+              >
+                Persönlicher in7Days Führerscheinbegleiter
+              </div>
+              <div
+                style={{
+                  fontSize: isMobile ? 25 : 32,
+                  fontWeight: 950,
+                  marginTop: 4,
+                }}
+              >
+                Hallo Max, dein Intensivkurs ist vorbereitet.
+              </div>
+              <div
+                style={{
+                  color: textSecondary,
+                  fontSize: 14,
+                  lineHeight: 1.5,
+                  marginTop: 7,
+                }}
+              >
+                Dein nächster sinnvoller Schritt: Passbild hochladen, den THEO-Lernstand prüfen und anschließend deinen Intensivplatz bestätigen.
+              </div>
+            </div>
+
+            <div
+              style={{
+                width: 116,
+                height: 116,
+                borderRadius: 999,
+                display: "grid",
+                placeItems: "center",
+                background: `conic-gradient(${accent} 0 62%, rgba(${accentRgb}, 0.12) 62% 100%)`,
+                boxShadow: `0 18px 38px rgba(${accentRgb}, 0.18)`,
+              }}
+            >
+              <div
+                style={{
+                  width: 88,
+                  height: 88,
+                  borderRadius: 999,
+                  display: "grid",
+                  placeItems: "center",
+                  background: "rgba(255,255,255,0.92)",
+                  textAlign: "center",
+                }}
+              >
+                <div>
+                  <div style={{ fontSize: 24, fontWeight: 950 }}>62 %</div>
+                  <div style={{ fontSize: 10.5, color: textSecondary }}>
+                    Gesamtstand
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: isMobile
+                ? "1fr"
+                : "repeat(3, minmax(0, 1fr))",
+              gap: 10,
+            }}
+          >
+            {[
+              ["📱", "THEO App", "72 % Lernstand", "Im Plan"],
+              ["✅", "Unterlagen", "4 von 5 vollständig", "80 %"],
+              ["🚘", "Praxis", "6 Fahrstunden geplant", "Intensiv"],
+            ].map(([icon, title, detail, value]) => (
+              <button
+                key={title}
+                type="button"
+                onClick={() =>
+                  onPanelChange(title === "Unterlagen" ? "documents" : "coach")
+                }
+                style={{
+                  ...glassCard,
+                  padding: 16,
+                  color: textPrimary,
+                  textAlign: "left",
+                  cursor: "pointer",
+                }}
+              >
+                <div style={{ fontSize: 22 }}>{icon}</div>
+                <div style={{ fontWeight: 950, marginTop: 8 }}>{title}</div>
+                <div
+                  style={{
+                    color: textSecondary,
+                    fontSize: 12.5,
+                    marginTop: 4,
+                  }}
+                >
+                  {detail}
+                </div>
+                <div
+                  style={{
+                    color: accent,
+                    fontSize: 12.5,
+                    fontWeight: 950,
+                    marginTop: 9,
+                  }}
+                >
+                  {value} →
+                </div>
+              </button>
+            ))}
+          </div>
+
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: isMobile ? "1fr" : "1.15fr 0.85fr",
+              gap: 12,
+            }}
+          >
+            <div style={{ ...glassCard, padding: 18 }}>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  gap: 10,
+                  alignItems: "center",
+                }}
+              >
+                <div>
+                  <div style={{ fontSize: 18, fontWeight: 950 }}>
+                    Dein nächster Termin
+                  </div>
+                  <div
+                    style={{
+                      fontSize: 12.5,
+                      color: textSecondary,
+                      marginTop: 3,
+                    }}
+                  >
+                    Automatisch aus deinem Fahrschulkalender
+                  </div>
+                </div>
+                <span
+                  style={{
+                    borderRadius: 999,
+                    padding: "7px 10px",
+                    background: `rgba(${accentRgb}, 0.11)`,
+                    color: accent,
+                    fontSize: 11,
+                    fontWeight: 950,
+                  }}
+                >
+                  MORGEN
+                </span>
+              </div>
+
+              <div
+                style={{
+                  ...softCard,
+                  padding: 16,
+                  marginTop: 14,
+                  display: "flex",
+                  justifyContent: "space-between",
+                  gap: 12,
+                  alignItems: "center",
+                  flexWrap: "wrap",
+                }}
+              >
+                <div>
+                  <div style={{ fontWeight: 950 }}>🚘 Fahrstunde · Stadtverkehr</div>
+                  <div
+                    style={{
+                      color: textSecondary,
+                      fontSize: 13,
+                      marginTop: 5,
+                    }}
+                  >
+                    Mittwoch, 5. August · 16:30–17:15 Uhr
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => onPanelChange("schedule")}
+                  style={secondaryButton}
+                >
+                  Termin verwalten
+                </button>
+              </div>
+            </div>
+
+            <div
+              style={{
+                ...glassCard,
+                padding: 18,
+                background: `linear-gradient(145deg, rgba(${accentRgb}, 0.18), rgba(255,255,255,0.74))`,
+              }}
+            >
+              <div style={{ fontSize: 18, fontWeight: 950 }}>
+                ✨ Dein Begleiter empfiehlt
+              </div>
+              <div
+                style={{
+                  color: textSecondary,
+                  fontSize: 13.5,
+                  lineHeight: 1.5,
+                  marginTop: 8,
+                }}
+              >
+                Heute noch 15 Minuten Vorfahrt und Geschwindigkeit üben. Das
+                passt zu deiner nächsten Fahrstunde.
+              </div>
+              <button
+                type="button"
+                onClick={() => onPanelChange("coach")}
+                style={{ ...primaryButton, width: "100%", marginTop: 14 }}
+              >
+                Persönlichen Plan öffnen
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {panel === "courses" && (
+        <div
+          style={{
+            position: "relative",
+            display: "flex",
+            flexDirection: "column",
+            gap: 14,
+          }}
+        >
+          <div>
+            <div style={{ fontSize: isMobile ? 25 : 31, fontWeight: 950 }}>
+              In wenigen Klicks zum passenden Intensivkurs
+            </div>
+            <div
+              style={{
+                color: textSecondary,
+                fontSize: 14,
+                lineHeight: 1.5,
+                marginTop: 6,
+              }}
+            >
+              Das Interface gleicht Klasse, Standort, Urlaubszeit und Bearbeitungsstand automatisch mit den nächsten Intensivkursen ab.
+            </div>
+          </div>
+
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: isMobile
+                ? "1fr"
+                : "repeat(3, minmax(0, 1fr))",
+              gap: 8,
+            }}
+          >
+            {[
+              ["1", "Klasse", "B / B197 / A"],
+              ["2", "Deine Zeit", coursePreference],
+              ["3", "Kurs", reservedCourse ? "Vorgemerkt" : "Auswählen"],
+            ].map(([number, label, value]) => (
+              <div key={number} style={{ ...softCard, padding: 13 }}>
+                <div
+                  style={{
+                    color: accent,
+                    fontSize: 11,
+                    fontWeight: 950,
+                    textTransform: "uppercase",
+                  }}
+                >
+                  Schritt {number}
+                </div>
+                <div style={{ fontWeight: 950, marginTop: 4 }}>{label}</div>
+                <div
+                  style={{
+                    color: textSecondary,
+                    fontSize: 11.5,
+                    marginTop: 3,
+                  }}
+                >
+                  {value}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div style={{ ...glassCard, padding: 16 }}>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                gap: 12,
+                alignItems: "center",
+                flexWrap: "wrap",
+              }}
+            >
+              <div>
+                <div style={{ fontWeight: 950 }}>Wie möchtest du starten?</div>
+                <div
+                  style={{
+                    color: textSecondary,
+                    fontSize: 12.5,
+                    marginTop: 3,
+                  }}
+                >
+                  Die Vorschläge sortieren sich sofort neu.
+                </div>
+              </div>
+              <div style={{ display: "flex", gap: 7, flexWrap: "wrap" }}>
+                <button
+                  type="button"
+                  onClick={() => setCourseMode("fast")}
+                  style={{
+                    ...secondaryButton,
+                    background:
+                      courseMode === "fast"
+                        ? `rgba(${accentRgb}, 0.16)`
+                        : "rgba(255,255,255,0.62)",
+                  }}
+                >
+                  ⚡ So schnell wie möglich
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setCourseMode("time")}
+                  style={{
+                    ...secondaryButton,
+                    background:
+                      courseMode === "time"
+                        ? `rgba(${accentRgb}, 0.16)`
+                        : "rgba(255,255,255,0.62)",
+                  }}
+                >
+                  🕒 Nach meiner Zeit
+                </button>
+              </div>
+            </div>
+
+            <div
+              style={{
+                display: "flex",
+                flexWrap: "wrap",
+                gap: 8,
+                marginTop: 14,
+              }}
+            >
+              {[
+                "Etwa 2 Wochen Urlaub",
+                "Start im August",
+                "Nur Baden-Baden",
+                "Bühl möglich",
+              ].map((preference) => (
+                <button
+                  key={preference}
+                  type="button"
+                  onClick={() => setCoursePreference(preference)}
+                  style={{
+                    borderRadius: 999,
+                    border: `1px solid rgba(${accentRgb}, ${coursePreference === preference ? 0.34 : 0.14})`,
+                    background:
+                      coursePreference === preference
+                        ? `rgba(${accentRgb}, 0.14)`
+                        : "rgba(255,255,255,0.54)",
+                    color: textPrimary,
+                    padding: "9px 12px",
+                    fontSize: 12.5,
+                    fontWeight: 850,
+                    cursor: "pointer",
+                  }}
+                >
+                  {preference}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {reservedCourse ? (
+            <div
+              style={{
+                ...softCard,
+                padding: isMobile ? 18 : 22,
+                border: `1px solid rgba(${accentRgb}, 0.30)`,
+              }}
+            >
+              <div
+                style={{
+                  display: "flex",
+                  gap: 12,
+                  alignItems: "flex-start",
+                }}
+              >
+                <div
+                  style={{
+                    width: 46,
+                    height: 46,
+                    borderRadius: 16,
+                    display: "grid",
+                    placeItems: "center",
+                    background: `rgba(${accentRgb}, 0.17)`,
+                    fontSize: 23,
+                  }}
+                >
+                  ✓
+                </div>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: 20, fontWeight: 950 }}>
+                    Platz ist vorgemerkt
+                  </div>
+                  <div
+                    style={{
+                      color: textSecondary,
+                      fontSize: 13.5,
+                      lineHeight: 1.5,
+                      marginTop: 5,
+                    }}
+                  >
+                    {reservedCourse.title} in {reservedCourse.location} · Start
+                    am {reservedCourse.start}. In der echten Version würde der
+                    Platz jetzt kurz reserviert und die Anmeldung direkt
+                    abgeschlossen.
+                  </div>
+                  <div
+                    style={{
+                      display: "flex",
+                      gap: 8,
+                      flexWrap: "wrap",
+                      marginTop: 14,
+                    }}
+                  >
+                    <button
+                      type="button"
+                      onClick={() => onPanelChange("connect")}
+                      style={primaryButton}
+                    >
+                      Intensivplatz in 60 Sekunden anfragen
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setReservedCourseId(null)}
+                      style={secondaryButton}
+                    >
+                      Anderen Kurs wählen
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: isMobile
+                  ? "1fr"
+                  : "repeat(3, minmax(0, 1fr))",
+                gap: 11,
+              }}
+            >
+              {HOHENBADEN_DEMO_COURSES.map((course, index) => (
+                <div
+                  key={course.id}
+                  style={{
+                    ...glassCard,
+                    padding: 17,
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: 12,
+                    border:
+                      index === 0
+                        ? `1px solid rgba(${accentRgb}, 0.34)`
+                        : glassCard.border,
+                  }}
+                >
+                  <div
+                    style={{
+                      alignSelf: "flex-start",
+                      borderRadius: 999,
+                      background:
+                        index === 0
+                          ? `rgba(${accentRgb}, 0.15)`
+                          : "rgba(17,24,39,0.06)",
+                      color: index === 0 ? accent : textSecondary,
+                      padding: "7px 9px",
+                      fontSize: 10.5,
+                      fontWeight: 950,
+                    }}
+                  >
+                    {course.tag}
+                  </div>
+                  <div>
+                    <div style={{ fontSize: 18, fontWeight: 950 }}>
+                      {course.title}
+                    </div>
+                    <div
+                      style={{
+                        color: textSecondary,
+                        fontSize: 12.5,
+                        lineHeight: 1.5,
+                        marginTop: 6,
+                      }}
+                    >
+                      📍 {course.location}
+                      <br />📆 {course.start}
+                      <br />🕒 {course.time}
+                    </div>
+                  </div>
+                  <div
+                    style={{
+                      ...softCard,
+                      padding: 11,
+                      fontSize: 11.5,
+                      color: textSecondary,
+                    }}
+                  >
+                    ✓ {course.match}
+                  </div>
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      gap: 8,
+                      marginTop: "auto",
+                    }}
+                  >
+                    <span
+                      style={{
+                        fontSize: 11.5,
+                        color: course.seats <= 3 ? accent : textSecondary,
+                        fontWeight: 900,
+                      }}
+                    >
+                      {course.seats} Beispielplätze frei
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => reserveCourse(course.id)}
+                      style={{
+                        ...primaryButton,
+                        minHeight: 40,
+                        padding: "0 13px",
+                        fontSize: 12,
+                      }}
+                    >
+                      Auswählen
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
+      {panel === "schedule" && (
+        <div
+          style={{
+            position: "relative",
+            display: "flex",
+            flexDirection: "column",
+            gap: 14,
+          }}
+        >
+          <div>
+            <div style={{ fontSize: isMobile ? 25 : 31, fontWeight: 950 }}>
+              Fahrstunden passend zu deinem Intensivplan
+            </div>
+            <div
+              style={{
+                color: textSecondary,
+                fontSize: 14,
+                lineHeight: 1.5,
+                marginTop: 6,
+              }}
+            >
+              Freie Zeiten werden später automatisch mit deinem Fahrlehrer,
+              Ausbildungsstand und deinen Verfügbarkeiten abgeglichen.
+            </div>
+          </div>
+
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: isMobile ? "1fr" : "0.75fr 1.25fr",
+              gap: 12,
+            }}
+          >
+            <div style={{ ...glassCard, padding: 17 }}>
+              <div style={{ fontWeight: 950 }}>Deine Verfügbarkeit</div>
+              <div
+                style={{
+                  color: textSecondary,
+                  fontSize: 12.5,
+                  marginTop: 4,
+                }}
+              >
+                Einmal hinterlegen, automatisch berücksichtigen.
+              </div>
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: 8,
+                  marginTop: 14,
+                }}
+              >
+                {[
+                  "Mo–Fr ab 16:00 Uhr",
+                  "Mittwoch ab 14:00 Uhr",
+                  "Samstag flexibel",
+                ].map((time, index) => (
+                  <label
+                    key={time}
+                    style={{
+                      ...softCard,
+                      padding: 12,
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 10,
+                      fontSize: 12.5,
+                      fontWeight: 800,
+                    }}
+                  >
+                    <input type="checkbox" defaultChecked={index < 2} />
+                    {time}
+                  </label>
+                ))}
+              </div>
+              <button
+                type="button"
+                style={{ ...secondaryButton, width: "100%", marginTop: 13 }}
+              >
+                Verfügbarkeit bearbeiten
+              </button>
+            </div>
+
+            <div style={{ ...glassCard, padding: 17 }}>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  gap: 10,
+                  alignItems: "center",
+                  flexWrap: "wrap",
+                }}
+              >
+                <div>
+                  <div style={{ fontWeight: 950 }}>Passende freie Zeiten</div>
+                  <div
+                    style={{
+                      color: textSecondary,
+                      fontSize: 12.5,
+                      marginTop: 4,
+                    }}
+                  >
+                    Sortiert nach deiner Verfügbarkeit
+                  </div>
+                </div>
+                <span
+                  style={{
+                    color: accent,
+                    fontSize: 11.5,
+                    fontWeight: 950,
+                  }}
+                >
+                  LIVE-ANSICHT ALS DEMO
+                </span>
+              </div>
+
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: isMobile
+                    ? "1fr"
+                    : "repeat(3, minmax(0, 1fr))",
+                  gap: 8,
+                  marginTop: 14,
+                }}
+              >
+                {[
+                  ["Heute", "17:15", "Grundfahraufgaben"],
+                  ["Mittwoch", "16:30", "Stadtverkehr"],
+                  ["Freitag", "18:00", "Überlandfahrt"],
+                ].map(([day, time, topic]) => {
+                  const slotId = `${day}-${time}`;
+                  const selected = selectedDrivingSlot === slotId;
+                  return (
+                    <button
+                      key={slotId}
+                      type="button"
+                      onClick={() => {
+                        setSelectedDrivingSlot(slotId);
+                        setDrivingSlotReserved(false);
+                      }}
+                      style={{
+                        ...softCard,
+                        padding: 14,
+                        color: textPrimary,
+                        textAlign: "left",
+                        cursor: "pointer",
+                        border: `1px solid rgba(${accentRgb}, ${selected ? 0.40 : 0.14})`,
+                        background: selected
+                          ? `rgba(${accentRgb}, 0.16)`
+                          : softCard.background,
+                      }}
+                    >
+                      <div
+                        style={{
+                          color: textSecondary,
+                          fontSize: 11.5,
+                          fontWeight: 850,
+                        }}
+                      >
+                        {day}
+                      </div>
+                      <div
+                        style={{
+                          fontSize: 23,
+                          fontWeight: 950,
+                          marginTop: 2,
+                        }}
+                      >
+                        {time}
+                      </div>
+                      <div
+                        style={{
+                          color: textSecondary,
+                          fontSize: 11.5,
+                          marginTop: 5,
+                        }}
+                      >
+                        {topic}
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+
+              {selectedDrivingSlot && (
+                <div
+                  style={{
+                    ...softCard,
+                    padding: 14,
+                    marginTop: 12,
+                    display: "flex",
+                    justifyContent: "space-between",
+                    gap: 12,
+                    alignItems: "center",
+                    flexWrap: "wrap",
+                  }}
+                >
+                  <div>
+                    <div style={{ fontWeight: 950 }}>
+                      {drivingSlotReserved
+                        ? "✓ Fahrstunde vorgemerkt"
+                        : "Zeit passt zu deinem Profil"}
+                    </div>
+                    <div
+                      style={{
+                        color: textSecondary,
+                        fontSize: 12.5,
+                        marginTop: 3,
+                      }}
+                    >
+                      {drivingSlotReserved
+                        ? "In der echten Version folgt direkt die Bestätigung."
+                        : "Ein Klick würde den Slot verbindlich anfragen."}
+                    </div>
+                  </div>
+                  {!drivingSlotReserved && (
+                    <button
+                      type="button"
+                      onClick={() => setDrivingSlotReserved(true)}
+                      style={primaryButton}
+                    >
+                      Fahrstunde vormerken
+                    </button>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {panel === "documents" && (
+        <div
+          style={{
+            position: "relative",
+            display: "flex",
+            flexDirection: "column",
+            gap: 14,
+          }}
+        >
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              gap: 16,
+              alignItems: "flex-end",
+              flexWrap: "wrap",
+            }}
+          >
+            <div>
+              <div style={{ fontSize: isMobile ? 25 : 31, fontWeight: 950 }}>
+                Unterlagen ohne Papierchaos
+              </div>
+              <div
+                style={{
+                  color: textSecondary,
+                  fontSize: 14,
+                  lineHeight: 1.5,
+                  marginTop: 6,
+                }}
+              >
+                Hochladen, prüfen lassen und jederzeit sehen, was noch fehlt.
+              </div>
+            </div>
+            <div style={{ minWidth: 150 }}>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  fontSize: 11.5,
+                  fontWeight: 900,
+                  marginBottom: 7,
+                }}
+              >
+                <span>Vollständigkeit</span>
+                <span>{documentProgress} %</span>
+              </div>
+              <div
+                style={{
+                  height: 9,
+                  borderRadius: 999,
+                  overflow: "hidden",
+                  background: `rgba(${accentRgb}, 0.10)`,
+                }}
+              >
+                <div
+                  style={{
+                    width: `${documentProgress}%`,
+                    height: "100%",
+                    borderRadius: 999,
+                    background: accent,
+                    transition: "width 220ms ease",
+                  }}
+                />
+              </div>
+            </div>
+          </div>
+
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: isMobile ? "1fr" : "1.2fr 0.8fr",
+              gap: 12,
+            }}
+          >
+            <div
+              style={{
+                ...glassCard,
+                padding: 16,
+                display: "flex",
+                flexDirection: "column",
+                gap: 9,
+              }}
+            >
+              {HOHENBADEN_DEMO_DOCUMENTS.map((item) => {
+                const done = documents[item.id];
+                return (
+                  <div
+                    key={item.id}
+                    style={{
+                      ...softCard,
+                      padding: 13,
+                      display: "flex",
+                      justifyContent: "space-between",
+                      gap: 12,
+                      alignItems: "center",
+                    }}
+                  >
+                    <div
+                      style={{
+                        display: "flex",
+                        gap: 11,
+                        alignItems: "center",
+                      }}
+                    >
+                      <div
+                        style={{
+                          width: 34,
+                          height: 34,
+                          borderRadius: 12,
+                          display: "grid",
+                          placeItems: "center",
+                          background: done
+                            ? `rgba(${accentRgb}, 0.15)`
+                            : "rgba(17,24,39,0.06)",
+                          fontWeight: 950,
+                          color: done ? accent : textSecondary,
+                        }}
+                      >
+                        {done ? "✓" : "!"}
+                      </div>
+                      <div>
+                        <div style={{ fontSize: 13.5, fontWeight: 950 }}>
+                          {item.label}
+                        </div>
+                        <div
+                          style={{
+                            color: textSecondary,
+                            fontSize: 11.5,
+                            marginTop: 3,
+                          }}
+                        >
+                          {done ? item.detail : "Wird noch benötigt"}
+                        </div>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setDocuments((current) => ({
+                          ...current,
+                          [item.id]: !current[item.id],
+                        }))
+                      }
+                      style={{
+                        ...secondaryButton,
+                        minHeight: 36,
+                        padding: "0 11px",
+                        fontSize: 11.5,
+                      }}
+                    >
+                      {done ? "Öffnen" : "Hochladen"}
+                    </button>
+                  </div>
+                );
+              })}
+            </div>
+
+            <div
+              style={{
+                ...glassCard,
+                padding: 18,
+                display: "flex",
+                flexDirection: "column",
+                gap: 13,
+              }}
+            >
+              <div style={{ fontSize: 18, fontWeight: 950 }}>
+                🏛️ Antrag & Behörde
+              </div>
+              <div
+                style={{
+                  color: textSecondary,
+                  fontSize: 13.5,
+                  lineHeight: 1.5,
+                }}
+              >
+                Das Interface könnte den Fahrerlaubnisantrag vorbereiten, fehlende Angaben erkennen und die behördliche Bearbeitung bis zur Prüfungsfreigabe anzeigen.
+              </div>
+              <div style={{ ...softCard, padding: 14 }}>
+                <div
+                  style={{
+                    color: textSecondary,
+                    fontSize: 11.5,
+                    fontWeight: 850,
+                  }}
+                >
+                  AKTUELLER DEMO-STATUS
+                </div>
+                <div style={{ fontWeight: 950, marginTop: 5 }}>
+                  Antrag vorbereitet
+                </div>
+                <div
+                  style={{
+                    color: textSecondary,
+                    fontSize: 12,
+                    marginTop: 4,
+                  }}
+                >
+                  Noch nicht an die Behörde übermittelt
+                </div>
+              </div>
+              <button type="button" style={primaryButton}>
+                Antrag digital vervollständigen
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {panel === "coach" && (
+        <div
+          style={{
+            position: "relative",
+            display: "flex",
+            flexDirection: "column",
+            gap: 14,
+          }}
+        >
+          <div
+            style={{
+              ...softCard,
+              padding: isMobile ? 18 : 24,
+              display: "grid",
+              gridTemplateColumns: isMobile ? "1fr" : "1.15fr 0.85fr",
+              gap: 18,
+              alignItems: "center",
+            }}
+          >
+            <div>
+              <div
+                style={{
+                  color: accent,
+                  fontSize: 11.5,
+                  fontWeight: 950,
+                  letterSpacing: 0.5,
+                }}
+              >
+                DEIN PERSÖNLICHER BEGLEITER
+              </div>
+              <div
+                style={{
+                  fontSize: isMobile ? 26 : 34,
+                  fontWeight: 950,
+                  marginTop: 5,
+                }}
+              >
+                Er kennt deinen Stand – nicht nur deine Frage.
+              </div>
+              <div
+                style={{
+                  color: textSecondary,
+                  fontSize: 14,
+                  lineHeight: 1.55,
+                  marginTop: 9,
+                }}
+              >
+                Antworten, THEO-Lernempfehlungen und nächste Schritte werden passend zu deiner Klasse, deinem Lernstand, deiner Sprache und deinem Intensivplan vorbereitet.
+              </div>
+            </div>
+            <div
+              style={{
+                width: isMobile ? 150 : 180,
+                height: isMobile ? 150 : 180,
+                margin: "0 auto",
+                borderRadius: 999,
+                display: "grid",
+                placeItems: "center",
+                background: `radial-gradient(circle at 35% 30%, rgba(255,255,255,0.90), rgba(${accentRgb}, 0.24) 48%, rgba(${accentRgb}, 0.10) 72%)`,
+                boxShadow: `0 24px 70px rgba(${accentRgb}, 0.24), inset 0 1px 0 rgba(255,255,255,0.80)`,
+                fontSize: 54,
+              }}
+            >
+              ✨
+            </div>
+          </div>
+
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: isMobile ? "1fr" : "0.85fr 1.15fr",
+              gap: 12,
+            }}
+          >
+            <div style={{ ...glassCard, padding: 17 }}>
+              <div style={{ fontWeight: 950 }}>Was der Begleiter weiß</div>
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: 8,
+                  marginTop: 13,
+                }}
+              >
+                {[
+                  ["🪪", "Klasse B197"],
+                  ["📱", "THEO App: 72 % Lernstand"],
+                  ["✅", "Passbild fehlt noch"],
+                  ["🌍", "Lernsprache: Englisch"],
+                ].map(([icon, value]) => (
+                  <div
+                    key={value}
+                    style={{
+                      ...softCard,
+                      padding: 11,
+                      fontSize: 12.5,
+                      fontWeight: 850,
+                    }}
+                  >
+                    {icon} {value}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div style={{ ...glassCard, padding: 17 }}>
+              <div style={{ fontWeight: 950 }}>Direkt ausprobieren</div>
+              <div
+                style={{
+                  color: textSecondary,
+                  fontSize: 12.5,
+                  marginTop: 4,
+                }}
+              >
+                Die Frage wird in den normalen Chat übernommen.
+              </div>
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr",
+                  gap: 8,
+                  marginTop: 13,
+                }}
+              >
+                {[
+                  "Was soll ich heute in der THEO App lernen?",
+                  "Passt mein Urlaub zum nächsten Intensivkurs?",
+                  "Bin ich bereit für die Theorieprüfung?",
+                  "Welche Fahrstunde passt als Nächstes zu mir?",
+                ].map((question) => (
+                  <button
+                    key={question}
+                    type="button"
+                    onClick={() => onAsk(question)}
+                    style={{
+                      ...softCard,
+                      color: textPrimary,
+                      padding: 13,
+                      textAlign: "left",
+                      cursor: "pointer",
+                      fontSize: 12.5,
+                      lineHeight: 1.4,
+                      fontWeight: 850,
+                    }}
+                  >
+                    {question} →
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <div
+            style={{
+              ...glassCard,
+              padding: 17,
+              display: "flex",
+              justifyContent: "space-between",
+              gap: 14,
+              alignItems: "center",
+              flexWrap: "wrap",
+            }}
+          >
+            <div>
+              <div style={{ fontWeight: 950 }}>Dein Plan für heute</div>
+              <div
+                style={{
+                  color: textSecondary,
+                  fontSize: 12.5,
+                  marginTop: 4,
+                }}
+              >
+                20 Minuten THEO App · Kursplatz bestätigen · Passbild hochladen
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={() => onAsk("Erstelle mir meinen persönlichen in7Days-Lernplan für heute.")}
+              style={primaryButton}
+            >
+              Tagesplan starten
+            </button>
+          </div>
+        </div>
+      )}
+    </section>
+  );
+}
+
 
 export default function WidgetPage() {
   const [mounted, setMounted] = useState(false);
@@ -651,12 +4198,31 @@ export default function WidgetPage() {
     "fahrwerkbde",
     "fahrwerk",
   ].includes(normalizedTenantId);
+  const isAbgefahrenInterface = [
+    "fahrschule-abgefahren",
+    "abgefahren",
+    "abgefahren-schwerin",
+    "abgefahrenschwerin",
+    "abgefahren-schwerin.de",
+    "abgefahren-schwerinde",
+  ].includes(normalizedTenantId);
+  const isHohenbadenInterface = [
+    "fahrschule-hohenbaden",
+    "hohenbaden",
+    "fahrschule-in7days",
+    "in7days",
+    "in7-days",
+    "fahrschule-hohenbaden.de",
+    "fahrschulehohenbaden",
+  ].includes(normalizedTenantId);
   const isEnhancedInterface =
     isTxbikesInterface ||
     isWilliInterface ||
     isLinaInterface ||
     isMmWartungInterface ||
-    isFahrwerkBInterface;
+    isFahrwerkBInterface ||
+    isAbgefahrenInterface ||
+    isHohenbadenInterface;
   const isBookingInterface =
     isLinaInterface ||
     isMmWartungInterface ||
@@ -692,16 +4258,24 @@ export default function WidgetPage() {
       : isWilliInterface
         ? WILLI_BOOKING_SERVICES
         : BTDESIGNS_BOOKING_SERVICES;
-  const displayBrandName = isFahrwerkBInterface
-    ? "Fahrwerk B"
-    : isTxbikesInterface
+  const displayBrandName = isHohenbadenInterface
+    ? "Fahrschule Hohenbaden · in7Days"
+    : isAbgefahrenInterface
+      ? "Fahrschule Abgefahren"
+      : isFahrwerkBInterface
+      ? "Fahrwerk B"
+      : isTxbikesInterface
       ? "TXBikes"
       : isWilliInterface
         ? "Willi"
         : cfg.brandName;
-  const displayAssistantName = isFahrwerkBInterface
-    ? "Führerschein-Cockpit"
-    : isTxbikesInterface
+  const displayAssistantName = isHohenbadenInterface
+    ? "Führerschein-Assistent"
+    : isAbgefahrenInterface
+      ? "Führerschein-Assistent"
+      : isFahrwerkBInterface
+      ? "Führerschein-Cockpit"
+      : isTxbikesInterface
       ? "Bike-Service Interface"
       : isWilliInterface
         ? "AI Interface"
@@ -717,9 +4291,13 @@ export default function WidgetPage() {
       ? theme.accent || "#2563eb"
       : isMmWartungInterface
         ? theme.accent || "#ff751f"
-        : isFahrwerkBInterface
-          ? "#c8102e"
-          : theme.accent;
+        : isHohenbadenInterface
+          ? "#e31e24"
+          : isAbgefahrenInterface
+            ? theme.accent || "#e11d48"
+            : isFahrwerkBInterface
+            ? "#c8102e"
+            : theme.accent;
   const widgetBackground = isTxbikesInterface
     ? "#f6f2ff"
     : isWilliInterface
@@ -728,9 +4306,13 @@ export default function WidgetPage() {
         ? "#f7fbff"
         : isMmWartungInterface
           ? "#fff7ed"
-          : isFahrwerkBInterface
-            ? "#0b0f16"
-            : theme.bg;
+          : isHohenbadenInterface
+            ? "#fff8f7"
+            : isAbgefahrenInterface
+              ? "#fff7fb"
+              : isFahrwerkBInterface
+              ? "#0b0f16"
+              : theme.bg;
   const textPrimary = isTxbikesInterface
     ? "#1f1636"
     : isWilliInterface
@@ -739,9 +4321,13 @@ export default function WidgetPage() {
         ? "#182536"
         : isMmWartungInterface
           ? "#2b1f18"
-          : isFahrwerkBInterface
-            ? "#111827"
-            : "#163126";
+          : isHohenbadenInterface
+            ? "#171717"
+            : isAbgefahrenInterface
+              ? "#24141b"
+              : isFahrwerkBInterface
+              ? "#111827"
+              : "#163126";
   const textSecondary = isTxbikesInterface
     ? "#6a5f8d"
     : isWilliInterface
@@ -750,9 +4336,13 @@ export default function WidgetPage() {
         ? "#566477"
         : isMmWartungInterface
           ? "#705a4a"
-          : isFahrwerkBInterface
-            ? "#4b5563"
-            : "#355f52";
+          : isHohenbadenInterface
+            ? "#6b5555"
+            : isAbgefahrenInterface
+              ? "#765463"
+              : isFahrwerkBInterface
+              ? "#4b5563"
+              : "#355f52";
   const accentRgb = useMemo(() => hexToRgb(widgetAccent), [widgetAccent]);
 
   const [open, setOpen] = useState(false);
@@ -780,6 +4370,10 @@ export default function WidgetPage() {
   const [fahrwerkChecklist, setFahrwerkChecklist] = useState<
     Record<string, boolean>
   >(DEFAULT_FAHRWERK_CHECKLIST);
+  const [abgefahrenPanel, setAbgefahrenPanel] =
+    useState<AbgefahrenPanel>("home");
+  const [hohenbadenPanel, setHohenbadenPanel] =
+    useState<HohenbadenPanel>("home");
 
   const isEmbedClosed = isEmbedded && !open;
   const listRef = useRef<HTMLDivElement | null>(null);
@@ -861,9 +4455,13 @@ export default function WidgetPage() {
   useEffect(() => {
     if (!mounted) return;
 
-    const firstMessage = isFahrwerkBInterface
-      ? "Hi — ich bin dein Fahrwerk B Führerschein-Cockpit. Wähle aus, wo du gerade stehst, und ich zeige dir den nächsten sinnvollen Schritt."
-      : isLinaInterface
+    const firstMessage = isHohenbadenInterface
+      ? "Hallo! Ich bin der digitale Führerschein-Assistent der Fahrschule Hohenbaden · in7Days. Ich helfe dir beim Intensivkurs, der THEO App, der Anmeldung und den Standorten Baden-Baden oder Bühl. Womit möchtest du starten?"
+      : isAbgefahrenInterface
+        ? "Moin! Ich bin der digitale Führerschein-Assistent der Fahrschule Abgefahren. Ich helfe dir bei Führerscheinklassen, Theorie, Anmeldung und den Standorten Schwerin oder Sternberg. Womit möchtest du starten?"
+        : isFahrwerkBInterface
+        ? "Hi — ich bin dein Fahrwerk B Führerschein-Cockpit. Wähle aus, wo du gerade stehst, und ich zeige dir den nächsten sinnvollen Schritt."
+        : isLinaInterface
         ? `Hi — ich bin ${displayAssistantName}. Wobei soll ich dir bei BTDesigns helfen?`
         : isMmWartungInterface
           ? `Hi — ich bin ${displayAssistantName}. Was möchtest du bei MM Wartung machen?`
@@ -885,6 +4483,8 @@ export default function WidgetPage() {
   }, [
     mounted,
     displayAssistantName,
+    isAbgefahrenInterface,
+    isHohenbadenInterface,
     isFahrwerkBInterface,
     isLinaInterface,
     isMmWartungInterface,
@@ -968,12 +4568,12 @@ export default function WidgetPage() {
             type: "bt-chat-resize",
             width: isBookingInterface
               ? 1080
-              : isTxbikesInterface || isFahrwerkBInterface
+              : isTxbikesInterface || isFahrwerkBInterface || isAbgefahrenInterface || isHohenbadenInterface
                 ? 980
                 : 500,
             height: isBookingInterface
               ? 920
-              : isTxbikesInterface || isFahrwerkBInterface
+              : isTxbikesInterface || isFahrwerkBInterface || isAbgefahrenInterface || isHohenbadenInterface
                 ? 880
                 : 760,
           }
@@ -991,6 +4591,8 @@ export default function WidgetPage() {
     isBookingInterface,
     isTxbikesInterface,
     isFahrwerkBInterface,
+    isAbgefahrenInterface,
+    isHohenbadenInterface,
     embedClosedSize,
   ]);
 
@@ -1001,9 +4603,13 @@ export default function WidgetPage() {
       {
         type: "bt-chat-ready",
         tenant: tenantId,
-        interface: isFahrwerkBInterface
-          ? "fahrwerk-b"
-          : isLinaInterface
+        interface: isHohenbadenInterface
+          ? "fahrschule-hohenbaden"
+          : isAbgefahrenInterface
+            ? "fahrschule-abgefahren"
+            : isFahrwerkBInterface
+            ? "fahrwerk-b"
+            : isLinaInterface
             ? "btai"
             : isTxbikesInterface
               ? "txbikes"
@@ -1049,6 +4655,8 @@ export default function WidgetPage() {
   }, [
     mounted,
     tenantId,
+    isAbgefahrenInterface,
+    isHohenbadenInterface,
     isFahrwerkBInterface,
     isLinaInterface,
     isTxbikesInterface,
@@ -1113,7 +4721,11 @@ export default function WidgetPage() {
     setLoading(true);
 
     try {
-      const activeTenantId = cfg.id;
+      const activeTenantId = isHohenbadenInterface
+        ? "fahrschule-hohenbaden"
+        : isAbgefahrenInterface
+          ? "fahrschule-abgefahren"
+          : cfg.id;
 
       const res = await fetch(
         `/api/chat?tenant=${encodeURIComponent(activeTenantId)}`,
@@ -1329,6 +4941,28 @@ export default function WidgetPage() {
     setFahrwerkSignupOpen(false);
     setShowBadge(false);
     scrollFahrwerkPanelIntoView();
+  }
+
+  function openAbgefahrenPanel(panel: AbgefahrenPanel) {
+    if (!isAbgefahrenInterface || loading || isVoiceActive) return;
+
+    setAbgefahrenPanel(panel);
+    setShowBadge(false);
+
+    window.requestAnimationFrame(() => {
+      listRef.current?.scrollTo({ top: 0, behavior: "smooth" });
+    });
+  }
+
+  function openHohenbadenPanel(panel: HohenbadenPanel) {
+    if (!isHohenbadenInterface || loading || isVoiceActive) return;
+
+    setHohenbadenPanel(panel);
+    setShowBadge(false);
+
+    window.requestAnimationFrame(() => {
+      listRef.current?.scrollTo({ top: 0, behavior: "smooth" });
+    });
   }
 
   function toggleFahrwerkChecklistItem(itemId: string) {
@@ -1612,9 +5246,13 @@ export default function WidgetPage() {
       ...current,
       {
         role: "user",
-        content: isFahrwerkBInterface
-          ? "📷 Bild zur Führerschein-Anfrage hinzugefügt"
-          : isLinaInterface
+        content: isHohenbadenInterface
+          ? "📷 Bild zur Anfrage bei Hohenbaden · in7Days hinzugefügt"
+          : isAbgefahrenInterface
+            ? "📷 Bild zur Anfrage bei Abgefahren hinzugefügt"
+            : isFahrwerkBInterface
+            ? "📷 Bild zur Führerschein-Anfrage hinzugefügt"
+            : isLinaInterface
             ? "📷 Beispiel oder Projektbild hinzugefügt"
             : isMmWartungInterface
               ? "📷 Foto zum Fahrzeug oder Ersatzteil hinzugefügt"
@@ -1628,9 +5266,13 @@ export default function WidgetPage() {
       },
       {
         role: "assistant",
-        content: isFahrwerkBInterface
-          ? "Danke, das Bild ist jetzt in der Anfrage sichtbar. Schreib kurz dazu, ob es um Anmeldung, Beratung oder Unterlagen geht."
-          : isLinaInterface
+        content: isHohenbadenInterface
+          ? "Danke, das Bild ist jetzt sichtbar. Schreib kurz dazu, ob es um einen Intensivkurs, die Anmeldung, eine Umschreibung oder deine Unterlagen geht."
+          : isAbgefahrenInterface
+            ? "Danke, das Bild ist jetzt sichtbar. Schreib kurz dazu, ob es um eine Führerscheinklasse, die Anmeldung oder eine andere Frage geht."
+            : isFahrwerkBInterface
+            ? "Danke, das Bild ist jetzt in der Anfrage sichtbar. Schreib kurz dazu, ob es um Anmeldung, Beratung oder Unterlagen geht."
+            : isLinaInterface
             ? "Danke, das Bild ist jetzt in der Anfrage sichtbar. Schreib kurz, worum es geht, dann ordne ich es besser ein."
             : isMmWartungInterface
               ? "Danke, das Foto ist jetzt in der Anfrage sichtbar. Schreib kurz dazu, ob es um ein Fahrzeugproblem, einen Termin oder ein Ersatzteil geht."
@@ -2514,12 +6156,18 @@ export default function WidgetPage() {
     setFahrwerkSignupOpen(false);
     setFahrwerkSignupForm(DEFAULT_FAHRWERK_SIGNUP_FORM);
     setFahrwerkPanel("dashboard");
+    setAbgefahrenPanel("home");
+    setHohenbadenPanel("home");
     setMsgs([
       {
         role: "assistant",
-        content: isFahrwerkBInterface
-          ? "Alles klar — wo stehst du gerade bei deinem Führerschein?"
-          : isLinaInterface
+        content: isHohenbadenInterface
+          ? "Alles klar — wobei soll ich dir rund um Intensivkurs, THEO App oder Führerschein bei Hohenbaden helfen?"
+          : isAbgefahrenInterface
+            ? "Alles klar — wobei soll ich dir rund um deinen Führerschein bei Abgefahren helfen?"
+            : isFahrwerkBInterface
+            ? "Alles klar — wo stehst du gerade bei deinem Führerschein?"
+            : isLinaInterface
             ? "Alles klar — wobei soll ich dir bei BTDesigns helfen?"
             : isMmWartungInterface
               ? "Alles klar — was möchtest du bei MM Wartung machen?"
@@ -2535,14 +6183,14 @@ export default function WidgetPage() {
 
   const panelW = isBookingInterface
     ? 1040
-    : isTxbikesInterface || isFahrwerkBInterface
+    : isTxbikesInterface || isFahrwerkBInterface || isAbgefahrenInterface || isHohenbadenInterface
       ? 940
       : isEmbedded
         ? 460
         : 500;
   const panelH = isBookingInterface
     ? 840
-    : isTxbikesInterface || isFahrwerkBInterface
+    : isTxbikesInterface || isFahrwerkBInterface || isAbgefahrenInterface || isHohenbadenInterface
       ? 820
       : isEmbedded
         ? 660
@@ -2552,7 +6200,14 @@ export default function WidgetPage() {
       ? 28
       : 38
     : 28;
-  const GLOBAL_LOGO_SRC = "/brand/btai-logo.png";
+  const GLOBAL_LOGO_SRC = isHohenbadenInterface
+    ? "https://fahrschule-hohenbaden.de/wp-content/uploads/2023/12/logo3-1.png"
+    : "/brand/btai-logo.png";
+  const headerPrimaryCta = isHohenbadenInterface
+    ? { label: "Website", url: "https://fahrschule-hohenbaden.de" }
+    : isAbgefahrenInterface
+      ? { label: "Website", url: "https://abgefahren-schwerin.de" }
+      : cfg.primaryCta;
 
   if (!mounted) return null;
 
@@ -2564,11 +6219,17 @@ export default function WidgetPage() {
     msgs.length === 1 &&
     msgs[0]?.role === "assistant" &&
     !loading &&
-    !isVoiceActive;
+    !isVoiceActive &&
+    (!isAbgefahrenInterface || abgefahrenPanel === "home") &&
+    (!isHohenbadenInterface || hohenbadenPanel === "home");
 
-  const startCards = isFahrwerkBInterface
-    ? FAHRWERK_B_START_CARDS
-    : isTxbikesInterface
+  const startCards = isHohenbadenInterface
+    ? HOHENBADEN_START_CARDS
+    : isAbgefahrenInterface
+      ? ABGEFAHREN_START_CARDS
+      : isFahrwerkBInterface
+      ? FAHRWERK_B_START_CARDS
+      : isTxbikesInterface
       ? TXBIKES_START_CARDS
       : isWilliInterface
         ? WILLI_START_CARDS
@@ -3285,6 +6946,31 @@ body::after {
   }
 }
 
+.bt-panel-scroll {
+  position: relative;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  overscroll-behavior-y: contain;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
+  scrollbar-width: thin;
+}
+
+.bt-panel-scroll::-webkit-scrollbar {
+  width: 8px;
+}
+
+.bt-panel-scroll::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: rgba(${accentRgb}, 0.28);
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+.bt-panel-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
 /* Mobile layout is class-driven as well as media-query-driven.
    This is important for embedded iframes that were previously opened at 980px. */
 .bt-mobile-viewport {
@@ -3575,9 +7261,13 @@ body::after {
               <div className={`bt-badge ${!showBadge ? "bt-badge-hide" : ""}`}>
                 <span className="bt-badge-dot" />
                 <span>
-                  {isFahrwerkBInterface
-                    ? "Führerschein starten?"
-                    : isTxbikesInterface
+                  {isHohenbadenInterface
+                    ? "Intensivkurs finden?"
+                    : isAbgefahrenInterface
+                      ? "Führerschein-Frage?"
+                      : isFahrwerkBInterface
+                      ? "Führerschein starten?"
+                      : isTxbikesInterface
                       ? "Fahrrad-Frage?"
                       : isWilliInterface
                         ? "Fragen?"
@@ -3619,6 +7309,10 @@ body::after {
                 WebkitBackdropFilter: "blur(34px) saturate(180%)",
                 boxShadow: `0 28px 110px rgba(17,12,31,0.22), 0 0 0 1px rgba(255,255,255,0.18) inset, 0 0 58px rgba(${accentRgb},0.13)`,
                 zIndex: 999999,
+                display: "flex",
+                flexDirection: "column",
+                overflow: "hidden",
+                isolation: "isolate",
               }}
             >
               <div
@@ -3684,10 +7378,13 @@ body::after {
               <div
                 style={{
                   position: "relative",
+                  flex: "1 1 auto",
+                  width: "100%",
                   height: "100%",
                   display: "flex",
                   flexDirection: "column",
                   minHeight: 0,
+                  overflow: "hidden",
                 }}
               >
                 <div
@@ -3780,9 +7477,13 @@ body::after {
                                 ? "Antwortet…"
                                 : loading
                                   ? "Tippt…"
-                                  : isFahrwerkBInterface
-                                    ? "In 1 Minute zum passenden Einstieg"
-                                    : "Online verfügbar"}
+                                  : isHohenbadenInterface
+                                    ? "Beta: in7Days Führerscheinbegleiter"
+                                    : isAbgefahrenInterface
+                                      ? "Beta: persönlicher Führerscheinbegleiter"
+                                      : isFahrwerkBInterface
+                                      ? "In 1 Minute zum passenden Einstieg"
+                                      : "Online verfügbar"}
                       </div>
                     </div>
                   </div>
@@ -3829,10 +7530,10 @@ body::after {
                       />
                     </div>
 
-                    {cfg.primaryCta?.url && (
+                    {headerPrimaryCta?.url && (
                       <a
                         className="bt-primary-cta"
-                        href={cfg.primaryCta.url}
+                        href={headerPrimaryCta.url}
                         target="_blank"
                         rel="noreferrer"
                         style={{
@@ -3848,9 +7549,9 @@ body::after {
                           whiteSpace: "nowrap",
                           boxShadow: "inset 0 1px 0 rgba(255,255,255,0.12)",
                         }}
-                        title={cfg.primaryCta.label}
+                        title={headerPrimaryCta.label}
                       >
-                        {cfg.primaryCta.label}
+                        {headerPrimaryCta.label}
                       </a>
                     )}
 
@@ -3880,9 +7581,16 @@ body::after {
                   ref={listRef}
                   className="bt-panel-scroll"
                   style={{
-                    flex: "1 1 auto",
+                    flex: "1 1 0%",
+                    height: 0,
                     minHeight: 0,
-                    overflowY: "auto",
+                    maxHeight: "100%",
+                    overflowY: "scroll",
+                    overflowX: "hidden",
+                    WebkitOverflowScrolling: "touch",
+                    overscrollBehaviorY: "contain",
+                    touchAction: "pan-y",
+                    scrollbarGutter: "stable",
                     padding: isMobileViewport
                       ? 12
                       : isEnhancedInterface
@@ -3931,9 +7639,13 @@ body::after {
                             marginBottom: 6,
                           }}
                         >
-                          {isFahrwerkBInterface
-                            ? "Dein Führerschein-Cockpit"
-                            : "Was möchtest du machen?"}
+                          {isHohenbadenInterface
+                            ? "Schneller zum Führerschein. Persönlich begleitet."
+                            : isAbgefahrenInterface
+                              ? "Dein Führerschein. Ein persönliches Cockpit."
+                              : isFahrwerkBInterface
+                              ? "Dein Führerschein-Cockpit"
+                              : "Was möchtest du machen?"}
                         </div>
                         <div
                           className="bt-start-description"
@@ -3947,9 +7659,13 @@ body::after {
                             color: textSecondary,
                           }}
                         >
-                          {isFahrwerkBInterface
-                            ? "Wähle aus, wo du gerade stehst. Das Interface zeigt dir den nächsten Schritt, prüft Unterlagen und bereitet Anfragen sauber vor."
-                            : isLinaInterface
+                          {isHohenbadenInterface
+                            ? "Verbinde dich als Fahrschüler, finde den nächsten Intensivkurs, verfolge deinen THEO-Lernstand und plane deine Praxis. Diese Beta zeigt, wie in7Days die komplette Ausbildung digital an einem Ort bündeln könnte."
+                            : isAbgefahrenInterface
+                              ? "Verbinde dich als Fahrschüler, buche den nächsten passenden Kurs oder öffne deinen persönlichen Begleiter. Diese Beta zeigt, wie die komplette Ausbildung später an einem Ort zusammenlaufen kann."
+                              : isFahrwerkBInterface
+                              ? "Wähle aus, wo du gerade stehst. Das Interface zeigt dir den nächsten Schritt, prüft Unterlagen und bereitet Anfragen sauber vor."
+                              : isLinaInterface
                               ? `Wähle einen Einstieg aus. Danach führt dich ${displayAssistantName} gezielt zur passenden Lösung.`
                               : isMmWartungInterface
                                 ? `Wähle aus, worum es geht. Danach nimmt ${displayAssistantName} dein Anliegen für Moritz sauber auf.`
@@ -3960,7 +7676,7 @@ body::after {
                                     : `Wähle einen Einstieg aus. Danach führt dich ${displayAssistantName} gezielt weiter.`}
                         </div>
 
-                        {isFahrwerkBInterface && (
+                        {(isFahrwerkBInterface || isAbgefahrenInterface || isHohenbadenInterface) && (
                           <div
                             className="bt-fahrwerk-steps"
                             style={{
@@ -3972,12 +7688,27 @@ body::after {
                               marginTop: 18,
                             }}
                           >
-                            {[
-                              "1 Orientierung",
-                              "2 Unterlagen",
-                              "3 Theorie/Praxis",
-                              "4 Anfrage",
-                            ].map((step) => (
+                            {(isHohenbadenInterface
+                              ? [
+                                  "1 Verbinden",
+                                  "2 Intensivkurs",
+                                  "3 THEO & Praxis",
+                                  "4 Persönlich begleiten",
+                                ]
+                              : isAbgefahrenInterface
+                                ? [
+                                    "1 Verbinden",
+                                    "2 Kurs buchen",
+                                    "3 Fortschritt sehen",
+                                    "4 Persönlich begleiten",
+                                  ]
+                                : [
+                                  "1 Orientierung",
+                                  "2 Unterlagen",
+                                  "3 Theorie/Praxis",
+                                  "4 Anfrage",
+                                ]
+                            ).map((step) => (
                               <div
                                 key={step}
                                 style={{
@@ -4057,6 +7788,22 @@ body::after {
                                 return;
                               }
 
+                              if (
+                                card.action === "abgefahrenPanel" &&
+                                card.abgefahrenPanel
+                              ) {
+                                openAbgefahrenPanel(card.abgefahrenPanel);
+                                return;
+                              }
+
+                              if (
+                                card.action === "hohenbadenPanel" &&
+                                card.hohenbadenPanel
+                              ) {
+                                openHohenbadenPanel(card.hohenbadenPanel);
+                                return;
+                              }
+
                               if (card.message) {
                                 void sendText(card.message);
                               }
@@ -4109,6 +7856,32 @@ body::after {
                         ))}
                       </div>
                     </div>
+                  )}
+
+                  {isAbgefahrenInterface && abgefahrenPanel !== "home" && (
+                    <AbgefahrenFutureDemo
+                      panel={abgefahrenPanel}
+                      onPanelChange={openAbgefahrenPanel}
+                      accent={widgetAccent}
+                      accentRgb={accentRgb}
+                      textPrimary={textPrimary}
+                      textSecondary={textSecondary}
+                      isMobile={isMobileViewport}
+                      onAsk={(message) => void sendText(message)}
+                    />
+                  )}
+
+                  {isHohenbadenInterface && hohenbadenPanel !== "home" && (
+                    <HohenbadenFutureDemo
+                      panel={hohenbadenPanel}
+                      onPanelChange={openHohenbadenPanel}
+                      accent={widgetAccent}
+                      accentRgb={accentRgb}
+                      textPrimary={textPrimary}
+                      textSecondary={textSecondary}
+                      isMobile={isMobileViewport}
+                      onAsk={(message) => void sendText(message)}
+                    />
                   )}
 
                   {isFahrwerkBInterface &&
@@ -5660,7 +9433,8 @@ body::after {
                             color: isUser ? "#ffffff" : textPrimary,
                           }}
                         >
-                          {isFahrwerkBInterface && !isUser
+                          {(isFahrwerkBInterface || isAbgefahrenInterface || isHohenbadenInterface) &&
+                          !isUser
                             ? ensureFahrwerkEmoji(m.content)
                             : m.content}
 
@@ -5669,9 +9443,13 @@ body::after {
                               <img
                                 src={m.imagePreviewUrl}
                                 alt={
-                                  isFahrwerkBInterface
-                                    ? "Hochgeladenes Bild zur Führerschein-Anfrage"
-                                    : isLinaInterface
+                                  isHohenbadenInterface
+                                    ? "Hochgeladenes Bild zur Anfrage bei Hohenbaden · in7Days"
+                                    : isAbgefahrenInterface
+                                      ? "Hochgeladenes Bild zur Anfrage bei Abgefahren"
+                                      : isFahrwerkBInterface
+                                      ? "Hochgeladenes Bild zur Führerschein-Anfrage"
+                                      : isLinaInterface
                                       ? "Hochgeladenes Beispielbild"
                                       : isMmWartungInterface
                                         ? "Hochgeladenes Foto zum Fahrzeug oder Ersatzteil"
@@ -5808,9 +9586,13 @@ body::after {
                     placeholder={
                       isVoiceActive
                         ? "Sprachmodus aktiv…"
-                        : isFahrwerkBInterface
-                          ? "Schreib z. B. B197, BF17 oder Beratung…"
-                          : isLinaInterface
+                        : isHohenbadenInterface
+                          ? "Schreib z. B. Intensivkurs, THEO App oder Umschreibung…"
+                          : isAbgefahrenInterface
+                            ? "Schreib z. B. B197, 7-Tage-Theorie oder Anmeldung…"
+                            : isFahrwerkBInterface
+                            ? "Schreib z. B. B197, BF17 oder Beratung…"
+                            : isLinaInterface
                             ? "Schreib kurz, was du brauchst…"
                             : isMmWartungInterface
                               ? "Schreib dein Anliegen…"
@@ -5853,7 +9635,7 @@ body::after {
                         : "rgba(255,255,255,0.26)",
                       color: input.trim()
                         ? "#ffffff"
-                        : isFahrwerkBInterface
+                        : isFahrwerkBInterface || isAbgefahrenInterface || isHohenbadenInterface
                           ? "rgba(127,29,29,0.62)"
                           : "#5c7a6d",
                       cursor:
