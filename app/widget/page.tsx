@@ -1,4 +1,5 @@
 // app/widget/page.tsx
+// Scroll-Fix v3: native scrolling + non-shrinking beta panels
 "use client";
 
 import {
@@ -890,7 +891,10 @@ function AbgefahrenFutureDemo({
         gap: 16,
         color: textPrimary,
         position: "relative",
-        overflow: "hidden",
+        flex: "0 0 auto",
+        flexShrink: 0,
+        minHeight: "min-content",
+        overflow: "visible",
       }}
     >
       <div
@@ -2605,7 +2609,10 @@ function HohenbadenFutureDemo({
         gap: 16,
         color: textPrimary,
         position: "relative",
-        overflow: "hidden",
+        flex: "0 0 auto",
+        flexShrink: 0,
+        minHeight: "min-content",
+        overflow: "visible",
       }}
     >
       <div
@@ -6903,7 +6910,7 @@ body::after {
   overflow: hidden;
   animation: bt-panel-fade-in 260ms ease-out both;
   isolation: isolate;
-  contain: layout paint;
+  contain: none;
 }
 
 .bt-panel-layer {
@@ -6958,12 +6965,25 @@ body::after {
 
 .bt-panel-scroll {
   position: relative;
-  overflow-y: auto !important;
+  min-height: 0 !important;
+  height: 100% !important;
+  overflow-y: scroll !important;
   overflow-x: hidden !important;
   overscroll-behavior-y: contain;
   -webkit-overflow-scrolling: touch;
   touch-action: pan-y;
   scrollbar-width: thin;
+  scroll-behavior: smooth;
+  pointer-events: auto !important;
+}
+
+/* Important: this element is a column flex container. Without this rule,
+   large beta views shrink to the available height and their own
+   overflow:hidden clips the lower content. Then there is nothing to scroll. */
+.bt-panel-scroll > * {
+  flex: 0 0 auto !important;
+  flex-shrink: 0 !important;
+  min-height: min-content;
 }
 
 .bt-panel-scroll::-webkit-scrollbar {
@@ -7389,8 +7409,8 @@ body::after {
                   flex: "1 1 auto",
                   width: "100%",
                   height: "100%",
-                  display: "flex",
-                  flexDirection: "column",
+                  display: "grid",
+                  gridTemplateRows: "auto minmax(0, 1fr) auto",
                   minHeight: 0,
                   overflow: "hidden",
                 }}
@@ -7588,25 +7608,15 @@ body::after {
                 <div
                   ref={listRef}
                   className="bt-panel-scroll"
-                  onWheelCapture={(event) => {
-                    const scrollArea = event.currentTarget;
-
-                    if (scrollArea.scrollHeight <= scrollArea.clientHeight) return;
-
-                    const multiplier = event.deltaMode === 1 ? 18 : event.deltaMode === 2 ? scrollArea.clientHeight : 1;
-                    scrollArea.scrollTop += event.deltaY * multiplier;
-                    event.preventDefault();
-                    event.stopPropagation();
-                  }}
                   style={{
                     position: "relative",
                     zIndex: 3,
-                    flex: "1 1 auto",
+                    flex: "1 1 0%",
                     flexBasis: 0,
-                    height: "auto",
+                    height: "100%",
                     minHeight: 0,
-                    maxHeight: "none",
-                    overflowY: "auto",
+                    maxHeight: "100%",
+                    overflowY: "scroll",
                     overflowX: "hidden",
                     WebkitOverflowScrolling: "touch",
                     overscrollBehaviorY: "contain",
