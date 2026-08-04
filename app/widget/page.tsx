@@ -6200,9 +6200,8 @@ export default function WidgetPage() {
       ? 28
       : 38
     : 28;
-  const GLOBAL_LOGO_SRC = isHohenbadenInterface
-    ? "https://fahrschule-hohenbaden.de/wp-content/uploads/2023/12/logo3-1.png"
-    : "/brand/btai-logo.png";
+  // Das BTDesigns-/BTAI-Logo wird in allen Interfaces einheitlich angezeigt.
+  const GLOBAL_LOGO_SRC = "/brand/btai-logo.png";
   const headerPrimaryCta = isHohenbadenInterface
     ? { label: "Website", url: "https://fahrschule-hohenbaden.de" }
     : isAbgefahrenInterface
@@ -6374,7 +6373,15 @@ export default function WidgetPage() {
         pointerEvents: isEmbedClosed ? "none" : "auto",
       }}
     >
-      <style>{`html, body {background: transparent !important;margin: 0 !important;padding: 0 !important;overflow: visible !important;}
+      <style>{`html, body {
+  width: 100% !important;
+  height: 100% !important;
+  background: transparent !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+  overscroll-behavior: none;
+}
 
 body::before,
 body::after {
@@ -6811,6 +6818,11 @@ body::after {
   100% { opacity: 1; transform: translate3d(0, 0, 0) scale(1); filter: blur(0); }
 }
 
+@keyframes bt-panel-fade-in {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
 @keyframes bt-panel-pop-in {
   0% { opacity: 0; transform: translate3d(28px, 34px, 0) scale(0.82); filter: blur(14px); }
   52% { opacity: 1; transform: translate3d(-4px, -6px, 0) scale(1.025); filter: blur(0); }
@@ -6889,11 +6901,9 @@ body::after {
 .bt-panel {
   border-radius: ${panelRadius}px;
   overflow: hidden;
-  transform: translateZ(0);
-  transform-origin: right bottom;
-  animation: bt-panel-pop-in 520ms cubic-bezier(.16,1,.3,1) both;
-  -webkit-mask-image: -webkit-radial-gradient(white, black);
+  animation: bt-panel-fade-in 260ms ease-out both;
   isolation: isolate;
+  contain: layout paint;
 }
 
 .bt-panel-layer {
@@ -7292,12 +7302,10 @@ body::after {
                 maxWidth: isMobileViewport
                   ? "none"
                   : "calc(100vw - 28px)",
-                height: isMobileViewport ? "auto" : panelH,
-                maxHeight: isMobileViewport
-                  ? "none"
-                  : isEnhancedInterface
-                    ? "calc(100vh - 96px)"
-                    : "calc(100vh - 122px)",
+                height: isMobileViewport
+                  ? "auto"
+                  : `min(${panelH}px, calc(100dvh - ${panelOffsetBottom + 12}px))`,
+                maxHeight: "none",
                 border: "1px solid rgba(255,255,255,0.46)",
                 background: `
           radial-gradient(980px 520px at 18% -10%, ${widgetAccent}26 0%, transparent 62%),
@@ -7580,16 +7588,29 @@ body::after {
                 <div
                   ref={listRef}
                   className="bt-panel-scroll"
+                  onWheelCapture={(event) => {
+                    const scrollArea = event.currentTarget;
+
+                    if (scrollArea.scrollHeight <= scrollArea.clientHeight) return;
+
+                    const multiplier = event.deltaMode === 1 ? 18 : event.deltaMode === 2 ? scrollArea.clientHeight : 1;
+                    scrollArea.scrollTop += event.deltaY * multiplier;
+                    event.preventDefault();
+                    event.stopPropagation();
+                  }}
                   style={{
-                    flex: "1 1 0%",
-                    height: 0,
+                    position: "relative",
+                    zIndex: 3,
+                    flex: "1 1 auto",
+                    flexBasis: 0,
+                    height: "auto",
                     minHeight: 0,
-                    maxHeight: "100%",
-                    overflowY: "scroll",
+                    maxHeight: "none",
+                    overflowY: "auto",
                     overflowX: "hidden",
                     WebkitOverflowScrolling: "touch",
                     overscrollBehaviorY: "contain",
-                    touchAction: "pan-y",
+                    touchAction: "pan-y pinch-zoom",
                     scrollbarGutter: "stable",
                     padding: isMobileViewport
                       ? 12
