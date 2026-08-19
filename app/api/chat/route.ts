@@ -16,6 +16,8 @@ const allowedOrigins = [
   "https://www.btdesigns.de",
   "https://mm-wartung.de",
   "https://www.mm-wartung.de",
+  "https://fahrwerk-b.de",
+  "https://www.fahrwerk-b.de",
   "https://schettlers-chatbot-lca3.vercel.app",
   "http://localhost:3000",
 ];
@@ -186,10 +188,33 @@ async function getCachedTenantKnowledge(
   return value;
 }
 
+const FAHRWERK_TENANT_ALIASES = [
+  "fahrwerk-b",
+  "fahrwerkb",
+  "fahrwerk_b",
+  "fahrwerk-b.de",
+  "fahrwerkbde",
+  "fahrwerk",
+] as const;
+
 function isFahrwerkTenant(tenantId: string) {
-  return ["fahrwerk-b", "fahrwerkb", "fahrwerk"].includes(
-    tenantId.toLowerCase(),
+  return FAHRWERK_TENANT_ALIASES.includes(
+    tenantId.trim().toLowerCase() as (typeof FAHRWERK_TENANT_ALIASES)[number],
   );
+}
+
+function normalizeTenantParam(tenantId: string) {
+  const normalized = tenantId.trim().toLowerCase();
+
+  if (
+    FAHRWERK_TENANT_ALIASES.includes(
+      normalized as (typeof FAHRWERK_TENANT_ALIASES)[number],
+    )
+  ) {
+    return "fahrwerk-b";
+  }
+
+  return tenantId.trim();
 }
 
 
@@ -391,7 +416,8 @@ export async function POST(req: NextRequest) {
       tenantFromReferer(req) ||
       "demo";
 
-    const tenant = getTenant(tenantParam);
+    const normalizedTenantParam = normalizeTenantParam(tenantParam);
+    const tenant = getTenant(normalizedTenantParam);
     const sessionId = body.sessionId || crypto.randomUUID();
 
     const calendarBookingEnabled = ["btdesigns", "demo", "lina", "mm-wartung"].includes(
@@ -527,7 +553,9 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    const knowledgeText = await getCachedTenantKnowledge(tenant.id);
+    const knowledgeText = isFahrwerkTenant(tenant.id)
+      ? await loadTenantKnowledge(tenant.id)
+      : await getCachedTenantKnowledge(tenant.id);
 
     const bookingPromptAddOn = calendarBookingEnabled
       ? `
@@ -575,6 +603,10 @@ Feste Identität:
 - Wenn du gefragt wirst, für wen du arbeitest, antworte eindeutig: Fahrwerk B.
 - Verwende im Text- und Sprachmodus immer dasselbe Fahrwerk-B-Wissen und dieselben Regeln.
 - Erfinde keine anderen Fahrschulen, Standorte, Preise, Öffnungszeiten oder Leistungen.
+- Wenn ein Preis im Fahrwerk-B-Wissen hinterlegt ist, darfst und sollst du diesen konkreten Preis nennen.
+- Sage niemals pauschal, dass du keine Preise nennen kannst, wenn für die Frage passende Preise im Fahrwerk-B-Wissen vorhanden sind.
+- Wenn nach dem Gesamtpreis eines Führerscheins gefragt wird, erfinde keine garantierte Gesamtsumme. Erkläre stattdessen, dass die Gesamtkosten unter anderem von der benötigten Zahl der Fahrstunden abhängen, und nenne die bekannten Einzelpreise aus dem Fahrwerk-B-Wissen.
+- Bei Fragen zu Klasse BE oder Anhängerführerschein verwende die dafür hinterlegten BE-Preise aus dem Fahrwerk-B-Wissen.
 - Wenn eine Information nicht im Fahrwerk-B-Wissen steht, sage das offen und verweise auf Fahrwerk B.
 `
       : "";
