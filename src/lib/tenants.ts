@@ -6,7 +6,8 @@ export type TenantId =
   | "willi"
   | "mm-wartung"
   | "txbikes"
-  | "txbikesV2";
+  | "txbikesV2"
+  | "fahrwerk-b";
 
 export type ThemeConfig = {
   accent: string;
@@ -437,6 +438,51 @@ export const TENANTS: Record<TenantId, TenantConfig> = {
       launcherIcon: "/favicon.ico",
     },
   },
+  "fahrwerk-b": {
+    id: "fahrwerk-b",
+    brandName: "Fahrwerk B",
+    assistantName: "Führerschein-Cockpit",
+    language: "de",
+
+    knowledge: {
+      files: ["knowledge.md"],
+    },
+
+    websiteUrl: "https://www.fahrwerk-b.de",
+
+    primaryCta: {
+      label: "Online anmelden",
+      url: "https://www.fahrwerk-b.de",
+    },
+
+    fallbackContact: {
+      label: "Fahrwerk B",
+      value: "https://www.fahrwerk-b.de",
+    },
+
+    companyInfo: {
+      address: "Schwerin",
+      openingHours: "Siehe Fahrwerk-B Website",
+    },
+
+    rules: {
+      noMedicalClaims: true,
+      noInventingPrices: false,
+      noGuarantees: true,
+    },
+
+    theme: {
+      accent: "#c8102e",
+      bg: "#0b0f16",
+      glass: "rgba(200,16,46,0.12)",
+      text: "#ffffff",
+    },
+
+    assets: {
+      launcherIcon: "/favicon.ico",
+    },
+  },
+
     txbikesV2: {
     id: "txbikesV2",
     brandName: "TXBIKESV2",
