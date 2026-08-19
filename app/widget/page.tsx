@@ -4732,7 +4732,9 @@ export default function WidgetPage() {
         ? "fahrschule-hohenbaden"
         : isAbgefahrenInterface
           ? "fahrschule-abgefahren"
-          : cfg.id;
+          : isFahrwerkBInterface
+            ? "fahrwerk-b"
+            : cfg.id;
 
       const res = await fetch(
         `/api/chat?tenant=${encodeURIComponent(activeTenantId)}`,
