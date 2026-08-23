@@ -1,5 +1,5 @@
 // app/widget/page.tsx
-// Scroll-Fix v3: native scrolling + non-shrinking beta panels
+// Scroll-Fix v7 + Liquid Glass Voice Surface Actions
 "use client";
 
 import {
@@ -13,6 +13,10 @@ import {
 } from "react";
 import { getTenant } from "@/lib/tenants";
 import { MessageCircle } from "lucide-react";
+import {
+  RealtimeVoiceClient,
+  type RealtimeVoiceStatus,
+} from "@/lib/realtimeVoice";
 
 type Msg = {
   role: "user" | "assistant";
@@ -23,7 +27,9 @@ type Msg = {
 
 type VoicePhase =
   | "idle"
+  | "connecting"
   | "listening"
+  | "user-speaking"
   | "transcribing"
   | "thinking"
   | "speaking"
@@ -31,6 +37,16 @@ type VoicePhase =
   | "error";
 
 type SendTextOptions = { fromVoice?: boolean; signal?: AbortSignal };
+
+type VoiceUiAction = {
+  id: string;
+  kind: "link";
+  eyebrow: string;
+  title: string;
+  description: string;
+  url: string;
+  cta: string;
+};
 
 type StartCard = {
   icon: string;
@@ -606,6 +622,12 @@ const FAHRWERK_B_START_CARDS: StartCard[] = [
     description: "Stand auswählen und den nächsten sinnvollen Schritt sehen",
     action: "fahrwerkPanel",
     fahrwerkPanel: "student",
+  },
+  {
+    icon: "🎙️",
+    title: "Einfach sprechen",
+    description: "Frage stellen, unterbrechen und direkt weiterreden",
+    action: "voice",
   },
 ];
 
@@ -4359,10 +4381,14 @@ export default function WidgetPage() {
   const [attention, setAttention] = useState(false);
   const [showBadge, setShowBadge] = useState(true);
   const [voicePhase, setVoicePhase] = useState<VoicePhase>("idle");
+  const [voiceVisualVisible, setVoiceVisualVisible] = useState(false);
+  const [voiceVisualLeaving, setVoiceVisualLeaving] = useState(false);
+  const [voiceOrigin, setVoiceOrigin] = useState({ x: 0.5, y: 0.88 });
+  const [voiceUiAction, setVoiceUiAction] = useState<VoiceUiAction | null>(null);
   const [voiceSupported, setVoiceSupported] = useState(false);
-  const [voiceTranscript, setVoiceTranscript] = useState("");
-  const [voiceError, setVoiceError] = useState("");
-  const isListening = voicePhase === "listening";
+  const [, setVoiceTranscript] = useState("");
+  const [, setVoiceError] = useState("");
+  const [, setRealtimeStatus] = useState<RealtimeVoiceStatus>("idle");
   const isVoiceActive = voicePhase !== "idle";
   const [bookingOpen, setBookingOpen] = useState(false);
   const [bookingSubmitting, setBookingSubmitting] = useState(false);
@@ -4386,6 +4412,15 @@ export default function WidgetPage() {
   const listRef = useRef<HTMLDivElement | null>(null);
   const fahrwerkPanelRef = useRef<HTMLDivElement | null>(null);
   const photoInputRef = useRef<HTMLInputElement | null>(null);
+  const realtimeVoiceRef = useRef<RealtimeVoiceClient | null>(null);
+  const realtimeVoiceConnectingRef = useRef(false);
+  const voiceStageRef = useRef<HTMLDivElement | null>(null);
+  const voiceEdgeRef = useRef<HTMLDivElement | null>(null);
+  const voiceVisualExitTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
+    null,
+  );
+  const voiceEnergySmoothedRef = useRef(0.08);
+  const voiceUserSpeakingRef = useRef(false);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const mediaStreamRef = useRef<MediaStream | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
@@ -4410,7 +4445,6 @@ export default function WidgetPage() {
   const voiceFillerStopRef = useRef(false);
   const voiceAnswerReadyRef = useRef(false);
   const lastVoiceFillerRef = useRef("");
-  const voiceStageRef = useRef<HTMLDivElement | null>(null);
   const voiceConversationActiveRef = useRef(false);
   const voiceRestartTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
     null,
@@ -4508,7 +4542,35 @@ export default function WidgetPage() {
   }, [loading]);
 
   useEffect(() => {
+    if (voiceVisualExitTimeoutRef.current) {
+      clearTimeout(voiceVisualExitTimeoutRef.current);
+      voiceVisualExitTimeoutRef.current = null;
+    }
+
+    if (isVoiceActive) {
+      setVoiceVisualLeaving(false);
+      setVoiceVisualVisible(true);
+      return;
+    }
+
+    if (!voiceVisualVisible) return;
+
+    setVoiceVisualLeaving(true);
+    voiceVisualExitTimeoutRef.current = setTimeout(() => {
+      voiceVisualExitTimeoutRef.current = null;
+      setVoiceVisualVisible(false);
+      setVoiceVisualLeaving(false);
+    }, 940);
+  }, [isVoiceActive, voiceVisualVisible]);
+
+  useEffect(() => {
     return () => {
+      if (voiceVisualExitTimeoutRef.current) {
+        clearTimeout(voiceVisualExitTimeoutRef.current);
+        voiceVisualExitTimeoutRef.current = null;
+      }
+      realtimeVoiceRef.current?.disconnect(false);
+      realtimeVoiceRef.current = null;
       releaseVoiceResources();
     };
   }, []);
@@ -4671,6 +4733,71 @@ export default function WidgetPage() {
     isMmWartungInterface,
   ]);
 
+  function showFahrwerkSignupLink() {
+    setVoiceUiAction({
+      id: "fahrwerk-live-signup",
+      kind: "link",
+      eyebrow: "Fahrwerk B",
+      title: "Online-Anmeldung",
+      description: "Direkt zur offiziellen Anmeldung über Fahrschule.live.",
+      url: FAHRWERK_LIVE_SIGNUP_URL,
+      cta: "Anmeldung öffnen",
+    });
+  }
+
+  function applyVoiceSurfaceIntent(rawText: string) {
+    if (!isFahrwerkBInterface) return;
+
+    const normalized = rawText
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/[^a-z0-9äöüß\s-]/gi, " ")
+      .replace(/\s+/g, " ")
+      .trim();
+
+    if (!normalized) return;
+
+    const wantsSignup =
+      /\b(anmeld|anmeldung|anmelden|registrier|registrieren|einschreib|starten)\w*/i.test(
+        normalized,
+      ) &&
+      /\b(link|online|seite|website|direkt|wo|wie|anmeld|registrier|starten)\w*/i.test(
+        normalized,
+      );
+
+    if (wantsSignup) {
+      // Die aktuelle Maske bleibt bewusst bestehen. Nur die passende Aktion
+      // wird als Liquid-Glass-Ergebnis eingeblendet.
+      showFahrwerkSignupLink();
+      return;
+    }
+
+    if (/\b(unterlagen|dokument|sehtest|erste hilfe|passbild|antrag)\w*/i.test(normalized)) {
+      setFahrwerkPanel("documents");
+      return;
+    }
+
+    if (/\b(theorie|theorieprufung|lernen|prufungsfragen)\w*/i.test(normalized)) {
+      setFahrwerkPanel("theory");
+      return;
+    }
+
+    if (/\b(praxis|fahrstunde|sonderfahrt|praktische prufung)\w*/i.test(normalized)) {
+      setFahrwerkPanel("practice");
+      return;
+    }
+
+    if (/\b(prufung|prufungsvorbereitung|durchgefallen)\w*/i.test(normalized)) {
+      setFahrwerkPanel("exam");
+      return;
+    }
+
+    if (/\b(fahrschuler|mein stand|fortschritt|bin schon angemeldet)\b/i.test(normalized)) {
+      setFahrwerkPanel("student");
+    }
+  }
+
   async function sendText(
     rawText: string,
     options: SendTextOptions = {},
@@ -4678,7 +4805,12 @@ export default function WidgetPage() {
     const text = rawText.trim();
     if (!text || loadingRef.current) return null;
 
+    if (options.fromVoice) {
+      applyVoiceSurfaceIntent(text);
+    }
+
     const wantsBooking =
+      !options.fromVoice &&
       isBookingInterface &&
       /\b(termin|werkstatttermin|beratungsgespräch|erstgespräch|gespräch|meeting|call|buchen|anrufen|vereinbaren|rückruf|reparatur|inspektion|wartung|service)\b/i.test(
         text,
@@ -4688,7 +4820,7 @@ export default function WidgetPage() {
       setBookingOpen(true);
     }
 
-    if (isFahrwerkBInterface) {
+    if (isFahrwerkBInterface && !options.fromVoice) {
       if (
         /\b(unterlagen|sehtest|erste hilfe|passbild|antrag|dokumente)\b/i.test(
           text,
@@ -5296,16 +5428,62 @@ export default function WidgetPage() {
 
   function setVoiceEnergy(level: number) {
     const safeLevel = Math.max(0, Math.min(1, level));
-    const stage = voiceStageRef.current;
+    const previous = voiceEnergySmoothedRef.current;
 
-    if (!stage) return;
+    // Die Sprachflaeche reagiert sichtbar auf Lautstaerke, bleibt dabei aber weich.
+    // Nach oben folgt sie der Stimme schneller, danach gleitet sie ruhig zurueck.
+    const smoothing = safeLevel > previous ? 0.26 : 0.10;
+    const smoothed = previous + (safeLevel - previous) * smoothing;
 
-    stage.style.setProperty("--voice-scale", (1 + safeLevel * 0.34).toFixed(3));
-    stage.style.setProperty("--voice-energy", safeLevel.toFixed(3));
-    stage.style.setProperty(
-      "--voice-glow",
-      (0.24 + safeLevel * 0.68).toFixed(3),
+    voiceEnergySmoothedRef.current = smoothed;
+
+    const targets = [voiceStageRef.current, voiceEdgeRef.current].filter(
+      (target): target is HTMLDivElement => Boolean(target),
     );
+
+    const frameAlpha = 0.86 + smoothed * 0.14;
+    const washAlpha = 0.16 + smoothed * 0.18;
+    const haloAlpha = 0.38 + smoothed * 0.38;
+    const anchorScale = 1 + smoothed * 0.34;
+    const glowAlpha = 0.24 + smoothed * 0.34;
+    const glowSize = 48 + smoothed * 52;
+    const meterScale = 0.94 + smoothed * 0.34;
+    const edgeWidth = 6.5 + smoothed * 11.5;
+    const frameWidth = 3 + smoothed * 4.5;
+    const edgeBlur = 4.2 + smoothed * 4.8;
+    const edgeAlpha = 0.78 + smoothed * 0.22;
+
+    for (const target of targets) {
+      target.style.setProperty("--voice-energy", smoothed.toFixed(3));
+      target.style.setProperty("--voice-frame-alpha", frameAlpha.toFixed(3));
+      target.style.setProperty("--voice-wash-alpha", washAlpha.toFixed(3));
+      target.style.setProperty("--voice-halo-alpha", haloAlpha.toFixed(3));
+      target.style.setProperty("--voice-anchor-scale", anchorScale.toFixed(3));
+      target.style.setProperty("--voice-glow-alpha", glowAlpha.toFixed(3));
+      target.style.setProperty("--voice-glow-size", `${glowSize.toFixed(1)}px`);
+      target.style.setProperty("--voice-meter-scale", meterScale.toFixed(3));
+      target.style.setProperty("--voice-edge-width", `${edgeWidth.toFixed(1)}px`);
+      target.style.setProperty("--voice-frame-width", `${frameWidth.toFixed(1)}px`);
+      target.style.setProperty("--voice-edge-blur", `${edgeBlur.toFixed(1)}px`);
+      target.style.setProperty("--voice-edge-alpha", edgeAlpha.toFixed(3));
+    }
+  }
+
+  function rememberVoiceOrigin(source?: HTMLElement | null) {
+    const panelRect = voiceStageRef.current?.getBoundingClientRect();
+    const sourceRect = source?.getBoundingClientRect();
+
+    if (!panelRect || !sourceRect || panelRect.width <= 0 || panelRect.height <= 0) {
+      setVoiceOrigin({ x: 0.5, y: 0.88 });
+      return;
+    }
+
+    const sourceCenterX = sourceRect.left + sourceRect.width / 2;
+    const sourceCenterY = sourceRect.top + sourceRect.height / 2;
+    const x = Math.max(0.03, Math.min(0.97, (sourceCenterX - panelRect.left) / panelRect.width));
+    const y = Math.max(0.03, Math.min(0.97, (sourceCenterY - panelRect.top) / panelRect.height));
+
+    setVoiceOrigin({ x, y });
   }
 
   function stopVoiceAnimation() {
@@ -5315,6 +5493,7 @@ export default function WidgetPage() {
     }
 
     analyserRef.current = null;
+    voiceUserSpeakingRef.current = false;
     setVoiceEnergy(0.08);
   }
 
@@ -5718,7 +5897,17 @@ export default function WidgetPage() {
       if (rms > 0.03) {
         voiceDetectedRef.current = true;
         silenceStartedAtRef.current = null;
+
+        if (!voiceUserSpeakingRef.current) {
+          voiceUserSpeakingRef.current = true;
+          setVoicePhase("user-speaking");
+        }
       } else if (voiceDetectedRef.current && elapsed > 550) {
+        if (voiceUserSpeakingRef.current) {
+          voiceUserSpeakingRef.current = false;
+          setVoicePhase("listening");
+        }
+
         if (silenceStartedAtRef.current === null) {
           silenceStartedAtRef.current = now;
         }
@@ -5745,8 +5934,15 @@ export default function WidgetPage() {
         return;
       }
 
-      const wave = (Math.sin(performance.now() / 115) + 1) / 2;
-      setVoiceEnergy(0.24 + wave * 0.26);
+      const now = performance.now();
+      const waveA = Math.sin(now / 137);
+      const waveB = Math.sin(now / 223 + 1.7);
+      const waveC = Math.sin(now / 79 + 0.55);
+      const organicWave = Math.max(
+        0,
+        Math.min(1, 0.5 + waveA * 0.22 + waveB * 0.16 + waveC * 0.08),
+      );
+      setVoiceEnergy(0.30 + organicWave * 0.34);
       voiceAnimationFrameRef.current = window.requestAnimationFrame(draw);
     };
 
@@ -6070,13 +6266,288 @@ export default function WidgetPage() {
     }
   }
 
+  async function startRealtimeVoice(source?: HTMLElement | null) {
+    rememberVoiceOrigin(source);
+
+    // Verhindert Doppelstarts, solange der erste WebRTC-Handshake noch laeuft.
+    if (realtimeVoiceConnectingRef.current) return;
+
+    if (
+      typeof window === "undefined" ||
+      typeof RTCPeerConnection === "undefined" ||
+      !navigator.mediaDevices?.getUserMedia
+    ) {
+      if (voiceSupported) {
+        await startVoiceInput();
+        return;
+      }
+
+      setVoiceError(
+        "Dieser Browser unterstützt den Sprachmodus leider nicht vollständig.",
+      );
+      setVoicePhase("error");
+      return;
+    }
+
+    if (realtimeVoiceRef.current && isVoiceActive) {
+      return;
+    }
+
+    if (realtimeVoiceRef.current) {
+      realtimeVoiceRef.current.disconnect();
+      realtimeVoiceRef.current = null;
+    }
+
+    realtimeVoiceConnectingRef.current = true;
+
+    // Alte Recorder-/ElevenLabs-Ressourcen freigeben, damit nicht zwei
+    // Mikrofon-Pipelines gleichzeitig laufen.
+    releaseVoiceResources();
+
+    setVoiceTranscript("");
+    setVoiceError("");
+    setRealtimeStatus("connecting");
+    setVoiceEnergy(0.08);
+    setVoicePhase("connecting");
+
+    let responseIsSpeaking = false;
+
+    const activeRealtimeTenantId = isHohenbadenInterface
+      ? "fahrschule-hohenbaden"
+      : isAbgefahrenInterface
+        ? "fahrschule-abgefahren"
+        : isFahrwerkBInterface
+          ? "fahrwerk-b"
+          : cfg.id;
+
+    const client = new RealtimeVoiceClient({
+      tenant: activeRealtimeTenantId,
+      onAudioLevel: (level, source) => {
+        const isRelevantSource =
+          (source === "assistant" && responseIsSpeaking) ||
+          (source === "user" && voiceUserSpeakingRef.current);
+
+        if (!isRelevantSource) return;
+
+        const visualLevel = responseIsSpeaking
+          ? 0.18 + level * 0.82
+          : 0.08 + level * 0.92;
+
+        setVoiceEnergy(visualLevel);
+      },
+      onStatusChange: (status) => {
+        setRealtimeStatus(status);
+
+        if (status === "connecting") {
+          setVoiceEnergy(0.10);
+          setVoicePhase("connecting");
+          return;
+        }
+
+        if (status === "connected") {
+          setVoiceError("");
+          setVoiceEnergy(0.12);
+          setVoicePhase((current) =>
+            current === "speaking" ? current : "listening",
+          );
+          return;
+        }
+
+        if (status === "error") {
+          setVoicePhase("error");
+          return;
+        }
+
+        if (status === "closed") {
+          stopVoiceAnimation();
+          setVoicePhase((current) =>
+            current === "error" ? current : "idle",
+          );
+        }
+      },
+
+      onEvent: (event) => {
+        const eventType = String(event.type || "");
+
+        if (eventType === "input_audio_buffer.speech_started") {
+          responseIsSpeaking = false;
+          voiceUserSpeakingRef.current = true;
+          setVoiceTranscript("");
+          setVoiceError("");
+          setVoicePhase("user-speaking");
+          return;
+        }
+
+        if (eventType === "input_audio_buffer.speech_stopped") {
+          voiceUserSpeakingRef.current = false;
+          stopVoiceAnimation();
+          setVoiceEnergy(0.18);
+          setVoicePhase("thinking");
+          return;
+        }
+
+        if (
+          eventType === "conversation.item.input_audio_transcription.completed" ||
+          eventType === "input_audio_transcription.completed"
+        ) {
+          const transcript =
+            typeof event.transcript === "string"
+              ? event.transcript
+              : typeof event.text === "string"
+                ? event.text
+                : "";
+
+          if (transcript.trim()) {
+            applyVoiceSurfaceIntent(transcript);
+          }
+
+          return;
+        }
+
+        if (eventType === "response.created") {
+          stopVoiceAnimation();
+          setVoiceEnergy(0.20);
+          setVoicePhase("thinking");
+          return;
+        }
+
+        if (
+          eventType === "output_audio_buffer.started" ||
+          eventType === "response.output_audio.started"
+        ) {
+          responseIsSpeaking = true;
+          voiceUserSpeakingRef.current = false;
+          setVoicePhase("speaking");
+          return;
+        }
+
+        if (eventType === "response.output_audio_transcript.delta") {
+          const delta =
+            typeof event.delta === "string" ? event.delta : "";
+
+          if (delta) {
+            setVoiceTranscript((current) =>
+              `${current}${delta}`.trimStart().slice(-420),
+            );
+          }
+
+          return;
+        }
+
+        if (eventType === "response.output_audio_transcript.done") {
+          const transcript =
+            typeof event.transcript === "string"
+              ? event.transcript
+              : "";
+
+          if (transcript) {
+            setVoiceTranscript(transcript.slice(-420));
+
+            if (
+              isFahrwerkBInterface &&
+              /\b(anmeld|anmeldung|anmelden|fahrschule\.live|link)\w*/i.test(transcript)
+            ) {
+              showFahrwerkSignupLink();
+            }
+          }
+
+          return;
+        }
+
+        if (
+          eventType === "output_audio_buffer.stopped" ||
+          eventType === "output_audio_buffer.cleared"
+        ) {
+          responseIsSpeaking = false;
+          voiceUserSpeakingRef.current = false;
+          setVoiceTranscript("");
+          stopVoiceAnimation();
+          setVoiceEnergy(0.12);
+          setVoicePhase("listening");
+          return;
+        }
+
+        if (eventType === "response.done") {
+          // Bei WebRTC kann die Audioausgabe noch minimal nachlaufen.
+          // Wenn kein separates Audio-Buffer-Event kommt, wechseln wir
+          // kurz danach wieder in den Zuhör-Zustand.
+          window.setTimeout(() => {
+            if (
+              realtimeVoiceRef.current === client &&
+              !responseIsSpeaking
+            ) {
+              setVoiceTranscript("");
+              stopVoiceAnimation();
+              setVoiceEnergy(0.12);
+              setVoicePhase("listening");
+            }
+          }, 260);
+          return;
+        }
+
+        if (eventType === "error") {
+          stopVoiceAnimation();
+          const errorMessage =
+            typeof event.error === "object" &&
+            event.error &&
+            "message" in event.error &&
+            typeof (event.error as { message?: unknown }).message === "string"
+              ? String((event.error as { message: string }).message)
+              : "Die Sprachverbindung hat einen Fehler gemeldet.";
+
+          setVoiceError(errorMessage);
+          setVoicePhase("error");
+        }
+      },
+
+      onError: (error) => {
+        stopVoiceAnimation();
+        setVoiceError(
+          error.message ||
+            "Die Realtime-Sprachverbindung konnte nicht gestartet werden.",
+        );
+        setVoicePhase("error");
+      },
+    });
+
+    realtimeVoiceRef.current = client;
+
+    try {
+      await client.connect();
+
+      if (realtimeVoiceRef.current === client) {
+        setRealtimeStatus("connected");
+        setVoiceEnergy(0.12);
+        setVoicePhase("listening");
+      }
+    } catch (error) {
+      if (realtimeVoiceRef.current === client) {
+        realtimeVoiceRef.current = null;
+      }
+
+      const message =
+        error instanceof DOMException &&
+        (error.name === "NotAllowedError" || error.name === "SecurityError")
+          ? "Das Mikrofon ist blockiert. Erlaube den Mikrofonzugriff im Browser und versuch es erneut."
+          : error instanceof Error
+            ? error.message
+            : "Die neue Sprachverbindung konnte nicht gestartet werden.";
+
+      setVoiceError(message);
+      setRealtimeStatus("error");
+      setVoicePhase("error");
+    } finally {
+      realtimeVoiceConnectingRef.current = false;
+    }
+  }
+
   async function startVoiceInput() {
     const unlockPromise = unlockVoiceAudio();
 
     if (loadingRef.current || ["transcribing", "thinking"].includes(voicePhase))
       return;
 
-    if (voicePhase === "listening") {
+    if (voicePhase === "listening" || voicePhase === "user-speaking") {
       stopVoiceRecording();
       return;
     }
@@ -6121,9 +6592,21 @@ export default function WidgetPage() {
   function cancelVoiceMode() {
     clearVoiceFiller();
 
-    if (!isVoiceActive && !mediaRecorderRef.current && !voiceAudioRef.current)
+    if (
+      !isVoiceActive &&
+      !mediaRecorderRef.current &&
+      !voiceAudioRef.current &&
+      !realtimeVoiceRef.current
+    ) {
       return;
+    }
 
+    if (realtimeVoiceRef.current) {
+      realtimeVoiceRef.current.disconnect();
+      realtimeVoiceRef.current = null;
+    }
+
+    setRealtimeStatus("closed");
     cancelVoiceRef.current = true;
     voiceConversationActiveRef.current = false;
     clearVoiceStopTimeout();
@@ -6144,6 +6627,8 @@ export default function WidgetPage() {
     stopMicrophoneTracks();
     stopVoicePlayback();
     audioChunksRef.current = [];
+    voiceUserSpeakingRef.current = false;
+    setVoiceEnergy(0.03);
     setVoicePhase("idle");
     setVoiceTranscript("");
     setVoiceError("");
@@ -6155,6 +6640,7 @@ export default function WidgetPage() {
 
   function resetChat() {
     cancelVoiceMode();
+    setVoiceUiAction(null);
     setBookingOpen(false);
     setBookingSubmitting(false);
     setBookingForm({
@@ -6227,7 +6713,6 @@ export default function WidgetPage() {
     msgs.length === 1 &&
     msgs[0]?.role === "assistant" &&
     !loading &&
-    !isVoiceActive &&
     (!isAbgefahrenInterface || abgefahrenPanel === "home") &&
     (!isHohenbadenInterface || hohenbadenPanel === "home");
 
@@ -6255,53 +6740,55 @@ export default function WidgetPage() {
     (fahrwerkCompletedDocuments / FAHRWERK_DOCUMENT_ITEMS.length) * 100,
   );
 
-  const voiceTitle =
-    voicePhase === "listening"
-      ? "Ich höre zu"
-      : voicePhase === "transcribing"
-        ? "Ich verstehe dich"
-        : voicePhase === "thinking"
-          ? "Einen Moment"
-          : voicePhase === "speaking"
-            ? `${displayBrandName} antwortet`
-            : voicePhase === "ready"
-              ? "Deine Antwort ist bereit"
-              : voicePhase === "error"
-                ? "Das hat nicht geklappt"
-                : "";
-
-  const voiceEyebrow =
-    voicePhase === "listening"
-      ? "Sprachmodus aktiv"
-      : voicePhase === "transcribing"
-        ? "ElevenLabs erkennt deine Sprache"
-        : voicePhase === "thinking"
-          ? "Das Interface bereitet die Antwort vor"
-          : voicePhase === "speaking"
-            ? "Gesprochene Antwort"
-            : voicePhase === "ready"
-              ? "Einmal tippen"
-              : voicePhase === "error"
-                ? "Sprachmodus"
-                : "";
-
-  const voiceDescription =
-    voicePhase === "listening"
-      ? isFahrwerkBInterface
-        ? "Sprich einfach los. Nach einer kurzen Pause antworte ich automatisch."
-        : "Sprich einfach los. Nach einer kurzen Pause wird deine Anfrage automatisch gesendet."
-      : voicePhase === "transcribing"
-        ? "Deine Aufnahme wird gerade sicher in Text umgewandelt."
-        : voicePhase === "thinking"
-          ? voiceTranscript || "Deine Anfrage wird verarbeitet."
-          : voicePhase === "speaking"
-            ? voiceTranscript ||
-              "Die Antwort wird jetzt vorgelesen. Danach höre ich automatisch wieder zu."
-            : voicePhase === "ready"
-              ? voiceError || "Tippe auf die Kugel, um die Antwort zu hören."
-              : voicePhase === "error"
-                ? voiceError || "Versuch es bitte noch einmal."
-                : "";
+  const voiceStatus = (() => {
+    switch (voicePhase) {
+      case "connecting":
+        return {
+          label: "Sprachmodus wird gestartet",
+          detail: "Verbindung wird aufgebaut …",
+        };
+      case "listening":
+        return {
+          label: "Sprachmodus aktiv",
+          detail: "Ich höre dir zu",
+        };
+      case "user-speaking":
+        return {
+          label: "Ich höre dich",
+          detail: "Sprich einfach weiter",
+        };
+      case "transcribing":
+        return {
+          label: "Einen Moment",
+          detail: "Ich verstehe gerade, was du gesagt hast",
+        };
+      case "thinking":
+        return {
+          label: "Ich denke kurz nach",
+          detail: "Deine Antwort wird vorbereitet",
+        };
+      case "speaking":
+        return {
+          label: "Ich antworte",
+          detail: "Du kannst mich jederzeit unterbrechen",
+        };
+      case "ready":
+        return {
+          label: "Antwort ist bereit",
+          detail: "Tippe auf das Mikrofon zum Abspielen",
+        };
+      case "error":
+        return {
+          label: "Sprachmodus unterbrochen",
+          detail: "Beende ihn kurz und starte ihn erneut",
+        };
+      default:
+        return {
+          label: "Sprachmodus",
+          detail: "Sprich einfach los",
+        };
+    }
+  })();
 
   const wrapperBackground = isEmbedded
     ? "transparent"
@@ -6368,7 +6855,7 @@ export default function WidgetPage() {
   return (
     <div
       className={`${isMobileViewport ? "bt-mobile-viewport" : ""} ${
-        isVoiceActive ? "bt-voice-mode-open" : ""
+        voiceVisualVisible ? "bt-voice-mode-open" : ""
       }`.trim()}
       style={{
         minHeight: isEmbedded ? embedClosedSize : "100vh",
@@ -6442,328 +6929,479 @@ body::after {
   box-shadow: 0 16px 44px rgba(0,0,0,0.16), 0 0 0 1px rgba(${accentRgb}, 0.16) inset, 0 0 28px rgba(${accentRgb}, 0.28);
 }
 
-@keyframes bt-voice-stage-in {
-  0% { opacity: 0; transform: scale(1.025); filter: blur(14px); }
-  100% { opacity: 1; transform: scale(1); filter: blur(0); }
+/*
+  VOICE PRESENCE v4 — LIQUID GLASS / CALM SURFACE
+  ------------------------------------------------------------
+  Keine KI-Wellen, Scanner oder hektischen Lichtschienen. Die aktuelle Maske
+  bleibt sichtbar. Der Sprachmodus entsteht wie eine duenne Glasschicht vom
+  Ausloesepunkt aus, bleibt als ruhige refraktive Kante bestehen und reagiert
+  bei Sprache nur mit etwas mehr Licht und Tiefe.
+*/
+
+@keyframes bt-voice-liquid-in {
+  0% {
+    opacity: 0;
+    clip-path: circle(0% at var(--voice-origin-x) var(--voice-origin-y));
+    filter: blur(18px) saturate(.85);
+    transform: scale(.992);
+  }
+  42% { opacity: .82; }
+  74% {
+    clip-path: circle(185% at var(--voice-origin-x) var(--voice-origin-y));
+    filter: blur(1px) saturate(1.12);
+  }
+  100% {
+    opacity: 1;
+    clip-path: circle(185% at var(--voice-origin-x) var(--voice-origin-y));
+    filter: blur(0) saturate(1);
+    transform: scale(1);
+  }
 }
 
-@keyframes bt-voice-ambient-a {
-  0%, 100% { transform: translate3d(-8%, -5%, 0) scale(1); }
-  50% { transform: translate3d(9%, 8%, 0) scale(1.13); }
+@keyframes bt-voice-liquid-out {
+  0% {
+    opacity: 1;
+    clip-path: circle(185% at var(--voice-origin-x) var(--voice-origin-y));
+    transform: scale(1);
+  }
+  36% { opacity: .82; }
+  100% {
+    opacity: 0;
+    clip-path: circle(0% at var(--voice-origin-x) var(--voice-origin-y));
+    filter: blur(18px);
+    transform: scale(.992);
+  }
 }
 
-@keyframes bt-voice-ambient-b {
-  0%, 100% { transform: translate3d(8%, 9%, 0) scale(1.08); }
-  50% { transform: translate3d(-10%, -7%, 0) scale(0.96); }
+@keyframes bt-voice-glass-breathe {
+  0%, 100% {
+    opacity: .72;
+    filter: blur(8px) saturate(1.08);
+    transform: scale(1);
+  }
+  50% {
+    opacity: .92;
+    filter: blur(11px) saturate(1.18);
+    transform: scale(1.0025);
+  }
 }
 
-@keyframes bt-voice-halo-spin {
-  from { transform: rotate(0deg) scale(var(--voice-scale, 1.03)); }
-  to { transform: rotate(360deg) scale(var(--voice-scale, 1.03)); }
+@keyframes bt-voice-surface-drift {
+  0%, 100% { background-position: 4% 12%, 96% 86%, 50% 50%; }
+  50% { background-position: 12% 20%, 88% 78%, 54% 46%; }
 }
 
-@keyframes bt-voice-halo-reverse {
-  from { transform: rotate(360deg) scale(var(--voice-scale, 1.03)); }
-  to { transform: rotate(0deg) scale(var(--voice-scale, 1.03)); }
+@keyframes bt-voice-lens-breathe {
+  0%, 100% { opacity: .44; transform: translate(-50%, -50%) scale(.96); }
+  50% { opacity: .66; transform: translate(-50%, -50%) scale(1.05); }
 }
 
-@keyframes bt-voice-core-breathe {
-  0%, 100% { border-radius: 46% 54% 58% 42% / 44% 46% 54% 56%; }
-  33% { border-radius: 58% 42% 45% 55% / 51% 61% 39% 49%; }
-  66% { border-radius: 42% 58% 61% 39% / 58% 42% 58% 42%; }
+@keyframes bt-voice-action-in {
+  0% { opacity: 0; transform: translateY(10px) scale(.985); filter: blur(8px); }
+  100% { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
 }
 
-@keyframes bt-voice-text-in {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+.bt-panel.bt-panel--voice {
+  --voice-energy: .08;
+  --voice-glow-alpha: .16;
+  --voice-glow-size: 34px;
+  border-color: rgba(255,255,255,.74) !important;
+  box-shadow:
+    0 28px 92px rgba(15,23,42,.16),
+    0 0 var(--voice-glow-size) rgba(${accentRgb}, var(--voice-glow-alpha)),
+    0 0 0 1px rgba(255,255,255,.28) inset !important;
+  transition:
+    box-shadow 380ms cubic-bezier(.2,.8,.2,1),
+    border-color 420ms cubic-bezier(.2,.8,.2,1) !important;
 }
 
-@keyframes bt-voice-dot {
-  0%, 100% { transform: translateY(0) scale(0.82); opacity: 0.42; }
-  50% { transform: translateY(-7px) scale(1); opacity: 1; }
+.bt-panel.bt-panel--voice-user-speaking,
+.bt-panel.bt-panel--voice-speaking {
+  border-color: rgba(255,255,255,.90) !important;
 }
 
-.bt-voice-stage {
-  --voice-scale: 1.03;
-  --voice-energy: 0.08;
-  --voice-glow: 0.30;
+.bt-panel.bt-panel--voice-closing {
+  box-shadow:
+    0 24px 78px rgba(15,23,42,.14),
+    0 0 18px rgba(${accentRgb}, .08),
+    0 0 0 1px rgba(255,255,255,.22) inset !important;
+}
+
+.bt-panel.bt-panel--voice::before,
+.bt-panel.bt-panel--voice::after {
+  content: none !important;
+  display: none !important;
+}
+
+.bt-voice-presence {
+  --voice-energy: .08;
+  --voice-frame-alpha: .74;
+  --voice-wash-alpha: .11;
+  --voice-halo-alpha: .26;
+  --voice-anchor-scale: 1;
+  --voice-glow-alpha: .16;
+  --voice-glow-size: 34px;
+  --voice-origin-x: 50%;
+  --voice-origin-y: 88%;
+
+  pointer-events: none !important;
+  isolation: isolate;
+  overflow: hidden !important;
+  transform: translateZ(0);
+  animation: bt-voice-liquid-in 1450ms cubic-bezier(.16,1,.3,1) both;
+}
+
+.bt-voice-presence--leaving {
+  animation: bt-voice-liquid-out 980ms cubic-bezier(.4,0,.2,1) both !important;
+}
+
+.bt-voice-wash {
   position: absolute;
   inset: 0;
-  z-index: 80;
-  overflow: hidden;
-  display: grid;
-  place-items: center;
-  padding: clamp(28px, 5vw, 64px);
-  border: 0;
   border-radius: inherit;
-  color: #ffffff;
+  pointer-events: none;
+  opacity: var(--voice-wash-alpha);
   background:
-    radial-gradient(920px 620px at 50% 42%, rgba(${accentRgb}, 0.34), transparent 66%),
-    radial-gradient(680px 520px at 14% 4%, rgba(255,255,255,0.16), transparent 64%),
-    linear-gradient(145deg, rgba(7,10,17,0.86), rgba(18,9,15,0.90) 52%, rgba(7,10,17,0.92));
-  backdrop-filter: blur(32px) saturate(175%);
-  -webkit-backdrop-filter: blur(32px) saturate(175%);
-  animation: bt-voice-stage-in 420ms cubic-bezier(.16,1,.3,1) both;
-  isolation: isolate;
+    radial-gradient(70% 52% at 8% 4%, rgba(255,255,255,.72), transparent 62%),
+    radial-gradient(66% 52% at 96% 96%, rgba(${accentRgb},.34), transparent 68%),
+    linear-gradient(135deg, rgba(255,255,255,.10), rgba(${accentRgb},.08) 46%, rgba(255,255,255,.04));
+  mix-blend-mode: soft-light;
+  animation:
+    bt-voice-liquid-in 1500ms cubic-bezier(.16,1,.3,1) both,
+    bt-voice-surface-drift 10s ease-in-out 1500ms infinite;
 }
 
-.bt-voice-stage::before,
-.bt-voice-stage::after {
-  content: "";
+.bt-voice-bloom {
   position: absolute;
-  width: 72%;
-  aspect-ratio: 1;
-  border-radius: 50%;
-  pointer-events: none;
-  filter: blur(62px);
-  opacity: calc(0.42 + var(--voice-energy, 0.08) * 0.34);
-  mix-blend-mode: screen;
-}
-
-.bt-voice-stage::before {
-  left: -20%;
-  top: -34%;
-  background: radial-gradient(circle, rgba(${accentRgb}, 0.84), transparent 66%);
-  animation: bt-voice-ambient-a 7s ease-in-out infinite;
-}
-
-.bt-voice-stage::after {
-  right: -24%;
-  bottom: -42%;
-  background: radial-gradient(circle, rgba(255,102,133,0.52), transparent 65%);
-  animation: bt-voice-ambient-b 8.5s ease-in-out infinite;
-}
-
-.bt-voice-grid {
-  position: absolute;
-  inset: -20%;
-  pointer-events: none;
-  opacity: 0.16;
-  background-image:
-    linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px);
-  background-size: 54px 54px;
-  mask-image: radial-gradient(circle at 50% 48%, #000 0%, transparent 67%);
-  -webkit-mask-image: radial-gradient(circle at 50% 48%, #000 0%, transparent 67%);
-  transform: perspective(700px) rotateX(58deg) translateY(30%);
-}
-
-.bt-voice-close {
-  position: absolute;
-  top: clamp(18px, 3vw, 28px);
-  right: clamp(18px, 3vw, 28px);
-  z-index: 4;
-  width: 44px;
-  height: 44px;
-  border: 0;
+  left: var(--voice-origin-x);
+  top: var(--voice-origin-y);
+  width: min(70vmin, 460px);
+  height: min(70vmin, 460px);
   border-radius: 999px;
-  color: rgba(255,255,255,0.86);
-  background: rgba(255,255,255,0.08);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.12), 0 14px 34px rgba(0,0,0,0.18);
-  cursor: pointer;
-  font-size: 24px;
-  line-height: 1;
-  transition: transform 180ms ease, background 180ms ease;
+  pointer-events: none;
+  background:
+    radial-gradient(circle,
+      rgba(255,255,255,.78) 0 1%,
+      rgba(${accentRgb}, .36) 7%,
+      rgba(${accentRgb}, .14) 23%,
+      rgba(255,255,255,.06) 42%,
+      transparent 70%);
+  filter: blur(10px);
+  mix-blend-mode: screen;
+  animation: bt-voice-lens-breathe 6.8s ease-in-out infinite;
 }
 
-.bt-voice-close:hover {
-  transform: scale(1.06);
-  background: rgba(255,255,255,0.14);
-}
-
-.bt-voice-center {
-  position: relative;
-  z-index: 2;
-  width: min(100%, 720px);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-}
-
-.bt-voice-orb-button {
-  position: relative;
-  width: clamp(230px, 34vw, 330px);
-  aspect-ratio: 1;
-  border: 0;
-  padding: 0;
-  border-radius: 50%;
-  background: transparent;
-  cursor: default;
-  display: grid;
-  place-items: center;
-  -webkit-tap-highlight-color: transparent;
-}
-
-.bt-voice-stage--listening .bt-voice-orb-button,
-.bt-voice-stage--ready .bt-voice-orb-button,
-.bt-voice-stage--error .bt-voice-orb-button {
-  cursor: pointer;
-}
-
-.bt-voice-halo {
+.bt-voice-frame {
   position: absolute;
-  inset: 8%;
-  border-radius: 44% 56% 50% 50% / 46% 44% 56% 54%;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  padding: 2px;
   background:
-    conic-gradient(from 20deg,
-      rgba(255,255,255,0.04),
-      rgba(${accentRgb},0.76),
-      rgba(255,120,145,0.42),
-      rgba(255,255,255,0.12),
-      rgba(${accentRgb},0.76),
-      rgba(255,255,255,0.04));
-  filter: blur(18px);
-  opacity: var(--voice-glow, 0.3);
-  animation: bt-voice-halo-spin 6.4s linear infinite;
-  will-change: transform, opacity;
+    linear-gradient(138deg,
+      rgba(255,255,255,.92),
+      rgba(255,255,255,.24) 18%,
+      rgba(${accentRgb},.42) 42%,
+      rgba(255,255,255,.18) 63%,
+      rgba(${accentRgb},.30) 82%,
+      rgba(255,255,255,.76));
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: var(--voice-frame-alpha);
+  filter: drop-shadow(0 0 12px rgba(${accentRgb},var(--voice-halo-alpha)));
+  animation: bt-voice-liquid-in 1480ms cubic-bezier(.16,1,.3,1) both;
+  transition:
+    opacity 360ms cubic-bezier(.2,.8,.2,1),
+    filter 420ms cubic-bezier(.2,.8,.2,1),
+    padding 420ms cubic-bezier(.2,.8,.2,1);
 }
 
-.bt-voice-halo:nth-child(2) {
-  inset: 15%;
-  filter: blur(11px);
-  opacity: calc(var(--voice-glow, 0.3) * 0.78);
-  animation: bt-voice-halo-reverse 4.8s linear infinite;
+.bt-voice-flow {
+  position: absolute;
+  inset: -10px;
+  border-radius: inherit;
+  pointer-events: none;
+  padding: 9px;
+  background:
+    radial-gradient(34% 22% at 10% 3%, rgba(255,255,255,.82), transparent 70%),
+    radial-gradient(38% 26% at 91% 97%, rgba(${accentRgb},.54), transparent 72%),
+    linear-gradient(118deg, transparent 10%, rgba(${accentRgb},.18) 42%, rgba(255,255,255,.28) 55%, transparent 84%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: .68;
+  filter: blur(8px) saturate(1.10);
+  animation:
+    bt-voice-liquid-in 1640ms cubic-bezier(.16,1,.3,1) both,
+    bt-voice-glass-breathe 7.4s ease-in-out 1640ms infinite;
+  transition:
+    opacity 420ms cubic-bezier(.2,.8,.2,1),
+    filter 420ms cubic-bezier(.2,.8,.2,1),
+    padding 420ms cubic-bezier(.2,.8,.2,1);
 }
 
-.bt-voice-core {
-  position: relative;
-  width: 52%;
-  aspect-ratio: 1;
-  transform: scale(var(--voice-scale, 1.03));
-  border-radius: 46% 54% 58% 42% / 44% 46% 54% 56%;
+.bt-voice-corners {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
   background:
-    radial-gradient(circle at 30% 23%, rgba(255,255,255,0.96), transparent 18%),
-    radial-gradient(circle at 68% 72%, rgba(255,116,145,0.78), transparent 34%),
-    radial-gradient(circle at 34% 70%, rgba(${accentRgb},0.94), transparent 48%),
-    linear-gradient(135deg, rgba(255,255,255,0.68), rgba(${accentRgb},0.94) 48%, rgba(98,11,30,0.92));
+    radial-gradient(120px 100px at 0 0, rgba(255,255,255,.28), transparent 72%),
+    radial-gradient(150px 120px at 100% 100%, rgba(${accentRgb},.24), transparent 74%);
+  opacity: .55;
+  mix-blend-mode: screen;
+  animation: bt-voice-surface-drift 11.5s ease-in-out infinite;
+}
+
+.bt-voice-anchor {
+  position: absolute;
+  left: var(--voice-origin-x);
+  top: var(--voice-origin-y);
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  transform: translate(-50%, -50%) scale(var(--voice-anchor-scale));
+  border: 1px solid rgba(255,255,255,.86);
+  background: rgba(255,255,255,.70);
   box-shadow:
-    0 0 34px rgba(${accentRgb}, calc(0.22 + var(--voice-energy, 0.08) * 0.40)),
-    0 0 110px rgba(${accentRgb}, calc(0.16 + var(--voice-energy, 0.08) * 0.34)),
-    inset 0 1px 0 rgba(255,255,255,0.72),
-    inset -18px -20px 46px rgba(40,0,10,0.24);
-  animation: bt-voice-core-breathe 3.8s ease-in-out infinite;
-  transition: transform 90ms linear, box-shadow 120ms linear;
-  will-change: transform, border-radius;
+    0 0 0 6px rgba(255,255,255,.05),
+    0 0 22px rgba(${accentRgb},var(--voice-halo-alpha));
+  opacity: .64;
+  transition:
+    transform 420ms cubic-bezier(.2,.8,.2,1),
+    box-shadow 420ms cubic-bezier(.2,.8,.2,1),
+    opacity 420ms cubic-bezier(.2,.8,.2,1);
 }
 
-.bt-voice-core::before {
+/* Alte AI-artige Elemente bleiben absichtlich aus. */
+.bt-voice-ripple,
+.bt-voice-rails,
+.bt-voice-scan,
+.bt-voice-signature {
+  display: none !important;
+}
+
+/* Sprechen veraendert die Glasflaeche, aber startet keine hektische Animation. */
+.bt-voice-presence--user-speaking .bt-voice-frame,
+.bt-voice-presence--speaking .bt-voice-frame {
+  padding: 3px;
+  opacity: 1;
+  filter: drop-shadow(0 0 18px rgba(${accentRgb}, calc(var(--voice-halo-alpha) + .14)));
+}
+
+.bt-voice-presence--user-speaking .bt-voice-flow,
+.bt-voice-presence--speaking .bt-voice-flow {
+  padding: 12px;
+  opacity: .92;
+  filter: blur(10px) saturate(1.20);
+}
+
+.bt-voice-presence--user-speaking .bt-voice-bloom,
+.bt-voice-presence--speaking .bt-voice-bloom {
+  opacity: .74;
+}
+
+.bt-voice-presence--thinking .bt-voice-frame,
+.bt-voice-presence--transcribing .bt-voice-frame,
+.bt-voice-presence--connecting .bt-voice-frame {
+  opacity: .82;
+}
+
+.bt-voice-presence--error .bt-voice-frame,
+.bt-voice-presence--error .bt-voice-flow {
+  opacity: .42;
+  filter: saturate(.55) blur(8px);
+}
+
+.bt-voice-presence--leaving .bt-voice-wash,
+.bt-voice-presence--leaving .bt-voice-bloom,
+.bt-voice-presence--leaving .bt-voice-frame,
+.bt-voice-presence--leaving .bt-voice-flow,
+.bt-voice-presence--leaving .bt-voice-corners,
+.bt-voice-presence--leaving .bt-voice-anchor {
+  animation: bt-voice-liquid-out 940ms cubic-bezier(.4,0,.2,1) both !important;
+}
+
+.bt-voice-mode-open .bt-launcher-shell--open {
+  display: none !important;
+}
+
+.bt-round-action-button.bt-listening {
+  color: ${textPrimary} !important;
+  border-color: rgba(255,255,255,.82) !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.82), rgba(255,255,255,.56)) !important;
+  backdrop-filter: blur(22px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(22px) saturate(180%) !important;
+  box-shadow:
+    0 10px 28px rgba(15,23,42,.10),
+    inset 0 1px 0 rgba(255,255,255,.92),
+    0 0 0 1px rgba(${accentRgb},.12),
+    0 0 24px rgba(${accentRgb},.16) !important;
+}
+
+.bt-voice-action-dock {
+  margin: 0 14px 12px;
+  padding: 10px 10px 10px 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 0 0 auto;
+  border-radius: 20px;
+  border: 1px solid rgba(255,255,255,.70);
+  background:
+    radial-gradient(120% 160% at 0 0, rgba(255,255,255,.88), rgba(255,255,255,.42) 58%, rgba(${accentRgb},.10)),
+    rgba(255,255,255,.46);
+  backdrop-filter: blur(28px) saturate(180%);
+  -webkit-backdrop-filter: blur(28px) saturate(180%);
+  box-shadow:
+    0 16px 46px rgba(15,23,42,.11),
+    inset 0 1px 0 rgba(255,255,255,.92),
+    0 0 0 1px rgba(${accentRgb},.05);
+  animation: bt-voice-action-in 560ms cubic-bezier(.16,1,.3,1) both;
+  position: relative;
+  overflow: hidden;
+  z-index: 4;
+}
+
+.bt-voice-action-dock::before {
   content: "";
   position: absolute;
-  inset: 10%;
-  border-radius: inherit;
-  background: linear-gradient(130deg, rgba(255,255,255,0.24), transparent 44%, rgba(255,255,255,0.08));
-  mix-blend-mode: screen;
-  filter: blur(5px);
+  width: 140px;
+  height: 90px;
+  right: -38px;
+  top: -52px;
+  border-radius: 999px;
+  background: rgba(${accentRgb},.16);
+  filter: blur(20px);
+  pointer-events: none;
 }
 
-.bt-voice-stage--transcribing .bt-voice-core,
-.bt-voice-stage--thinking .bt-voice-core {
-  transform: scale(0.94);
-  animation-duration: 2.1s;
-}
-
-.bt-voice-stage--speaking .bt-voice-core {
-  animation-duration: 2.7s;
-}
-
-.bt-voice-copy {
-  width: min(100%, 660px);
-  margin-top: clamp(4px, 1vw, 12px);
-  animation: bt-voice-text-in 380ms 100ms ease both;
-}
-
-.bt-voice-eyebrow {
-  font-size: 12px;
+.bt-voice-action-mark {
+  width: 38px;
+  height: 38px;
+  flex: 0 0 38px;
+  display: grid;
+  place-items: center;
+  border-radius: 13px;
+  border: 1px solid rgba(255,255,255,.78);
+  background: rgba(255,255,255,.52);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.88);
+  font-size: 17px;
   font-weight: 800;
-  letter-spacing: 0.18em;
+}
+
+.bt-voice-action-copy {
+  min-width: 0;
+  flex: 1;
+}
+
+.bt-voice-action-eyebrow {
+  font-size: 10.5px;
+  line-height: 1.1;
+  letter-spacing: .08em;
   text-transform: uppercase;
-  color: rgba(255,255,255,0.56);
-  margin-bottom: 10px;
+  color: ${textSecondary};
+  font-weight: 800;
 }
 
-.bt-voice-title {
-  font-size: clamp(28px, 4.2vw, 48px);
-  line-height: 1.08;
-  font-weight: 780;
-  letter-spacing: -0.035em;
-  text-wrap: balance;
-  text-shadow: 0 12px 44px rgba(0,0,0,0.24);
+.bt-voice-action-title {
+  margin-top: 3px;
+  font-size: 14px;
+  line-height: 1.18;
+  color: ${textPrimary};
+  font-weight: 850;
 }
 
-.bt-voice-transcript {
-  margin: 14px auto 0;
-  max-width: 620px;
-  min-height: 46px;
-  font-size: clamp(15px, 1.9vw, 19px);
-  line-height: 1.5;
-  color: rgba(255,255,255,0.70);
-  text-wrap: balance;
+.bt-voice-action-description {
+  margin-top: 3px;
+  font-size: 11.5px;
+  line-height: 1.3;
+  color: ${textSecondary};
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.bt-voice-dots {
-  height: 30px;
+.bt-voice-action-link {
+  position: relative;
+  z-index: 1;
+  min-height: 42px;
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 7px;
-  margin-top: 8px;
+  padding: 0 14px;
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,.56);
+  background: ${widgetAccent};
+  color: #fff;
+  text-decoration: none;
+  font-size: 12.5px;
+  font-weight: 850;
+  box-shadow:
+    0 10px 26px rgba(${accentRgb},.22),
+    inset 0 1px 0 rgba(255,255,255,.26);
+  transition: transform 180ms ease, box-shadow 180ms ease;
 }
 
-.bt-voice-dots span {
-  width: 7px;
-  height: 7px;
-  border-radius: 999px;
-  background: rgba(255,255,255,0.82);
-  animation: bt-voice-dot 900ms ease-in-out infinite;
+.bt-voice-action-link:hover {
+  transform: translateY(-1px);
+  box-shadow:
+    0 13px 30px rgba(${accentRgb},.27),
+    inset 0 1px 0 rgba(255,255,255,.30);
 }
 
-.bt-voice-dots span:nth-child(2) { animation-delay: 120ms; }
-.bt-voice-dots span:nth-child(3) { animation-delay: 240ms; }
-
-.bt-voice-action {
-  margin-top: 18px;
-  min-height: 46px;
-  padding: 0 18px;
+.bt-voice-action-close {
+  width: 30px;
+  height: 30px;
+  flex: 0 0 30px;
+  display: grid;
+  place-items: center;
   border: 0;
   border-radius: 999px;
-  color: #ffffff;
-  background: rgba(255,255,255,0.12);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.16), 0 16px 38px rgba(0,0,0,0.16);
+  background: rgba(255,255,255,.42);
+  color: ${textSecondary};
   cursor: pointer;
-  font-weight: 750;
-  font-size: 14px;
-  transition: transform 180ms ease, background 180ms ease;
-}
-
-.bt-voice-action:hover {
-  transform: translateY(-1px);
-  background: rgba(255,255,255,0.18);
-}
-
-.bt-voice-footer {
-  position: absolute;
-  left: 50%;
-  bottom: clamp(20px, 3vw, 30px);
-  transform: translateX(-50%);
-  z-index: 3;
-  width: calc(100% - 120px);
-  text-align: center;
-  color: rgba(255,255,255,0.44);
-  font-size: 12px;
-  line-height: 1.4;
-  pointer-events: none;
+  font-size: 16px;
+  line-height: 1;
 }
 
 @media (max-width: 680px) {
-  .bt-voice-stage { padding: 26px 18px 68px; }
-  .bt-voice-orb-button { width: min(68vw, 260px); }
-  .bt-voice-title { font-size: clamp(27px, 9vw, 40px); }
-  .bt-voice-transcript { font-size: 15px; }
-  .bt-voice-footer { width: calc(100% - 64px); }
+  .bt-voice-presence {
+    left: max(8px, env(safe-area-inset-left)) !important;
+    right: max(8px, env(safe-area-inset-right)) !important;
+    top: max(8px, env(safe-area-inset-top)) !important;
+    bottom: max(8px, env(safe-area-inset-bottom)) !important;
+    width: auto !important;
+    height: auto !important;
+    max-width: none !important;
+    max-height: none !important;
+  }
+
+  .bt-voice-frame { padding: 2px; }
+  .bt-voice-flow { padding: 8px; }
+
+  .bt-voice-action-dock {
+    margin: 0 8px 8px;
+    padding: 9px 9px 9px 11px;
+    gap: 9px;
+    border-radius: 17px;
+  }
+
+  .bt-voice-action-description { display: none; }
+  .bt-voice-action-link { padding: 0 11px; min-height: 39px; }
+  .bt-voice-action-mark { width: 34px; height: 34px; flex-basis: 34px; border-radius: 11px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bt-voice-presence,
+  .bt-voice-presence *,
+  .bt-voice-action-dock {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+  }
 }
 
 .bt-image-preview-wrap {
@@ -7013,8 +7651,8 @@ body::after {
 }
 
 .bt-mobile-viewport .bt-panel {
-  left: 8px !important;
-  right: 8px !important;
+  left: max(8px, env(safe-area-inset-left)) !important;
+  right: max(8px, env(safe-area-inset-right)) !important;
   top: max(8px, env(safe-area-inset-top)) !important;
   bottom: max(8px, env(safe-area-inset-bottom)) !important;
   width: auto !important;
@@ -7189,41 +7827,10 @@ body::after {
   font-weight: 900;
 }
 
-.bt-mobile-viewport .bt-voice-stage {
-  padding: 52px 18px 76px !important;
-  border-radius: 28px !important;
-}
-
-.bt-mobile-viewport .bt-voice-close {
-  top: 14px !important;
-  right: 14px !important;
-  width: 42px !important;
-  height: 42px !important;
-}
-
-.bt-mobile-viewport .bt-voice-orb-button {
-  width: min(58vw, 220px) !important;
-}
-
-.bt-mobile-viewport .bt-voice-title {
-  font-size: clamp(28px, 9vw, 36px) !important;
-}
-
-.bt-mobile-viewport .bt-voice-transcript {
-  font-size: 14px !important;
-  line-height: 1.45 !important;
-}
-
-.bt-mobile-viewport .bt-voice-footer {
-  bottom: calc(14px + env(safe-area-inset-bottom)) !important;
-  width: calc(100% - 44px) !important;
-  font-size: 11px !important;
-}
-
 @media (max-width: 680px) {
   .bt-panel {
-    left: 8px !important;
-    right: 8px !important;
+    left: max(8px, env(safe-area-inset-left)) !important;
+    right: max(8px, env(safe-area-inset-right)) !important;
     top: max(8px, env(safe-area-inset-top)) !important;
     bottom: max(8px, env(safe-area-inset-bottom)) !important;
     width: auto !important;
@@ -7233,19 +7840,523 @@ body::after {
   }
 }
 
+/* Clean 2026 visual refresh: ruhiger, heller, weniger "Chatbot-Box". */
+.bt-panel {
+  border: 1px solid rgba(255,255,255,0.72) !important;
+  box-shadow:
+    0 24px 80px rgba(15,23,42,0.16),
+    0 0 0 1px rgba(255,255,255,0.28) inset !important;
+}
+
+.bt-panel.bt-panel--voice {
+  border-color: rgba(255,255,255,.74) !important;
+  box-shadow:
+    0 28px 92px rgba(15,23,42,.16),
+    0 0 var(--voice-glow-size, 34px) rgba(${accentRgb}, var(--voice-glow-alpha, .16)),
+    0 0 0 1px rgba(255,255,255,.28) inset !important;
+}
+
+.bt-panel-liquid {
+  opacity: 0.20 !important;
+}
+
+.bt-panel-header {
+  background: rgba(255,255,255,0.48) !important;
+  border-bottom: 1px solid rgba(15,23,42,0.07) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.72) !important;
+  backdrop-filter: blur(24px) saturate(145%);
+  -webkit-backdrop-filter: blur(24px) saturate(145%);
+}
+
+.bt-start-card {
+  border: 1px solid rgba(15,23,42,0.07) !important;
+  background: rgba(255,255,255,0.58) !important;
+  box-shadow:
+    0 8px 26px rgba(15,23,42,0.07),
+    inset 0 1px 0 rgba(255,255,255,0.82) !important;
+}
+
+.bt-start-card:hover:not(:disabled) {
+  transform: translateY(-2px) scale(1.005);
+  border-color: rgba(${accentRgb},0.22) !important;
+  background: rgba(255,255,255,0.76) !important;
+  box-shadow:
+    0 14px 34px rgba(15,23,42,0.10),
+    0 0 0 1px rgba(${accentRgb},0.05) inset !important;
+}
+
+.bt-composer {
+  background: rgba(255,255,255,0.50) !important;
+  border-top: 1px solid rgba(15,23,42,0.06) !important;
+  backdrop-filter: blur(24px) saturate(150%);
+  -webkit-backdrop-filter: blur(24px) saturate(150%);
+}
+
+.bt-message-input {
+  border: 1px solid rgba(15,23,42,0.08) !important;
+  background: rgba(255,255,255,0.72) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.80) !important;
+}
+
+.bt-round-action-button {
+  border: 1px solid rgba(15,23,42,0.07) !important;
+  background: rgba(255,255,255,0.66) !important;
+  box-shadow:
+    0 8px 24px rgba(15,23,42,0.07),
+    inset 0 1px 0 rgba(255,255,255,0.82) !important;
+}
+
+.bt-round-action-button.bt-listening {
+  color: ${textPrimary} !important;
+  border-color: rgba(255,255,255,.82) !important;
+  background: linear-gradient(180deg, rgba(255,255,255,.82), rgba(255,255,255,.56)) !important;
+  box-shadow:
+    0 10px 28px rgba(15,23,42,.10),
+    inset 0 1px 0 rgba(255,255,255,.92),
+    0 0 0 1px rgba(${accentRgb},.12),
+    0 0 24px rgba(${accentRgb},.16) !important;
+}
+
+/*
+  VOICE PRESENCE v5 — deutlich, clean und dauerhaft sichtbar.
+  Die bestehende Maske bleibt stehen. Vom angeklickten Mikrofon aus legt sich
+  eine lebendige Lichtkante ueber das Panel; der Composer wird zur Statusleiste.
+*/
+
+@property --voice-angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+@keyframes bt-voice-edge-travel {
+  to { --voice-angle: 360deg; }
+}
+
+@keyframes bt-voice-atmosphere-breathe {
+  0%, 100% {
+    opacity: .62;
+    transform: scale(1);
+    filter: blur(28px) saturate(1.08);
+  }
+  50% {
+    opacity: .92;
+    transform: scale(1.025);
+    filter: blur(36px) saturate(1.28);
+  }
+}
+
+@keyframes bt-voice-status-in {
+  0% {
+    opacity: 0;
+    transform: translateY(12px) scale(.975);
+    filter: blur(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+  }
+}
+
+@keyframes bt-voice-dot-pulse {
+  0%, 100% {
+    transform: scale(.78);
+    opacity: .62;
+  }
+  50% {
+    transform: scale(1.22);
+    opacity: 1;
+  }
+}
+
+@keyframes bt-voice-meter-move {
+  0%, 100% { transform: scaleY(.30); opacity: .48; }
+  38% { transform: scaleY(1); opacity: 1; }
+  68% { transform: scaleY(.56); opacity: .78; }
+}
+
+.bt-panel.bt-panel--voice {
+  border-color: rgba(255,255,255,.94) !important;
+  box-shadow:
+    0 30px 100px rgba(15,23,42,.19),
+    0 0 var(--voice-glow-size, 54px) rgba(${accentRgb}, var(--voice-glow-alpha, .28)),
+    0 0 70px rgba(109,76,255,.13),
+    0 0 0 1px rgba(255,255,255,.48) inset !important;
+  transition:
+    box-shadow 240ms cubic-bezier(.2,.8,.2,1),
+    border-color 260ms cubic-bezier(.2,.8,.2,1) !important;
+}
+
+.bt-panel.bt-panel--voice-user-speaking,
+.bt-panel.bt-panel--voice-speaking {
+  box-shadow:
+    0 32px 108px rgba(15,23,42,.21),
+    0 0 var(--voice-glow-size, 86px) rgba(${accentRgb}, var(--voice-glow-alpha, .50)),
+    0 0 86px rgba(109,76,255,.20),
+    0 0 0 1px rgba(255,255,255,.64) inset !important;
+}
+
+.bt-voice-presence {
+  --voice-frame-alpha: .90;
+  --voice-wash-alpha: .19;
+  --voice-halo-alpha: .46;
+  --voice-glow-alpha: .28;
+  --voice-glow-size: 54px;
+  box-shadow:
+    inset 0 0 0 1px rgba(255,255,255,.72),
+    inset 0 0 38px rgba(${accentRgb},.10),
+    0 0 54px rgba(${accentRgb},.20),
+    0 0 84px rgba(109,76,255,.10);
+}
+
+.bt-voice-wash {
+  opacity: var(--voice-wash-alpha) !important;
+  background:
+    radial-gradient(70% 54% at 0 0, rgba(255,255,255,.92), transparent 62%),
+    radial-gradient(68% 58% at 100% 100%, rgba(${accentRgb},.58), transparent 68%),
+    radial-gradient(52% 42% at 96% 6%, rgba(92,121,255,.34), transparent 72%),
+    linear-gradient(132deg, rgba(255,255,255,.18), rgba(${accentRgb},.13) 48%, rgba(109,76,255,.09)) !important;
+  mix-blend-mode: soft-light;
+  transition: opacity 220ms cubic-bezier(.2,.8,.2,1);
+}
+
+.bt-voice-atmosphere {
+  position: absolute;
+  inset: -11%;
+  border-radius: inherit;
+  pointer-events: none;
+  background:
+    radial-gradient(44% 34% at 4% 8%, rgba(255,255,255,.72), transparent 72%),
+    radial-gradient(46% 38% at 97% 90%, rgba(${accentRgb},.44), transparent 72%),
+    radial-gradient(34% 28% at 91% 10%, rgba(92,121,255,.28), transparent 74%);
+  mix-blend-mode: screen;
+  animation: bt-voice-atmosphere-breathe 5.8s ease-in-out infinite;
+}
+
+.bt-voice-frame {
+  padding: var(--voice-frame-width, 4px) !important;
+  opacity: var(--voice-frame-alpha) !important;
+  background:
+    linear-gradient(132deg,
+      rgba(255,255,255,1),
+      rgba(255,255,255,.42) 16%,
+      rgba(${accentRgb},.88) 39%,
+      rgba(109,76,255,.64) 62%,
+      rgba(83,190,255,.48) 78%,
+      rgba(255,255,255,.96)) !important;
+  filter:
+    drop-shadow(0 0 10px rgba(255,255,255,.76))
+    drop-shadow(0 0 18px rgba(${accentRgb},var(--voice-halo-alpha))) !important;
+}
+
+.bt-voice-flow {
+  inset: -1px !important;
+  padding: var(--voice-edge-width, 9px) !important;
+  opacity: var(--voice-edge-alpha, .92) !important;
+  background:
+    conic-gradient(from var(--voice-angle),
+      rgba(255,255,255,.98) 0deg,
+      rgba(${accentRgb},.94) 58deg,
+      rgba(109,76,255,.76) 116deg,
+      rgba(83,190,255,.62) 176deg,
+      rgba(255,255,255,.92) 226deg,
+      rgba(${accentRgb},.84) 292deg,
+      rgba(255,255,255,.98) 360deg) !important;
+  filter:
+    blur(var(--voice-edge-blur, 5px))
+    saturate(1.34)
+    drop-shadow(0 0 17px rgba(${accentRgb},var(--voice-halo-alpha))) !important;
+  animation:
+    bt-voice-liquid-in 1480ms cubic-bezier(.16,1,.3,1) both,
+    bt-voice-edge-travel 7.2s linear 1180ms infinite !important;
+  transition:
+    opacity 200ms ease,
+    padding 220ms cubic-bezier(.2,.8,.2,1),
+    filter 220ms cubic-bezier(.2,.8,.2,1) !important;
+}
+
+.bt-voice-bloom {
+  width: min(82vmin, 560px) !important;
+  height: min(82vmin, 560px) !important;
+  background:
+    radial-gradient(circle,
+      rgba(255,255,255,.96) 0 1%,
+      rgba(${accentRgb},.55) 8%,
+      rgba(109,76,255,.24) 24%,
+      rgba(83,190,255,.12) 43%,
+      transparent 72%) !important;
+  filter: blur(13px) !important;
+}
+
+.bt-voice-anchor {
+  width: 13px !important;
+  height: 13px !important;
+  opacity: .84 !important;
+  background: rgba(255,255,255,.94) !important;
+  box-shadow:
+    0 0 0 7px rgba(255,255,255,.08),
+    0 0 28px rgba(${accentRgb},var(--voice-halo-alpha)),
+    0 0 52px rgba(109,76,255,.20) !important;
+}
+
+.bt-voice-presence--user-speaking .bt-voice-frame,
+.bt-voice-presence--speaking .bt-voice-frame {
+  padding: var(--voice-frame-width, 6px) !important;
+  filter:
+    drop-shadow(0 0 12px rgba(255,255,255,.88))
+    drop-shadow(0 0 26px rgba(${accentRgb},var(--voice-halo-alpha))) !important;
+}
+
+.bt-voice-presence--user-speaking .bt-voice-flow,
+.bt-voice-presence--speaking .bt-voice-flow {
+  padding: var(--voice-edge-width, 15px) !important;
+  opacity: var(--voice-edge-alpha, 1) !important;
+  filter:
+    blur(var(--voice-edge-blur, 7px))
+    saturate(1.52)
+    drop-shadow(0 0 24px rgba(${accentRgb},var(--voice-halo-alpha))) !important;
+  animation-duration: 1480ms, 3.6s !important;
+}
+
+.bt-voice-presence--thinking .bt-voice-flow,
+.bt-voice-presence--transcribing .bt-voice-flow,
+.bt-voice-presence--connecting .bt-voice-flow {
+  animation-duration: 1480ms, 5.1s !important;
+}
+
+.bt-voice-presence--error .bt-voice-flow,
+.bt-voice-presence--error .bt-voice-frame {
+  opacity: .54 !important;
+  filter: saturate(.62) blur(4px) !important;
+}
+
+.bt-voice-presence--leaving .bt-voice-atmosphere {
+  animation: bt-voice-liquid-out 940ms cubic-bezier(.4,0,.2,1) both !important;
+}
+
+.bt-brand-status-dot--voice {
+  animation: bt-voice-dot-pulse 1.75s ease-in-out infinite;
+}
+
+.bt-composer.bt-composer--voice {
+  background:
+    radial-gradient(100% 180% at 0 0, rgba(255,255,255,.80), rgba(255,255,255,.46) 58%, rgba(${accentRgb},.12)) !important;
+  border-top-color: rgba(255,255,255,.72) !important;
+  box-shadow:
+    0 -16px 48px rgba(${accentRgb},.10),
+    inset 0 1px 0 rgba(255,255,255,.88) !important;
+}
+
+.bt-round-action-button.bt-listening {
+  overflow: visible !important;
+  color: #fff !important;
+  border-color: rgba(255,255,255,.94) !important;
+  background:
+    radial-gradient(80px 62px at 35% 18%, rgba(255,255,255,.48), transparent 58%),
+    linear-gradient(145deg, rgba(${accentRgb},1), rgba(109,76,255,.92)) !important;
+  box-shadow:
+    0 13px 32px rgba(${accentRgb},.32),
+    inset 0 1px 0 rgba(255,255,255,.56),
+    0 0 0 1px rgba(${accentRgb},.16),
+    0 0 34px rgba(109,76,255,.24) !important;
+  transform: scale(1.035);
+}
+
+.bt-round-action-button.bt-listening::before {
+  content: "";
+  position: absolute;
+  inset: -6px;
+  border-radius: inherit;
+  border: 1px solid rgba(${accentRgb},.28);
+  animation: bt-voice-dot-pulse 1.75s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.bt-round-action-button.bt-listening::after {
+  content: "×";
+  position: absolute;
+  right: -6px;
+  top: -6px;
+  width: 19px;
+  height: 19px;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  border: 2px solid rgba(255,255,255,.92);
+  background: ${widgetAccent};
+  color: #fff;
+  font-size: 13px;
+  font-weight: 900;
+  line-height: 1;
+  box-shadow: 0 5px 14px rgba(15,23,42,.18);
+}
+
+.bt-voice-live-strip {
+  min-width: 0;
+  flex: 1;
+  height: ${isEnhancedInterface ? "60px" : "46px"};
+  padding: 0 ${isEnhancedInterface ? "17px" : "13px"};
+  display: flex;
+  align-items: center;
+  gap: ${isEnhancedInterface ? "13px" : "10px"};
+  border-radius: ${isEnhancedInterface ? "19px" : "15px"};
+  border: 1px solid rgba(255,255,255,.88);
+  background:
+    radial-gradient(110% 180% at 0 0, rgba(255,255,255,.92), rgba(255,255,255,.58) 58%, rgba(${accentRgb},.13)),
+    rgba(255,255,255,.60);
+  backdrop-filter: blur(28px) saturate(180%);
+  -webkit-backdrop-filter: blur(28px) saturate(180%);
+  box-shadow:
+    0 12px 34px rgba(15,23,42,.10),
+    inset 0 1px 0 rgba(255,255,255,.96),
+    0 0 0 1px rgba(${accentRgb},.06);
+  animation: bt-voice-status-in 720ms cubic-bezier(.16,1,.3,1) both;
+  overflow: hidden;
+  position: relative;
+}
+
+.bt-voice-live-strip::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(${accentRgb},.86), rgba(109,76,255,.70), transparent);
+  opacity: calc(.48 + var(--voice-energy, .08));
+  transform: scaleX(var(--voice-meter-scale, 1));
+  transform-origin: center;
+  transition: transform 180ms ease, opacity 180ms ease;
+}
+
+.bt-voice-live-orb {
+  width: ${isEnhancedInterface ? "34px" : "28px"};
+  height: ${isEnhancedInterface ? "34px" : "28px"};
+  flex: 0 0 ${isEnhancedInterface ? "34px" : "28px"};
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  background:
+    radial-gradient(circle at 34% 26%, rgba(255,255,255,.98), rgba(${accentRgb},.84) 38%, rgba(109,76,255,.88) 72%);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.78),
+    0 0 20px rgba(${accentRgb},.30);
+  transform: scale(var(--voice-anchor-scale, 1));
+  transition: transform 180ms cubic-bezier(.2,.8,.2,1);
+}
+
+.bt-voice-live-orb > span {
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: #fff;
+  box-shadow: 0 0 10px rgba(255,255,255,.94);
+  animation: bt-voice-dot-pulse 1.35s ease-in-out infinite;
+}
+
+.bt-voice-live-copy {
+  min-width: 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  line-height: 1.1;
+}
+
+.bt-voice-live-copy strong {
+  color: ${textPrimary};
+  font-size: ${isEnhancedInterface ? "14px" : "12.5px"};
+  font-weight: 850;
+  letter-spacing: .01em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.bt-voice-live-copy > span {
+  color: ${textSecondary};
+  font-size: ${isEnhancedInterface ? "11.5px" : "10.5px"};
+  font-weight: 650;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.bt-voice-live-meter {
+  width: ${isEnhancedInterface ? "44px" : "34px"};
+  height: ${isEnhancedInterface ? "28px" : "22px"};
+  flex: 0 0 ${isEnhancedInterface ? "44px" : "34px"};
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 3px;
+  transform: scaleY(var(--voice-meter-scale, 1));
+  transition: transform 160ms cubic-bezier(.2,.8,.2,1);
+}
+
+.bt-voice-live-meter i {
+  width: 3px;
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(180deg, rgba(109,76,255,.82), rgba(${accentRgb},.94));
+  transform-origin: center;
+  animation: bt-voice-meter-move 1.25s ease-in-out infinite;
+  animation-delay: calc(var(--bar) * -110ms);
+}
+
+.bt-voice-live-strip--user-speaking .bt-voice-live-meter i,
+.bt-voice-live-strip--speaking .bt-voice-live-meter i {
+  animation-duration: .66s;
+}
+
+.bt-voice-live-strip--thinking .bt-voice-live-meter i,
+.bt-voice-live-strip--transcribing .bt-voice-live-meter i,
+.bt-voice-live-strip--connecting .bt-voice-live-meter i {
+  animation-duration: 1.65s;
+}
+
+.bt-voice-live-strip--error {
+  filter: saturate(.65);
+  opacity: .82;
+}
+
+@media (max-width: 680px) {
+  .bt-voice-frame {
+    padding: min(var(--voice-frame-width, 3px), 5px) !important;
+  }
+  .bt-voice-flow {
+    padding: min(var(--voice-edge-width, 7px), 14px) !important;
+  }
+
+  .bt-voice-presence--user-speaking .bt-voice-flow,
+  .bt-voice-presence--speaking .bt-voice-flow {
+    padding: min(var(--voice-edge-width, 11px), 14px) !important;
+  }
+
+  .bt-voice-live-strip {
+    padding: 0 11px;
+    gap: 9px;
+  }
+
+  .bt-voice-live-copy > span {
+    display: none;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .bt-bouncing { animation: none !important; }
   .bt-launcher { animation: none !important; }
   .bt-panel { animation: none !important; }
   .bt-launcher::after { animation: none !important; }
   .bt-panel-liquid { animation: none !important; }
-  .bt-voice-stage,
-  .bt-voice-stage::before,
-  .bt-voice-stage::after,
-  .bt-voice-halo,
-  .bt-voice-core,
-  .bt-voice-copy,
-  .bt-voice-dots span { animation: none !important; }
+  .bt-voice-presence,
+  .bt-voice-presence *,
+  .bt-brand-status-dot--voice,
+  .bt-round-action-button.bt-listening::before,
+  .bt-voice-live-strip,
+  .bt-voice-live-orb > span,
+  .bt-voice-live-meter i { animation: none !important; }
 }
 
 `}</style>
@@ -7311,9 +8422,52 @@ body::after {
             {launcherButton}
           </div>
 
+          {open && voiceVisualVisible && (
+            <div
+              ref={voiceEdgeRef}
+              aria-hidden="true"
+              className={`bt-voice-presence bt-voice-presence--${
+                isVoiceActive ? voicePhase : "closing"
+              } ${voiceVisualLeaving ? "bt-voice-presence--leaving" : ""}`}
+              style={{
+                position: "fixed",
+                right: isMobileViewport ? 8 : launcherOffset,
+                left: isMobileViewport ? 8 : undefined,
+                top: isMobileViewport ? 8 : undefined,
+                bottom: isMobileViewport ? 8 : panelOffsetBottom,
+                width: isMobileViewport ? "auto" : panelW,
+                maxWidth: isMobileViewport ? "none" : "calc(100vw - 28px)",
+                height: isMobileViewport
+                  ? "auto"
+                  : `min(${panelH}px, calc(100dvh - ${panelOffsetBottom + 12}px))`,
+                maxHeight: "none",
+                borderRadius: panelRadius,
+                zIndex: 1000001,
+                pointerEvents: "none",
+                "--voice-origin-x": `${(voiceOrigin.x * 100).toFixed(2)}%`,
+                "--voice-origin-y": `${(voiceOrigin.y * 100).toFixed(2)}%`,
+              } as CSSProperties}
+            >
+              <div className="bt-voice-wash" />
+              <div className="bt-voice-atmosphere" />
+              <div className="bt-voice-bloom" />
+              <div className="bt-voice-frame" />
+              <div className="bt-voice-flow" />
+              <div className="bt-voice-corners" />
+              <div className="bt-voice-anchor" />
+            </div>
+          )}
+
           {open && (
             <div
-              className="bt-panel"
+              ref={voiceStageRef}
+              className={`bt-panel ${
+                voiceVisualVisible
+                  ? `bt-panel--voice bt-panel--voice-${
+                      isVoiceActive ? voicePhase : "closing"
+                    }`
+                  : ""
+              }`}
               style={{
                 position: "fixed",
                 right: isMobileViewport ? 8 : launcherOffset,
@@ -7453,13 +8607,22 @@ body::after {
                     }}
                   >
                     <div
+                      className={`bt-brand-status-dot ${
+                        isVoiceActive ? "bt-brand-status-dot--voice" : ""
+                      }`}
                       style={{
                         width: 12,
                         height: 12,
                         borderRadius: 999,
-                        background: loading ? "#f5c542" : widgetAccent,
+                        background: isVoiceActive
+                          ? widgetAccent
+                          : loading
+                            ? "#f5c542"
+                            : widgetAccent,
                         boxShadow: `0 0 0 7px ${
-                          loading
+                          isVoiceActive
+                            ? `rgba(${accentRgb}, 0.20)`
+                            : loading
                             ? "rgba(245,197,66,0.14)"
                             : `rgba(${accentRgb}, 0.12)`
                         }`,
@@ -7496,24 +8659,17 @@ body::after {
                           color: textSecondary,
                         }}
                       >
-                        {voicePhase === "listening"
-                          ? "Hört zu…"
-                          : voicePhase === "transcribing"
-                            ? "Versteht dich…"
-                            : voicePhase === "thinking"
-                              ? "Denkt nach…"
-                              : voicePhase === "speaking" ||
-                                  voicePhase === "ready"
-                                ? "Antwortet…"
-                                : loading
-                                  ? "Tippt…"
-                                  : isHohenbadenInterface
-                                    ? "Beta: in7Days Führerscheinbegleiter"
-                                    : isAbgefahrenInterface
-                                      ? "Beta: persönlicher Führerscheinbegleiter"
-                                      : isFahrwerkBInterface
-                                      ? "In 1 Minute zum passenden Einstieg"
-                                      : "Online verfügbar"}
+                        {isVoiceActive
+                          ? voiceStatus.label
+                          : loading
+                          ? "Tippt…"
+                          : isHohenbadenInterface
+                            ? "Beta: in7Days Führerscheinbegleiter"
+                            : isAbgefahrenInterface
+                              ? "Beta: persönlicher Führerscheinbegleiter"
+                              : isFahrwerkBInterface
+                                ? "In 1 Minute zum passenden Einstieg"
+                                : "Online verfügbar"}
                       </div>
                     </div>
                   </div>
@@ -7783,15 +8939,15 @@ body::after {
                             key={card.title}
                             type="button"
                             className="bt-start-card"
-                            disabled={loading || isVoiceActive}
-                            onClick={() => {
+                            disabled={loading}
+                            onClick={(event) => {
                               if (card.action === "photo") {
                                 openPhotoPicker();
                                 return;
                               }
 
                               if (card.action === "voice") {
-                                void startVoiceInput();
+                                void startRealtimeVoice(event.currentTarget);
                                 return;
                               }
 
@@ -9535,8 +10691,45 @@ body::after {
                   )}
                 </div>
 
+                {voiceUiAction && (
+                  <div className="bt-voice-action-dock">
+                    <div className="bt-voice-action-mark" aria-hidden="true">
+                      ↗
+                    </div>
+                    <div className="bt-voice-action-copy">
+                      <div className="bt-voice-action-eyebrow">
+                        {voiceUiAction.eyebrow}
+                      </div>
+                      <div className="bt-voice-action-title">
+                        {voiceUiAction.title}
+                      </div>
+                      <div className="bt-voice-action-description">
+                        {voiceUiAction.description}
+                      </div>
+                    </div>
+                    <a
+                      className="bt-voice-action-link"
+                      href={voiceUiAction.url}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      {voiceUiAction.cta} <span aria-hidden="true">↗</span>
+                    </a>
+                    <button
+                      type="button"
+                      className="bt-voice-action-close"
+                      onClick={() => setVoiceUiAction(null)}
+                      aria-label="Vorschlag schließen"
+                    >
+                      ×
+                    </button>
+                  </div>
+                )}
+
                 <div
-                  className="bt-composer"
+                  className={`bt-composer ${
+                    isVoiceActive ? "bt-composer--voice" : ""
+                  }`}
                   style={{
                     padding: isMobileViewport
                       ? 10
@@ -9568,93 +10761,113 @@ body::after {
                     onChange={handlePhotoUpload}
                   />
 
-                  <button
-                    type="button"
-                    className="bt-round-action-button"
-                    onClick={openPhotoPicker}
-                    disabled={loading || isVoiceActive}
-                    title="Foto hinzufügen"
-                    aria-label="Foto hinzufügen"
-                  >
-                    📷
-                  </button>
+                  {!isVoiceActive && (
+                    <button
+                      type="button"
+                      className="bt-round-action-button"
+                      onClick={openPhotoPicker}
+                      disabled={loading}
+                      title="Foto hinzufügen"
+                      aria-label="Foto hinzufügen"
+                    >
+                      📷
+                    </button>
+                  )}
 
                   <button
                     type="button"
                     className={`bt-round-action-button ${isVoiceActive ? "bt-listening" : ""}`}
-                    onClick={() => void startVoiceInput()}
-                    disabled={loading && !isVoiceActive}
-                    title={
-                      isListening
-                        ? "Aufnahme beenden"
-                        : voicePhase === "ready"
-                          ? "Antwort abspielen"
-                          : voiceSupported
-                            ? "Sprachmodus starten"
-                            : "Audioaufnahme nicht unterstützt"
-                    }
-                    aria-label={
-                      isListening
-                        ? "Aufnahme beenden"
-                        : voicePhase === "ready"
-                          ? "Antwort abspielen"
-                          : voiceSupported
-                            ? "Sprachmodus starten"
-                            : "Audioaufnahme nicht unterstützt"
-                    }
-                  >
-                    {isListening ? "■" : "🎙️"}
-                  </button>
-
-                  <input
-                    className="bt-message-input"
-                    value={input}
-                    onChange={(e) => setInput(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter") {
-                        e.preventDefault();
-                        send();
+                    onClick={(event) => {
+                      if (isVoiceActive) {
+                        cancelVoiceMode();
+                      } else {
+                        void startRealtimeVoice(event.currentTarget);
                       }
                     }}
-                    placeholder={
+                    disabled={loading && !isVoiceActive}
+                    aria-label={
                       isVoiceActive
-                        ? "Sprachmodus aktiv…"
-                        : isHohenbadenInterface
+                        ? "Sprachmodus schließen"
+                        : "Realtime-Sprachmodus starten"
+                    }
+                    title={
+                      isVoiceActive
+                        ? "Sprachmodus beenden"
+                        : "Sprachmodus starten"
+                    }
+                  >
+                    🎙️
+                  </button>
+
+                  {isVoiceActive ? (
+                    <div
+                      className={`bt-voice-live-strip bt-voice-live-strip--${voicePhase}`}
+                      role="status"
+                      aria-live="polite"
+                    >
+                      <span className="bt-voice-live-orb" aria-hidden="true">
+                        <span />
+                      </span>
+                      <span className="bt-voice-live-copy">
+                        <strong>{voiceStatus.label}</strong>
+                        <span>{voiceStatus.detail}</span>
+                      </span>
+                      <span className="bt-voice-live-meter" aria-hidden="true">
+                        {[0, 1, 2, 3, 4].map((bar) => (
+                          <i key={bar} style={{ "--bar": bar } as CSSProperties} />
+                        ))}
+                      </span>
+                    </div>
+                  ) : (
+                    <input
+                      className="bt-message-input"
+                      value={input}
+                      onChange={(e) => setInput(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          e.preventDefault();
+                          send();
+                        }
+                      }}
+                      placeholder={
+                        isHohenbadenInterface
                           ? "Schreib z. B. Intensivkurs, THEO App oder Umschreibung…"
                           : isAbgefahrenInterface
                             ? "Schreib z. B. B197, 7-Tage-Theorie oder Anmeldung…"
                             : isFahrwerkBInterface
-                            ? "Schreib z. B. B197, BF17 oder Beratung…"
-                            : isLinaInterface
-                            ? "Schreib kurz, was du brauchst…"
-                            : isMmWartungInterface
-                              ? "Schreib dein Anliegen…"
-                              : isTxbikesInterface
-                                ? "Schreib z. B. Reparatur, E-Bike oder Termin…"
-                                : isWilliInterface
-                                  ? "Schreib kurz dein Anliegen…"
-                                  : "Schreib eine Frage…"
-                    }
-                    style={{
-                      flex: 1,
-                      height: isEnhancedInterface ? 60 : 46,
-                      padding: isEnhancedInterface ? "0 16px" : "0 12px",
-                      borderRadius: isEnhancedInterface ? 18 : 14,
-                      border: "1px solid rgba(22,49,38,0.12)",
-                      background:
-                        "linear-gradient(180deg, rgba(255,255,255,0.84), rgba(255,255,255,0.72))",
-                      backdropFilter: "blur(22px) saturate(180%)",
-                      WebkitBackdropFilter: "blur(22px) saturate(180%)",
-                      boxShadow:
-                        "inset 0 1px 0 rgba(255,255,255,0.22), 0 1px 0 rgba(255,255,255,0.18)",
-                      color: textPrimary,
-                      outline: "none",
-                      caretColor: textPrimary,
-                      fontSize: isEnhancedInterface ? 16 : 14,
-                    }}
-                  />
+                              ? "Schreib z. B. B197, BF17 oder Beratung…"
+                              : isLinaInterface
+                                ? "Schreib kurz, was du brauchst…"
+                                : isMmWartungInterface
+                                  ? "Schreib dein Anliegen…"
+                                  : isTxbikesInterface
+                                    ? "Schreib z. B. Reparatur, E-Bike oder Termin…"
+                                    : isWilliInterface
+                                      ? "Schreib kurz dein Anliegen…"
+                                      : "Schreib eine Frage…"
+                      }
+                      style={{
+                        flex: 1,
+                        height: isEnhancedInterface ? 60 : 46,
+                        padding: isEnhancedInterface ? "0 16px" : "0 12px",
+                        borderRadius: isEnhancedInterface ? 18 : 14,
+                        border: "1px solid rgba(22,49,38,0.12)",
+                        background:
+                          "linear-gradient(180deg, rgba(255,255,255,0.84), rgba(255,255,255,0.72))",
+                        backdropFilter: "blur(22px) saturate(180%)",
+                        WebkitBackdropFilter: "blur(22px) saturate(180%)",
+                        boxShadow:
+                          "inset 0 1px 0 rgba(255,255,255,0.22), 0 1px 0 rgba(255,255,255,0.18)",
+                        color: textPrimary,
+                        outline: "none",
+                        caretColor: textPrimary,
+                        fontSize: isEnhancedInterface ? 16 : 14,
+                      }}
+                    />
+                  )}
 
-                  <button
+                  {!isVoiceActive && (
+                    <button
                     className="bt-send-button"
                     onClick={send}
                     disabled={!input.trim() || loading || isVoiceActive}
@@ -9674,7 +10887,7 @@ body::after {
                       cursor:
                         input.trim() && !loading && !isVoiceActive
                           ? "pointer"
-                          : "not-allowed",
+                          : "not-allowaed",
                       opacity: loading ? 0.72 : 1,
                       fontWeight: isEnhancedInterface ? 700 : 500,
                       fontSize: isEnhancedInterface ? 16 : 14,
@@ -9684,121 +10897,11 @@ body::after {
                     }}
                   >
                     Senden
-                  </button>
+                    </button>
+                  )}
                 </div>
               </div>
 
-              {isVoiceActive && (
-                <div
-                  ref={voiceStageRef}
-                  className={`bt-voice-stage bt-voice-stage--${voicePhase}`}
-                  role="dialog"
-                  aria-modal="true"
-                  aria-live="polite"
-                  aria-label="Sprachmodus"
-                  style={
-                    {
-                      "--voice-scale": "1.03",
-                      "--voice-energy": "0.08",
-                      "--voice-glow": "0.30",
-                    } as CSSProperties
-                  }
-                >
-                  <div className="bt-voice-grid" aria-hidden="true" />
-
-                  <button
-                    type="button"
-                    className="bt-voice-close"
-                    onClick={cancelVoiceMode}
-                    aria-label="Sprachmodus schließen"
-                    title="Sprachmodus schließen"
-                  >
-                    ×
-                  </button>
-
-                  <div className="bt-voice-center">
-                    <button
-                      type="button"
-                      className="bt-voice-orb-button"
-                      onClick={() => {
-                        if (voicePhase === "listening") {
-                          stopVoiceRecording();
-                        } else if (voicePhase === "speaking") {
-                          void startVoiceInput();
-                        } else if (voicePhase === "ready") {
-                          void playPreparedVoiceResponse();
-                        } else if (voicePhase === "error") {
-                          void startVoiceInput();
-                        }
-                      }}
-                      disabled={
-                        !["listening", "speaking", "ready", "error"].includes(
-                          voicePhase,
-                        )
-                      }
-                      aria-label={
-                        voicePhase === "listening"
-                          ? "Aufnahme beenden"
-                          : voicePhase === "speaking"
-                            ? "Antwort unterbrechen und weiterreden"
-                            : voicePhase === "ready"
-                              ? "Antwort abspielen"
-                              : voicePhase === "error"
-                                ? "Erneut versuchen"
-                                : voiceTitle
-                      }
-                    >
-                      <span className="bt-voice-halo" aria-hidden="true" />
-                      <span className="bt-voice-halo" aria-hidden="true" />
-                      <span className="bt-voice-core" aria-hidden="true" />
-                    </button>
-
-                    <div className="bt-voice-copy" key={voicePhase}>
-                      <div className="bt-voice-eyebrow">{voiceEyebrow}</div>
-                      <div className="bt-voice-title">{voiceTitle}</div>
-                      <div className="bt-voice-transcript">
-                        {voiceDescription}
-                      </div>
-
-                      {["transcribing", "thinking"].includes(voicePhase) && (
-                        <div className="bt-voice-dots" aria-hidden="true">
-                          <span />
-                          <span />
-                          <span />
-                        </div>
-                      )}
-
-                      {voicePhase === "ready" && (
-                        <button
-                          type="button"
-                          className="bt-voice-action"
-                          onClick={() => void playPreparedVoiceResponse()}
-                        >
-                          Antwort abspielen
-                        </button>
-                      )}
-
-                      {voicePhase === "error" && (
-                        <button
-                          type="button"
-                          className="bt-voice-action"
-                          onClick={() => void startVoiceInput()}
-                        >
-                          Erneut versuchen
-                        </button>
-                      )}
-                    </div>
-                  </div>
-
-                  <div className="bt-voice-footer">
-                    {voicePhase === "listening"
-                      ? "Eine kurze Pause reicht – deine Frage wird automatisch gesendet."
-                      : voicePhase === "speaking"
-                        ? "Nach der Antwort hört das Interface automatisch wieder zu."
-                        : "Der Sprachmodus bleibt aktiv, bis du ihn oben rechts schließt."}
-                  </div>
-                </div>
-              )}
             </div>
           )}
         </>
