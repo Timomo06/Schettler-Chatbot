@@ -66,6 +66,7 @@ type StartCard = {
     | "booking"
     | "fahrwerkSignup"
     | "fahrwerkLiveSignup"
+    | "petermaennchenContact"
     | "fahrwerkPanel"
     | "abgefahrenPanel"
     | "hohenbadenPanel";
@@ -148,6 +149,14 @@ const DEFAULT_FAHRWERK_SIGNUP_FORM: FahrwerkSignupFormState = {
 
 const FAHRWERK_LIVE_SIGNUP_URL =
   "https://start.fahrschule.live/WTd4L0ZsYzRRbkcycmRzV3gxczFGQT09OjrLg1cp9dg7zbbiRX6Flixr/st/reg";
+
+const PETERMAENNCHEN_WEBSITE_URL =
+  "https://www.petermaennchen-fahrschule.de/";
+const PETERMAENNCHEN_CONTACT_URL =
+  "https://www.petermaennchen-fahrschule.de/#kontakt";
+const PETERMAENNCHEN_PHONE_URL = "tel:+49385734393";
+const PETERMAENNCHEN_LOGO_SRC =
+  "https://www.petermaennchen-fahrschule.de/wp-content/themes/fka/img/logo_petermeannchen_fahrschule.png";
 
 const FAHRWERK_LICENSE_CLASSES = [
   "Klasse B",
@@ -634,6 +643,48 @@ const FAHRWERK_B_START_CARDS: StartCard[] = [
     icon: "🎙️",
     title: "Einfach sprechen",
     description: "Frage stellen, unterbrechen und direkt weiterreden",
+    action: "voice",
+  },
+];
+
+const PETERMAENNCHEN_START_CARDS: StartCard[] = [
+  {
+    icon: "🧭",
+    title: "Führerschein finden",
+    description: "Auto, Motorrad, Lkw, Bus oder Anhänger einordnen",
+    message:
+      "Ich weiß noch nicht genau, welche Führerscheinklasse zu mir passt. Bitte finde sie mit mir gemeinsam heraus.",
+  },
+  {
+    icon: "📅",
+    title: "Kurse & Termine",
+    description: "Abendkurse, Ferienkurse und Weiterbildungen ansehen",
+    message:
+      "Welche kommenden Kurse und Termine bietet die Petermännchen Fahrschule an?",
+  },
+  {
+    icon: "€",
+    title: "Preise",
+    description: "Bekannte Kosten verständlich aufgeschlüsselt",
+    message:
+      "Was kostet die Ausbildung bei der Petermännchen Fahrschule?",
+  },
+  {
+    icon: "✅",
+    title: "Unterlagen prüfen",
+    description: "Passbild, Sehtest, Erste Hilfe und Antrag",
+    message: "Welche Unterlagen brauche ich für meinen Führerschein?",
+  },
+  {
+    icon: "📝",
+    title: "Anmeldung & Beratung",
+    description: "Anfrage vorbereiten und Fahrschulbüro kontaktieren",
+    action: "petermaennchenContact",
+  },
+  {
+    icon: "🎙️",
+    title: "Frage einsprechen",
+    description: "Einfach erzählen statt tippen",
     action: "voice",
   },
 ];
@@ -4234,6 +4285,15 @@ export default function WidgetPage() {
     "fahrwerkbde",
     "fahrwerk",
   ].includes(normalizedTenantId);
+  const isPetermaennchenInterface = [
+    "petermaennchen",
+    "petermännchen",
+    "petermaennchen-fahrschule",
+    "petermännchen-fahrschule",
+    "petermaennchen-fahrschule.de",
+    "petermaennchenfahrschule",
+    "petermaennchen-fahrschulede",
+  ].includes(normalizedTenantId);
   const isAbgefahrenInterface = [
     "fahrschule-abgefahren",
     "abgefahren",
@@ -4257,6 +4317,7 @@ export default function WidgetPage() {
     isLinaInterface ||
     isMmWartungInterface ||
     isFahrwerkBInterface ||
+    isPetermaennchenInterface ||
     isAbgefahrenInterface ||
     isHohenbadenInterface;
   const isBookingInterface =
@@ -4300,6 +4361,8 @@ export default function WidgetPage() {
       ? "Fahrschule Abgefahren"
       : isFahrwerkBInterface
       ? "Fahrwerk B"
+      : isPetermaennchenInterface
+        ? "Petermännchen Fahrschule"
       : isTxbikesInterface
       ? "TXBikes"
       : isWilliInterface
@@ -4311,6 +4374,8 @@ export default function WidgetPage() {
       ? "Führerschein-Assistent"
       : isFahrwerkBInterface
       ? "Führerschein-Cockpit"
+      : isPetermaennchenInterface
+        ? "Führerschein-Assistent"
       : isTxbikesInterface
       ? "Bike-Service Interface"
       : isWilliInterface
@@ -4333,6 +4398,8 @@ export default function WidgetPage() {
             ? theme.accent || "#e11d48"
             : isFahrwerkBInterface
             ? "#c8102e"
+            : isPetermaennchenInterface
+              ? "#f9c806"
             : theme.accent;
   const widgetBackground = isTxbikesInterface
     ? "#f6f2ff"
@@ -4348,6 +4415,8 @@ export default function WidgetPage() {
               ? "#fff7fb"
               : isFahrwerkBInterface
               ? "#0b0f16"
+              : isPetermaennchenInterface
+                ? "#fefefe"
               : theme.bg;
   const textPrimary = isTxbikesInterface
     ? "#1f1636"
@@ -4363,6 +4432,8 @@ export default function WidgetPage() {
               ? "#24141b"
               : isFahrwerkBInterface
               ? "#111827"
+              : isPetermaennchenInterface
+                ? "#000d1a"
               : "#163126";
   const textSecondary = isTxbikesInterface
     ? "#6a5f8d"
@@ -4378,6 +4449,8 @@ export default function WidgetPage() {
               ? "#765463"
               : isFahrwerkBInterface
               ? "#4b5563"
+              : isPetermaennchenInterface
+                ? "#434f58"
               : "#355f52";
   const accentRgb = useMemo(() => hexToRgb(widgetAccent), [widgetAccent]);
 
@@ -4509,6 +4582,8 @@ export default function WidgetPage() {
         ? "Moin! Ich bin der digitale Führerschein-Assistent der Fahrschule Abgefahren. Ich helfe dir bei Führerscheinklassen, Theorie, Anmeldung und den Standorten Schwerin oder Sternberg. Womit möchtest du starten?"
         : isFahrwerkBInterface
         ? "Hi — ich bin dein Fahrwerk B Führerschein-Cockpit. Wähle aus, wo du gerade stehst, und ich zeige dir den nächsten sinnvollen Schritt."
+        : isPetermaennchenInterface
+          ? "Hallo! Ich bin der digitale Führerschein-Assistent der Petermännchen Fahrschule in Schwerin. Ich helfe dir bei Führerscheinklassen, Kursen, Preisen, Unterlagen und deiner Anfrage. Womit möchtest du starten?"
         : isLinaInterface
         ? `Hi — ich bin ${displayAssistantName}. Wobei soll ich dir bei BTDesigns helfen?`
         : isMmWartungInterface
@@ -4534,6 +4609,7 @@ export default function WidgetPage() {
     isAbgefahrenInterface,
     isHohenbadenInterface,
     isFahrwerkBInterface,
+    isPetermaennchenInterface,
     isLinaInterface,
     isMmWartungInterface,
     isTxbikesInterface,
@@ -4644,12 +4720,12 @@ export default function WidgetPage() {
             type: "bt-chat-resize",
             width: isBookingInterface
               ? 1080
-              : isTxbikesInterface || isFahrwerkBInterface || isAbgefahrenInterface || isHohenbadenInterface
+              : isTxbikesInterface || isFahrwerkBInterface || isPetermaennchenInterface || isAbgefahrenInterface || isHohenbadenInterface
                 ? 980
                 : 500,
             height: isBookingInterface
               ? 920
-              : isTxbikesInterface || isFahrwerkBInterface || isAbgefahrenInterface || isHohenbadenInterface
+              : isTxbikesInterface || isFahrwerkBInterface || isPetermaennchenInterface || isAbgefahrenInterface || isHohenbadenInterface
                 ? 880
                 : 760,
           }
@@ -4667,6 +4743,7 @@ export default function WidgetPage() {
     isBookingInterface,
     isTxbikesInterface,
     isFahrwerkBInterface,
+    isPetermaennchenInterface,
     isAbgefahrenInterface,
     isHohenbadenInterface,
     embedClosedSize,
@@ -4685,6 +4762,8 @@ export default function WidgetPage() {
             ? "fahrschule-abgefahren"
             : isFahrwerkBInterface
             ? "fahrwerk-b"
+            : isPetermaennchenInterface
+              ? "petermaennchen"
             : isLinaInterface
             ? "btai"
             : isTxbikesInterface
@@ -4734,6 +4813,7 @@ export default function WidgetPage() {
     isAbgefahrenInterface,
     isHohenbadenInterface,
     isFahrwerkBInterface,
+    isPetermaennchenInterface,
     isLinaInterface,
     isTxbikesInterface,
     isWilliInterface,
@@ -4750,6 +4830,179 @@ export default function WidgetPage() {
       url: FAHRWERK_LIVE_SIGNUP_URL,
       cta: "Anmeldung öffnen",
     });
+  }
+
+  function showPetermaennchenContactCard() {
+    setVoiceUiAction({
+      id: `petermaennchen-contact-${Date.now()}`,
+      kind: "contact",
+      eyebrow: "Petermännchen Fahrschule",
+      title: "Anmeldung & persönliche Beratung",
+      description:
+        "Das Kontaktformular ist unverbindlich. Eine verbindliche Anmeldung erfolgt im Fahrschulbüro oder schriftlich per E-Mail.",
+      items: [
+        {
+          label: "Telefon",
+          value: "0385 73 43 93",
+          detail: "Direkt mit dem Fahrschulbüro sprechen.",
+        },
+        {
+          label: "E-Mail",
+          value: "info@petermaennchen-fahrschule.de",
+          detail: "Verbindliche Anmeldung schriftlich anfragen.",
+        },
+      ],
+      url: PETERMAENNCHEN_CONTACT_URL,
+      cta: "Anfrage öffnen",
+    });
+  }
+
+  function applyPetermaennchenSurfaceIntent(rawText: string) {
+    const normalized = rawText
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/[^a-z0-9äöüß\s-]/gi, " ")
+      .replace(/\s+/g, " ")
+      .trim();
+
+    if (!normalized) return;
+
+    if (/\b(anmeld|anmeldung|anmelden|kontakt|beratung|ruckruf|rückruf)\w*/i.test(normalized)) {
+      showPetermaennchenContactCard();
+      return;
+    }
+
+    if (/\b(preis|preise|kosten|kostet|gebuhr|gebühr)\w*/i.test(normalized)) {
+      setVoiceUiAction({
+        id: `petermaennchen-prices-${Date.now()}`,
+        kind: "price-list",
+        eyebrow: "Petermännchen Fahrschule",
+        title: "Bekannte Preise im Überblick",
+        description:
+          "Der Gesamtpreis hängt unter anderem von den benötigten Fahrstunden und Prüfungsgebühren ab.",
+        items: [
+          {
+            label: "Klasse B / B197",
+            value: "530,00 €",
+            detail: "Grundbetrag plus Lehr-/Lernmittel – nicht der Gesamtpreis.",
+          },
+          {
+            label: "Berufskraftfahrer-Modul",
+            value: "100,00 €",
+            detail: "Preis je veröffentlichtem Modul.",
+          },
+          {
+            label: "Individuelles Angebot",
+            detail: "Den verbindlichen Gesamtpreis bestätigt das Fahrschulbüro.",
+          },
+        ],
+        url: PETERMAENNCHEN_CONTACT_URL,
+        cta: "Preis anfragen",
+      });
+      return;
+    }
+
+    if (/\b(kurs|kurse|termin|termine|abendkurs|ferienkurs|modul)\w*/i.test(normalized)) {
+      setVoiceUiAction({
+        id: `petermaennchen-courses-${Date.now()}`,
+        kind: "info",
+        eyebrow: "Kurse · Stand 23.08.2026",
+        title: "Die nächsten veröffentlichten Termine",
+        description:
+          "Freie Plätze und kurzfristige Änderungen müssen vom Fahrschulbüro bestätigt werden.",
+        items: [
+          {
+            label: "Abendkurs",
+            value: "08.09.–22.10.2026",
+            detail: "Dienstag und Donnerstag, 17:30 bis ca. 19:15 Uhr.",
+          },
+          {
+            label: "Berufskraftfahrer Modul 5",
+            value: "05.09.2026",
+            detail: "Beginn 08:45 Uhr im NUFA Center Schwerin Süd.",
+          },
+          {
+            label: "Berufskraftfahrer Modul 1",
+            value: "26.09.2026",
+            detail: "Beginn 08:45 Uhr im NUFA Center Schwerin Süd.",
+          },
+        ],
+        url: PETERMAENNCHEN_CONTACT_URL,
+        cta: "Platz anfragen",
+      });
+      return;
+    }
+
+    if (/\b(unterlagen|dokument|sehtest|erste hilfe|passbild|antrag)\w*/i.test(normalized)) {
+      setVoiceUiAction({
+        id: `petermaennchen-documents-${Date.now()}`,
+        kind: "checklist",
+        eyebrow: "Führerscheinantrag",
+        title: "Diese Unterlagen brauchst du",
+        description:
+          "Der Antrag sollte möglichst gleichzeitig mit der Fahrschulanmeldung eingereicht werden.",
+        items: [
+          { label: "Personalausweis oder Reisepass" },
+          { label: "Biometrisches Passbild" },
+          { label: "Sehtest", detail: "Darf höchstens zwei Jahre alt sein." },
+          { label: "Erste-Hilfe-Nachweis" },
+          { label: "Antragsgebühr der Fahrerlaubnisbehörde" },
+        ],
+      });
+      return;
+    }
+
+    if (/\b(bf17|begleitet|begleitperson|mit 17|ab 17)\b/i.test(normalized)) {
+      setVoiceUiAction({
+        id: `petermaennchen-bf17-${Date.now()}`,
+        kind: "checklist",
+        eyebrow: "Begleitetes Fahren ab 17",
+        title: "BF17 kurz geprüft",
+        description: "Die Anmeldung ist für Bewerber ab 16 1/2 Jahren möglich.",
+        items: [
+          { label: "Zustimmung der Erziehungsberechtigten" },
+          { label: "Begleitperson mindestens 30 Jahre" },
+          { label: "Seit mindestens 5 Jahren Klasse B" },
+          { label: "Höchstens 1 Punkt im Fahreignungsregister" },
+        ],
+        url: PETERMAENNCHEN_CONTACT_URL,
+        cta: "BF17 anfragen",
+      });
+      return;
+    }
+
+    if (/\b(offen|offnungszeiten|öffnungszeiten|uhrzeit|mittagspause)\w*/i.test(normalized)) {
+      setVoiceUiAction({
+        id: `petermaennchen-hours-${Date.now()}`,
+        kind: "info",
+        eyebrow: "Fahrschulbüro",
+        title: "Öffnungszeiten",
+        description: "Platz der Freiheit 1 · 19053 Schwerin",
+        items: [
+          { label: "Dienstag & Donnerstag", value: "13:00–18:00" },
+          { label: "Mittwoch & Freitag", value: "09:00–14:00" },
+          { label: "Mittagspause", value: "12:00–13:00" },
+          { label: "Montag & Sonnabend", value: "nach Vereinbarung" },
+        ],
+        url: PETERMAENNCHEN_PHONE_URL,
+        cta: "Jetzt anrufen",
+      });
+      return;
+    }
+
+    if (/\b(adresse|anfahrt|route|finden|standort|platz der freiheit)\w*/i.test(normalized)) {
+      setVoiceUiAction({
+        id: `petermaennchen-location-${Date.now()}`,
+        kind: "contact",
+        eyebrow: "Hauptstelle Schwerin",
+        title: "Platz der Freiheit 1",
+        description:
+          "19053 Schwerin · Straßenbahn 2 und 4 · Bus 10, 11, 12 und 14.",
+        url: PETERMAENNCHEN_WEBSITE_URL,
+        cta: "Website öffnen",
+      });
+    }
   }
 
   function getSafeInterfaceUrl(rawUrl: unknown) {
@@ -4769,7 +5022,7 @@ export default function WidgetPage() {
   }
 
   function applyRealtimeInterfaceTool(rawArguments: unknown) {
-    if (!isFahrwerkBInterface) return false;
+    if (!isFahrwerkBInterface && !isPetermaennchenInterface) return false;
 
     let parsed: Record<string, unknown>;
 
@@ -4830,7 +5083,7 @@ export default function WidgetPage() {
       "contact",
     ];
 
-    if (validPanels.includes(requestedPanel)) {
+    if (isFahrwerkBInterface && validPanels.includes(requestedPanel)) {
       setFahrwerkPanel(requestedPanel);
     }
 
@@ -4841,13 +5094,20 @@ export default function WidgetPage() {
       !url &&
       /anmeld|registrier|einschreib/i.test(`${title} ${description}`)
     ) {
-      url = FAHRWERK_LIVE_SIGNUP_URL;
+      url = isPetermaennchenInterface
+        ? PETERMAENNCHEN_CONTACT_URL
+        : FAHRWERK_LIVE_SIGNUP_URL;
     }
 
     setVoiceUiAction({
       id: `realtime-surface-${Date.now()}`,
       kind,
-      eyebrow: String(parsed.eyebrow || "Fahrwerk B")
+      eyebrow: String(
+        parsed.eyebrow ||
+          (isPetermaennchenInterface
+            ? "Petermännchen Fahrschule"
+            : "Fahrwerk B"),
+      )
         .trim()
         .slice(0, 45),
       title,
@@ -4863,6 +5123,11 @@ export default function WidgetPage() {
   }
 
   function applyVoiceSurfaceIntent(rawText: string) {
+    if (isPetermaennchenInterface) {
+      applyPetermaennchenSurfaceIntent(rawText);
+      return;
+    }
+
     if (!isFahrwerkBInterface) return;
 
     const normalized = rawText
@@ -4922,7 +5187,7 @@ export default function WidgetPage() {
     const text = rawText.trim();
     if (!text || loadingRef.current) return null;
 
-    if (options.fromVoice) {
+    if (options.fromVoice || isPetermaennchenInterface) {
       applyVoiceSurfaceIntent(text);
     }
 
@@ -4983,6 +5248,8 @@ export default function WidgetPage() {
           ? "fahrschule-abgefahren"
           : isFahrwerkBInterface
             ? "fahrwerk-b"
+            : isPetermaennchenInterface
+              ? "petermaennchen"
             : cfg.id;
 
       const res = await fetch(
@@ -5070,6 +5337,32 @@ export default function WidgetPage() {
 
     // Falls der Browser neue Tabs blockiert, wird die Anmeldung im aktuellen Fenster geöffnet.
     window.location.assign(FAHRWERK_LIVE_SIGNUP_URL);
+  }
+
+  function openPetermaennchenContact() {
+    if (!isPetermaennchenInterface || loading || isVoiceActive) return;
+
+    setShowBadge(false);
+    showPetermaennchenContactCard();
+
+    setMsgs((current) => {
+      const alreadyHasContactHint = current.some(
+        (msg) =>
+          msg.role === "assistant" &&
+          msg.content.includes("Anfrage für die Petermännchen Fahrschule"),
+      );
+
+      if (alreadyHasContactHint) return current;
+
+      return [
+        ...current,
+        {
+          role: "assistant",
+          content:
+            "Gern bereite ich deine Anfrage für die Petermännchen Fahrschule vor. Das Kontaktformular ist unverbindlich; verbindlich meldest du dich anschließend im Büro oder schriftlich per E-Mail an.",
+        },
+      ];
+    });
   }
 
   function openFahrwerkSignupForm(licenseClass?: string, startWish?: string) {
@@ -6435,6 +6728,8 @@ export default function WidgetPage() {
         ? "fahrschule-abgefahren"
         : isFahrwerkBInterface
           ? "fahrwerk-b"
+          : isPetermaennchenInterface
+            ? "petermaennchen"
           : cfg.id;
 
     const handledRealtimeToolCalls = new Set<string>();
@@ -6870,6 +7165,8 @@ export default function WidgetPage() {
             ? "Alles klar — wobei soll ich dir rund um deinen Führerschein bei Abgefahren helfen?"
             : isFahrwerkBInterface
             ? "Alles klar — wo stehst du gerade bei deinem Führerschein?"
+            : isPetermaennchenInterface
+              ? "Alles klar — wobei soll ich dir rund um Führerschein, Kurse oder Anmeldung bei der Petermännchen Fahrschule helfen?"
             : isLinaInterface
             ? "Alles klar — wobei soll ich dir bei BTDesigns helfen?"
             : isMmWartungInterface
@@ -6886,14 +7183,14 @@ export default function WidgetPage() {
 
   const panelW = isBookingInterface
     ? 1040
-    : isTxbikesInterface || isFahrwerkBInterface || isAbgefahrenInterface || isHohenbadenInterface
+    : isTxbikesInterface || isFahrwerkBInterface || isPetermaennchenInterface || isAbgefahrenInterface || isHohenbadenInterface
       ? 940
       : isEmbedded
         ? 460
         : 500;
   const panelH = isBookingInterface
     ? 840
-    : isTxbikesInterface || isFahrwerkBInterface || isAbgefahrenInterface || isHohenbadenInterface
+    : isTxbikesInterface || isFahrwerkBInterface || isPetermaennchenInterface || isAbgefahrenInterface || isHohenbadenInterface
       ? 820
       : isEmbedded
         ? 660
@@ -6903,12 +7200,17 @@ export default function WidgetPage() {
       ? 28
       : 38
     : 28;
-  // Das BTDesigns-/BTAI-Logo wird in allen Interfaces einheitlich angezeigt.
-  const GLOBAL_LOGO_SRC = "/brand/btai-logo.png";
+  // Petermännchen erhält für die Vertriebsversion sein eigenes Markenlogo.
+  // Alle anderen Interfaces behalten weiterhin das BTDesigns-/BTAI-Logo.
+  const GLOBAL_LOGO_SRC = isPetermaennchenInterface
+    ? PETERMAENNCHEN_LOGO_SRC
+    : "/brand/btai-logo.png";
   const headerPrimaryCta = isHohenbadenInterface
     ? { label: "Website", url: "https://fahrschule-hohenbaden.de" }
     : isAbgefahrenInterface
       ? { label: "Website", url: "https://abgefahren-schwerin.de" }
+      : isPetermaennchenInterface
+        ? { label: "Website", url: PETERMAENNCHEN_WEBSITE_URL }
       : cfg.primaryCta;
 
   if (!mounted) return null;
@@ -6928,6 +7230,8 @@ export default function WidgetPage() {
     ? HOHENBADEN_START_CARDS
     : isAbgefahrenInterface
       ? ABGEFAHREN_START_CARDS
+      : isPetermaennchenInterface
+        ? PETERMAENNCHEN_START_CARDS
       : isFahrwerkBInterface
       ? FAHRWERK_B_START_CARDS
       : isTxbikesInterface
@@ -7016,16 +7320,18 @@ export default function WidgetPage() {
         border: open
           ? `1px solid rgba(${accentRgb}, 0.34)`
           : `1px solid rgba(${accentRgb}, 0.56)`,
-        background: open
-          ? `radial-gradient(150px 96px at 35% 25%, rgba(${accentRgb}, 0.34) 0%, transparent 65%), linear-gradient(180deg, rgba(255,255,255,0.28), rgba(${accentRgb}, 0.16))`
-          : `radial-gradient(150px 96px at 35% 25%, rgba(${accentRgb}, 0.72) 0%, transparent 65%), linear-gradient(180deg, rgba(255,255,255,0.30), rgba(${accentRgb}, 0.26))`,
+        background: isPetermaennchenInterface
+          ? `radial-gradient(150px 96px at 35% 25%, rgba(${accentRgb}, ${open ? 0.22 : 0.34}) 0%, transparent 66%), linear-gradient(145deg, #000d1a, #071c2d)`
+          : open
+            ? `radial-gradient(150px 96px at 35% 25%, rgba(${accentRgb}, 0.34) 0%, transparent 65%), linear-gradient(180deg, rgba(255,255,255,0.28), rgba(${accentRgb}, 0.16))`
+            : `radial-gradient(150px 96px at 35% 25%, rgba(${accentRgb}, 0.72) 0%, transparent 65%), linear-gradient(180deg, rgba(255,255,255,0.30), rgba(${accentRgb}, 0.26))`,
         backdropFilter: "blur(18px) saturate(175%)",
         WebkitBackdropFilter: "blur(18px) saturate(175%)",
         boxShadow: open
           ? `0 18px 52px rgba(0,0,0,0.22), 0 0 0 1px rgba(${accentRgb}, 0.20) inset, 0 0 26px rgba(${accentRgb}, 0.16)`
           : `0 18px 52px rgba(0,0,0,0.20), 0 0 0 1px rgba(${accentRgb}, 0.34) inset, 0 0 42px rgba(${accentRgb}, 0.30)`,
         cursor: "pointer",
-        color: "#ffffff",
+        color: isPetermaennchenInterface ? "#f9c806" : "#ffffff",
         display: "grid",
         placeItems: "center",
         position: "relative",
@@ -8682,6 +8988,8 @@ body::after {
                       ? "Führerschein-Frage?"
                       : isFahrwerkBInterface
                       ? "Führerschein starten?"
+                      : isPetermaennchenInterface
+                        ? "Führerschein-Frage?"
                       : isTxbikesInterface
                       ? "Fahrrad-Frage?"
                       : isWilliInterface
@@ -8851,7 +9159,9 @@ body::after {
                       : isEnhancedInterface
                         ? "24px 28px 22px"
                         : "16px 14px 14px",
-                    borderBottom: "1px solid rgba(22,49,38,0.12)",
+                    borderBottom: isPetermaennchenInterface
+                      ? "1px solid rgba(249,200,6,0.34)"
+                      : "1px solid rgba(22,49,38,0.12)",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "space-between",
@@ -8862,11 +9172,15 @@ body::after {
                         ? 116
                         : 86,
                     flex: "0 0 auto",
-                    background: `
+                    background: isPetermaennchenInterface
+                      ? `radial-gradient(520px 180px at 18% 0%, rgba(${accentRgb},0.13) 0%, transparent 72%), linear-gradient(135deg, #000d1a, #071c2d)`
+                      : `
               radial-gradient(520px 180px at 18% 0%, ${widgetAccent}14 0%, transparent 72%),
               linear-gradient(180deg, rgba(255,255,255,0.34), rgba(255,255,255,0.14))
             `,
-                    boxShadow: "0 1px 0 rgba(255,255,255,0.22) inset",
+                    boxShadow: isPetermaennchenInterface
+                      ? "0 1px 0 rgba(255,255,255,0.10) inset, 0 12px 32px rgba(0,13,26,0.16)"
+                      : "0 1px 0 rgba(255,255,255,0.22) inset",
                   }}
                 >
                   <div
@@ -8913,7 +9227,9 @@ body::after {
                           fontWeight: 700,
                           letterSpacing: 0.3,
                           opacity: 0.96,
-                          color: textPrimary,
+                          color: isPetermaennchenInterface
+                            ? "#ffffff"
+                            : textPrimary,
                         }}
                       >
                         {displayBrandName} – {displayAssistantName}
@@ -8928,7 +9244,9 @@ body::after {
                               : 12.5,
                           opacity: 0.9,
                           marginTop: 3,
-                          color: textSecondary,
+                          color: isPetermaennchenInterface
+                            ? "#f9c806"
+                            : textSecondary,
                         }}
                       >
                         {isVoiceActive
@@ -8939,8 +9257,10 @@ body::after {
                             ? "Beta: in7Days Führerscheinbegleiter"
                             : isAbgefahrenInterface
                               ? "Beta: persönlicher Führerscheinbegleiter"
-                              : isFahrwerkBInterface
+                            : isFahrwerkBInterface
                                 ? "In 1 Minute zum passenden Einstieg"
+                                : isPetermaennchenInterface
+                                  ? "Persönlich · regional · sicher ans Ziel"
                                 : "Online verfügbar"}
                       </div>
                     </div>
@@ -8956,10 +9276,30 @@ body::after {
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",
-                        width: isEnhancedInterface ? 64 : 52,
-                        height: isEnhancedInterface ? 64 : 52,
-                        padding: isEnhancedInterface ? "9px" : "7px",
-                        borderRadius: isEnhancedInterface ? 18 : 14,
+                        width: isPetermaennchenInterface
+                          ? isMobileViewport
+                            ? 118
+                            : 184
+                          : isEnhancedInterface
+                            ? 64
+                            : 52,
+                        height: isPetermaennchenInterface
+                          ? isMobileViewport
+                            ? 44
+                            : 58
+                          : isEnhancedInterface
+                            ? 64
+                            : 52,
+                        padding: isPetermaennchenInterface
+                          ? "8px 12px"
+                          : isEnhancedInterface
+                            ? "9px"
+                            : "7px",
+                        borderRadius: isPetermaennchenInterface
+                          ? 14
+                          : isEnhancedInterface
+                            ? 18
+                            : 14,
                         border: "1px solid rgba(255,255,255,0.42)",
                         background:
                           "linear-gradient(180deg, rgba(255,255,255,0.62), rgba(255,255,255,0.36))",
@@ -8974,14 +9314,20 @@ body::after {
                     >
                       <img
                         src={GLOBAL_LOGO_SRC}
-                        alt="Logo"
+                        alt={
+                          isPetermaennchenInterface
+                            ? "Petermännchen Fahrschule"
+                            : "BTDesigns Logo"
+                        }
                         style={{
                           height: "100%",
                           width: "100%",
                           objectFit: "contain",
                           display: "block",
                           margin: "auto",
-                          transform: "scale(1.04)",
+                          transform: isPetermaennchenInterface
+                            ? "scale(1)"
+                            : "scale(1.04)",
                           transformOrigin: "center",
                           filter: "drop-shadow(0 2px 6px rgba(0,0,0,0.10))",
                         }}
@@ -9002,7 +9348,9 @@ body::after {
                           borderRadius: isEnhancedInterface ? 14 : 11,
                           border: "1px solid rgba(255,255,255,0.24)",
                           background: `linear-gradient(180deg, ${widgetAccent}D6, ${widgetAccent}92)`,
-                          color: "#ffffff",
+                          color: isPetermaennchenInterface
+                            ? "#000d1a"
+                            : "#ffffff",
                           textDecoration: "none",
                           whiteSpace: "nowrap",
                           boxShadow: "inset 0 1px 0 rgba(255,255,255,0.12)",
@@ -9104,6 +9452,8 @@ body::after {
                             ? "Schneller zum Führerschein. Persönlich begleitet."
                             : isAbgefahrenInterface
                               ? "Dein Führerschein. Ein persönliches Cockpit."
+                              : isPetermaennchenInterface
+                                ? "Dein Weg zum Führerschein beginnt hier."
                               : isFahrwerkBInterface
                               ? "Dein Führerschein-Cockpit"
                               : "Was möchtest du machen?"}
@@ -9124,6 +9474,8 @@ body::after {
                             ? "Verbinde dich als Fahrschüler, finde den nächsten Intensivkurs, verfolge deinen THEO-Lernstand und plane deine Praxis. Diese Beta zeigt, wie in7Days die komplette Ausbildung digital an einem Ort bündeln könnte."
                             : isAbgefahrenInterface
                               ? "Verbinde dich als Fahrschüler, buche den nächsten passenden Kurs oder öffne deinen persönlichen Begleiter. Diese Beta zeigt, wie die komplette Ausbildung später an einem Ort zusammenlaufen kann."
+                              : isPetermaennchenInterface
+                                ? "Finde die passende Führerscheinklasse, prüfe Kurse und Unterlagen oder bereite deine Anfrage an die Petermännchen Fahrschule direkt vor."
                               : isFahrwerkBInterface
                               ? "Wähle aus, wo du gerade stehst. Das Interface zeigt dir den nächsten Schritt, prüft Unterlagen und bereitet Anfragen sauber vor."
                               : isLinaInterface
@@ -9137,7 +9489,7 @@ body::after {
                                     : `Wähle einen Einstieg aus. Danach führt dich ${displayAssistantName} gezielt weiter.`}
                         </div>
 
-                        {(isFahrwerkBInterface || isAbgefahrenInterface || isHohenbadenInterface) && (
+                        {(isFahrwerkBInterface || isPetermaennchenInterface || isAbgefahrenInterface || isHohenbadenInterface) && (
                           <div
                             className="bt-fahrwerk-steps"
                             style={{
@@ -9163,6 +9515,13 @@ body::after {
                                     "3 Fortschritt sehen",
                                     "4 Persönlich begleiten",
                                   ]
+                                : isPetermaennchenInterface
+                                  ? [
+                                      "1 Klasse finden",
+                                      "2 Kurs wählen",
+                                      "3 Unterlagen",
+                                      "4 Anfrage",
+                                    ]
                                 : [
                                   "1 Orientierung",
                                   "2 Unterlagen",
@@ -9238,6 +9597,11 @@ body::after {
 
                               if (card.action === "fahrwerkLiveSignup") {
                                 openFahrwerkLiveSignup();
+                                return;
+                              }
+
+                              if (card.action === "petermaennchenContact") {
+                                openPetermaennchenContact();
                                 return;
                               }
 
@@ -10894,7 +11258,7 @@ body::after {
                             color: isUser ? "#ffffff" : textPrimary,
                           }}
                         >
-                          {(isFahrwerkBInterface || isAbgefahrenInterface || isHohenbadenInterface) &&
+                          {(isFahrwerkBInterface || isPetermaennchenInterface || isAbgefahrenInterface || isHohenbadenInterface) &&
                           !isUser
                             ? ensureFahrwerkEmoji(m.content)
                             : m.content}
@@ -10908,6 +11272,8 @@ body::after {
                                     ? "Hochgeladenes Bild zur Anfrage bei Hohenbaden · in7Days"
                                     : isAbgefahrenInterface
                                       ? "Hochgeladenes Bild zur Anfrage bei Abgefahren"
+                                      : isPetermaennchenInterface
+                                        ? "Hochgeladenes Bild zur Anfrage bei der Petermännchen Fahrschule"
                                       : isFahrwerkBInterface
                                       ? "Hochgeladenes Bild zur Führerschein-Anfrage"
                                       : isLinaInterface
@@ -11144,6 +11510,8 @@ body::after {
                             ? "Schreib z. B. B197, 7-Tage-Theorie oder Anmeldung…"
                             : isFahrwerkBInterface
                               ? "Schreib z. B. B197, BF17 oder Beratung…"
+                              : isPetermaennchenInterface
+                                ? "Schreib z. B. Kurse, Preise oder Anmeldung…"
                               : isLinaInterface
                                 ? "Schreib kurz, was du brauchst…"
                                 : isMmWartungInterface
@@ -11188,7 +11556,11 @@ body::after {
                         ? `linear-gradient(180deg, ${widgetAccent}F0, ${widgetAccent}A8)`
                         : "rgba(255,255,255,0.26)",
                       color: input.trim()
-                        ? "#ffffff"
+                        ? isPetermaennchenInterface
+                          ? "#000d1a"
+                          : "#ffffff"
+                        : isPetermaennchenInterface
+                          ? "rgba(0,13,26,0.58)"
                         : isFahrwerkBInterface || isAbgefahrenInterface || isHohenbadenInterface
                           ? "rgba(127,29,29,0.62)"
                           : "#5c7a6d",
