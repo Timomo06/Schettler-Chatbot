@@ -38,14 +38,21 @@ type VoicePhase =
 
 type SendTextOptions = { fromVoice?: boolean; signal?: AbortSignal };
 
+type VoiceUiActionItem = {
+  label: string;
+  value?: string;
+  detail?: string;
+};
+
 type VoiceUiAction = {
   id: string;
-  kind: "link";
+  kind: "link" | "price-list" | "checklist" | "info" | "contact";
   eyebrow: string;
   title: string;
   description: string;
-  url: string;
-  cta: string;
+  items?: VoiceUiActionItem[];
+  url?: string;
+  cta?: string;
 };
 
 type StartCard = {
@@ -4745,6 +4752,116 @@ export default function WidgetPage() {
     });
   }
 
+  function getSafeInterfaceUrl(rawUrl: unknown) {
+    if (typeof rawUrl !== "string" || !rawUrl.trim()) return undefined;
+
+    try {
+      const url = new URL(rawUrl.trim());
+
+      if (!["https:", "http:", "tel:", "mailto:"].includes(url.protocol)) {
+        return undefined;
+      }
+
+      return url.toString();
+    } catch {
+      return undefined;
+    }
+  }
+
+  function applyRealtimeInterfaceTool(rawArguments: unknown) {
+    if (!isFahrwerkBInterface) return false;
+
+    let parsed: Record<string, unknown>;
+
+    try {
+      parsed =
+        typeof rawArguments === "string"
+          ? (JSON.parse(rawArguments) as Record<string, unknown>)
+          : rawArguments && typeof rawArguments === "object"
+            ? (rawArguments as Record<string, unknown>)
+            : {};
+    } catch {
+      return false;
+    }
+
+    const rawKind = String(parsed.kind || "info");
+    const kind: VoiceUiAction["kind"] =
+      rawKind === "price_list"
+        ? "price-list"
+        : rawKind === "checklist"
+          ? "checklist"
+          : rawKind === "contact"
+            ? "contact"
+            : rawKind === "link"
+              ? "link"
+              : "info";
+    const title = String(parsed.title || "Passende Information")
+      .trim()
+      .slice(0, 90);
+    const description = String(parsed.description || "")
+      .trim()
+      .slice(0, 220);
+    const rawItems = Array.isArray(parsed.items) ? parsed.items : [];
+    const items = rawItems
+      .filter((item) => item && typeof item === "object")
+      .slice(0, 6)
+      .map((item) => {
+        const entry = item as Record<string, unknown>;
+        const label = String(entry.label || "").trim().slice(0, 90);
+        const value = String(entry.value || "").trim().slice(0, 70);
+        const detail = String(entry.detail || "").trim().slice(0, 150);
+
+        return {
+          label,
+          value: value || undefined,
+          detail: detail || undefined,
+        } satisfies VoiceUiActionItem;
+      })
+      .filter((item) => Boolean(item.label));
+    const requestedPanel = String(parsed.panel || "").trim() as FahrwerkPanel;
+    const validPanels: FahrwerkPanel[] = [
+      "dashboard",
+      "start",
+      "documents",
+      "theory",
+      "practice",
+      "exam",
+      "student",
+      "contact",
+    ];
+
+    if (validPanels.includes(requestedPanel)) {
+      setFahrwerkPanel(requestedPanel);
+    }
+
+    let url = getSafeInterfaceUrl(parsed.url);
+
+    if (
+      kind === "link" &&
+      !url &&
+      /anmeld|registrier|einschreib/i.test(`${title} ${description}`)
+    ) {
+      url = FAHRWERK_LIVE_SIGNUP_URL;
+    }
+
+    setVoiceUiAction({
+      id: `realtime-surface-${Date.now()}`,
+      kind,
+      eyebrow: String(parsed.eyebrow || "Fahrwerk B")
+        .trim()
+        .slice(0, 45),
+      title,
+      description,
+      items: items.length > 0 ? items : undefined,
+      url,
+      cta: url
+        ? String(parsed.cta || "Öffnen").trim().slice(0, 45)
+        : undefined,
+    });
+
+    return true;
+  }
+
   function applyVoiceSurfaceIntent(rawText: string) {
     if (!isFahrwerkBInterface) return;
 
@@ -6320,6 +6437,52 @@ export default function WidgetPage() {
           ? "fahrwerk-b"
           : cfg.id;
 
+    const handledRealtimeToolCalls = new Set<string>();
+
+    const runRealtimeInterfaceTool = (
+      toolName: string,
+      callId: string,
+      rawArguments: unknown,
+    ) => {
+      if (
+        toolName !== "show_interface_card" ||
+        !callId ||
+        handledRealtimeToolCalls.has(callId)
+      ) {
+        return false;
+      }
+
+      handledRealtimeToolCalls.add(callId);
+      responseIsSpeaking = false;
+      voiceUserSpeakingRef.current = false;
+      stopVoiceAnimation();
+      setVoiceEnergy(0.20);
+      setVoicePhase("thinking");
+
+      const applied = applyRealtimeInterfaceTool(rawArguments);
+      const activeClient = realtimeVoiceRef.current;
+
+      if (activeClient) {
+        activeClient.send({
+          type: "conversation.item.create",
+          item: {
+            type: "function_call_output",
+            call_id: callId,
+            output: JSON.stringify({
+              success: applied,
+              visible_in_interface: applied,
+            }),
+          },
+        });
+
+        // Nach dem UI-Tool erzeugt das Modell noch eine sehr kurze
+        // gesprochene Einordnung. Die eigentlichen Details stehen sichtbar.
+        activeClient.send({ type: "response.create" });
+      }
+
+      return true;
+    };
+
     const client = new RealtimeVoiceClient({
       tenant: activeRealtimeTenantId,
       onAudioLevel: (level, source) => {
@@ -6368,6 +6531,51 @@ export default function WidgetPage() {
 
       onEvent: (event) => {
         const eventType = String(event.type || "");
+
+        if (eventType === "response.function_call_arguments.done") {
+          const toolName = String(event.name || "");
+          const callId = String(event.call_id || "");
+
+          if (
+            runRealtimeInterfaceTool(
+              toolName,
+              callId,
+              event.arguments,
+            )
+          ) {
+            return;
+          }
+        }
+
+        // Je nach Realtime-Version kommt der fertige Funktionsaufruf auch als
+        // Output-Item. Die Call-ID verhindert eine doppelte Verarbeitung.
+        if (eventType === "response.output_item.done") {
+          const item = event.item;
+
+          if (
+            item &&
+            typeof item === "object" &&
+            "type" in item &&
+            item.type === "function_call"
+          ) {
+            const toolName =
+              "name" in item ? String(item.name || "") : "";
+            const callId =
+              "call_id" in item ? String(item.call_id || "") : "";
+            const rawArguments =
+              "arguments" in item ? item.arguments : undefined;
+
+            if (
+              runRealtimeInterfaceTool(
+                toolName,
+                callId,
+                rawArguments,
+              )
+            ) {
+              return;
+            }
+          }
+        }
 
         if (eventType === "input_audio_buffer.speech_started") {
           responseIsSpeaking = false;
@@ -7324,6 +7532,63 @@ body::after {
   text-overflow: ellipsis;
 }
 
+.bt-voice-action-dock--expanded {
+  align-items: flex-start;
+  padding-top: 13px;
+  padding-bottom: 13px;
+}
+
+.bt-voice-action-dock--expanded .bt-voice-action-description {
+  white-space: normal;
+  display: block;
+}
+
+.bt-voice-action-items {
+  margin-top: 9px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.bt-voice-action-item {
+  min-width: 0;
+  padding: 8px 10px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,.64);
+  background: rgba(255,255,255,.45);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.78);
+}
+
+.bt-voice-action-item-main {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 9px;
+  color: ${textPrimary};
+  font-size: 11.5px;
+  line-height: 1.25;
+  font-weight: 750;
+}
+
+.bt-voice-action-item-main > span {
+  min-width: 0;
+}
+
+.bt-voice-action-item-main strong {
+  flex: 0 0 auto;
+  color: ${widgetAccent};
+  font-size: 12px;
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+.bt-voice-action-item-detail {
+  margin-top: 3px;
+  color: ${textSecondary};
+  font-size: 10.5px;
+  line-height: 1.28;
+}
+
 .bt-voice-action-link {
   position: relative;
   z-index: 1;
@@ -7391,6 +7656,13 @@ body::after {
   }
 
   .bt-voice-action-description { display: none; }
+  .bt-voice-action-dock--expanded .bt-voice-action-description { display: block; }
+  .bt-voice-action-items {
+    grid-template-columns: 1fr;
+    max-height: 138px;
+    overflow-y: auto;
+    padding-right: 2px;
+  }
   .bt-voice-action-link { padding: 0 11px; min-height: 39px; }
   .bt-voice-action-mark { width: 34px; height: 34px; flex-basis: 34px; border-radius: 11px; }
 }
@@ -10692,9 +10964,23 @@ body::after {
                 </div>
 
                 {voiceUiAction && (
-                  <div className="bt-voice-action-dock">
+                  <div
+                    className={`bt-voice-action-dock ${
+                      voiceUiAction.items?.length
+                        ? "bt-voice-action-dock--expanded"
+                        : ""
+                    }`}
+                  >
                     <div className="bt-voice-action-mark" aria-hidden="true">
-                      ↗
+                      {voiceUiAction.kind === "price-list"
+                        ? "€"
+                        : voiceUiAction.kind === "checklist"
+                          ? "✓"
+                          : voiceUiAction.kind === "contact"
+                            ? "☎"
+                            : voiceUiAction.kind === "info"
+                              ? "i"
+                              : "↗"}
                     </div>
                     <div className="bt-voice-action-copy">
                       <div className="bt-voice-action-eyebrow">
@@ -10706,15 +10992,37 @@ body::after {
                       <div className="bt-voice-action-description">
                         {voiceUiAction.description}
                       </div>
+                      {voiceUiAction.items?.length ? (
+                        <div className="bt-voice-action-items">
+                          {voiceUiAction.items.map((item, index) => (
+                            <div
+                              className="bt-voice-action-item"
+                              key={`${item.label}-${index}`}
+                            >
+                              <div className="bt-voice-action-item-main">
+                                <span>{item.label}</span>
+                                {item.value ? <strong>{item.value}</strong> : null}
+                              </div>
+                              {item.detail ? (
+                                <div className="bt-voice-action-item-detail">
+                                  {item.detail}
+                                </div>
+                              ) : null}
+                            </div>
+                          ))}
+                        </div>
+                      ) : null}
                     </div>
-                    <a
-                      className="bt-voice-action-link"
-                      href={voiceUiAction.url}
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      {voiceUiAction.cta} <span aria-hidden="true">↗</span>
-                    </a>
+                    {voiceUiAction.url && voiceUiAction.cta ? (
+                      <a
+                        className="bt-voice-action-link"
+                        href={voiceUiAction.url}
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        {voiceUiAction.cta} <span aria-hidden="true">↗</span>
+                      </a>
+                    ) : null}
                     <button
                       type="button"
                       className="bt-voice-action-close"

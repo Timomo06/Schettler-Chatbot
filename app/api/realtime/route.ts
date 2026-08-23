@@ -22,6 +22,94 @@ const FAHRWERK_TENANT_ALIASES = [
   "fahrwerk",
 ] as const;
 
+const FAHRWERK_INTERFACE_TOOLS = [
+  {
+    type: "function",
+    name: "show_interface_card",
+    description:
+      "Zeigt passend zum aktuellen Gespräch eine kompakte Karte direkt im Fahrwerk-B-Cockpit. Verwende das Tool bei Anmeldelinks, Preisen, benötigten Unterlagen, Kontaktdaten, Kursen, Öffnungszeiten, Standorten, Führerscheinklassen, Prüfungsvorbereitung oder wenn ein Cockpit-Bereich geöffnet werden soll. Nutze ausschließlich Daten aus dem Fahrwerk-B-Wissen und erfinde keine Werte.",
+    parameters: {
+      type: "object",
+      additionalProperties: false,
+      properties: {
+        kind: {
+          type: "string",
+          enum: [
+            "link",
+            "price_list",
+            "checklist",
+            "info",
+            "contact",
+            "panel",
+          ],
+          description: "Darstellungsart der Karte.",
+        },
+        eyebrow: {
+          type: "string",
+          description: "Kurze Kategorie, meistens Fahrwerk B.",
+        },
+        title: {
+          type: "string",
+          description: "Kurzer, konkreter Titel der Karte.",
+        },
+        description: {
+          type: "string",
+          description: "Ein kurzer erklärender Satz.",
+        },
+        items: {
+          type: "array",
+          maxItems: 6,
+          description:
+            "Passende Preise, Schritte oder Fakten. Nur Einträge aufnehmen, die für das aktuelle Thema relevant sind.",
+          items: {
+            type: "object",
+            additionalProperties: false,
+            properties: {
+              label: {
+                type: "string",
+                description: "Bezeichnung des Preises, Schritts oder Fakts.",
+              },
+              value: {
+                type: "string",
+                description: "Optionaler Wert, zum Beispiel 59,00 €.",
+              },
+              detail: {
+                type: "string",
+                description: "Optionaler sehr kurzer Zusatz.",
+              },
+            },
+            required: ["label"],
+          },
+        },
+        url: {
+          type: "string",
+          description:
+            "Nur bei einer Link- oder Kontaktkarte. Verwende ausschließlich eine im Wissen hinterlegte URL, Telefonnummer als tel: oder E-Mail als mailto:.",
+        },
+        cta: {
+          type: "string",
+          description: "Kurzer Text für den Link-Button.",
+        },
+        panel: {
+          type: "string",
+          enum: [
+            "dashboard",
+            "start",
+            "documents",
+            "theory",
+            "practice",
+            "exam",
+            "student",
+            "contact",
+          ],
+          description: "Optional passender Bereich im Führerschein-Cockpit.",
+        },
+      },
+      required: ["kind", "title", "description"],
+    },
+  },
+] as const;
+
 function isFahrwerkTenant(tenantId: string) {
   return FAHRWERK_TENANT_ALIASES.includes(
     tenantId
@@ -105,10 +193,25 @@ Sprachmodus:
 - Erfinde keine Informationen. Wenn etwas nicht im Wissen steht, sage es offen.
 `.trim();
 
+  const interfacePrompt = isFahrwerkTenant(tenant.id)
+    ? `
+Aktive Cockpit-Oberfläche:
+- Nutze show_interface_card immer dann, wenn sichtbare Informationen dem Nutzer einen konkreten Vorteil geben.
+- Bei einer Frage nach Anmeldung oder Anmeldelink: Zeige direkt eine Link-Karte mit dem offiziellen Anmeldelink.
+- Bei einer Preisfrage: Zeige eine price_list mit ausschließlich den Preisen, die zum gerade besprochenen Thema gehören.
+- Bei Unterlagen oder Prüfungsvorbereitung: Zeige eine kurze checklist und öffne den passenden Cockpit-Bereich.
+- Bei Kontaktdaten, Standort oder Öffnungszeiten: Zeige eine kompakte contact- oder info-Karte.
+- Bei Theorie, Praxis, Prüfung oder aktuellem Fahrschüler-Stand: Öffne über panel den passenden Cockpit-Bereich und zeige nur dann zusätzlich Punkte, wenn sie konkret helfen.
+- Lies eine längere sichtbare Liste nicht vollständig vor. Sage kurz, dass du die passenden Informationen eingeblendet hast, und beantworte die Kernfrage mündlich.
+- Zeige keine allgemeine Karte ohne Mehrwert und wiederhole nicht bei jeder Antwort dieselbe Karte.
+`.trim()
+    : "";
+
   const instructions = [
     buildSystemPrompt(tenant, knowledgeText),
     tenantIdentityPrompt,
     realtimeConversationPrompt,
+    interfacePrompt,
   ]
     .filter(Boolean)
     .join("\n\n");
@@ -116,6 +219,7 @@ Sprachmodus:
   return {
     tenantId: tenant.id,
     instructions,
+    tools: isFahrwerkTenant(tenant.id) ? FAHRWERK_INTERFACE_TOOLS : [],
   };
 }
 
@@ -135,7 +239,7 @@ export async function POST(req: NextRequest) {
       req.headers.get("x-tenant") ||
       req.headers.get("x-tenant-id") ||
       "demo";
-    const { tenantId, instructions } =
+    const { tenantId, instructions, tools } =
       await buildRealtimeInstructions(rawTenantId);
 
     // Das SDP kommt absichtlich roh als application/sdp.
@@ -164,6 +268,12 @@ export async function POST(req: NextRequest) {
       type: "realtime",
       model: "gpt-realtime-2.1",
       instructions,
+      ...(tools.length > 0
+        ? {
+            tools,
+            tool_choice: "auto",
+          }
+        : {}),
       audio: {
         output: {
           voice: "marin",
