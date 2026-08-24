@@ -7,7 +7,14 @@ export type TenantId =
   | "mm-wartung"
   | "txbikes"
   | "txbikesV2"
-  | "fahrwerk-b";
+  | "fahrwerk-b"
+  | "fahrschule-hohenbaden"
+  | "fahrschule-abgefahren"
+  | "petermännchen-fahrschule"
+  | "schelf-fahrschule"
+  | "fahrschule-jentsch"
+  | "asphaltcrew"
+  | "fahrschule-malik";
 
 export type ThemeConfig = {
   accent: string;
@@ -483,6 +490,274 @@ export const TENANTS: Record<TenantId, TenantConfig> = {
     },
   },
 
+  "fahrschule-hohenbaden": {
+    id: "fahrschule-hohenbaden",
+    brandName: "Fahrschule Hohenbaden · in7Days",
+    assistantName: "Führerschein-Assistent",
+    language: "de",
+    knowledge: {
+      files: ["eKnowledge.md"],
+    },
+    websiteUrl: "https://fahrschule-hohenbaden.de",
+    primaryCta: {
+      label: "Website öffnen",
+      url: "https://fahrschule-hohenbaden.de",
+    },
+    fallbackContact: {
+      label: "Fahrschule Hohenbaden",
+      value: "https://fahrschule-hohenbaden.de",
+    },
+    companyInfo: {
+      address: "Baden-Baden und Bühl",
+      openingHours: "Siehe Website der Fahrschule Hohenbaden",
+    },
+    rules: {
+      noMedicalClaims: true,
+      noInventingPrices: false,
+      noGuarantees: true,
+    },
+    theme: {
+      accent: "#e31e24",
+      bg: "#fff8f7",
+      glass: "rgba(227,30,36,0.12)",
+      text: "#171717",
+    },
+    assets: {
+      launcherIcon: "/favicon.ico",
+    },
+  },
+
+  "fahrschule-abgefahren": {
+    id: "fahrschule-abgefahren",
+    brandName: "Fahrschule Abgefahren",
+    assistantName: "Führerschein-Assistent",
+    language: "de",
+    knowledge: {
+      files: ["eKnowledge.md"],
+    },
+    websiteUrl: "https://abgefahren-schwerin.de",
+    primaryCta: {
+      label: "Website öffnen",
+      url: "https://abgefahren-schwerin.de",
+    },
+    fallbackContact: {
+      label: "Fahrschule Abgefahren",
+      value: "https://abgefahren-schwerin.de",
+    },
+    companyInfo: {
+      address: "Schwerin und Sternberg",
+      openingHours: "Siehe Website der Fahrschule Abgefahren",
+    },
+    rules: {
+      noMedicalClaims: true,
+      noInventingPrices: false,
+      noGuarantees: true,
+    },
+    theme: {
+      accent: "#e11d48",
+      bg: "#fff7fb",
+      glass: "rgba(225,29,72,0.12)",
+      text: "#24141b",
+    },
+    assets: {
+      launcherIcon: "/favicon.ico",
+    },
+  },
+
+  "petermännchen-fahrschule": {
+    id: "petermännchen-fahrschule",
+    brandName: "Petermännchen Fahrschule",
+    assistantName: "Führerschein-Assistent",
+    language: "de",
+    knowledge: {
+      files: ["eKnowledge.md"],
+    },
+    websiteUrl: "https://www.petermaennchen-fahrschule.de/",
+    primaryCta: {
+      label: "Website öffnen",
+      url: "https://www.petermaennchen-fahrschule.de/",
+    },
+    fallbackContact: {
+      label: "Telefon",
+      value: "0385 734393",
+    },
+    companyInfo: {
+      address: "Schwerin",
+      phone: "0385 734393",
+      openingHours: "Siehe Website der Petermännchen Fahrschule",
+    },
+    rules: {
+      noMedicalClaims: true,
+      noInventingPrices: false,
+      noGuarantees: true,
+    },
+    theme: {
+      accent: "#f9c806",
+      bg: "#fefefe",
+      glass: "rgba(249,200,6,0.14)",
+      text: "#000d1a",
+    },
+    assets: {
+      launcherIcon: "/favicon.ico",
+    },
+  },
+
+  "schelf-fahrschule": {
+    id: "schelf-fahrschule",
+    brandName: "Schelf-Fahrschule",
+    assistantName: "Führerschein-Assistent",
+    language: "de",
+    knowledge: {
+      files: ["eKnowledge.md"],
+    },
+    websiteUrl: "https://schelf-fahrschule.de/",
+    primaryCta: {
+      label: "Website öffnen",
+      url: "https://schelf-fahrschule.de/",
+    },
+    fallbackContact: {
+      label: "Telefon und WhatsApp",
+      value: "0152 22363413",
+    },
+    companyInfo: {
+      address: "Schwerin und Crivitz",
+      phone: "0152 22363413",
+      email: "info@schelf-fahrschule.de",
+      openingHours: "Siehe eKnowledge und Website",
+    },
+    rules: {
+      noMedicalClaims: true,
+      noInventingPrices: false,
+      noGuarantees: true,
+    },
+    theme: {
+      accent: "#db0010",
+      bg: "#fff7f8",
+      glass: "rgba(219,0,16,0.12)",
+      text: "#18191f",
+    },
+    assets: {
+      launcherIcon: "/favicon.ico",
+    },
+  },
+
+  "fahrschule-jentsch": {
+    id: "fahrschule-jentsch",
+    brandName: "Fahrschule Jentsch",
+    assistantName: "KI-Führerscheinbegleiter",
+    language: "de",
+    knowledge: {
+      files: ["eKnowledge.md"],
+    },
+    websiteUrl: "https://fahrschule-jentsch-schwerin.de/",
+    primaryCta: {
+      label: "Website öffnen",
+      url: "https://fahrschule-jentsch-schwerin.de/",
+    },
+    fallbackContact: {
+      label: "Telefon",
+      value: "0385 / 440 087 80",
+    },
+    companyInfo: {
+      address: "Am Markt 10, 19055 Schwerin",
+      phone: "0385 / 440 087 80",
+      email: "info@fahrschule-jentsch-schwerin.de",
+      openingHours: "Montag und Freitag 14:30–17:30 Uhr",
+    },
+    rules: {
+      noMedicalClaims: true,
+      noInventingPrices: false,
+      noGuarantees: true,
+    },
+    theme: {
+      accent: "#f28b35",
+      bg: "#fffaf2",
+      glass: "rgba(242,139,53,0.13)",
+      text: "#25230f",
+    },
+    assets: {
+      launcherIcon: "/favicon.ico",
+    },
+  },
+
+  asphaltcrew: {
+    id: "asphaltcrew",
+    brandName: "AsphaltCrew Fahrschule",
+    assistantName: "Flight-Copilot",
+    language: "de",
+    knowledge: {
+      files: ["eKnowledge.md"],
+    },
+    websiteUrl: "https://www.asphaltcrew.info/",
+    primaryCta: {
+      label: "Website öffnen",
+      url: "https://www.asphaltcrew.info/",
+    },
+    fallbackContact: {
+      label: "WhatsApp",
+      value: "+49 177 6067591",
+    },
+    companyInfo: {
+      address: "Josefstraße 44/3, 76437 Rastatt",
+      phone: "+49 7222 9209252",
+      email: "cockpit@asphaltcrew.info",
+      openingHours: "Montag bis Mittwoch 15:30–17:30 Uhr sowie nach Vereinbarung",
+    },
+    rules: {
+      noMedicalClaims: true,
+      noInventingPrices: false,
+      noGuarantees: true,
+    },
+    theme: {
+      accent: "#6f2c91",
+      bg: "#f8f4fb",
+      glass: "rgba(111,44,145,0.13)",
+      text: "#22172c",
+    },
+    assets: {
+      launcherIcon: "/favicon.ico",
+    },
+  },
+
+  "fahrschule-malik": {
+    id: "fahrschule-malik",
+    brandName: "Fahrschule Malik",
+    assistantName: "Lern- & Praxisbegleiter",
+    language: "de",
+    knowledge: {
+      files: ["eKnowledge.md"],
+    },
+    websiteUrl: "https://fahrschule-malik.de/",
+    primaryCta: {
+      label: "Website öffnen",
+      url: "https://fahrschule-malik.de/",
+    },
+    fallbackContact: {
+      label: "Telefon",
+      value: "0177 2682919",
+    },
+    companyInfo: {
+      address: "Rastatt und Karlsruhe",
+      phone: "0177 2682919",
+      email: "fahrschulemalik@gmx.de",
+      openingHours: "Siehe eKnowledge für beide Standorte",
+    },
+    rules: {
+      noMedicalClaims: true,
+      noInventingPrices: false,
+      noGuarantees: true,
+    },
+    theme: {
+      accent: "#1f9d70",
+      bg: "#f3fbf7",
+      glass: "rgba(31,157,112,0.13)",
+      text: "#14272a",
+    },
+    assets: {
+      launcherIcon: "/favicon.ico",
+    },
+  },
+
     txbikesV2: {
     id: "txbikesV2",
     brandName: "TXBIKESV2",
@@ -539,7 +814,60 @@ export const TENANTS: Record<TenantId, TenantConfig> = {
   },
 };
 
+const TENANT_ALIASES: Record<string, TenantId> = {
+  lina: "btdesigns",
+  btai: "btdesigns",
+  "btdesigns-lina": "btdesigns",
+  mmwartung: "mm-wartung",
+  "mm_wartung": "mm-wartung",
+  "mm-wartung.de": "mm-wartung",
+  fahrwerkb: "fahrwerk-b",
+  "fahrwerk_b": "fahrwerk-b",
+  "fahrwerk-b.de": "fahrwerk-b",
+  fahrwerk: "fahrwerk-b",
+  txbikesv2: "txbikesV2",
+  "tx-bikes": "txbikes",
+  "tx_bikes": "txbikes",
+  hohenbaden: "fahrschule-hohenbaden",
+  "fahrschule-in7days": "fahrschule-hohenbaden",
+  in7days: "fahrschule-hohenbaden",
+  "in7-days": "fahrschule-hohenbaden",
+  "fahrschule-hohenbaden.de": "fahrschule-hohenbaden",
+  fahrschulehohenbaden: "fahrschule-hohenbaden",
+  abgefahren: "fahrschule-abgefahren",
+  "abgefahren-schwerin": "fahrschule-abgefahren",
+  abgefahrenschwerin: "fahrschule-abgefahren",
+  "abgefahren-schwerin.de": "fahrschule-abgefahren",
+  petermaennchen: "petermännchen-fahrschule",
+  petermännchen: "petermännchen-fahrschule",
+  "petermaennchen-fahrschule": "petermännchen-fahrschule",
+  "petermaennchen-fahrschule.de": "petermännchen-fahrschule",
+  petermaennchenfahrschule: "petermännchen-fahrschule",
+  schelf: "schelf-fahrschule",
+  schelffahrschule: "schelf-fahrschule",
+  "schelf-fahrschule.de": "schelf-fahrschule",
+  "schelf-schwerin": "schelf-fahrschule",
+  "schelf-crivitz": "schelf-fahrschule",
+  jentsch: "fahrschule-jentsch",
+  "jentsch-schwerin": "fahrschule-jentsch",
+  "fahrschule-jentsch-schwerin": "fahrschule-jentsch",
+  "fahrschule-jentsch-schwerin.de": "fahrschule-jentsch",
+  "asphalt-crew": "asphaltcrew",
+  "asphaltcrew-rastatt": "asphaltcrew",
+  "asphaltcrew.info": "asphaltcrew",
+  "www.asphaltcrew.info": "asphaltcrew",
+  malik: "fahrschule-malik",
+  "malik-rastatt": "fahrschule-malik",
+  "malik-karlsruhe": "fahrschule-malik",
+  "fahrschule-malik.de": "fahrschule-malik",
+};
+
 export function getTenant(tenant: string | null): TenantConfig {
-  const key = (tenant || "demo") as TenantId;
-  return TENANTS[key] ?? TENANTS.demo;
+  const rawTenant = (tenant || "demo").trim();
+  const directTenant = TENANTS[rawTenant as TenantId];
+
+  if (directTenant) return directTenant;
+
+  const aliasTenantId = TENANT_ALIASES[rawTenant.toLowerCase()];
+  return aliasTenantId ? TENANTS[aliasTenantId] : TENANTS.demo;
 }

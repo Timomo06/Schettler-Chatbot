@@ -197,9 +197,26 @@ const FAHRWERK_TENANT_ALIASES = [
   "fahrwerk",
 ] as const;
 
+const FAHRSCHULE_TENANT_IDS = [
+  "fahrwerk-b",
+  "fahrschule-hohenbaden",
+  "fahrschule-abgefahren",
+  "petermännchen-fahrschule",
+  "schelf-fahrschule",
+  "fahrschule-jentsch",
+  "asphaltcrew",
+  "fahrschule-malik",
+] as const;
+
 function isFahrwerkTenant(tenantId: string) {
   return FAHRWERK_TENANT_ALIASES.includes(
     tenantId.trim().toLowerCase() as (typeof FAHRWERK_TENANT_ALIASES)[number],
+  );
+}
+
+function isFahrschuleTenant(tenantId: string) {
+  return FAHRSCHULE_TENANT_IDS.includes(
+    tenantId as (typeof FAHRSCHULE_TENANT_IDS)[number],
   );
 }
 
@@ -553,7 +570,9 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    const knowledgeText = isFahrwerkTenant(tenant.id)
+    // Fahrschul-Demos werden bewusst ohne Cache geladen. Damit gelten
+    // Änderungen an eKnowledge.md im Text- und Sprachmodus ab dem nächsten Chat.
+    const knowledgeText = isFahrschuleTenant(tenant.id)
       ? await loadTenantKnowledge(tenant.id)
       : await getCachedTenantKnowledge(tenant.id);
 
@@ -595,19 +614,23 @@ Sage niemals "Ich trage ihn jetzt ein" oder "Einen Moment", wenn du den Termin n
 `
       : "";
 
-    const tenantIdentityPrompt = isFahrwerkTenant(tenant.id)
+    const tenantIdentityPrompt = isFahrschuleTenant(tenant.id)
       ? `
 Feste Identität:
-- Du bist das digitale Führerschein-Cockpit der Fahrschule Fahrwerk B.
-- Du arbeitest ausschließlich für Fahrwerk B.
-- Wenn du gefragt wirst, für wen du arbeitest, antworte eindeutig: Fahrwerk B.
-- Verwende im Text- und Sprachmodus immer dasselbe Fahrwerk-B-Wissen und dieselben Regeln.
-- Erfinde keine anderen Fahrschulen, Standorte, Preise, Öffnungszeiten oder Leistungen.
-- Wenn ein Preis im Fahrwerk-B-Wissen hinterlegt ist, darfst und sollst du diesen konkreten Preis nennen.
-- Sage niemals pauschal, dass du keine Preise nennen kannst, wenn für die Frage passende Preise im Fahrwerk-B-Wissen vorhanden sind.
-- Wenn nach dem Gesamtpreis eines Führerscheins gefragt wird, erfinde keine garantierte Gesamtsumme. Erkläre stattdessen, dass die Gesamtkosten unter anderem von der benötigten Zahl der Fahrstunden abhängen, und nenne die bekannten Einzelpreise aus dem Fahrwerk-B-Wissen.
-- Bei Fragen zu Klasse BE oder Anhängerführerschein verwende die dafür hinterlegten BE-Preise aus dem Fahrwerk-B-Wissen.
-- Wenn eine Information nicht im Fahrwerk-B-Wissen steht, sage das offen und verweise auf Fahrwerk B.
+- Du bist ${tenant.assistantName} der Fahrschule „${tenant.brandName}“.
+- Du arbeitest in dieser Sitzung ausschließlich für diese Fahrschule.
+- Wenn du gefragt wirst, für wen du arbeitest, nenne eindeutig „${tenant.brandName}“.
+- Das geladene Knowledge dieser Fahrschule ist dein verbindliches fachliches Gedächtnis.
+- Vermische niemals Informationen, Preise, Standorte, Personen, Kurse oder Kontaktdaten verschiedener Fahrschulen.
+- Verwende im Text- und Sprachmodus dieselben Fakten und Demo-Grenzen.
+- Nenne konkrete Preise oder Termine nur, wenn sie im aktuell geladenen Knowledge stehen.
+- Erfinde keine garantierte Gesamtsumme, keinen freien Platz und keine bestätigte Buchung.
+- Wenn etwas nicht im Knowledge steht, sage das offen und verweise auf ${tenant.brandName}.
+${
+  isFahrwerkTenant(tenant.id)
+    ? "- Für Fahrwerk B darfst und sollst du bekannte Einzelpreise nennen. Bei Klasse BE verwendest du ausschließlich die hinterlegten BE-Preise."
+    : "- Kennzeichne alle im Demo-Cockpit gezeigten Schülerstände, Plätze und Termine als Beispiel- oder Demo-Daten."
+}
 `
       : "";
 

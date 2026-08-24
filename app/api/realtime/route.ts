@@ -22,12 +22,33 @@ const FAHRWERK_TENANT_ALIASES = [
   "fahrwerk",
 ] as const;
 
-const FAHRWERK_INTERFACE_TOOLS = [
+const FAHRSCHULE_TENANT_IDS = [
+  "fahrwerk-b",
+  "fahrschule-hohenbaden",
+  "fahrschule-abgefahren",
+  "petermännchen-fahrschule",
+  "schelf-fahrschule",
+  "fahrschule-jentsch",
+  "asphaltcrew",
+  "fahrschule-malik",
+] as const;
+
+const VOICE_INTERFACE_TENANT_IDS = [
+  "fahrwerk-b",
+  "fahrschule-hohenbaden",
+  "petermännchen-fahrschule",
+  "schelf-fahrschule",
+  "fahrschule-jentsch",
+  "asphaltcrew",
+  "fahrschule-malik",
+] as const;
+
+const FAHRSCHULE_INTERFACE_TOOLS = [
   {
     type: "function",
     name: "show_interface_card",
     description:
-      "Zeigt passend zum aktuellen Gespräch eine kompakte Karte direkt im Fahrwerk-B-Cockpit. Verwende das Tool bei Anmeldelinks, Preisen, benötigten Unterlagen, Kontaktdaten, Kursen, Öffnungszeiten, Standorten, Führerscheinklassen, Prüfungsvorbereitung oder wenn ein Cockpit-Bereich geöffnet werden soll. Nutze ausschließlich Daten aus dem Fahrwerk-B-Wissen und erfinde keine Werte.",
+      "Zeigt passend zum aktuellen Gespräch eine kompakte Karte im Interface der aktiven Fahrschule. Verwende ausschließlich Informationen aus dem Knowledge des aktuellen Tenants. Nutze das Tool bei Anmeldelinks, Preisen, Unterlagen, Kontaktdaten, Kursen, Öffnungszeiten, Standorten, Führerscheinklassen, Prüfungsvorbereitung oder wenn ein passender Cockpit-Bereich geöffnet werden soll. Erfinde keine Werte.",
     parameters: {
       type: "object",
       additionalProperties: false,
@@ -46,7 +67,7 @@ const FAHRWERK_INTERFACE_TOOLS = [
         },
         eyebrow: {
           type: "string",
-          description: "Kurze Kategorie, meistens Fahrwerk B.",
+          description: "Kurze Kategorie oder Name der aktuell aktiven Fahrschule.",
         },
         title: {
           type: "string",
@@ -93,16 +114,21 @@ const FAHRWERK_INTERFACE_TOOLS = [
         panel: {
           type: "string",
           enum: [
+            "home",
+            "connect",
             "dashboard",
             "start",
+            "courses",
+            "schedule",
             "documents",
             "theory",
             "practice",
             "exam",
             "student",
             "contact",
+            "coach",
           ],
-          description: "Optional passender Bereich im Führerschein-Cockpit.",
+          description: "Optional passender Bereich im Interface der aktuellen Fahrschule.",
         },
       },
       required: ["kind", "title", "description"],
@@ -115,6 +141,18 @@ function isFahrwerkTenant(tenantId: string) {
     tenantId
       .trim()
       .toLowerCase() as (typeof FAHRWERK_TENANT_ALIASES)[number],
+  );
+}
+
+function isFahrschuleTenant(tenantId: string) {
+  return FAHRSCHULE_TENANT_IDS.includes(
+    tenantId as (typeof FAHRSCHULE_TENANT_IDS)[number],
+  );
+}
+
+function supportsVoiceInterfaceTools(tenantId: string) {
+  return VOICE_INTERFACE_TENANT_IDS.includes(
+    tenantId as (typeof VOICE_INTERFACE_TENANT_IDS)[number],
   );
 }
 
@@ -155,25 +193,29 @@ async function buildRealtimeInstructions(rawTenantId: string) {
   const normalizedTenantId = normalizeTenantParam(rawTenantId);
   const tenant = getTenant(normalizedTenantId);
 
-  // Fahrwerk B wird wie in /api/chat bewusst ohne Cache geladen, damit
-  // aktualisierte Preise, Kurse und Informationen sofort im Sprachmodus gelten.
-  const knowledgeText = isFahrwerkTenant(tenant.id)
+  // Fahrschul-Demos werden bewusst ohne Cache geladen, damit Änderungen an
+  // eKnowledge.md beim nächsten Gespräch sofort im Sprachmodus gelten.
+  const knowledgeText = isFahrschuleTenant(tenant.id)
     ? await loadTenantKnowledge(tenant.id)
     : await getCachedTenantKnowledge(tenant.id);
 
-  const tenantIdentityPrompt = isFahrwerkTenant(tenant.id)
+  const tenantIdentityPrompt = isFahrschuleTenant(tenant.id)
     ? `
 Feste Identität:
-- Du bist das digitale Führerschein-Cockpit der Fahrschule Fahrwerk B.
-- Du arbeitest ausschließlich für Fahrwerk B.
-- Wenn du gefragt wirst, für wen du arbeitest, antworte eindeutig: Fahrwerk B.
-- Verwende im Text- und Sprachmodus immer dasselbe Fahrwerk-B-Wissen und dieselben Regeln.
-- Erfinde keine anderen Fahrschulen, Standorte, Preise, Öffnungszeiten oder Leistungen.
-- Wenn ein Preis im Fahrwerk-B-Wissen hinterlegt ist, darfst und sollst du diesen konkreten Preis nennen.
-- Sage niemals pauschal, dass du keine Preise nennen kannst, wenn für die Frage passende Preise im Fahrwerk-B-Wissen vorhanden sind.
-- Wenn nach dem Gesamtpreis eines Führerscheins gefragt wird, erfinde keine garantierte Gesamtsumme. Erkläre stattdessen kurz, dass die Gesamtkosten unter anderem von der benötigten Zahl der Fahrstunden abhängen, und nenne die bekannten Einzelpreise aus dem Fahrwerk-B-Wissen.
-- Bei Fragen zu Klasse BE oder Anhängerführerschein verwende die dafür hinterlegten BE-Preise aus dem Fahrwerk-B-Wissen.
-- Wenn eine Information nicht im Fahrwerk-B-Wissen steht, sage das offen und verweise auf Fahrwerk B.
+- Du bist ${tenant.assistantName} der Fahrschule „${tenant.brandName}“.
+- Du arbeitest in dieser Sitzung ausschließlich für diese Fahrschule.
+- Wenn du gefragt wirst, für wen du arbeitest, nenne eindeutig „${tenant.brandName}“.
+- Das geladene Knowledge dieser Fahrschule ist dein verbindliches fachliches Gedächtnis.
+- Vermische niemals Informationen, Preise, Standorte, Personen, Kurse oder Kontaktdaten verschiedener Fahrschulen.
+- Verwende im Text- und Sprachmodus dieselben Fakten und Demo-Grenzen.
+- Nenne konkrete Preise oder Termine nur, wenn sie im aktuell geladenen Knowledge stehen.
+- Erfinde keine garantierte Gesamtsumme, keinen freien Platz und keine bestätigte Buchung.
+- Wenn etwas nicht im Knowledge steht, sage das offen und verweise auf ${tenant.brandName}.
+${
+  isFahrwerkTenant(tenant.id)
+    ? "- Für Fahrwerk B darfst und sollst du bekannte Einzelpreise nennen. Bei Klasse BE verwendest du ausschließlich die hinterlegten BE-Preise."
+    : "- Kennzeichne alle im Demo-Cockpit gezeigten Schülerstände, Plätze und Termine als Beispiel- oder Demo-Daten."
+}
 `.trim()
     : "";
 
@@ -181,7 +223,7 @@ Feste Identität:
 Sprachmodus:
 - Führe ein echtes, natürliches Gespräch auf Deutsch.
 - Antworte sofort und direkt auf die konkrete Frage.
-- Nutze das hinterlegte Wissen des aktuellen Unternehmens als verbindliche Grundlage.
+- Nutze ausschließlich das beim Start dieser Sitzung geladene Knowledge des aktuellen Tenants als verbindliche Grundlage.
 - Bei einfachen und normalen Fragen reichen meistens ein bis zwei kurze gesprochene Sätze.
 - Bleibe möglichst unter 45 Wörtern, solange eine längere Erklärung nicht wirklich nötig oder ausdrücklich gewünscht ist.
 - Verwende keine Listen, Überschriften, Tabellen oder Markdown-Zeichen in gesprochenen Antworten.
@@ -193,17 +235,18 @@ Sprachmodus:
 - Erfinde keine Informationen. Wenn etwas nicht im Wissen steht, sage es offen.
 `.trim();
 
-  const interfacePrompt = isFahrwerkTenant(tenant.id)
+  const interfacePrompt = supportsVoiceInterfaceTools(tenant.id)
     ? `
 Aktive Cockpit-Oberfläche:
 - Nutze show_interface_card immer dann, wenn sichtbare Informationen dem Nutzer einen konkreten Vorteil geben.
 - Bei einer Frage nach Anmeldung oder Anmeldelink: Zeige direkt eine Link-Karte mit dem offiziellen Anmeldelink.
 - Bei einer Preisfrage: Zeige eine price_list mit ausschließlich den Preisen, die zum gerade besprochenen Thema gehören.
-- Bei Unterlagen oder Prüfungsvorbereitung: Zeige eine kurze checklist und öffne den passenden Cockpit-Bereich.
+- Bei Unterlagen oder Prüfungsvorbereitung: Zeige eine kurze checklist und öffne, sofern vorhanden, den passenden Cockpit-Bereich.
 - Bei Kontaktdaten, Standort oder Öffnungszeiten: Zeige eine kompakte contact- oder info-Karte.
-- Bei Theorie, Praxis, Prüfung oder aktuellem Fahrschüler-Stand: Öffne über panel den passenden Cockpit-Bereich und zeige nur dann zusätzlich Punkte, wenn sie konkret helfen.
+- Bei Kursen, Theorie, Praxis, Prüfung oder aktuellem Fahrschüler-Stand: Öffne über panel den für dieses Interface passenden Bereich und zeige nur dann zusätzliche Punkte, wenn sie konkret helfen.
 - Lies eine längere sichtbare Liste nicht vollständig vor. Sage kurz, dass du die passenden Informationen eingeblendet hast, und beantworte die Kernfrage mündlich.
 - Zeige keine allgemeine Karte ohne Mehrwert und wiederhole nicht bei jeder Antwort dieselbe Karte.
+- Verwende für Karten ausschließlich Fakten und Links aus dem aktuellen Tenant-Knowledge.
 `.trim()
     : "";
 
@@ -219,7 +262,9 @@ Aktive Cockpit-Oberfläche:
   return {
     tenantId: tenant.id,
     instructions,
-    tools: isFahrwerkTenant(tenant.id) ? FAHRWERK_INTERFACE_TOOLS : [],
+    tools: supportsVoiceInterfaceTools(tenant.id)
+      ? FAHRSCHULE_INTERFACE_TOOLS
+      : [],
   };
 }
 
