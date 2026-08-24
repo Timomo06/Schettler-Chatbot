@@ -201,6 +201,19 @@ async function buildRealtimeInstructions(rawTenantId: string) {
     ? await loadTenantKnowledge(tenant.id)
     : await getCachedTenantKnowledge(tenant.id);
 
+  console.log("🧠 Realtime-Knowledge geprüft:", {
+    requestedTenant: rawTenantId,
+    resolvedTenant: tenant.id,
+    files: tenant.knowledge.files,
+    knowledgeLength: knowledgeText.trim().length,
+  });
+
+  if (isFahrschuleTenant(tenant.id) && !knowledgeText.trim()) {
+    throw new Error(
+      `Die Sprachsession wurde gestoppt, weil für "${tenant.id}" kein Fahrschul-Knowledge geladen wurde.`,
+    );
+  }
+
   const tenantIdentityPrompt = isFahrschuleTenant(tenant.id)
     ? `
 Feste Identität:
