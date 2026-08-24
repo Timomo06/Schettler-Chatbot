@@ -1,5 +1,5 @@
 // TEXTEDIT-KOPIE – Zielpfad im Projekt: app/widget/page.tsx
-// Scroll-Fix v8 + Schelf-Fahrschule Demo + Liquid Glass Voice Surface Actions
+// Gemeinsame Widget-Version inkl. Jentsch, AsphaltCrew und Fahrschule Malik
 "use client";
 
 import {
@@ -165,6 +165,16 @@ const SCHELF_PHONE_URL = "tel:+4915222363413";
 const SCHELF_WHATSAPP_URL = "https://wa.me/4915222363413";
 const SCHELF_LOGO_SRC =
   "https://schelf-fahrschule.de/wp-content/uploads/2024/09/Logo_Schelf-Fahrschule.svg";
+
+const JENTSCH_WEBSITE_URL = "https://fahrschule-jentsch-schwerin.de/";
+const JENTSCH_LOGO_SRC =
+  "https://fahrschule-jentsch-schwerin.de/wp-content/uploads/2022/03/cropped-logo_klein.png";
+const ASPHALTCREW_WEBSITE_URL = "https://www.asphaltcrew.info/";
+const ASPHALTCREW_LOGO_SRC =
+  "https://static.wixstatic.com/media/970079_32a60fbb7b574841aa3db8e5da7d586c~mv2.png";
+const MALIK_WEBSITE_URL = "https://fahrschule-malik.de/";
+const MALIK_LOGO_SRC =
+  "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 360 150'%3E%3Crect width='360' height='150' rx='26' fill='%2316262f'/%3E%3Cpath d='M34 116 73 34l35 54 35-54 39 82h-28l-15-34-31 43-30-43-16 34Z' fill='%233ac58f'/%3E%3Ctext x='195' y='82' fill='white' font-family='Arial,sans-serif' font-size='40' font-weight='800'%3EMALIK%3C/text%3E%3Ctext x='197' y='108' fill='%23a9c9be' font-family='Arial,sans-serif' font-size='15' letter-spacing='3'%3EFAHRSCHULE%3C/text%3E%3C/svg%3E";
 
 const FAHRWERK_LICENSE_CLASSES = [
   "Klasse B",
@@ -751,6 +761,180 @@ const SCHELF_START_CARDS: StartCard[] = [
     icon: "🎙️",
     title: "Frage einsprechen",
     description: "Anliegen einfach erzählen statt tippen",
+    action: "voice",
+  },
+];
+
+const JENTSCH_START_CARDS: StartCard[] = [
+  {
+    icon: "✨",
+    title: "Sofort beraten lassen",
+    description: "Ohne Download direkt auf der Website starten",
+    action: "hohenbadenPanel",
+    hohenbadenPanel: "courses",
+  },
+  {
+    icon: "🔗",
+    title: "Drive.Buzz + KI",
+    description: "Bestehende Ausbildung um persönliche Empfehlungen ergänzen",
+    action: "hohenbadenPanel",
+    hohenbadenPanel: "connect",
+  },
+  {
+    icon: "🧭",
+    title: "Klasse finden",
+    description: "Pkw, Anhänger, Lkw oder Bus passend einordnen",
+    action: "hohenbadenPanel",
+    hohenbadenPanel: "courses",
+  },
+  {
+    icon: "🪪",
+    title: "Mein KI-Cockpit",
+    description: "Fortschritt, Kosten, Unterlagen und nächsten Schritt sehen",
+    action: "hohenbadenPanel",
+    hohenbadenPanel: "dashboard",
+  },
+  {
+    icon: "📅",
+    title: "Fahrstunden planen",
+    description: "Passende Beispielzeiten nach Verfügbarkeit finden",
+    action: "hohenbadenPanel",
+    hohenbadenPanel: "schedule",
+  },
+  {
+    icon: "✅",
+    title: "Unterlagen prüfen",
+    description: "Passbild, Sehtest, Erste Hilfe und Antrag im Blick",
+    action: "hohenbadenPanel",
+    hohenbadenPanel: "documents",
+  },
+  {
+    icon: "🚛",
+    title: "Lkw & Bus",
+    description: "C/CE oder D/DE mit Voraussetzungen einordnen",
+    message:
+      "Ich interessiere mich für Lkw oder Bus. Welche Klassen bietet die Fahrschule Jentsch an und was brauche ich dafür?",
+  },
+  {
+    icon: "🎙️",
+    title: "Einfach sprechen",
+    description: "Anliegen erzählen statt Formulare durchsuchen",
+    action: "voice",
+  },
+];
+
+const ASPHALTCREW_START_CARDS: StartCard[] = [
+  {
+    icon: "🚀",
+    title: "Intensivkurs starten",
+    description: "Deinen schnellsten Take-off als Demo planen",
+    action: "hohenbadenPanel",
+    hohenbadenPanel: "courses",
+  },
+  {
+    icon: "🧭",
+    title: "Klasse matchen",
+    description: "B, B197, B78, Motorrad oder Anhänger vergleichen",
+    action: "hohenbadenPanel",
+    hohenbadenPanel: "courses",
+  },
+  {
+    icon: "🪪",
+    title: "Flight-Cockpit",
+    description: "Fortschritt, Kosten und nächste Etappe bündeln",
+    action: "hohenbadenPanel",
+    hohenbadenPanel: "dashboard",
+  },
+  {
+    icon: "📅",
+    title: "Praxis planen",
+    description: "Verfügbarkeit und Beispielslots abgleichen",
+    action: "hohenbadenPanel",
+    hohenbadenPanel: "schedule",
+  },
+  {
+    icon: "🏍️",
+    title: "Motorrad-Check",
+    description: "A, A2, A1, AM oder B196 passend finden",
+    message:
+      "Welche Motorradklasse bei der AsphaltCrew passt zu meinem Alter und meinem vorhandenen Führerschein?",
+  },
+  {
+    icon: "🛡️",
+    title: "Fahrtraining",
+    description: "Sicherheit, Wiedereinstieg oder Seniorentraining",
+    message:
+      "Welches Fahrtraining der AsphaltCrew passt zu mir und wie läuft es ab?",
+  },
+  {
+    icon: "✅",
+    title: "Preflight-Check",
+    description: "Unterlagen und Antrag vor dem Start prüfen",
+    action: "hohenbadenPanel",
+    hohenbadenPanel: "documents",
+  },
+  {
+    icon: "🎙️",
+    title: "Tower fragen",
+    description: "Frage einsprechen und direkt weiterkommen",
+    action: "voice",
+  },
+];
+
+const MALIK_START_CARDS: StartCard[] = [
+  {
+    icon: "🎮",
+    title: "Simulator-Start",
+    description: "Stressfrei üben, bevor es auf die Straße geht",
+    message:
+      "Wie hilft mir der High-Tech-Simulator der Fahrschule Malik beim Einstieg oder gegen Prüfungsangst?",
+  },
+  {
+    icon: "⚡",
+    title: "VIP-Führerschein",
+    description: "Schnellen Ausbildungsweg unverbindlich prüfen",
+    action: "hohenbadenPanel",
+    hohenbadenPanel: "courses",
+  },
+  {
+    icon: "🔋",
+    title: "E-Auto & B197",
+    description: "Automatik-Prüfung und Schaltkompetenz kombinieren",
+    action: "hohenbadenPanel",
+    hohenbadenPanel: "courses",
+  },
+  {
+    icon: "👩‍🏫",
+    title: "Fahrlehrerin wählen",
+    description: "Entspannt mit weiblicher Begleitung lernen",
+    message:
+      "Ich möchte gerne mit einer Fahrlehrerin lernen. Was bietet die Fahrschule Malik an?",
+  },
+  {
+    icon: "📍",
+    title: "Standort finden",
+    description: "Rastatt oder Karlsruhe nach Zeiten vergleichen",
+    action: "hohenbadenPanel",
+    hohenbadenPanel: "schedule",
+  },
+  {
+    icon: "🪪",
+    title: "Mein Lern-Cockpit",
+    description: "Simulator, FahrAPP, Praxis und Unterlagen verbinden",
+    action: "hohenbadenPanel",
+    hohenbadenPanel: "dashboard",
+  },
+  {
+    icon: "✅",
+    title: "Unterlagen prüfen",
+    description: "Persönliche Checkliste bis zur Prüfungsfreigabe",
+    action: "hohenbadenPanel",
+    hohenbadenPanel: "documents",
+  },
+  {
+    icon: "🎙️",
+    title: "Frage einsprechen",
+    description: "Einfach erzählen statt lange suchen",
     action: "voice",
   },
 ];
@@ -2569,8 +2753,55 @@ type HohenbadenCourse = {
   match: string;
 };
 
+type FutureDemoVariant =
+  | "hohenbaden"
+  | "schelf"
+  | "jentsch"
+  | "asphaltcrew"
+  | "malik";
+
+type FutureDemoDocument = {
+  readonly id: string;
+  readonly label: string;
+  readonly detail: string;
+  readonly initial: boolean;
+};
+
+type FutureDemoConfig = {
+  courses: readonly HohenbadenCourse[];
+  documents: readonly FutureDemoDocument[];
+  coursePreference: string;
+  coursePreferences: readonly string[];
+  studentCode: string;
+  connectSource: string;
+  connectPotential: string;
+  dashboardEyebrow: string;
+  dashboardTitle: string;
+  dashboardNextStep: string;
+  theoryTitle: string;
+  theoryDetail: string;
+  practiceDetail: string;
+  practiceValue: string;
+  nextAppointmentTitle: string;
+  nextAppointmentDetail: string;
+  coachRecommendation: string;
+  coursesTitle: string;
+  coursesDescription: string;
+  classesSummary: string;
+  reserveButton: string;
+  seatsLabel: string;
+  scheduleTitle: string;
+  scheduleDescription: string;
+  scheduleSlots: ReadonlyArray<readonly [string, string, string]>;
+  coachDescription: string;
+  coachFacts: ReadonlyArray<readonly [string, string]>;
+  coachQuestions: readonly string[];
+  todayPlan: string;
+  todayPlanPrompt: string;
+};
+
 type HohenbadenFutureDemoProps = {
-  variant?: "hohenbaden" | "schelf";
+  variant?: FutureDemoVariant;
   panel: HohenbadenPanel;
   onPanelChange: (panel: HohenbadenPanel) => void;
   accent: string;
@@ -2663,6 +2894,292 @@ const SCHELF_DEMO_DOCUMENTS = [
   { id: "antrag", label: "Fahrerlaubnisantrag", detail: "Von der Fahrschule vorbereitet", initial: true },
 ] as const;
 
+const JENTSCH_DEMO_COURSES: HohenbadenCourse[] = [
+  {
+    id: "jentsch-pkw",
+    title: "Pkw B / B197 / BF17",
+    location: "Schwerin · Am Markt 10",
+    start: "Start nach persönlicher Abstimmung",
+    time: "Theorie und Praxis individuell geplant",
+    seats: 3,
+    tag: "Pkw-Match",
+    match: "Passt zu: B, B197 oder begleitetem Fahren",
+  },
+  {
+    id: "jentsch-lkw",
+    title: "Lkw C / CE",
+    location: "Schwerin",
+    start: "Ausbildungsstart auf Anfrage",
+    time: "Voraussetzungen werden vorab geprüft",
+    seats: 2,
+    tag: "Beruf & Weiterbildung",
+    match: "Passt zu: schweren Fahrzeugen und Klasse-B-Vorbesitz",
+  },
+  {
+    id: "jentsch-bus",
+    title: "Bus D / DE",
+    location: "Schwerin",
+    start: "Persönliche Terminplanung",
+    time: "Vorbesitz und Mindestalter individuell prüfen",
+    seats: 2,
+    tag: "Bus-Ausbildung",
+    match: "Passt zu: Personenbeförderung und beruflicher Mobilität",
+  },
+];
+
+const JENTSCH_DEMO_DOCUMENTS = [
+  { id: "vertrag", label: "Ausbildungsvertrag", detail: "Digital signiert", initial: true },
+  { id: "ausweis", label: "Ausweiskopie", detail: "Geprüft", initial: true },
+  { id: "sehtest", label: "Sehtest", detail: "Nachweis liegt vor", initial: true },
+  { id: "erstehilfe", label: "Erste-Hilfe-Kurs", detail: "Nachweis liegt vor", initial: true },
+  { id: "passbild", label: "Biometrisches Passbild", detail: "Noch hochladen", initial: false },
+] as const;
+
+const ASPHALTCREW_DEMO_COURSES: HohenbadenCourse[] = [
+  {
+    id: "asphalt-intensiv-b",
+    title: "Intensivkurs B / B197 / B78",
+    location: "Rastatt",
+    start: "Nächster Kompaktstart auf Anfrage",
+    time: "Blockunterricht passend zum Alltag",
+    seats: 3,
+    tag: "Fast Track",
+    match: "Passt zu: schnellem Pkw-Take-off",
+  },
+  {
+    id: "asphalt-motorrad",
+    title: "Motorrad A / A2 / A1 / AM / B196",
+    location: "Rastatt",
+    start: "Start nach Klassen- und Alterscheck",
+    time: "Individuelle Motorrad-Ausbildung",
+    seats: 2,
+    tag: "Zwei Räder",
+    match: "Passt zu: Einstieg, Aufstieg oder B196-Upgrade",
+  },
+  {
+    id: "asphalt-anhaenger-training",
+    title: "BE / B96 oder Fahrtraining",
+    location: "Rastatt",
+    start: "Termin nach persönlicher Abstimmung",
+    time: "Anhänger, Wiedereinstieg oder Seniorentraining",
+    seats: 4,
+    tag: "Individuelles Training",
+    match: "Passt zu: mehr Sicherheit und konkretem Praxisziel",
+  },
+];
+
+const ASPHALTCREW_DEMO_DOCUMENTS = [
+  { id: "ausweis", label: "Ausweis", detail: "Preflight-Check bestanden", initial: true },
+  { id: "sehtest", label: "Sehtest", detail: "Nachweis liegt vor", initial: true },
+  { id: "erstehilfe", label: "Erste-Hilfe-Kurs", detail: "Nachweis liegt vor", initial: true },
+  { id: "passbild", label: "Biometrisches Passbild", detail: "Noch hochladen", initial: false },
+  { id: "antrag", label: "Fahrerlaubnisantrag", detail: "Digital vorbereitet", initial: true },
+] as const;
+
+const MALIK_DEMO_COURSES: HohenbadenCourse[] = [
+  {
+    id: "malik-rastatt-b197",
+    title: "B197 mit Simulator & E-Auto",
+    location: "Rastatt",
+    start: "Flexibler Start nach Beratung",
+    time: "Simulator, Automatik und Schaltkompetenz kombiniert",
+    seats: 4,
+    tag: "Modern starten",
+    match: "Passt zu: stressarmem Einstieg und B197",
+  },
+  {
+    id: "malik-karlsruhe-b",
+    title: "Klasse B / BF17 / B197",
+    location: "Karlsruhe",
+    start: "Start passend zu den Theoriezeiten",
+    time: "Mo. und Mi. Theorie · 18:00–19:30 Uhr",
+    seats: 3,
+    tag: "Standort-Match",
+    match: "Passt zu: Karlsruhe und Abendtheorie",
+  },
+  {
+    id: "malik-vip",
+    title: "VIP-Führerschein",
+    location: "Rastatt oder Karlsruhe",
+    start: "Schnellstart nach Machbarkeitsprüfung",
+    time: "In vielen Fällen laut Fahrschule in etwa zwei Wochen möglich",
+    seats: 2,
+    tag: "Fast Track",
+    match: "Passt zu: hoher zeitlicher Verfügbarkeit",
+  },
+];
+
+const MALIK_DEMO_DOCUMENTS = [
+  { id: "ausweis", label: "Ausweis", detail: "Geprüft", initial: true },
+  { id: "sehtest", label: "Sehtest", detail: "Nachweis liegt vor", initial: true },
+  { id: "erstehilfe", label: "Erste-Hilfe-Kurs", detail: "Nachweis liegt vor", initial: true },
+  { id: "passbild", label: "Biometrisches Passbild", detail: "Noch hochladen", initial: false },
+  { id: "antrag", label: "Fahrerlaubnisantrag", detail: "Für Standort vorbereitet", initial: true },
+] as const;
+
+const FUTURE_DEMO_CONFIGS: Record<FutureDemoVariant, FutureDemoConfig> = {
+  hohenbaden: {
+    courses: HOHENBADEN_DEMO_COURSES,
+    documents: HOHENBADEN_DEMO_DOCUMENTS,
+    coursePreference: "Etwa 2 Wochen Urlaub",
+    coursePreferences: ["Etwa 2 Wochen Urlaub", "Start im August", "Nur Baden-Baden", "Bühl möglich"],
+    studentCode: "HOB-2048",
+    connectSource: "Später per Fahrschülernummer, QR-Code oder Verknüpfung mit Fahrschulsoftware und THEO App.",
+    connectPotential: "Die echte Version kann Fahrschulsoftware, THEO-Lernstand und Kursplanung verbinden.",
+    dashboardEyebrow: "Persönlicher in7Days Führerscheinbegleiter",
+    dashboardTitle: "Hallo Max, dein Intensivkurs ist vorbereitet.",
+    dashboardNextStep: "Dein nächster sinnvoller Schritt: Passbild hochladen, den THEO-Lernstand prüfen und anschließend deinen Intensivplatz bestätigen.",
+    theoryTitle: "THEO App",
+    theoryDetail: "72 % Lernstand",
+    practiceDetail: "6 Fahrstunden geplant",
+    practiceValue: "Intensiv",
+    nextAppointmentTitle: "🚘 Fahrstunde · Stadtverkehr",
+    nextAppointmentDetail: "Mittwoch, 5. August · 16:30–17:15 Uhr",
+    coachRecommendation: "Heute noch 15 Minuten Vorfahrt und Geschwindigkeit üben. Das passt zu deiner nächsten Fahrstunde.",
+    coursesTitle: "In wenigen Klicks zum passenden Intensivkurs",
+    coursesDescription: "Das Interface gleicht Klasse, Standort, Urlaubszeit und Bearbeitungsstand automatisch mit den nächsten Intensivkursen ab.",
+    classesSummary: "B / B197 / A",
+    reserveButton: "Intensivplatz in 60 Sekunden anfragen",
+    seatsLabel: "Beispielplätze frei",
+    scheduleTitle: "Fahrstunden passend zu deinem Intensivplan",
+    scheduleDescription: "Freie Zeiten werden später automatisch mit deinem Fahrlehrer, Ausbildungsstand und deinen Verfügbarkeiten abgeglichen.",
+    scheduleSlots: [["Heute", "17:15", "Grundfahraufgaben"], ["Mittwoch", "16:30", "Stadtverkehr"], ["Freitag", "18:00", "Überlandfahrt"]],
+    coachDescription: "Antworten, THEO-Lernempfehlungen und nächste Schritte werden passend zu deiner Klasse, deinem Lernstand, deiner Sprache und deinem Intensivplan vorbereitet.",
+    coachFacts: [["🪪", "Klasse B197"], ["📱", "THEO App: 72 % Lernstand"], ["✅", "Passbild fehlt noch"], ["🌍", "Lernsprache: Englisch"]],
+    coachQuestions: ["Was soll ich heute in der THEO App lernen?", "Passt mein Urlaub zum nächsten Intensivkurs?", "Bin ich bereit für die Theorieprüfung?", "Welche Fahrstunde passt als Nächstes zu mir?"],
+    todayPlan: "20 Minuten THEO App · Kursplatz bestätigen · Passbild hochladen",
+    todayPlanPrompt: "Erstelle mir meinen persönlichen in7Days-Lernplan für heute.",
+  },
+  schelf: {
+    courses: SCHELF_DEMO_COURSES,
+    documents: SCHELF_DEMO_DOCUMENTS,
+    coursePreference: "Herbstferien",
+    coursePreferences: ["Herbstferien", "Start im Oktober", "Nur Schwerin", "Crivitz möglich"],
+    studentCode: "SCHELF-2048",
+    connectSource: "Später per Fahrschülernummer, QR-Code oder Verknüpfung mit Fahrschulsoftware und Lern-App.",
+    connectPotential: "Die echte Version kann Fahrschulsoftware, Lernstand, Simulator und Kursplanung verbinden.",
+    dashboardEyebrow: "Persönlicher Schelf-Führerscheinbegleiter",
+    dashboardTitle: "Hallo Max, dein 7-Tage-Theoriekurs ist vorbereitet.",
+    dashboardNextStep: "Dein nächster sinnvoller Schritt: Passbild ergänzen, deinen Lernstand prüfen und anschließend den Kursplatz in Schwerin oder Crivitz bestätigen.",
+    theoryTitle: "Theorie-Lernen",
+    theoryDetail: "72 % Lernstand",
+    practiceDetail: "Simulator + 6 Fahrstunden",
+    practiceValue: "Im Aufbau",
+    nextAppointmentTitle: "🎮 Fahrsimulator · Block 1",
+    nextAppointmentDetail: "Mittwoch · 16:30–17:15 Uhr · Demo-Termin",
+    coachRecommendation: "Heute noch 15 Minuten Fahrzeugbedienung wiederholen. Das passt zu deinem nächsten Simulator-Block.",
+    coursesTitle: "In wenigen Klicks zum passenden 7-Tage-Theoriekurs",
+    coursesDescription: "Das Interface gleicht Klasse, Standort, Ferienzeit und Bearbeitungsstand automatisch mit den nächsten Kursen in Schwerin und Crivitz ab.",
+    classesSummary: "B · B197 · Motorrad",
+    reserveButton: "Kursplatz in 60 Sekunden anfragen",
+    seatsLabel: "zuletzt veröffentlichte Plätze",
+    scheduleTitle: "Fahrstunden passend zu deinem Lern- und Simulatorplan",
+    scheduleDescription: "Freie Zeiten werden später automatisch mit Fahrsimulator, Fahrlehrer, Ausbildungsstand und deinen Verfügbarkeiten abgeglichen.",
+    scheduleSlots: [["Heute", "17:15", "Fahrsimulator · Block 1"], ["Mittwoch", "16:30", "Stadtverkehr"], ["Freitag", "18:00", "Überlandfahrt"]],
+    coachDescription: "Antworten, Lernempfehlungen und nächste Schritte werden passend zu deiner Klasse, deinem Lernstand, deinen Unterlagen und deinem Simulator- beziehungsweise Praxisplan vorbereitet.",
+    coachFacts: [["🪪", "Klasse B197"], ["📱", "Theorie: 72 % Lernstand"], ["✅", "Passbild fehlt noch"], ["🎮", "Simulator: Block 1 geplant"]],
+    coachQuestions: ["Was soll ich heute für die Theorie lernen?", "Welcher 7-Tage-Kurs passt zu meinem Standort?", "Bin ich bereit für die Theorieprüfung?", "Was kommt nach dem Fahrsimulator?"],
+    todayPlan: "20 Minuten Theorie · Kursplatz bestätigen · Passbild ergänzen",
+    todayPlanPrompt: "Erstelle mir meinen persönlichen Schelf-Lernplan für heute.",
+  },
+  jentsch: {
+    courses: JENTSCH_DEMO_COURSES,
+    documents: JENTSCH_DEMO_DOCUMENTS,
+    coursePreference: "Klasse B / B197",
+    coursePreferences: ["Klasse B / B197", "BF17", "C / CE", "D / DE"],
+    studentCode: "JEN-2048",
+    connectSource: "Ohne App direkt im Browser starten. Ein bestehender Drive.Buzz- oder Fahrschulzugang könnte später optional verknüpft werden.",
+    connectPotential: "Die Demo zeigt keine fertige Drive.Buzz-Schnittstelle. Eine echte Version könnte vorhandene Ausbildungsdaten ergänzen und daraus persönliche nächste Schritte ableiten.",
+    dashboardEyebrow: "Persönlicher Jentsch KI-Begleiter",
+    dashboardTitle: "Hallo Max, dein nächster Schritt ist schon vorbereitet.",
+    dashboardNextStep: "Passbild ergänzen, den Lernstand prüfen und danach die passende Praxisetappe mit der Fahrschule abstimmen.",
+    theoryTitle: "Drive.Buzz + KI",
+    theoryDetail: "72 % Beispiel-Lernstand",
+    practiceDetail: "6 Fahrstunden im Demo-Plan",
+    practiceValue: "Persönlich",
+    nextAppointmentTitle: "🚘 Fahrstunde · Ruhiger Stadtverkehr",
+    nextAppointmentDetail: "Mittwoch · 16:30–17:15 Uhr · Demo-Termin",
+    coachRecommendation: "Heute 15 Minuten Vorfahrt üben. Danach beantwortet der Begleiter deine Unsicherheiten in Alltagssprache.",
+    coursesTitle: "Die passende Ausbildung, bevor du eine App installierst",
+    coursesDescription: "Der KI-Berater klärt Ziel, Vorbesitz, Zeit und Unterlagen direkt auf der Website. Drive.Buzz kann danach als bestehendes Ausbildungswerkzeug weiter genutzt werden.",
+    classesSummary: "B · BF17 · BE · C/CE · D/DE",
+    reserveButton: "Persönliche Beratung anfragen",
+    seatsLabel: "Demo-Plätze",
+    scheduleTitle: "Fahrstunden passend zu Alltag und Lernstand",
+    scheduleDescription: "Beispielzeiten werden nach Verfügbarkeit, Klasse, Lernstand und Fahrlehrer-Match sortiert – ohne in mehreren Menüs zu suchen.",
+    scheduleSlots: [["Heute", "17:15", "Grundfahraufgaben"], ["Mittwoch", "16:30", "Stadtverkehr"], ["Freitag", "18:00", "Lkw-/Bus-Beratung"]],
+    coachDescription: "Der Begleiter beantwortet freie Fragen, versteht Sprache und Fotos und macht aus Lernstand, Unterlagen, Klasse und Terminen eine konkrete Empfehlung.",
+    coachFacts: [["🪪", "Klasse B197"], ["📱", "Drive.Buzz-Lernstand: Demo"], ["✅", "Passbild fehlt noch"], ["📅", "Fahrstunde Mittwoch geplant"]],
+    coachQuestions: ["Was ist heute mein wichtigster nächster Schritt?", "Welche Klasse passt zu meinem Ziel?", "Welche Unterlagen fehlen mir noch?", "Wie ergänzen sich Drive.Buzz und der KI-Begleiter?"],
+    todayPlan: "15 Minuten Theorie · Passbild ergänzen · Praxisfrage klären",
+    todayPlanPrompt: "Erstelle mir meinen persönlichen Jentsch-Lernplan für heute.",
+  },
+  asphaltcrew: {
+    courses: ASPHALTCREW_DEMO_COURSES,
+    documents: ASPHALTCREW_DEMO_DOCUMENTS,
+    coursePreference: "Intensivkurs",
+    coursePreferences: ["Intensivkurs", "B197 / Automatik", "Motorrad", "BE / B96"],
+    studentCode: "CREW-2048",
+    connectSource: "Per Fahrschülernummer, QR-Code oder späterer Verbindung mit der eingesetzten Fahrschulsoftware.",
+    connectPotential: "Die echte Version könnte Ausbildung, digitale Lernmittel, Kosten, Termine und persönliche Empfehlungen in einem Flight-Cockpit bündeln.",
+    dashboardEyebrow: "Dein persönliches AsphaltCrew Flight-Cockpit",
+    dashboardTitle: "Hallo Max, dein nächster Take-off ist vorbereitet.",
+    dashboardNextStep: "Preflight-Unterlagen abschließen, Klasse bestätigen und danach den passenden Theorie- und Praxisplan auswählen.",
+    theoryTitle: "Digitale Theorie",
+    theoryDetail: "72 % Beispiel-Lernstand",
+    practiceDetail: "6 Etappen im Demo-Flugplan",
+    practiceValue: "Ready",
+    nextAppointmentTitle: "🚘 Praxis · Stadtverkehr",
+    nextAppointmentDetail: "Mittwoch · 16:30–17:15 Uhr · Demo-Slot",
+    coachRecommendation: "Heute die nächste Theorieetappe abschließen. Danach ist dein Preflight für die Praxis fast komplett.",
+    coursesTitle: "Ready for Take-off? Finde deinen besten Ausbildungsplan",
+    coursesDescription: "Das Matching verbindet Klasse, Intensivwunsch, Alltag und Vorbesitz – vom Pkw über Motorrad und Anhänger bis zum Fahrtraining.",
+    classesSummary: "B/B197/B78 · A/A2/A1 · BE/B96",
+    reserveButton: "Take-off unverbindlich anfragen",
+    seatsLabel: "Demo-Plätze",
+    scheduleTitle: "Dein persönlicher Praxis-Flugplan",
+    scheduleDescription: "Beispielslots werden nach Verfügbarkeit, Ausbildungsstand und gewünschter Etappe sortiert.",
+    scheduleSlots: [["Heute", "17:15", "Grundfahraufgaben"], ["Mittwoch", "16:30", "Stadtverkehr"], ["Samstag", "10:00", "Fahrtraining"]],
+    coachDescription: "Der Begleiter kennt Klasse, Preflight-Unterlagen, Lernstand und Praxisplan. Dadurch liefert er nicht nur Antworten, sondern die nächste sinnvolle Etappe.",
+    coachFacts: [["🪪", "Klasse B197"], ["📚", "Theorie: 72 % Lernstand"], ["✅", "Preflight: 4 von 5"], ["🚀", "Nächste Etappe: Praxis"]],
+    coachQuestions: ["Welcher Intensivplan passt zu meinem Alltag?", "Ist B197 oder B78 besser für mich?", "Welche Motorradklasse passt zu meinem Alter?", "Welches Fahrtraining gibt mir mehr Sicherheit?"],
+    todayPlan: "20 Minuten Theorie · Preflight abschließen · Praxisetappe wählen",
+    todayPlanPrompt: "Erstelle mir meinen persönlichen AsphaltCrew-Flugplan für heute.",
+  },
+  malik: {
+    courses: MALIK_DEMO_COURSES,
+    documents: MALIK_DEMO_DOCUMENTS,
+    coursePreference: "B197 & Simulator",
+    coursePreferences: ["B197 & Simulator", "VIP-Führerschein", "Rastatt", "Karlsruhe"],
+    studentCode: "MALIK-2048",
+    connectSource: "Per Fahrschülernummer, QR-Code oder späterer Verbindung mit FahrAPP und Fahrschulsoftware.",
+    connectPotential: "Die echte Version könnte FahrAPP-Lernstand, Simulator, E-Auto-Praxis, Unterlagen und beide Standorte in einem Cockpit verbinden.",
+    dashboardEyebrow: "Persönlicher Malik Lern- und Praxisbegleiter",
+    dashboardTitle: "Hallo Max, dein stressfreier Start ist vorbereitet.",
+    dashboardNextStep: "Simulator-Einstieg bestätigen, Passbild ergänzen und danach den passenden Standort- und Theorieplan auswählen.",
+    theoryTitle: "FahrAPP",
+    theoryDetail: "72 % Beispiel-Lernstand",
+    practiceDetail: "Simulator + E-Auto-Praxis",
+    practiceValue: "Stressarm",
+    nextAppointmentTitle: "🎮 Simulator · Grundlagen",
+    nextAppointmentDetail: "Mittwoch · 16:30–17:15 Uhr · Demo-Termin",
+    coachRecommendation: "Heute im Simulator Fahrzeugbedienung üben. Das senkt den Druck vor der ersten echten Fahrstunde.",
+    coursesTitle: "Dein moderner Weg zum Führerschein",
+    coursesDescription: "Das Matching kombiniert Ziel, Standort, B197, Simulator, E-Auto und auf Wunsch den schnellen VIP-Ausbildungsweg.",
+    classesSummary: "B · BF17 · B197 · BE",
+    reserveButton: "Kostenlose Beratung anfragen",
+    seatsLabel: "Demo-Plätze",
+    scheduleTitle: "Rastatt oder Karlsruhe – passend zu deinem Alltag",
+    scheduleDescription: "Die Demo gleicht Standort, Büro- und Theoriezeiten, Simulator und persönliche Verfügbarkeit miteinander ab.",
+    scheduleSlots: [["Dienstag", "18:00", "Theorie · Rastatt"], ["Mittwoch", "18:00", "Theorie · Karlsruhe"], ["Freitag", "16:30", "Simulator · Demo-Slot"]],
+    coachDescription: "Der Begleiter kennt FahrAPP-Lernstand, Simulatorfortschritt, Standort, Unterlagen und Praxisziel und empfiehlt daraus den nächsten stressarmen Schritt.",
+    coachFacts: [["🪪", "Klasse B197"], ["📱", "FahrAPP: 72 % Lernstand"], ["✅", "Passbild fehlt noch"], ["🎮", "Simulator: Einstieg geplant"]],
+    coachQuestions: ["Wie starte ich stressfrei im Simulator?", "Welcher Standort passt zu meinen Zeiten?", "Wie funktioniert B197 mit E-Auto und Schaltung?", "Ist der VIP-Führerschein für mich realistisch?"],
+    todayPlan: "15 Minuten FahrAPP · Simulator bestätigen · Passbild ergänzen",
+    todayPlanPrompt: "Erstelle mir meinen persönlichen Malik-Lernplan für heute.",
+  },
+};
+
 function HohenbadenFutureDemo({
   variant = "hohenbaden",
   panel,
@@ -2674,20 +3191,16 @@ function HohenbadenFutureDemo({
   isMobile,
   onAsk,
 }: HohenbadenFutureDemoProps) {
-  const isSchelf = variant === "schelf";
-  const demoCourses = isSchelf
-    ? SCHELF_DEMO_COURSES
-    : HOHENBADEN_DEMO_COURSES;
-  const demoDocuments = isSchelf
-    ? SCHELF_DEMO_DOCUMENTS
-    : HOHENBADEN_DEMO_DOCUMENTS;
+  const demoConfig = FUTURE_DEMO_CONFIGS[variant];
+  const demoCourses = demoConfig.courses;
+  const demoDocuments = demoConfig.documents;
   const [studentCode, setStudentCode] = useState("");
   const [birthDate, setBirthDate] = useState("");
   const [connecting, setConnecting] = useState(false);
   const [connected, setConnected] = useState(false);
   const [courseMode, setCourseMode] = useState<"fast" | "time">("fast");
   const [coursePreference, setCoursePreference] = useState(
-    isSchelf ? "Herbstferien" : "Etwa 2 Wochen Urlaub",
+    demoConfig.coursePreference,
   );
   const [reservedCourseId, setReservedCourseId] = useState<string | null>(null);
   const [selectedDrivingSlot, setSelectedDrivingSlot] = useState<string | null>(
@@ -2778,7 +3291,7 @@ function HohenbadenFutureDemo({
     if (connecting) return;
 
     if (useDemoData) {
-      setStudentCode(isSchelf ? "SCHELF-2048" : "HOB-2048");
+      setStudentCode(demoConfig.studentCode);
       setBirthDate("2007-06-12");
     }
 
@@ -3014,9 +3527,7 @@ function HohenbadenFutureDemo({
               Fahrschüler-Zugang
             </div>
             <div style={{ fontSize: 13.5, color: textSecondary }}>
-              {isSchelf
-                ? "Später per Fahrschülernummer, QR-Code oder Verknüpfung mit Fahrschulsoftware und Lern-App."
-                : "Später per Fahrschülernummer, QR-Code oder Verknüpfung mit Fahrschulsoftware und THEO App."}
+              {demoConfig.connectSource}
             </div>
 
             <label style={{ fontSize: 12.5, fontWeight: 850 }}>
@@ -3025,7 +3536,7 @@ function HohenbadenFutureDemo({
             <input
               value={studentCode}
               onChange={(event) => setStudentCode(event.target.value)}
-              placeholder={isSchelf ? "z. B. SCHELF-2048" : "z. B. HOB-2048"}
+              placeholder={`z. B. ${demoConfig.studentCode}`}
               style={inputStyle}
             />
 
@@ -3065,9 +3576,7 @@ function HohenbadenFutureDemo({
               }}
             >
               <span>🔒</span>
-              {isSchelf
-                ? "Die echte Version kann Fahrschulsoftware, Lernstand, Simulator und Kursplanung verbinden."
-                : "Die echte Version kann Fahrschulsoftware, THEO-Lernstand und Kursplanung verbinden."}
+              {demoConfig.connectPotential}
             </div>
           </div>
         </div>
@@ -3137,9 +3646,7 @@ function HohenbadenFutureDemo({
                   textTransform: "uppercase",
                 }}
               >
-                {isSchelf
-                  ? "Persönlicher Schelf-Führerscheinbegleiter"
-                  : "Persönlicher in7Days Führerscheinbegleiter"}
+                {demoConfig.dashboardEyebrow}
               </div>
               <div
                 style={{
@@ -3148,9 +3655,7 @@ function HohenbadenFutureDemo({
                   marginTop: 4,
                 }}
               >
-                {isSchelf
-                  ? "Hallo Max, dein 7-Tage-Theoriekurs ist vorbereitet."
-                  : "Hallo Max, dein Intensivkurs ist vorbereitet."}
+                {demoConfig.dashboardTitle}
               </div>
               <div
                 style={{
@@ -3160,9 +3665,7 @@ function HohenbadenFutureDemo({
                   marginTop: 7,
                 }}
               >
-                {isSchelf
-                  ? "Dein nächster sinnvoller Schritt: Passbild ergänzen, deinen Lernstand prüfen und anschließend den Kursplatz in Schwerin oder Crivitz bestätigen."
-                  : "Dein nächster sinnvoller Schritt: Passbild hochladen, den THEO-Lernstand prüfen und anschließend deinen Intensivplatz bestätigen."}
+                {demoConfig.dashboardNextStep}
               </div>
             </div>
 
@@ -3208,9 +3711,9 @@ function HohenbadenFutureDemo({
             }}
           >
             {[
-              ["📱", isSchelf ? "Theorie-Lernen" : "THEO App", "72 % Lernstand", "Im Plan"],
+              ["📱", demoConfig.theoryTitle, demoConfig.theoryDetail, "Im Plan"],
               ["✅", "Unterlagen", "4 von 5 vollständig", "80 %"],
-              ["🚘", "Praxis", isSchelf ? "Simulator + 6 Fahrstunden" : "6 Fahrstunden geplant", isSchelf ? "Im Aufbau" : "Intensiv"],
+              ["🚘", "Praxis", demoConfig.practiceDetail, demoConfig.practiceValue],
             ].map(([icon, title, detail, value]) => (
               <button
                 key={title}
@@ -3309,9 +3812,7 @@ function HohenbadenFutureDemo({
               >
                 <div>
                   <div style={{ fontWeight: 950 }}>
-                    {isSchelf
-                      ? "🎮 Fahrsimulator · Block 1"
-                      : "🚘 Fahrstunde · Stadtverkehr"}
+                    {demoConfig.nextAppointmentTitle}
                   </div>
                   <div
                     style={{
@@ -3320,9 +3821,7 @@ function HohenbadenFutureDemo({
                       marginTop: 5,
                     }}
                   >
-                    {isSchelf
-                      ? "Mittwoch · 16:30–17:15 Uhr · Demo-Termin"
-                      : "Mittwoch, 5. August · 16:30–17:15 Uhr"}
+                    {demoConfig.nextAppointmentDetail}
                   </div>
                 </div>
                 <button
@@ -3353,9 +3852,7 @@ function HohenbadenFutureDemo({
                   marginTop: 8,
                 }}
               >
-                {isSchelf
-                  ? "Heute noch 15 Minuten Fahrzeugbedienung wiederholen. Das passt zu deinem nächsten Simulator-Block."
-                  : "Heute noch 15 Minuten Vorfahrt und Geschwindigkeit üben. Das passt zu deiner nächsten Fahrstunde."}
+                {demoConfig.coachRecommendation}
               </div>
               <button
                 type="button"
@@ -3380,9 +3877,7 @@ function HohenbadenFutureDemo({
         >
           <div>
             <div style={{ fontSize: isMobile ? 25 : 31, fontWeight: 950 }}>
-              {isSchelf
-                ? "In wenigen Klicks zum passenden 7-Tage-Theoriekurs"
-                : "In wenigen Klicks zum passenden Intensivkurs"}
+              {demoConfig.coursesTitle}
             </div>
             <div
               style={{
@@ -3392,9 +3887,7 @@ function HohenbadenFutureDemo({
                 marginTop: 6,
               }}
             >
-              {isSchelf
-                ? "Das Interface gleicht Klasse, Standort, Ferienzeit und Bearbeitungsstand automatisch mit den nächsten Kursen in Schwerin und Crivitz ab."
-                : "Das Interface gleicht Klasse, Standort, Urlaubszeit und Bearbeitungsstand automatisch mit den nächsten Intensivkursen ab."}
+              {demoConfig.coursesDescription}
             </div>
           </div>
 
@@ -3408,7 +3901,7 @@ function HohenbadenFutureDemo({
             }}
           >
             {[
-              ["1", "Klasse", isSchelf ? "B · B197 · Motorrad" : "B / B197 / A"],
+              ["1", "Klasse", demoConfig.classesSummary],
               ["2", "Deine Zeit", coursePreference],
               ["3", "Kurs", reservedCourse ? "Vorgemerkt" : "Auswählen"],
             ].map(([number, label, value]) => (
@@ -3497,20 +3990,7 @@ function HohenbadenFutureDemo({
                 marginTop: 14,
               }}
             >
-              {(isSchelf
-                ? [
-                    "Herbstferien",
-                    "Start im Oktober",
-                    "Nur Schwerin",
-                    "Crivitz möglich",
-                  ]
-                : [
-                    "Etwa 2 Wochen Urlaub",
-                    "Start im August",
-                    "Nur Baden-Baden",
-                    "Bühl möglich",
-                  ]
-              ).map((preference) => (
+              {demoConfig.coursePreferences.map((preference) => (
                 <button
                   key={preference}
                   type="button"
@@ -3575,8 +4055,7 @@ function HohenbadenFutureDemo({
                       marginTop: 5,
                     }}
                   >
-                    {reservedCourse.title} in {reservedCourse.location} · Start
-                    am {reservedCourse.start}. In der echten Version würde der
+                    {reservedCourse.title} in {reservedCourse.location} · {reservedCourse.start}. In der echten Version würde der
                     Platz jetzt kurz reserviert und die Anmeldung direkt
                     abgeschlossen.
                   </div>
@@ -3593,9 +4072,7 @@ function HohenbadenFutureDemo({
                       onClick={() => onPanelChange("connect")}
                       style={primaryButton}
                     >
-                      {isSchelf
-                        ? "Kursplatz in 60 Sekunden anfragen"
-                        : "Intensivplatz in 60 Sekunden anfragen"}
+                      {demoConfig.reserveButton}
                     </button>
                     <button
                       type="button"
@@ -3692,7 +4169,7 @@ function HohenbadenFutureDemo({
                         fontWeight: 900,
                       }}
                     >
-                      {course.seats} {isSchelf ? "zuletzt veröffentlichte Plätze" : "Beispielplätze frei"}
+                      {course.seats} {demoConfig.seatsLabel}
                     </span>
                     <button
                       type="button"
@@ -3725,9 +4202,7 @@ function HohenbadenFutureDemo({
         >
           <div>
             <div style={{ fontSize: isMobile ? 25 : 31, fontWeight: 950 }}>
-              {isSchelf
-                ? "Fahrstunden passend zu deinem Lern- und Simulatorplan"
-                : "Fahrstunden passend zu deinem Intensivplan"}
+              {demoConfig.scheduleTitle}
             </div>
             <div
               style={{
@@ -3737,9 +4212,7 @@ function HohenbadenFutureDemo({
                 marginTop: 6,
               }}
             >
-              {isSchelf
-                ? "Freie Zeiten werden später automatisch mit Fahrsimulator, Fahrlehrer, Ausbildungsstand und deinen Verfügbarkeiten abgeglichen."
-                : "Freie Zeiten werden später automatisch mit deinem Fahrlehrer, Ausbildungsstand und deinen Verfügbarkeiten abgeglichen."}
+              {demoConfig.scheduleDescription}
             </div>
           </div>
 
@@ -3842,18 +4315,7 @@ function HohenbadenFutureDemo({
                   marginTop: 14,
                 }}
               >
-                {(isSchelf
-                  ? [
-                      ["Heute", "17:15", "Fahrsimulator · Block 1"],
-                      ["Mittwoch", "16:30", "Stadtverkehr"],
-                      ["Freitag", "18:00", "Überlandfahrt"],
-                    ]
-                  : [
-                      ["Heute", "17:15", "Grundfahraufgaben"],
-                      ["Mittwoch", "16:30", "Stadtverkehr"],
-                      ["Freitag", "18:00", "Überlandfahrt"],
-                    ]
-                ).map(([day, time, topic]) => {
+                {demoConfig.scheduleSlots.map(([day, time, topic]) => {
                   const slotId = `${day}-${time}`;
                   const selected = selectedDrivingSlot === slotId;
                   return (
@@ -4211,9 +4673,7 @@ function HohenbadenFutureDemo({
                   marginTop: 9,
                 }}
               >
-                {isSchelf
-                  ? "Antworten, Lernempfehlungen und nächste Schritte werden passend zu deiner Klasse, deinem Lernstand, deinen Unterlagen und deinem Simulator- beziehungsweise Praxisplan vorbereitet."
-                  : "Antworten, THEO-Lernempfehlungen und nächste Schritte werden passend zu deiner Klasse, deinem Lernstand, deiner Sprache und deinem Intensivplan vorbereitet."}
+                {demoConfig.coachDescription}
               </div>
             </div>
             <div
@@ -4250,20 +4710,7 @@ function HohenbadenFutureDemo({
                   marginTop: 13,
                 }}
               >
-                {(isSchelf
-                  ? [
-                      ["🪪", "Klasse B197"],
-                      ["📱", "Theorie: 72 % Lernstand"],
-                      ["✅", "Passbild fehlt noch"],
-                      ["🎮", "Simulator: Block 1 geplant"],
-                    ]
-                  : [
-                      ["🪪", "Klasse B197"],
-                      ["📱", "THEO App: 72 % Lernstand"],
-                      ["✅", "Passbild fehlt noch"],
-                      ["🌍", "Lernsprache: Englisch"],
-                    ]
-                ).map(([icon, value]) => (
+                {demoConfig.coachFacts.map(([icon, value]) => (
                   <div
                     key={value}
                     style={{
@@ -4298,20 +4745,7 @@ function HohenbadenFutureDemo({
                   marginTop: 13,
                 }}
               >
-                {(isSchelf
-                  ? [
-                      "Was soll ich heute für die Theorie lernen?",
-                      "Welcher 7-Tage-Kurs passt zu meinem Standort?",
-                      "Bin ich bereit für die Theorieprüfung?",
-                      "Was kommt nach dem Fahrsimulator?",
-                    ]
-                  : [
-                      "Was soll ich heute in der THEO App lernen?",
-                      "Passt mein Urlaub zum nächsten Intensivkurs?",
-                      "Bin ich bereit für die Theorieprüfung?",
-                      "Welche Fahrstunde passt als Nächstes zu mir?",
-                    ]
-                ).map((question) => (
+                {demoConfig.coachQuestions.map((question) => (
                   <button
                     key={question}
                     type="button"
@@ -4354,20 +4788,12 @@ function HohenbadenFutureDemo({
                   marginTop: 4,
                 }}
               >
-                {isSchelf
-                  ? "20 Minuten Theorie · Kursplatz bestätigen · Passbild ergänzen"
-                  : "20 Minuten THEO App · Kursplatz bestätigen · Passbild hochladen"}
+                {demoConfig.todayPlan}
               </div>
             </div>
             <button
               type="button"
-              onClick={() =>
-                onAsk(
-                  isSchelf
-                    ? "Erstelle mir meinen persönlichen Schelf-Lernplan für heute."
-                    : "Erstelle mir meinen persönlichen in7Days-Lernplan für heute.",
-                )
-              }
+              onClick={() => onAsk(demoConfig.todayPlanPrompt)}
               style={primaryButton}
             >
               Tagesplan starten
@@ -4503,6 +4929,61 @@ export default function WidgetPage() {
     "fahrschule-hohenbaden.de",
     "fahrschulehohenbaden",
   ].includes(normalizedTenantId);
+  const isJentschInterface = [
+    "fahrschule-jentsch",
+    "jentsch",
+    "jentsch-schwerin",
+    "fahrschule-jentsch-schwerin",
+    "fahrschule-jentsch-schwerin.de",
+  ].includes(normalizedTenantId);
+  const isAsphaltcrewInterface = [
+    "asphaltcrew",
+    "asphalt-crew",
+    "asphaltcrew-rastatt",
+    "asphaltcrew.info",
+    "www.asphaltcrew.info",
+  ].includes(normalizedTenantId);
+  const isMalikInterface = [
+    "fahrschule-malik",
+    "malik",
+    "malik-rastatt",
+    "malik-karlsruhe",
+    "fahrschule-malik.de",
+  ].includes(normalizedTenantId);
+  const futureDemoVariant: FutureDemoVariant | null = isHohenbadenInterface
+    ? "hohenbaden"
+    : isSchelfInterface
+      ? "schelf"
+      : isJentschInterface
+        ? "jentsch"
+        : isAsphaltcrewInterface
+          ? "asphaltcrew"
+          : isMalikInterface
+            ? "malik"
+            : null;
+  const isFutureDemoInterface = futureDemoVariant !== null;
+  const activeFutureTenantId = isHohenbadenInterface
+    ? "fahrschule-hohenbaden"
+    : isSchelfInterface
+      ? "schelf-fahrschule"
+      : isJentschInterface
+        ? "fahrschule-jentsch"
+        : isAsphaltcrewInterface
+          ? "asphaltcrew"
+          : isMalikInterface
+            ? "fahrschule-malik"
+            : null;
+  const activeFutureWebsiteUrl = isHohenbadenInterface
+    ? "https://fahrschule-hohenbaden.de"
+    : isSchelfInterface
+      ? SCHELF_WEBSITE_URL
+      : isJentschInterface
+        ? JENTSCH_WEBSITE_URL
+        : isAsphaltcrewInterface
+          ? ASPHALTCREW_WEBSITE_URL
+          : isMalikInterface
+            ? MALIK_WEBSITE_URL
+            : undefined;
   const isEnhancedInterface =
     isTxbikesInterface ||
     isWilliInterface ||
@@ -4510,9 +4991,8 @@ export default function WidgetPage() {
     isMmWartungInterface ||
     isFahrwerkBInterface ||
     isPetermaennchenInterface ||
-    isSchelfInterface ||
     isAbgefahrenInterface ||
-    isHohenbadenInterface;
+    isFutureDemoInterface;
   const isBookingInterface =
     isLinaInterface ||
     isMmWartungInterface ||
@@ -4550,6 +5030,12 @@ export default function WidgetPage() {
         : BTDESIGNS_BOOKING_SERVICES;
   const displayBrandName = isHohenbadenInterface
     ? "Fahrschule Hohenbaden · in7Days"
+    : isJentschInterface
+      ? "Fahrschule Jentsch"
+      : isAsphaltcrewInterface
+        ? "AsphaltCrew Fahrschule"
+        : isMalikInterface
+          ? "Fahrschule Malik"
     : isAbgefahrenInterface
       ? "Fahrschule Abgefahren"
       : isSchelfInterface
@@ -4565,6 +5051,12 @@ export default function WidgetPage() {
         : cfg.brandName;
   const displayAssistantName = isHohenbadenInterface
     ? "Führerschein-Assistent"
+    : isJentschInterface
+      ? "KI-Führerscheinbegleiter"
+      : isAsphaltcrewInterface
+        ? "Flight-Copilot"
+        : isMalikInterface
+          ? "Lern- & Praxisbegleiter"
     : isAbgefahrenInterface
       ? "Führerschein-Assistent"
       : isSchelfInterface
@@ -4591,6 +5083,12 @@ export default function WidgetPage() {
         ? theme.accent || "#ff751f"
         : isHohenbadenInterface
           ? "#e31e24"
+          : isJentschInterface
+            ? "#f28b35"
+            : isAsphaltcrewInterface
+              ? "#6f2c91"
+              : isMalikInterface
+                ? "#1f9d70"
           : isAbgefahrenInterface
             ? theme.accent || "#e11d48"
             : isSchelfInterface
@@ -4610,6 +5108,12 @@ export default function WidgetPage() {
           ? "#fff7ed"
           : isHohenbadenInterface
             ? "#fff8f7"
+            : isJentschInterface
+              ? "#fffaf2"
+              : isAsphaltcrewInterface
+                ? "#f8f4fb"
+                : isMalikInterface
+                  ? "#f3fbf7"
             : isAbgefahrenInterface
               ? "#fff7fb"
               : isSchelfInterface
@@ -4629,6 +5133,12 @@ export default function WidgetPage() {
           ? "#2b1f18"
           : isHohenbadenInterface
             ? "#171717"
+            : isJentschInterface
+              ? "#25230f"
+              : isAsphaltcrewInterface
+                ? "#22172c"
+                : isMalikInterface
+                  ? "#14272a"
             : isAbgefahrenInterface
               ? "#24141b"
               : isSchelfInterface
@@ -4648,6 +5158,12 @@ export default function WidgetPage() {
           ? "#705a4a"
           : isHohenbadenInterface
             ? "#6b5555"
+            : isJentschInterface
+              ? "#6d6147"
+              : isAsphaltcrewInterface
+                ? "#655570"
+                : isMalikInterface
+                  ? "#567069"
             : isAbgefahrenInterface
               ? "#765463"
               : isSchelfInterface
@@ -4783,6 +5299,12 @@ export default function WidgetPage() {
 
     const firstMessage = isHohenbadenInterface
       ? "Hallo! Ich bin der digitale Führerschein-Assistent der Fahrschule Hohenbaden · in7Days. Ich helfe dir beim Intensivkurs, der THEO App, der Anmeldung und den Standorten Baden-Baden oder Bühl. Womit möchtest du starten?"
+      : isJentschInterface
+        ? "Hallo! Ich bin der KI-Führerscheinbegleiter der Fahrschule Jentsch in Schwerin. Du kannst sofort ohne App starten, deine Klasse finden und später vorhandene Drive.Buzz-Daten sinnvoll ergänzen. Womit möchtest du beginnen?"
+        : isAsphaltcrewInterface
+          ? "Ready for Take-off? Ich bin dein digitaler Flight-Copilot der AsphaltCrew in Rastatt. Ich matche Klasse, Intensivwunsch, Unterlagen und Praxisplan. Welche Etappe soll zuerst starten?"
+          : isMalikInterface
+            ? "Hallo! Ich bin der digitale Lern- und Praxisbegleiter der Fahrschule Malik. Ich helfe dir bei Simulator, E-Auto, B197, VIP-Ausbildung und der Wahl zwischen Rastatt und Karlsruhe. Womit möchtest du starten?"
       : isAbgefahrenInterface
         ? "Moin! Ich bin der digitale Führerschein-Assistent der Fahrschule Abgefahren. Ich helfe dir bei Führerscheinklassen, Theorie, Anmeldung und den Standorten Schwerin oder Sternberg. Womit möchtest du starten?"
         : isSchelfInterface
@@ -4815,6 +5337,9 @@ export default function WidgetPage() {
     displayAssistantName,
     isAbgefahrenInterface,
     isHohenbadenInterface,
+    isJentschInterface,
+    isAsphaltcrewInterface,
+    isMalikInterface,
     isFahrwerkBInterface,
     isPetermaennchenInterface,
     isSchelfInterface,
@@ -4928,12 +5453,12 @@ export default function WidgetPage() {
             type: "bt-chat-resize",
             width: isBookingInterface
               ? 1080
-              : isTxbikesInterface || isFahrwerkBInterface || isPetermaennchenInterface || isSchelfInterface || isAbgefahrenInterface || isHohenbadenInterface
+              : isTxbikesInterface || isFahrwerkBInterface || isPetermaennchenInterface || isAbgefahrenInterface || isFutureDemoInterface
                 ? 980
                 : 500,
             height: isBookingInterface
               ? 920
-              : isTxbikesInterface || isFahrwerkBInterface || isPetermaennchenInterface || isSchelfInterface || isAbgefahrenInterface || isHohenbadenInterface
+              : isTxbikesInterface || isFahrwerkBInterface || isPetermaennchenInterface || isAbgefahrenInterface || isFutureDemoInterface
                 ? 880
                 : 760,
           }
@@ -4952,9 +5477,8 @@ export default function WidgetPage() {
     isTxbikesInterface,
     isFahrwerkBInterface,
     isPetermaennchenInterface,
-    isSchelfInterface,
     isAbgefahrenInterface,
-    isHohenbadenInterface,
+    isFutureDemoInterface,
     embedClosedSize,
   ]);
 
@@ -4965,12 +5489,10 @@ export default function WidgetPage() {
       {
         type: "bt-chat-ready",
         tenant: tenantId,
-        interface: isHohenbadenInterface
-          ? "fahrschule-hohenbaden"
+        interface: activeFutureTenantId
+          ? activeFutureTenantId
           : isAbgefahrenInterface
             ? "fahrschule-abgefahren"
-            : isSchelfInterface
-              ? "schelf-fahrschule"
             : isFahrwerkBInterface
             ? "fahrwerk-b"
             : isPetermaennchenInterface
@@ -5021,11 +5543,10 @@ export default function WidgetPage() {
   }, [
     mounted,
     tenantId,
+    activeFutureTenantId,
     isAbgefahrenInterface,
-    isHohenbadenInterface,
     isFahrwerkBInterface,
     isPetermaennchenInterface,
-    isSchelfInterface,
     isLinaInterface,
     isTxbikesInterface,
     isWilliInterface,
@@ -5430,7 +5951,7 @@ export default function WidgetPage() {
   }
 
   function applyRealtimeInterfaceTool(rawArguments: unknown) {
-    if (!isFahrwerkBInterface && !isPetermaennchenInterface && !isSchelfInterface) return false;
+    if (!isFahrwerkBInterface && !isPetermaennchenInterface && !isFutureDemoInterface) return false;
 
     let parsed: Record<string, unknown>;
 
@@ -5490,9 +6011,28 @@ export default function WidgetPage() {
       "student",
       "contact",
     ];
+    const requestedFuturePanel = String(
+      parsed.panel || "",
+    ).trim() as HohenbadenPanel;
+    const validFuturePanels: HohenbadenPanel[] = [
+      "home",
+      "connect",
+      "dashboard",
+      "courses",
+      "schedule",
+      "documents",
+      "coach",
+    ];
 
     if (isFahrwerkBInterface && validPanels.includes(requestedPanel)) {
       setFahrwerkPanel(requestedPanel);
+    }
+
+    if (
+      isFutureDemoInterface &&
+      validFuturePanels.includes(requestedFuturePanel)
+    ) {
+      setHohenbadenPanel(requestedFuturePanel);
     }
 
     let url = getSafeInterfaceUrl(parsed.url);
@@ -5502,8 +6042,8 @@ export default function WidgetPage() {
       !url &&
       /anmeld|registrier|einschreib/i.test(`${title} ${description}`)
     ) {
-      url = isSchelfInterface
-        ? SCHELF_CONTACT_URL
+      url = isFutureDemoInterface
+        ? activeFutureWebsiteUrl
         : isPetermaennchenInterface
           ? PETERMAENNCHEN_CONTACT_URL
           : FAHRWERK_LIVE_SIGNUP_URL;
@@ -5514,8 +6054,8 @@ export default function WidgetPage() {
       kind,
       eyebrow: String(
         parsed.eyebrow ||
-          (isSchelfInterface
-            ? "Schelf-Fahrschule"
+          (isFutureDemoInterface
+            ? displayBrandName
             : isPetermaennchenInterface
             ? "Petermännchen Fahrschule"
             : "Fahrwerk B"),
@@ -5542,6 +6082,21 @@ export default function WidgetPage() {
 
     if (isPetermaennchenInterface) {
       applyPetermaennchenSurfaceIntent(rawText);
+      return;
+    }
+
+    if (isFutureDemoInterface) {
+      const normalizedFutureIntent = rawText.toLowerCase();
+
+      if (/unterlagen|dokument|sehtest|erste hilfe|passbild|antrag/.test(normalizedFutureIntent)) {
+        setHohenbadenPanel("documents");
+      } else if (/fahrstunde|termin|zeit|standort|planen/.test(normalizedFutureIntent)) {
+        setHohenbadenPanel("schedule");
+      } else if (/kurs|klasse|b197|bf17|motorrad|lkw|bus|vip|intensiv/.test(normalizedFutureIntent)) {
+        setHohenbadenPanel("courses");
+      } else if (/lernplan|begleiter|coach|nächster schritt|weiter/.test(normalizedFutureIntent)) {
+        setHohenbadenPanel("coach");
+      }
       return;
     }
 
@@ -5604,7 +6159,7 @@ export default function WidgetPage() {
     const text = rawText.trim();
     if (!text || loadingRef.current) return null;
 
-    if (options.fromVoice || isPetermaennchenInterface || isSchelfInterface) {
+    if (options.fromVoice || isPetermaennchenInterface || isFutureDemoInterface) {
       applyVoiceSurfaceIntent(text);
     }
 
@@ -5659,12 +6214,10 @@ export default function WidgetPage() {
     setLoading(true);
 
     try {
-      const activeTenantId = isHohenbadenInterface
-        ? "fahrschule-hohenbaden"
+      const activeTenantId = activeFutureTenantId
+        ? activeFutureTenantId
         : isAbgefahrenInterface
           ? "fahrschule-abgefahren"
-          : isSchelfInterface
-            ? "schelf-fahrschule"
           : isFahrwerkBInterface
             ? "fahrwerk-b"
             : isPetermaennchenInterface
@@ -5951,7 +6504,7 @@ export default function WidgetPage() {
   }
 
   function openHohenbadenPanel(panel: HohenbadenPanel) {
-    if ((!isHohenbadenInterface && !isSchelfInterface) || loading || isVoiceActive) return;
+    if (!isFutureDemoInterface || loading || isVoiceActive) return;
 
     setHohenbadenPanel(panel);
     setShowBadge(false);
@@ -6242,8 +6795,8 @@ export default function WidgetPage() {
       ...current,
       {
         role: "user",
-        content: isHohenbadenInterface
-          ? "📷 Bild zur Anfrage bei Hohenbaden · in7Days hinzugefügt"
+        content: isFutureDemoInterface
+          ? `📷 Bild zur Anfrage bei ${displayBrandName} hinzugefügt`
           : isAbgefahrenInterface
             ? "📷 Bild zur Anfrage bei Abgefahren hinzugefügt"
             : isFahrwerkBInterface
@@ -6262,8 +6815,8 @@ export default function WidgetPage() {
       },
       {
         role: "assistant",
-        content: isHohenbadenInterface
-          ? "Danke, das Bild ist jetzt sichtbar. Schreib kurz dazu, ob es um einen Intensivkurs, die Anmeldung, eine Umschreibung oder deine Unterlagen geht."
+        content: isFutureDemoInterface
+          ? "Danke, das Bild ist jetzt sichtbar. Schreib kurz dazu, ob es um eine Führerscheinklasse, den Kursstart, deine Unterlagen oder eine andere Frage geht."
           : isAbgefahrenInterface
             ? "Danke, das Bild ist jetzt sichtbar. Schreib kurz dazu, ob es um eine Führerscheinklasse, die Anmeldung oder eine andere Frage geht."
             : isFahrwerkBInterface
@@ -7167,12 +7720,10 @@ export default function WidgetPage() {
 
     let responseIsSpeaking = false;
 
-    const activeRealtimeTenantId = isHohenbadenInterface
-      ? "fahrschule-hohenbaden"
+    const activeRealtimeTenantId = activeFutureTenantId
+      ? activeFutureTenantId
       : isAbgefahrenInterface
         ? "fahrschule-abgefahren"
-        : isSchelfInterface
-          ? "schelf-fahrschule"
         : isFahrwerkBInterface
           ? "fahrwerk-b"
           : isPetermaennchenInterface
@@ -7608,6 +8159,12 @@ export default function WidgetPage() {
         role: "assistant",
         content: isHohenbadenInterface
           ? "Alles klar — wobei soll ich dir rund um Intensivkurs, THEO App oder Führerschein bei Hohenbaden helfen?"
+          : isJentschInterface
+            ? "Alles klar — möchtest du ohne App beraten werden, eine Klasse finden oder dein persönliches KI-Cockpit öffnen?"
+            : isAsphaltcrewInterface
+              ? "Alles klar — welche Etappe soll dein AsphaltCrew Flight-Copilot jetzt vorbereiten?"
+              : isMalikInterface
+                ? "Alles klar — geht es um Simulator, B197, VIP-Ausbildung, Rastatt oder Karlsruhe?"
           : isAbgefahrenInterface
             ? "Alles klar — wobei soll ich dir rund um deinen Führerschein bei Abgefahren helfen?"
             : isSchelfInterface
@@ -7632,14 +8189,14 @@ export default function WidgetPage() {
 
   const panelW = isBookingInterface
     ? 1040
-    : isTxbikesInterface || isFahrwerkBInterface || isPetermaennchenInterface || isSchelfInterface || isAbgefahrenInterface || isHohenbadenInterface
+    : isTxbikesInterface || isFahrwerkBInterface || isPetermaennchenInterface || isAbgefahrenInterface || isFutureDemoInterface
       ? 940
       : isEmbedded
         ? 460
         : 500;
   const panelH = isBookingInterface
     ? 840
-    : isTxbikesInterface || isFahrwerkBInterface || isPetermaennchenInterface || isSchelfInterface || isAbgefahrenInterface || isHohenbadenInterface
+    : isTxbikesInterface || isFahrwerkBInterface || isPetermaennchenInterface || isAbgefahrenInterface || isFutureDemoInterface
       ? 820
       : isEmbedded
         ? 660
@@ -7651,17 +8208,27 @@ export default function WidgetPage() {
     : 28;
   // Personalisierte Vertriebsversionen erhalten das jeweilige Markenlogo.
   // Alle anderen Interfaces behalten weiterhin das BTDesigns-/BTAI-Logo.
-  const GLOBAL_LOGO_SRC = isSchelfInterface
+  const GLOBAL_LOGO_SRC = isJentschInterface
+    ? JENTSCH_LOGO_SRC
+    : isAsphaltcrewInterface
+      ? ASPHALTCREW_LOGO_SRC
+      : isMalikInterface
+        ? MALIK_LOGO_SRC
+        : isSchelfInterface
     ? SCHELF_LOGO_SRC
     : isPetermaennchenInterface
       ? PETERMAENNCHEN_LOGO_SRC
       : "/brand/btai-logo.png";
-  const headerPrimaryCta = isHohenbadenInterface
-    ? { label: "Website", url: "https://fahrschule-hohenbaden.de" }
+  const hasBrandedSchoolLogo =
+    isPetermaennchenInterface ||
+    isSchelfInterface ||
+    isJentschInterface ||
+    isAsphaltcrewInterface ||
+    isMalikInterface;
+  const headerPrimaryCta = activeFutureWebsiteUrl
+    ? { label: "Website", url: activeFutureWebsiteUrl }
     : isAbgefahrenInterface
       ? { label: "Website", url: "https://abgefahren-schwerin.de" }
-      : isSchelfInterface
-        ? { label: "Website", url: SCHELF_WEBSITE_URL }
       : isPetermaennchenInterface
         ? { label: "Website", url: PETERMAENNCHEN_WEBSITE_URL }
       : cfg.primaryCta;
@@ -7677,11 +8244,16 @@ export default function WidgetPage() {
     msgs[0]?.role === "assistant" &&
     !loading &&
     (!isAbgefahrenInterface || abgefahrenPanel === "home") &&
-    (!(isHohenbadenInterface || isSchelfInterface) ||
-      hohenbadenPanel === "home");
+    (!isFutureDemoInterface || hohenbadenPanel === "home");
 
   const startCards = isHohenbadenInterface
     ? HOHENBADEN_START_CARDS
+    : isJentschInterface
+      ? JENTSCH_START_CARDS
+      : isAsphaltcrewInterface
+        ? ASPHALTCREW_START_CARDS
+        : isMalikInterface
+          ? MALIK_START_CARDS
     : isAbgefahrenInterface
       ? ABGEFAHREN_START_CARDS
       : isSchelfInterface
@@ -9440,6 +10012,12 @@ body::after {
                 <span>
                   {isHohenbadenInterface
                     ? "Intensivkurs finden?"
+                    : isJentschInterface
+                      ? "Ohne App starten?"
+                      : isAsphaltcrewInterface
+                        ? "Ready for Take-off?"
+                        : isMalikInterface
+                          ? "Simulator oder B197?"
                     : isAbgefahrenInterface
                       ? "Führerschein-Frage?"
                       : isSchelfInterface
@@ -9713,6 +10291,12 @@ body::after {
                           ? "Tippt…"
                           : isHohenbadenInterface
                             ? "Beta: in7Days Führerscheinbegleiter"
+                            : isJentschInterface
+                              ? "Ohne App starten · Drive.Buzz intelligent ergänzen"
+                              : isAsphaltcrewInterface
+                                ? "Ready for Take-off?"
+                                : isMalikInterface
+                                  ? "Simulator · E-Auto · zwei Standorte"
                             : isAbgefahrenInterface
                               ? "Beta: persönlicher Führerscheinbegleiter"
                             : isSchelfInterface
@@ -9736,26 +10320,26 @@ body::after {
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",
-                        width: isPetermaennchenInterface || isSchelfInterface
+                        width: hasBrandedSchoolLogo
                           ? isMobileViewport
                             ? 118
                             : 184
                           : isEnhancedInterface
                             ? 64
                             : 52,
-                        height: isPetermaennchenInterface || isSchelfInterface
+                        height: hasBrandedSchoolLogo
                           ? isMobileViewport
                             ? 44
                             : 58
                           : isEnhancedInterface
                             ? 64
                             : 52,
-                        padding: isPetermaennchenInterface || isSchelfInterface
+                        padding: hasBrandedSchoolLogo
                           ? "8px 12px"
                           : isEnhancedInterface
                             ? "9px"
                             : "7px",
-                        borderRadius: isPetermaennchenInterface || isSchelfInterface
+                        borderRadius: hasBrandedSchoolLogo
                           ? 14
                           : isEnhancedInterface
                             ? 18
@@ -9775,8 +10359,8 @@ body::after {
                       <img
                         src={GLOBAL_LOGO_SRC}
                         alt={
-                          isSchelfInterface
-                            ? "Schelf-Fahrschule"
+                          hasBrandedSchoolLogo
+                            ? displayBrandName
                             : isPetermaennchenInterface
                             ? "Petermännchen Fahrschule"
                             : "BTDesigns Logo"
@@ -9787,7 +10371,7 @@ body::after {
                           objectFit: "contain",
                           display: "block",
                           margin: "auto",
-                          transform: isPetermaennchenInterface || isSchelfInterface
+                          transform: hasBrandedSchoolLogo
                             ? "scale(1)"
                             : "scale(1.04)",
                           transformOrigin: "center",
@@ -9912,6 +10496,12 @@ body::after {
                         >
                           {isHohenbadenInterface
                             ? "Schneller zum Führerschein. Persönlich begleitet."
+                            : isJentschInterface
+                              ? "Mehr als eine App: dein persönlicher KI-Weg."
+                              : isAsphaltcrewInterface
+                                ? "Ready for Take-off? Dein digitales Flight-Cockpit."
+                                : isMalikInterface
+                                  ? "Modern lernen. Stressfrei zum Führerschein."
                             : isAbgefahrenInterface
                               ? "Dein Führerschein. Ein persönliches Cockpit."
                               : isSchelfInterface
@@ -9936,6 +10526,12 @@ body::after {
                         >
                           {isHohenbadenInterface
                             ? "Verbinde dich als Fahrschüler, finde den nächsten Intensivkurs, verfolge deinen THEO-Lernstand und plane deine Praxis. Diese Beta zeigt, wie in7Days die komplette Ausbildung digital an einem Ort bündeln könnte."
+                            : isJentschInterface
+                              ? "Drive.Buzz bleibt für Theorie, Termine, Kosten und Ausbildungsdaten wertvoll. Diese Demo setzt früher an: sofortige KI-Beratung ohne Download, freie Sprache, Foto-Check, Klassen-Matching und ein persönlicher nächster Schritt – mit späterer Anbindung als Option."
+                              : isAsphaltcrewInterface
+                                ? "Vom Intensivkurs über B197, Motorrad und Anhänger bis zum Fahrtraining: Der Flight-Copilot matcht Ziel, Zeit, Unterlagen und Lernstand und führt dich durch jede Etappe."
+                                : isMalikInterface
+                                  ? "Simulator, FahrAPP, E-Auto, Fahrlehrerinnen sowie Rastatt und Karlsruhe werden zu einem persönlichen Lern- und Praxisplan verbunden."
                             : isAbgefahrenInterface
                               ? "Verbinde dich als Fahrschüler, buche den nächsten passenden Kurs oder öffne deinen persönlichen Begleiter. Diese Beta zeigt, wie die komplette Ausbildung später an einem Ort zusammenlaufen kann."
                               : isSchelfInterface
@@ -9955,7 +10551,7 @@ body::after {
                                     : `Wähle einen Einstieg aus. Danach führt dich ${displayAssistantName} gezielt weiter.`}
                         </div>
 
-                        {(isFahrwerkBInterface || isPetermaennchenInterface || isSchelfInterface || isAbgefahrenInterface || isHohenbadenInterface) && (
+                        {(isFahrwerkBInterface || isPetermaennchenInterface || isAbgefahrenInterface || isFutureDemoInterface) && (
                           <div
                             className="bt-fahrwerk-steps"
                             style={{
@@ -9974,6 +10570,27 @@ body::after {
                                   "3 THEO & Praxis",
                                   "4 Persönlich begleiten",
                                 ]
+                              : isJentschInterface
+                                ? [
+                                    "1 Ohne App starten",
+                                    "2 Klasse matchen",
+                                    "3 Daten verbinden",
+                                    "4 Nächster Schritt",
+                                  ]
+                                : isAsphaltcrewInterface
+                                  ? [
+                                      "1 Ziel wählen",
+                                      "2 Preflight prüfen",
+                                      "3 Etappen planen",
+                                      "4 Begleitet landen",
+                                    ]
+                                  : isMalikInterface
+                                    ? [
+                                        "1 Standort wählen",
+                                        "2 Simulator starten",
+                                        "3 Theorie & Praxis",
+                                        "4 Persönlich begleiten",
+                                      ]
                               : isAbgefahrenInterface
                                 ? [
                                     "1 Verbinden",
@@ -10174,10 +10791,10 @@ body::after {
                     />
                   )}
 
-                  {(isHohenbadenInterface || isSchelfInterface) &&
+                  {futureDemoVariant &&
                     hohenbadenPanel !== "home" && (
                     <HohenbadenFutureDemo
-                      variant={isSchelfInterface ? "schelf" : "hohenbaden"}
+                      variant={futureDemoVariant}
                       panel={hohenbadenPanel}
                       onPanelChange={openHohenbadenPanel}
                       accent={widgetAccent}
@@ -11738,7 +12355,7 @@ body::after {
                             color: isUser ? "#ffffff" : textPrimary,
                           }}
                         >
-                          {(isFahrwerkBInterface || isPetermaennchenInterface || isSchelfInterface || isAbgefahrenInterface || isHohenbadenInterface) &&
+                          {(isFahrwerkBInterface || isPetermaennchenInterface || isAbgefahrenInterface || isFutureDemoInterface) &&
                           !isUser
                             ? ensureFahrwerkEmoji(m.content)
                             : m.content}
@@ -11748,8 +12365,8 @@ body::after {
                               <img
                                 src={m.imagePreviewUrl}
                                 alt={
-                                  isHohenbadenInterface
-                                    ? "Hochgeladenes Bild zur Anfrage bei Hohenbaden · in7Days"
+                                  isFutureDemoInterface
+                                    ? `Hochgeladenes Bild zur Anfrage bei ${displayBrandName}`
                                     : isAbgefahrenInterface
                                       ? "Hochgeladenes Bild zur Anfrage bei Abgefahren"
                                       : isSchelfInterface
@@ -11988,6 +12605,12 @@ body::after {
                       placeholder={
                         isHohenbadenInterface
                           ? "Schreib z. B. Intensivkurs, THEO App oder Umschreibung…"
+                          : isJentschInterface
+                            ? "Schreib z. B. Drive.Buzz, B197, Lkw oder Unterlagen…"
+                            : isAsphaltcrewInterface
+                              ? "Schreib z. B. Intensivkurs, B197, Motorrad oder Fahrtraining…"
+                              : isMalikInterface
+                                ? "Schreib z. B. Simulator, VIP, B197 oder Standort…"
                           : isAbgefahrenInterface
                             ? "Schreib z. B. B197, 7-Tage-Theorie oder Anmeldung…"
                             : isSchelfInterface
@@ -12045,13 +12668,13 @@ body::after {
                           : "#ffffff"
                         : isPetermaennchenInterface
                           ? "rgba(0,13,26,0.58)"
-                        : isFahrwerkBInterface || isAbgefahrenInterface || isHohenbadenInterface
+                        : isFahrwerkBInterface || isAbgefahrenInterface || isFutureDemoInterface
                           ? "rgba(127,29,29,0.62)"
                           : "#5c7a6d",
                       cursor:
                         input.trim() && !loading && !isVoiceActive
                           ? "pointer"
-                          : "not-allowaed",
+                          : "not-allowed",
                       opacity: loading ? 0.72 : 1,
                       fontWeight: isEnhancedInterface ? 700 : 500,
                       fontSize: isEnhancedInterface ? 16 : 14,
