@@ -1,5 +1,5 @@
 // TEXTEDIT-KOPIE – Zielpfad im Projekt: app/widget/page.tsx
-// Gemeinsame Widget-Version inkl. Jentsch, AsphaltCrew und Fahrschule Malik
+// Gemeinsame Widget-Version inkl. Jentsch, AsphaltCrew, Malik und Fahrschule7
 "use client";
 
 import {
@@ -175,6 +175,9 @@ const ASPHALTCREW_LOGO_SRC =
 const MALIK_WEBSITE_URL = "https://fahrschule-malik.de/";
 const MALIK_LOGO_SRC =
   "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 360 150'%3E%3Crect width='360' height='150' rx='26' fill='%2316262f'/%3E%3Cpath d='M34 116 73 34l35 54 35-54 39 82h-28l-15-34-31 43-30-43-16 34Z' fill='%233ac58f'/%3E%3Ctext x='195' y='82' fill='white' font-family='Arial,sans-serif' font-size='40' font-weight='800'%3EMALIK%3C/text%3E%3Ctext x='197' y='108' fill='%23a9c9be' font-family='Arial,sans-serif' font-size='15' letter-spacing='3'%3EFAHRSCHULE%3C/text%3E%3C/svg%3E";
+const FAHRSCHULE7_WEBSITE_URL = "https://www.fahrschule7.de/";
+const FAHRSCHULE7_LOGO_SRC =
+  "https://www.fahrschule7.de/wp-content/uploads/go-x/u/c2643ae5-b02b-43a3-83a2-59697f58c6c8/image-384x384.png";
 
 const FAHRWERK_LICENSE_CLASSES = [
   "Klasse B",
@@ -935,6 +938,64 @@ const MALIK_START_CARDS: StartCard[] = [
     icon: "🎙️",
     title: "Frage einsprechen",
     description: "Einfach erzählen statt lange suchen",
+    action: "voice",
+  },
+];
+
+const FAHRSCHULE7_START_CARDS: StartCard[] = [
+  {
+    icon: "⚡",
+    title: "7-Tage-Plan erstellen",
+    description: "Zeit, Unterlagen und Intensivwunsch in 60 Sekunden prüfen",
+    action: "hohenbadenPanel",
+    hohenbadenPanel: "courses",
+  },
+  {
+    icon: "🧳",
+    title: "Urlaub + Führerschein",
+    description: "Anreise, Unterkunft und Kurs als Ablauf vorbereiten",
+    action: "hohenbadenPanel",
+    hohenbadenPanel: "schedule",
+  },
+  {
+    icon: "🪪",
+    title: "Mein 7-Tage-Cockpit",
+    description: "Unterlagen, Theorie, Praxis und nächsten Schritt bündeln",
+    action: "hohenbadenPanel",
+    hohenbadenPanel: "dashboard",
+  },
+  {
+    icon: "✅",
+    title: "Behörden-Check",
+    description: "Passbild, Sehtest, Erste Hilfe und Antrag im Blick",
+    action: "hohenbadenPanel",
+    hohenbadenPanel: "documents",
+  },
+  {
+    icon: "🧭",
+    title: "Klasse finden",
+    description: "Pkw, BF17, Motorrad oder Wechsel passend einordnen",
+    message:
+      "Welche Ausbildung bei Fahrschule7 passt zu mir? Bitte frage nach Alter, Vorbesitz, Ziel und verfügbarer Zeit.",
+  },
+  {
+    icon: "📱",
+    title: "Persönlicher Tagesplan",
+    description: "Lernen und Praxis passend zum Intensivziel priorisieren",
+    action: "hohenbadenPanel",
+    hohenbadenPanel: "coach",
+  },
+  {
+    icon: "🛟",
+    title: "Wechsel, ASF & FES",
+    description: "Sondersituation erklären und nächsten Kontakt vorbereiten",
+    message:
+      "Ich interessiere mich für einen Fahrschulwechsel, ASF oder FES. Was bietet Fahrschule7 an und wie gehe ich am besten vor?",
+  },
+  {
+    icon: "🎙️",
+    title: "Einfach fragen",
+    description: "Anliegen einsprechen und direkt weiterkommen",
     action: "voice",
   },
 ];
@@ -2758,7 +2819,8 @@ type FutureDemoVariant =
   | "schelf"
   | "jentsch"
   | "asphaltcrew"
-  | "malik";
+  | "malik"
+  | "fahrschule7";
 
 type FutureDemoDocument = {
   readonly id: string;
@@ -3017,6 +3079,47 @@ const MALIK_DEMO_DOCUMENTS = [
   { id: "antrag", label: "Fahrerlaubnisantrag", detail: "Für Standort vorbereitet", initial: true },
 ] as const;
 
+const FAHRSCHULE7_DEMO_COURSES: HohenbadenCourse[] = [
+  {
+    id: "fahrschule7-ruckzuck",
+    title: "Ruck-Zuck-Kurs · Pkw / BF17",
+    location: "Buxtehude · Konopkastraße 9",
+    start: "Start nach persönlicher Machbarkeitsprüfung",
+    time: "Intensiver Theorie- und Praxisplan",
+    seats: 3,
+    tag: "7-Tage-Ziel",
+    match: "Passt zu: hoher Verfügbarkeit und vollständigen Unterlagen",
+  },
+  {
+    id: "fahrschule7-urlaub",
+    title: "Urlaubsfahrschule mit Unterkunft",
+    location: "Buxtehude · Nähe Hamburg",
+    start: "Aufenthalt und Kurs gemeinsam abstimmen",
+    time: "Apartment-Option in der Buxtehuder Altstadt",
+    seats: 2,
+    tag: "Anreise von außerhalb",
+    match: "Passt zu: kompakter Ausbildung mit Übernachtung",
+  },
+  {
+    id: "fahrschule7-motorrad-seminar",
+    title: "Motorrad, ASF oder FES",
+    location: "Buxtehude",
+    start: "Persönliche Beratung erforderlich",
+    time: "Klasse oder Seminar passend zur Situation prüfen",
+    seats: 4,
+    tag: "Individuelle Route",
+    match: "Passt zu: Zweirad, Probezeit oder Punkteabbau",
+  },
+];
+
+const FAHRSCHULE7_DEMO_DOCUMENTS = [
+  { id: "ausweis", label: "Personalausweis oder Reisepass", detail: "Geprüft", initial: true },
+  { id: "sehtest", label: "Sehtest", detail: "Nachweis liegt vor", initial: true },
+  { id: "erstehilfe", label: "Erste-Hilfe-Bescheinigung", detail: "Nachweis liegt vor", initial: true },
+  { id: "passbild", label: "Biometrisches Passbild", detail: "Noch hochladen", initial: false },
+  { id: "antrag", label: "Fahrerlaubnisantrag", detail: "Behördenservice vorbereitet", initial: true },
+] as const;
+
 const FUTURE_DEMO_CONFIGS: Record<FutureDemoVariant, FutureDemoConfig> = {
   hohenbaden: {
     courses: HOHENBADEN_DEMO_COURSES,
@@ -3177,6 +3280,38 @@ const FUTURE_DEMO_CONFIGS: Record<FutureDemoVariant, FutureDemoConfig> = {
     coachQuestions: ["Wie starte ich stressfrei im Simulator?", "Welcher Standort passt zu meinen Zeiten?", "Wie funktioniert B197 mit E-Auto und Schaltung?", "Ist der VIP-Führerschein für mich realistisch?"],
     todayPlan: "15 Minuten FahrAPP · Simulator bestätigen · Passbild ergänzen",
     todayPlanPrompt: "Erstelle mir meinen persönlichen Malik-Lernplan für heute.",
+  },
+  fahrschule7: {
+    courses: FAHRSCHULE7_DEMO_COURSES,
+    documents: FAHRSCHULE7_DEMO_DOCUMENTS,
+    coursePreference: "Ruck-Zuck-Kurs",
+    coursePreferences: ["Ruck-Zuck-Kurs", "Ferienfahrschule", "Unterkunft nötig", "Motorrad / Seminar"],
+    studentCode: "FS7-2048",
+    connectSource: "Per Fahrschülernummer, QR-Code oder späterer Verbindung mit Lern-App und Fahrschulsoftware.",
+    connectPotential: "Die echte Version könnte Behördenstatus, mobilen Lernstand, Intensivplan, Praxis und Unterkunft in einem persönlichen 7-Tage-Cockpit verbinden.",
+    dashboardEyebrow: "Dein persönliches Fahrschule7 Express-Cockpit",
+    dashboardTitle: "Hallo Max, dein schnellster realistischer Weg ist vorbereitet.",
+    dashboardNextStep: "Passbild ergänzen, Behördenstatus prüfen und danach den Intensivplan verbindlich mit der Fahrschule abstimmen.",
+    theoryTitle: "Mobiler Lernplan",
+    theoryDetail: "72 % Beispiel-Lernstand",
+    practiceDetail: "Intensiv-Praxis als Demo geplant",
+    practiceValue: "Express",
+    nextAppointmentTitle: "🚘 Praxis · Grundfahraufgaben",
+    nextAppointmentDetail: "Mittwoch · 16:30–17:15 Uhr · Demo-Slot",
+    coachRecommendation: "Heute noch 20 Minuten Vorfahrt und Geschwindigkeit üben. Danach fehlen im Demo-Plan nur noch Passbild und finale Kursabstimmung.",
+    coursesTitle: "Ist dein Führerschein-Ziel in 7 Tagen realistisch?",
+    coursesDescription: "Der digitale Planer prüft Ziel, Vorbesitz, Unterlagen, Behördenstatus, Lernstand, Verfügbarkeit und bei Bedarf die Unterkunft, bevor eine Beratung angefragt wird.",
+    classesSummary: "Pkw · BF17 · Motorrad · ASF/FES",
+    reserveButton: "Persönlichen Express-Check anfragen",
+    seatsLabel: "Demo-Verfügbarkeit",
+    scheduleTitle: "Dein kompletter Aufenthalt auf einen Blick",
+    scheduleDescription: "Beispieltermine für Theorie, Praxis, Behördenstatus und Unterkunft werden zu einem verständlichen Ablauf verbunden.",
+    scheduleSlots: [["Tag 1", "09:00", "Start, Unterlagen & Theorie"], ["Tag 4", "10:30", "Praktische Einweisung"], ["Tag 7", "nach Freigabe", "Prüfungsziel · Demo-Ablauf"]],
+    coachDescription: "Der Begleiter kennt Intensivziel, Unterlagen, Lernstand, Verfügbarkeit und Anreise. Dadurch beantwortet er nicht nur Fragen, sondern erkennt früh, was den schnellen Start noch blockiert.",
+    coachFacts: [["⚡", "Ziel: Ruck-Zuck-Kurs"], ["📱", "Lernstand: 72 % Demo"], ["✅", "Unterlagen: 4 von 5"], ["🧳", "Unterkunft: noch klären"]],
+    coachQuestions: ["Ist mein 7-Tage-Ziel realistisch?", "Welche Unterlagen fehlen noch?", "Wie funktioniert die Urlaubsfahrschule?", "Was soll ich heute lernen?"],
+    todayPlan: "20 Minuten Theorie · Passbild ergänzen · Express-Beratung vorbereiten",
+    todayPlanPrompt: "Erstelle mir meinen persönlichen Fahrschule7-Plan für heute.",
   },
 };
 
@@ -4950,6 +5085,13 @@ export default function WidgetPage() {
     "malik-karlsruhe",
     "fahrschule-malik.de",
   ].includes(normalizedTenantId);
+  const isFahrschule7Interface = [
+    "fahrschule7",
+    "fahrschule-7",
+    "fahrschule7-buxtehude",
+    "fahrschule7.de",
+    "www.fahrschule7.de",
+  ].includes(normalizedTenantId);
   const futureDemoVariant: FutureDemoVariant | null = isHohenbadenInterface
     ? "hohenbaden"
     : isSchelfInterface
@@ -4960,7 +5102,9 @@ export default function WidgetPage() {
           ? "asphaltcrew"
           : isMalikInterface
             ? "malik"
-            : null;
+            : isFahrschule7Interface
+              ? "fahrschule7"
+              : null;
   const isFutureDemoInterface = futureDemoVariant !== null;
   const activeFutureTenantId = isHohenbadenInterface
     ? "fahrschule-hohenbaden"
@@ -4972,7 +5116,9 @@ export default function WidgetPage() {
           ? "asphaltcrew"
           : isMalikInterface
             ? "fahrschule-malik"
-            : null;
+            : isFahrschule7Interface
+              ? "fahrschule7"
+              : null;
   const activeFutureWebsiteUrl = isHohenbadenInterface
     ? "https://fahrschule-hohenbaden.de"
     : isSchelfInterface
@@ -4983,7 +5129,9 @@ export default function WidgetPage() {
           ? ASPHALTCREW_WEBSITE_URL
           : isMalikInterface
             ? MALIK_WEBSITE_URL
-            : undefined;
+            : isFahrschule7Interface
+              ? FAHRSCHULE7_WEBSITE_URL
+              : undefined;
   const isEnhancedInterface =
     isTxbikesInterface ||
     isWilliInterface ||
@@ -5036,6 +5184,8 @@ export default function WidgetPage() {
         ? "AsphaltCrew Fahrschule"
         : isMalikInterface
           ? "Fahrschule Malik"
+          : isFahrschule7Interface
+            ? "Fahrschule7 Buxtehude"
     : isAbgefahrenInterface
       ? "Fahrschule Abgefahren"
       : isSchelfInterface
@@ -5057,6 +5207,8 @@ export default function WidgetPage() {
         ? "Flight-Copilot"
         : isMalikInterface
           ? "Lern- & Praxisbegleiter"
+          : isFahrschule7Interface
+            ? "7-Tage-Führerscheinplaner"
     : isAbgefahrenInterface
       ? "Führerschein-Assistent"
       : isSchelfInterface
@@ -5089,6 +5241,8 @@ export default function WidgetPage() {
               ? "#6f2c91"
               : isMalikInterface
                 ? "#1f9d70"
+                : isFahrschule7Interface
+                  ? "#f28c28"
           : isAbgefahrenInterface
             ? theme.accent || "#e11d48"
             : isSchelfInterface
@@ -5114,6 +5268,8 @@ export default function WidgetPage() {
                 ? "#f8f4fb"
                 : isMalikInterface
                   ? "#f3fbf7"
+                  : isFahrschule7Interface
+                    ? "#fff8ef"
             : isAbgefahrenInterface
               ? "#fff7fb"
               : isSchelfInterface
@@ -5139,6 +5295,8 @@ export default function WidgetPage() {
                 ? "#22172c"
                 : isMalikInterface
                   ? "#14272a"
+                  : isFahrschule7Interface
+                    ? "#181818"
             : isAbgefahrenInterface
               ? "#24141b"
               : isSchelfInterface
@@ -5164,6 +5322,8 @@ export default function WidgetPage() {
                 ? "#655570"
                 : isMalikInterface
                   ? "#567069"
+                  : isFahrschule7Interface
+                    ? "#6b5c4d"
             : isAbgefahrenInterface
               ? "#765463"
               : isSchelfInterface
@@ -5305,6 +5465,8 @@ export default function WidgetPage() {
           ? "Ready for Take-off? Ich bin dein digitaler Flight-Copilot der AsphaltCrew in Rastatt. Ich matche Klasse, Intensivwunsch, Unterlagen und Praxisplan. Welche Etappe soll zuerst starten?"
           : isMalikInterface
             ? "Hallo! Ich bin der digitale Lern- und Praxisbegleiter der Fahrschule Malik. Ich helfe dir bei Simulator, E-Auto, B197, VIP-Ausbildung und der Wahl zwischen Rastatt und Karlsruhe. Womit möchtest du starten?"
+            : isFahrschule7Interface
+              ? "Hallo! Ich bin der digitale 7-Tage-Führerscheinplaner der Fahrschule7 in Buxtehude. Ich prüfe dein Express-Ziel, Unterlagen, Behördenstatus, Lernplan und bei Bedarf auch die Unterkunft. Womit möchtest du starten?"
       : isAbgefahrenInterface
         ? "Moin! Ich bin der digitale Führerschein-Assistent der Fahrschule Abgefahren. Ich helfe dir bei Führerscheinklassen, Theorie, Anmeldung und den Standorten Schwerin oder Sternberg. Womit möchtest du starten?"
         : isSchelfInterface
@@ -5340,6 +5502,7 @@ export default function WidgetPage() {
     isJentschInterface,
     isAsphaltcrewInterface,
     isMalikInterface,
+    isFahrschule7Interface,
     isFahrwerkBInterface,
     isPetermaennchenInterface,
     isSchelfInterface,
@@ -8165,6 +8328,8 @@ export default function WidgetPage() {
               ? "Alles klar — welche Etappe soll dein AsphaltCrew Flight-Copilot jetzt vorbereiten?"
               : isMalikInterface
                 ? "Alles klar — geht es um Simulator, B197, VIP-Ausbildung, Rastatt oder Karlsruhe?"
+                : isFahrschule7Interface
+                  ? "Alles klar — sollen wir dein 7-Tage-Ziel, die Unterlagen, die Unterkunft oder den nächsten Lernschritt prüfen?"
           : isAbgefahrenInterface
             ? "Alles klar — wobei soll ich dir rund um deinen Führerschein bei Abgefahren helfen?"
             : isSchelfInterface
@@ -8214,6 +8379,8 @@ export default function WidgetPage() {
       ? ASPHALTCREW_LOGO_SRC
       : isMalikInterface
         ? MALIK_LOGO_SRC
+        : isFahrschule7Interface
+          ? FAHRSCHULE7_LOGO_SRC
         : isSchelfInterface
     ? SCHELF_LOGO_SRC
     : isPetermaennchenInterface
@@ -8224,7 +8391,8 @@ export default function WidgetPage() {
     isSchelfInterface ||
     isJentschInterface ||
     isAsphaltcrewInterface ||
-    isMalikInterface;
+    isMalikInterface ||
+    isFahrschule7Interface;
   const headerPrimaryCta = activeFutureWebsiteUrl
     ? { label: "Website", url: activeFutureWebsiteUrl }
     : isAbgefahrenInterface
@@ -8254,6 +8422,8 @@ export default function WidgetPage() {
         ? ASPHALTCREW_START_CARDS
         : isMalikInterface
           ? MALIK_START_CARDS
+          : isFahrschule7Interface
+            ? FAHRSCHULE7_START_CARDS
     : isAbgefahrenInterface
       ? ABGEFAHREN_START_CARDS
       : isSchelfInterface
@@ -10018,6 +10188,8 @@ body::after {
                         ? "Ready for Take-off?"
                         : isMalikInterface
                           ? "Simulator oder B197?"
+                          : isFahrschule7Interface
+                            ? "In 7 Tagen ans Ziel?"
                     : isAbgefahrenInterface
                       ? "Führerschein-Frage?"
                       : isSchelfInterface
@@ -10297,6 +10469,8 @@ body::after {
                                 ? "Ready for Take-off?"
                                 : isMalikInterface
                                   ? "Simulator · E-Auto · zwei Standorte"
+                                  : isFahrschule7Interface
+                                    ? "Express-Kurs · Behördenservice · Unterkunft"
                             : isAbgefahrenInterface
                               ? "Beta: persönlicher Führerscheinbegleiter"
                             : isSchelfInterface
@@ -10502,6 +10676,8 @@ body::after {
                                 ? "Ready for Take-off? Dein digitales Flight-Cockpit."
                                 : isMalikInterface
                                   ? "Modern lernen. Stressfrei zum Führerschein."
+                                  : isFahrschule7Interface
+                                    ? "Heute starten. Den schnellsten realistischen Weg sehen."
                             : isAbgefahrenInterface
                               ? "Dein Führerschein. Ein persönliches Cockpit."
                               : isSchelfInterface
@@ -10532,6 +10708,8 @@ body::after {
                                 ? "Vom Intensivkurs über B197, Motorrad und Anhänger bis zum Fahrtraining: Der Flight-Copilot matcht Ziel, Zeit, Unterlagen und Lernstand und führt dich durch jede Etappe."
                                 : isMalikInterface
                                   ? "Simulator, FahrAPP, E-Auto, Fahrlehrerinnen sowie Rastatt und Karlsruhe werden zu einem persönlichen Lern- und Praxisplan verbunden."
+                                  : isFahrschule7Interface
+                                    ? "Der digitale Express-Planer verbindet 7-Tage-Ziel, Behördenstatus, mobilen Lernstand, Praxis, Anreise und Unterkunft. So erkennt die Fahrschule vor dem ersten Gespräch, ob der Schnellstart realistisch vorbereitet werden kann."
                             : isAbgefahrenInterface
                               ? "Verbinde dich als Fahrschüler, buche den nächsten passenden Kurs oder öffne deinen persönlichen Begleiter. Diese Beta zeigt, wie die komplette Ausbildung später an einem Ort zusammenlaufen kann."
                               : isSchelfInterface
@@ -10591,6 +10769,13 @@ body::after {
                                         "3 Theorie & Praxis",
                                         "4 Persönlich begleiten",
                                       ]
+                                    : isFahrschule7Interface
+                                      ? [
+                                          "1 Express-Ziel prüfen",
+                                          "2 Unterlagen klären",
+                                          "3 Aufenthalt planen",
+                                          "4 Persönlich begleiten",
+                                        ]
                               : isAbgefahrenInterface
                                 ? [
                                     "1 Verbinden",
@@ -12611,6 +12796,8 @@ body::after {
                               ? "Schreib z. B. Intensivkurs, B197, Motorrad oder Fahrtraining…"
                               : isMalikInterface
                                 ? "Schreib z. B. Simulator, VIP, B197 oder Standort…"
+                                : isFahrschule7Interface
+                                  ? "Schreib z. B. 7-Tage-Kurs, Unterkunft oder Unterlagen…"
                           : isAbgefahrenInterface
                             ? "Schreib z. B. B197, 7-Tage-Theorie oder Anmeldung…"
                             : isSchelfInterface

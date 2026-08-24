@@ -14,7 +14,8 @@ export type TenantId =
   | "schelf-fahrschule"
   | "fahrschule-jentsch"
   | "asphaltcrew"
-  | "fahrschule-malik";
+  | "fahrschule-malik"
+  | "fahrschule7";
 
 export type ThemeConfig = {
   accent: string;
@@ -758,6 +759,45 @@ export const TENANTS: Record<TenantId, TenantConfig> = {
     },
   },
 
+  fahrschule7: {
+    id: "fahrschule7",
+    brandName: "Fahrschule7 Buxtehude",
+    assistantName: "7-Tage-Führerscheinplaner",
+    language: "de",
+    knowledge: {
+      files: ["eKnowledge.md"],
+    },
+    websiteUrl: "https://www.fahrschule7.de/",
+    primaryCta: {
+      label: "Beratung anfragen",
+      url: "https://www.fahrschule7.de/beratungstermin/",
+    },
+    fallbackContact: {
+      label: "Telefon",
+      value: "04161 / 504 900",
+    },
+    companyInfo: {
+      address: "Konopkastraße 9, 21614 Buxtehude",
+      phone: "04161 / 504 900",
+      email: "info@fahrschule7.de",
+      openingHours: "Persönliche Beratung nach Kontaktaufnahme",
+    },
+    rules: {
+      noMedicalClaims: true,
+      noInventingPrices: true,
+      noGuarantees: true,
+    },
+    theme: {
+      accent: "#f28c28",
+      bg: "#fff8ef",
+      glass: "rgba(242,140,40,0.14)",
+      text: "#181818",
+    },
+    assets: {
+      launcherIcon: "/favicon.ico",
+    },
+  },
+
     txbikesV2: {
     id: "txbikesV2",
     brandName: "TXBIKESV2",
@@ -860,6 +900,10 @@ const TENANT_ALIASES: Record<string, TenantId> = {
   "malik-rastatt": "fahrschule-malik",
   "malik-karlsruhe": "fahrschule-malik",
   "fahrschule-malik.de": "fahrschule-malik",
+  "fahrschule-7": "fahrschule7",
+  "fahrschule7-buxtehude": "fahrschule7",
+  "fahrschule7.de": "fahrschule7",
+  "www.fahrschule7.de": "fahrschule7",
 };
 
 export function getTenant(tenant: string | null): TenantConfig {
