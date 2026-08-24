@@ -1,5 +1,5 @@
-// app/widget/page.tsx
-// Scroll-Fix v7 + Liquid Glass Voice Surface Actions
+// TEXTEDIT-KOPIE – Zielpfad im Projekt: app/widget/page.tsx
+// Scroll-Fix v8 + Schelf-Fahrschule Demo + Liquid Glass Voice Surface Actions
 "use client";
 
 import {
@@ -67,6 +67,7 @@ type StartCard = {
     | "fahrwerkSignup"
     | "fahrwerkLiveSignup"
     | "petermaennchenContact"
+    | "schelfContact"
     | "fahrwerkPanel"
     | "abgefahrenPanel"
     | "hohenbadenPanel";
@@ -157,6 +158,13 @@ const PETERMAENNCHEN_CONTACT_URL =
 const PETERMAENNCHEN_PHONE_URL = "tel:+49385734393";
 const PETERMAENNCHEN_LOGO_SRC =
   "https://www.petermaennchen-fahrschule.de/wp-content/themes/fka/img/logo_petermeannchen_fahrschule.png";
+
+const SCHELF_WEBSITE_URL = "https://schelf-fahrschule.de/";
+const SCHELF_CONTACT_URL = "https://schelf-fahrschule.de/#anmeldung";
+const SCHELF_PHONE_URL = "tel:+4915222363413";
+const SCHELF_WHATSAPP_URL = "https://wa.me/4915222363413";
+const SCHELF_LOGO_SRC =
+  "https://schelf-fahrschule.de/wp-content/uploads/2024/09/Logo_Schelf-Fahrschule.svg";
 
 const FAHRWERK_LICENSE_CLASSES = [
   "Klasse B",
@@ -685,6 +693,48 @@ const PETERMAENNCHEN_START_CARDS: StartCard[] = [
     icon: "🎙️",
     title: "Frage einsprechen",
     description: "Einfach erzählen statt tippen",
+    action: "voice",
+  },
+];
+
+const SCHELF_START_CARDS: StartCard[] = [
+  {
+    icon: "🧭",
+    title: "Führerschein finden",
+    description: "Auto, Motorrad oder Anhänger gemeinsam einordnen",
+    message:
+      "Ich weiß noch nicht, welche Führerscheinklasse zu mir passt. Bitte finde sie mit mir gemeinsam heraus.",
+  },
+  {
+    icon: "⚡",
+    title: "Theorie in 7 Tagen",
+    description: "Intensiv- und Ferienkurse in Schwerin oder Crivitz prüfen",
+    message:
+      "Welche kommenden Theorie-Intensivkurse bietet die Schelf-Fahrschule in Schwerin und Crivitz an?",
+  },
+  {
+    icon: "🎮",
+    title: "Fahrsimulator",
+    description: "Die ersten Fahrstunden ruhig und stressfrei starten",
+    message:
+      "Wie funktioniert der Einstieg mit dem Fahrsimulator bei der Schelf-Fahrschule?",
+  },
+  {
+    icon: "✅",
+    title: "Unterlagen prüfen",
+    description: "Passbild, Sehtest, Erste Hilfe und Antrag im Blick",
+    message: "Welche Unterlagen brauche ich für meine Anmeldung?",
+  },
+  {
+    icon: "💬",
+    title: "Anmeldung & Beratung",
+    description: "Standort wählen und direkt per WhatsApp Kontakt aufnehmen",
+    action: "schelfContact",
+  },
+  {
+    icon: "🎙️",
+    title: "Einfach sprechen",
+    description: "Frage stellen, unterbrechen und direkt weiterreden",
     action: "voice",
   },
 ];
@@ -4294,6 +4344,15 @@ export default function WidgetPage() {
     "petermaennchenfahrschule",
     "petermaennchen-fahrschulede",
   ].includes(normalizedTenantId);
+  const isSchelfInterface = [
+    "schelf",
+    "schelf-fahrschule",
+    "schelffahrschule",
+    "schelf-fahrschule.de",
+    "schelffahrschulede",
+    "schelf-schwerin",
+    "schelf-crivitz",
+  ].includes(normalizedTenantId);
   const isAbgefahrenInterface = [
     "fahrschule-abgefahren",
     "abgefahren",
@@ -4318,6 +4377,7 @@ export default function WidgetPage() {
     isMmWartungInterface ||
     isFahrwerkBInterface ||
     isPetermaennchenInterface ||
+    isSchelfInterface ||
     isAbgefahrenInterface ||
     isHohenbadenInterface;
   const isBookingInterface =
@@ -4359,6 +4419,8 @@ export default function WidgetPage() {
     ? "Fahrschule Hohenbaden · in7Days"
     : isAbgefahrenInterface
       ? "Fahrschule Abgefahren"
+      : isSchelfInterface
+        ? "Schelf-Fahrschule"
       : isFahrwerkBInterface
       ? "Fahrwerk B"
       : isPetermaennchenInterface
@@ -4372,6 +4434,8 @@ export default function WidgetPage() {
     ? "Führerschein-Assistent"
     : isAbgefahrenInterface
       ? "Führerschein-Assistent"
+      : isSchelfInterface
+        ? "Führerschein-Assistent"
       : isFahrwerkBInterface
       ? "Führerschein-Cockpit"
       : isPetermaennchenInterface
@@ -4396,6 +4460,8 @@ export default function WidgetPage() {
           ? "#e31e24"
           : isAbgefahrenInterface
             ? theme.accent || "#e11d48"
+            : isSchelfInterface
+              ? "#db0010"
             : isFahrwerkBInterface
             ? "#c8102e"
             : isPetermaennchenInterface
@@ -4413,6 +4479,8 @@ export default function WidgetPage() {
             ? "#fff8f7"
             : isAbgefahrenInterface
               ? "#fff7fb"
+              : isSchelfInterface
+                ? "#fff7f8"
               : isFahrwerkBInterface
               ? "#0b0f16"
               : isPetermaennchenInterface
@@ -4430,6 +4498,8 @@ export default function WidgetPage() {
             ? "#171717"
             : isAbgefahrenInterface
               ? "#24141b"
+              : isSchelfInterface
+                ? "#18191f"
               : isFahrwerkBInterface
               ? "#111827"
               : isPetermaennchenInterface
@@ -4447,6 +4517,8 @@ export default function WidgetPage() {
             ? "#6b5555"
             : isAbgefahrenInterface
               ? "#765463"
+              : isSchelfInterface
+                ? "#66575c"
               : isFahrwerkBInterface
               ? "#4b5563"
               : isPetermaennchenInterface
@@ -4580,6 +4652,8 @@ export default function WidgetPage() {
       ? "Hallo! Ich bin der digitale Führerschein-Assistent der Fahrschule Hohenbaden · in7Days. Ich helfe dir beim Intensivkurs, der THEO App, der Anmeldung und den Standorten Baden-Baden oder Bühl. Womit möchtest du starten?"
       : isAbgefahrenInterface
         ? "Moin! Ich bin der digitale Führerschein-Assistent der Fahrschule Abgefahren. Ich helfe dir bei Führerscheinklassen, Theorie, Anmeldung und den Standorten Schwerin oder Sternberg. Womit möchtest du starten?"
+        : isSchelfInterface
+          ? "Hallo! Ich bin der digitale Führerschein-Assistent der Schelf-Fahrschule. Ich helfe dir bei Führerscheinklassen, 7-Tage-Theoriekursen, Unterlagen, Fahrsimulator und der Anmeldung in Schwerin oder Crivitz. Womit möchtest du starten?"
         : isFahrwerkBInterface
         ? "Hi — ich bin dein Fahrwerk B Führerschein-Cockpit. Wähle aus, wo du gerade stehst, und ich zeige dir den nächsten sinnvollen Schritt."
         : isPetermaennchenInterface
@@ -4610,6 +4684,7 @@ export default function WidgetPage() {
     isHohenbadenInterface,
     isFahrwerkBInterface,
     isPetermaennchenInterface,
+    isSchelfInterface,
     isLinaInterface,
     isMmWartungInterface,
     isTxbikesInterface,
@@ -4720,12 +4795,12 @@ export default function WidgetPage() {
             type: "bt-chat-resize",
             width: isBookingInterface
               ? 1080
-              : isTxbikesInterface || isFahrwerkBInterface || isPetermaennchenInterface || isAbgefahrenInterface || isHohenbadenInterface
+              : isTxbikesInterface || isFahrwerkBInterface || isPetermaennchenInterface || isSchelfInterface || isAbgefahrenInterface || isHohenbadenInterface
                 ? 980
                 : 500,
             height: isBookingInterface
               ? 920
-              : isTxbikesInterface || isFahrwerkBInterface || isPetermaennchenInterface || isAbgefahrenInterface || isHohenbadenInterface
+              : isTxbikesInterface || isFahrwerkBInterface || isPetermaennchenInterface || isSchelfInterface || isAbgefahrenInterface || isHohenbadenInterface
                 ? 880
                 : 760,
           }
@@ -4744,6 +4819,7 @@ export default function WidgetPage() {
     isTxbikesInterface,
     isFahrwerkBInterface,
     isPetermaennchenInterface,
+    isSchelfInterface,
     isAbgefahrenInterface,
     isHohenbadenInterface,
     embedClosedSize,
@@ -4760,6 +4836,8 @@ export default function WidgetPage() {
           ? "fahrschule-hohenbaden"
           : isAbgefahrenInterface
             ? "fahrschule-abgefahren"
+            : isSchelfInterface
+              ? "schelf-fahrschule"
             : isFahrwerkBInterface
             ? "fahrwerk-b"
             : isPetermaennchenInterface
@@ -4814,6 +4892,7 @@ export default function WidgetPage() {
     isHohenbadenInterface,
     isFahrwerkBInterface,
     isPetermaennchenInterface,
+    isSchelfInterface,
     isLinaInterface,
     isTxbikesInterface,
     isWilliInterface,
@@ -5005,6 +5084,202 @@ export default function WidgetPage() {
     }
   }
 
+  function showSchelfContactCard() {
+    setVoiceUiAction({
+      id: `schelf-contact-${Date.now()}`,
+      kind: "contact",
+      eyebrow: "Schelf-Fahrschule · Schwerin & Crivitz",
+      title: "Direkt Kontakt aufnehmen",
+      description:
+        "Am schnellsten erreichst du das Team per WhatsApp. Die endgültige Vertragsunterzeichnung erfolgt persönlich zu den Bürozeiten.",
+      items: [
+        {
+          label: "WhatsApp & Telefon",
+          value: "0152 22 36 34 13",
+          detail: "Telefonzeiten: Montag bis Freitag, 15:00–18:00 Uhr.",
+        },
+        {
+          label: "E-Mail",
+          value: "info@schelf-fahrschule.de",
+        },
+        {
+          label: "Schwerin",
+          value: "Werderstraße 13",
+          detail: "Büro: Montag bis Mittwoch, 16:30–18:00 Uhr.",
+        },
+        {
+          label: "Crivitz",
+          value: "Friedensstraße 2",
+          detail: "Büro: Dienstag und Mittwoch, 14:00–18:00 Uhr.",
+        },
+      ],
+      url: SCHELF_WHATSAPP_URL,
+      cta: "WhatsApp öffnen",
+    });
+  }
+
+  function applySchelfSurfaceIntent(rawText: string) {
+    const normalized = rawText
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/[^a-z0-9äöüß\s-]/gi, " ")
+      .replace(/\s+/g, " ")
+      .trim();
+
+    if (!normalized) return;
+
+    if (/\b(anmeld|anmeldung|anmelden|kontakt|beratung|whatsapp|ruckruf|rückruf)\w*/i.test(normalized)) {
+      showSchelfContactCard();
+      return;
+    }
+
+    if (/\b(kurs|kurse|termin|termine|ferienkurs|intensivkurs|7 tage|theoriekurs)\w*/i.test(normalized)) {
+      setVoiceUiAction({
+        id: `schelf-courses-${Date.now()}`,
+        kind: "info",
+        eyebrow: "Theorie-Intensivkurse · Stand 24.08.2026",
+        title: "Die nächsten veröffentlichten Kurse",
+        description:
+          "Der komplette Stoff der Klasse B wird kompakt vermittelt. Freie Plätze und Änderungen bitte direkt bestätigen lassen.",
+        items: [
+          {
+            label: "Herbstferienkurs Schwerin",
+            value: "16.10.–23.10.2026",
+            detail: "Auf der Website zuletzt mit 15 freien Plätzen veröffentlicht.",
+          },
+          {
+            label: "Herbstferienkurs Crivitz",
+            value: "16.10.–23.10.2026",
+            detail: "Auf der Website zuletzt mit 15 freien Plätzen veröffentlicht.",
+          },
+          {
+            label: "Theoriekurs Schwerin",
+            value: "30.11.–09.12.2026",
+            detail: "November-/Dezemberkurs am Standort Schwerin.",
+          },
+        ],
+        url: SCHELF_CONTACT_URL,
+        cta: "Kursplatz anfragen",
+      });
+      return;
+    }
+
+    if (/\b(simulator|fahrsimulator|erste fahrstunde|fahrangst|angst)\w*/i.test(normalized)) {
+      setVoiceUiAction({
+        id: `schelf-simulator-${Date.now()}`,
+        kind: "info",
+        eyebrow: "Stressfreier Praxiseinstieg",
+        title: "Erst Simulator, dann echte Fahrstunde",
+        description:
+          "Die praktische Ausbildung startet mit 8 Simulator-Fahrstunden in 2 Blöcken. So lernst du die Fahrzeugbedienung zuerst in Ruhe kennen.",
+        items: [
+          { label: "8 Fahrstunden", detail: "Verteilt auf zwei Simulator-Blöcke." },
+          { label: "Grundbedienung üben", detail: "Ohne echten Straßenverkehr und ohne Druck." },
+          { label: "Danach Praxis", detail: "Ruhigerer Einstieg in die erste reale Fahrstunde." },
+        ],
+        url: SCHELF_CONTACT_URL,
+        cta: "Beratung anfragen",
+      });
+      return;
+    }
+
+    if (/\b(unterlagen|dokument|sehtest|erste hilfe|passbild|antrag)\w*/i.test(normalized)) {
+      setVoiceUiAction({
+        id: `schelf-documents-${Date.now()}`,
+        kind: "checklist",
+        eyebrow: "Anmeldung & Führerscheinantrag",
+        title: "Diese Unterlagen solltest du vorbereiten",
+        description:
+          "Die Fahrschule gibt dir den ausgefüllten Antrag. Mit den vollständigen Unterlagen reichst du ihn bei der Führerscheinstelle ein.",
+        items: [
+          { label: "Personalausweis oder Reisepass" },
+          { label: "Biometrisches Passbild" },
+          { label: "Sehtest" },
+          { label: "Erste-Hilfe-Nachweis" },
+          { label: "Bei BF17: Unterlagen der Begleitpersonen" },
+        ],
+        url: SCHELF_CONTACT_URL,
+        cta: "Anmeldung vorbereiten",
+      });
+      return;
+    }
+
+    if (/\b(preis|preise|kosten|kostet|gebuhr|gebühr)\w*/i.test(normalized)) {
+      setVoiceUiAction({
+        id: `schelf-costs-${Date.now()}`,
+        kind: "price-list",
+        eyebrow: "Kosten transparent einordnen",
+        title: "Der Gesamtpreis ist individuell",
+        description:
+          "Die Ausbildungskosten hängen vor allem von der Führerscheinklasse und der benötigten Zahl an Fahrstunden ab. Deshalb nennt die Fahrschule online keinen pauschalen Gesamtpreis.",
+        items: [
+          { label: "Ersterteilung – Behördenantrag", value: "49,70 €" },
+          { label: "Erweiterung – Behördenantrag", value: "48,90 €" },
+          { label: "BF17 – Behördenantrag", value: "52,40 €", detail: "Zusätzlich 13,30 € je Begleitperson." },
+          { label: "Vorstellung Theorieprüfung", value: "65,00 €", detail: "Laut veröffentlichten FAQ zu den Bürozeiten zu zahlen." },
+        ],
+        url: SCHELF_CONTACT_URL,
+        cta: "Persönlichen Preis anfragen",
+      });
+      return;
+    }
+
+    if (/\b(offen|offnungszeiten|öffnungszeiten|uhrzeit|telefonzeit)\w*/i.test(normalized)) {
+      setVoiceUiAction({
+        id: `schelf-hours-${Date.now()}`,
+        kind: "info",
+        eyebrow: "Büro- & Telefonzeiten",
+        title: "Wann du das Team erreichst",
+        description: "Für eine kurzfristige Frage kannst du jederzeit per WhatsApp schreiben.",
+        items: [
+          { label: "Schwerin", value: "Mo–Mi · 16:30–18:00" },
+          { label: "Crivitz", value: "Di–Mi · 14:00–18:00" },
+          { label: "Telefon", value: "Mo–Fr · 15:00–18:00" },
+        ],
+        url: SCHELF_PHONE_URL,
+        cta: "Jetzt anrufen",
+      });
+      return;
+    }
+
+    if (/\b(adresse|anfahrt|route|finden|standort|schwerin|crivitz)\w*/i.test(normalized)) {
+      setVoiceUiAction({
+        id: `schelf-locations-${Date.now()}`,
+        kind: "contact",
+        eyebrow: "Zwei Standorte",
+        title: "Schwerin oder Crivitz",
+        description: "Wähle den Standort, der für dich besser erreichbar ist.",
+        items: [
+          { label: "Schwerin", value: "Werderstraße 13 · 19055 Schwerin" },
+          { label: "Crivitz", value: "Friedensstraße 2 · 19089 Crivitz" },
+        ],
+        url: SCHELF_WEBSITE_URL,
+        cta: "Website öffnen",
+      });
+      return;
+    }
+
+    if (/\b(klasse|fuhrerscheinklasse|führerscheinklasse|motorrad|anhanger|anhänger|b196|b197|b96|am|a1|a2|be)\w*/i.test(normalized)) {
+      setVoiceUiAction({
+        id: `schelf-classes-${Date.now()}`,
+        kind: "info",
+        eyebrow: "Führerscheinklassen",
+        title: "Auto, Motorrad und Anhänger",
+        description:
+          "Die Schelf-Fahrschule bildet praktisch in mehreren Auto- und Motorradklassen aus.",
+        items: [
+          { label: "Auto", value: "B · B197" },
+          { label: "Anhänger", value: "BE · B96" },
+          { label: "Motorrad", value: "AM · A1 · A2 · A · B196" },
+          { label: "Begleitetes Fahren", value: "BF17 möglich" },
+        ],
+        url: SCHELF_CONTACT_URL,
+        cta: "Klasse beraten lassen",
+      });
+    }
+  }
+
   function getSafeInterfaceUrl(rawUrl: unknown) {
     if (typeof rawUrl !== "string" || !rawUrl.trim()) return undefined;
 
@@ -5022,7 +5297,7 @@ export default function WidgetPage() {
   }
 
   function applyRealtimeInterfaceTool(rawArguments: unknown) {
-    if (!isFahrwerkBInterface && !isPetermaennchenInterface) return false;
+    if (!isFahrwerkBInterface && !isPetermaennchenInterface && !isSchelfInterface) return false;
 
     let parsed: Record<string, unknown>;
 
@@ -5094,9 +5369,11 @@ export default function WidgetPage() {
       !url &&
       /anmeld|registrier|einschreib/i.test(`${title} ${description}`)
     ) {
-      url = isPetermaennchenInterface
-        ? PETERMAENNCHEN_CONTACT_URL
-        : FAHRWERK_LIVE_SIGNUP_URL;
+      url = isSchelfInterface
+        ? SCHELF_CONTACT_URL
+        : isPetermaennchenInterface
+          ? PETERMAENNCHEN_CONTACT_URL
+          : FAHRWERK_LIVE_SIGNUP_URL;
     }
 
     setVoiceUiAction({
@@ -5104,7 +5381,9 @@ export default function WidgetPage() {
       kind,
       eyebrow: String(
         parsed.eyebrow ||
-          (isPetermaennchenInterface
+          (isSchelfInterface
+            ? "Schelf-Fahrschule"
+            : isPetermaennchenInterface
             ? "Petermännchen Fahrschule"
             : "Fahrwerk B"),
       )
@@ -5123,6 +5402,11 @@ export default function WidgetPage() {
   }
 
   function applyVoiceSurfaceIntent(rawText: string) {
+    if (isSchelfInterface) {
+      applySchelfSurfaceIntent(rawText);
+      return;
+    }
+
     if (isPetermaennchenInterface) {
       applyPetermaennchenSurfaceIntent(rawText);
       return;
@@ -5187,7 +5471,7 @@ export default function WidgetPage() {
     const text = rawText.trim();
     if (!text || loadingRef.current) return null;
 
-    if (options.fromVoice || isPetermaennchenInterface) {
+    if (options.fromVoice || isPetermaennchenInterface || isSchelfInterface) {
       applyVoiceSurfaceIntent(text);
     }
 
@@ -5246,6 +5530,8 @@ export default function WidgetPage() {
         ? "fahrschule-hohenbaden"
         : isAbgefahrenInterface
           ? "fahrschule-abgefahren"
+          : isSchelfInterface
+            ? "schelf-fahrschule"
           : isFahrwerkBInterface
             ? "fahrwerk-b"
             : isPetermaennchenInterface
@@ -5360,6 +5646,32 @@ export default function WidgetPage() {
           role: "assistant",
           content:
             "Gern bereite ich deine Anfrage für die Petermännchen Fahrschule vor. Das Kontaktformular ist unverbindlich; verbindlich meldest du dich anschließend im Büro oder schriftlich per E-Mail an.",
+        },
+      ];
+    });
+  }
+
+  function openSchelfContact() {
+    if (!isSchelfInterface || loading || isVoiceActive) return;
+
+    setShowBadge(false);
+    showSchelfContactCard();
+
+    setMsgs((current) => {
+      const alreadyHasContactHint = current.some(
+        (msg) =>
+          msg.role === "assistant" &&
+          msg.content.includes("Kontakt zur Schelf-Fahrschule"),
+      );
+
+      if (alreadyHasContactHint) return current;
+
+      return [
+        ...current,
+        {
+          role: "assistant",
+          content:
+            "Ich bereite dir den Kontakt zur Schelf-Fahrschule vor. Wähle Schwerin oder Crivitz und schreibe am besten direkt per WhatsApp – für die endgültige Vertragsunterzeichnung kommst du anschließend zu den Bürozeiten vorbei.",
         },
       ];
     });
@@ -6726,6 +7038,8 @@ export default function WidgetPage() {
       ? "fahrschule-hohenbaden"
       : isAbgefahrenInterface
         ? "fahrschule-abgefahren"
+        : isSchelfInterface
+          ? "schelf-fahrschule"
         : isFahrwerkBInterface
           ? "fahrwerk-b"
           : isPetermaennchenInterface
@@ -7163,6 +7477,8 @@ export default function WidgetPage() {
           ? "Alles klar — wobei soll ich dir rund um Intensivkurs, THEO App oder Führerschein bei Hohenbaden helfen?"
           : isAbgefahrenInterface
             ? "Alles klar — wobei soll ich dir rund um deinen Führerschein bei Abgefahren helfen?"
+            : isSchelfInterface
+              ? "Alles klar — wobei soll ich dir rund um Führerschein, 7-Tage-Theorie, Fahrsimulator oder Anmeldung bei der Schelf-Fahrschule helfen?"
             : isFahrwerkBInterface
             ? "Alles klar — wo stehst du gerade bei deinem Führerschein?"
             : isPetermaennchenInterface
@@ -7183,14 +7499,14 @@ export default function WidgetPage() {
 
   const panelW = isBookingInterface
     ? 1040
-    : isTxbikesInterface || isFahrwerkBInterface || isPetermaennchenInterface || isAbgefahrenInterface || isHohenbadenInterface
+    : isTxbikesInterface || isFahrwerkBInterface || isPetermaennchenInterface || isSchelfInterface || isAbgefahrenInterface || isHohenbadenInterface
       ? 940
       : isEmbedded
         ? 460
         : 500;
   const panelH = isBookingInterface
     ? 840
-    : isTxbikesInterface || isFahrwerkBInterface || isPetermaennchenInterface || isAbgefahrenInterface || isHohenbadenInterface
+    : isTxbikesInterface || isFahrwerkBInterface || isPetermaennchenInterface || isSchelfInterface || isAbgefahrenInterface || isHohenbadenInterface
       ? 820
       : isEmbedded
         ? 660
@@ -7200,15 +7516,19 @@ export default function WidgetPage() {
       ? 28
       : 38
     : 28;
-  // Petermännchen erhält für die Vertriebsversion sein eigenes Markenlogo.
+  // Personalisierte Vertriebsversionen erhalten das jeweilige Markenlogo.
   // Alle anderen Interfaces behalten weiterhin das BTDesigns-/BTAI-Logo.
-  const GLOBAL_LOGO_SRC = isPetermaennchenInterface
-    ? PETERMAENNCHEN_LOGO_SRC
-    : "/brand/btai-logo.png";
+  const GLOBAL_LOGO_SRC = isSchelfInterface
+    ? SCHELF_LOGO_SRC
+    : isPetermaennchenInterface
+      ? PETERMAENNCHEN_LOGO_SRC
+      : "/brand/btai-logo.png";
   const headerPrimaryCta = isHohenbadenInterface
     ? { label: "Website", url: "https://fahrschule-hohenbaden.de" }
     : isAbgefahrenInterface
       ? { label: "Website", url: "https://abgefahren-schwerin.de" }
+      : isSchelfInterface
+        ? { label: "WhatsApp", url: SCHELF_WHATSAPP_URL }
       : isPetermaennchenInterface
         ? { label: "Website", url: PETERMAENNCHEN_WEBSITE_URL }
       : cfg.primaryCta;
@@ -7230,6 +7550,8 @@ export default function WidgetPage() {
     ? HOHENBADEN_START_CARDS
     : isAbgefahrenInterface
       ? ABGEFAHREN_START_CARDS
+      : isSchelfInterface
+        ? SCHELF_START_CARDS
       : isPetermaennchenInterface
         ? PETERMAENNCHEN_START_CARDS
       : isFahrwerkBInterface
@@ -8986,6 +9308,8 @@ body::after {
                     ? "Intensivkurs finden?"
                     : isAbgefahrenInterface
                       ? "Führerschein-Frage?"
+                      : isSchelfInterface
+                        ? "Theorie in 7 Tagen?"
                       : isFahrwerkBInterface
                       ? "Führerschein starten?"
                       : isPetermaennchenInterface
@@ -9257,6 +9581,8 @@ body::after {
                             ? "Beta: in7Days Führerscheinbegleiter"
                             : isAbgefahrenInterface
                               ? "Beta: persönlicher Führerscheinbegleiter"
+                            : isSchelfInterface
+                              ? "… weil’s Spaß machen soll!"
                             : isFahrwerkBInterface
                                 ? "In 1 Minute zum passenden Einstieg"
                                 : isPetermaennchenInterface
@@ -9276,26 +9602,26 @@ body::after {
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",
-                        width: isPetermaennchenInterface
+                        width: isPetermaennchenInterface || isSchelfInterface
                           ? isMobileViewport
                             ? 118
                             : 184
                           : isEnhancedInterface
                             ? 64
                             : 52,
-                        height: isPetermaennchenInterface
+                        height: isPetermaennchenInterface || isSchelfInterface
                           ? isMobileViewport
                             ? 44
                             : 58
                           : isEnhancedInterface
                             ? 64
                             : 52,
-                        padding: isPetermaennchenInterface
+                        padding: isPetermaennchenInterface || isSchelfInterface
                           ? "8px 12px"
                           : isEnhancedInterface
                             ? "9px"
                             : "7px",
-                        borderRadius: isPetermaennchenInterface
+                        borderRadius: isPetermaennchenInterface || isSchelfInterface
                           ? 14
                           : isEnhancedInterface
                             ? 18
@@ -9315,7 +9641,9 @@ body::after {
                       <img
                         src={GLOBAL_LOGO_SRC}
                         alt={
-                          isPetermaennchenInterface
+                          isSchelfInterface
+                            ? "Schelf-Fahrschule"
+                            : isPetermaennchenInterface
                             ? "Petermännchen Fahrschule"
                             : "BTDesigns Logo"
                         }
@@ -9325,7 +9653,7 @@ body::after {
                           objectFit: "contain",
                           display: "block",
                           margin: "auto",
-                          transform: isPetermaennchenInterface
+                          transform: isPetermaennchenInterface || isSchelfInterface
                             ? "scale(1)"
                             : "scale(1.04)",
                           transformOrigin: "center",
@@ -9452,6 +9780,8 @@ body::after {
                             ? "Schneller zum Führerschein. Persönlich begleitet."
                             : isAbgefahrenInterface
                               ? "Dein Führerschein. Ein persönliches Cockpit."
+                              : isSchelfInterface
+                                ? "Dein Führerschein soll Spaß machen."
                               : isPetermaennchenInterface
                                 ? "Dein Weg zum Führerschein beginnt hier."
                               : isFahrwerkBInterface
@@ -9474,6 +9804,8 @@ body::after {
                             ? "Verbinde dich als Fahrschüler, finde den nächsten Intensivkurs, verfolge deinen THEO-Lernstand und plane deine Praxis. Diese Beta zeigt, wie in7Days die komplette Ausbildung digital an einem Ort bündeln könnte."
                             : isAbgefahrenInterface
                               ? "Verbinde dich als Fahrschüler, buche den nächsten passenden Kurs oder öffne deinen persönlichen Begleiter. Diese Beta zeigt, wie die komplette Ausbildung später an einem Ort zusammenlaufen kann."
+                              : isSchelfInterface
+                                ? "Finde deine Führerscheinklasse, entdecke den passenden 7-Tage-Theoriekurs und kläre Unterlagen oder Anmeldung direkt für Schwerin und Crivitz."
                               : isPetermaennchenInterface
                                 ? "Finde die passende Führerscheinklasse, prüfe Kurse und Unterlagen oder bereite deine Anfrage an die Petermännchen Fahrschule direkt vor."
                               : isFahrwerkBInterface
@@ -9489,7 +9821,7 @@ body::after {
                                     : `Wähle einen Einstieg aus. Danach führt dich ${displayAssistantName} gezielt weiter.`}
                         </div>
 
-                        {(isFahrwerkBInterface || isPetermaennchenInterface || isAbgefahrenInterface || isHohenbadenInterface) && (
+                        {(isFahrwerkBInterface || isPetermaennchenInterface || isSchelfInterface || isAbgefahrenInterface || isHohenbadenInterface) && (
                           <div
                             className="bt-fahrwerk-steps"
                             style={{
@@ -9515,6 +9847,13 @@ body::after {
                                     "3 Fortschritt sehen",
                                     "4 Persönlich begleiten",
                                   ]
+                                : isSchelfInterface
+                                  ? [
+                                      "1 Klasse finden",
+                                      "2 Kurs wählen",
+                                      "3 Simulator & Praxis",
+                                      "4 Direkt anmelden",
+                                    ]
                                 : isPetermaennchenInterface
                                   ? [
                                       "1 Klasse finden",
@@ -9602,6 +9941,11 @@ body::after {
 
                               if (card.action === "petermaennchenContact") {
                                 openPetermaennchenContact();
+                                return;
+                              }
+
+                              if (card.action === "schelfContact") {
+                                openSchelfContact();
                                 return;
                               }
 
@@ -11258,7 +11602,7 @@ body::after {
                             color: isUser ? "#ffffff" : textPrimary,
                           }}
                         >
-                          {(isFahrwerkBInterface || isPetermaennchenInterface || isAbgefahrenInterface || isHohenbadenInterface) &&
+                          {(isFahrwerkBInterface || isPetermaennchenInterface || isSchelfInterface || isAbgefahrenInterface || isHohenbadenInterface) &&
                           !isUser
                             ? ensureFahrwerkEmoji(m.content)
                             : m.content}
@@ -11272,6 +11616,8 @@ body::after {
                                     ? "Hochgeladenes Bild zur Anfrage bei Hohenbaden · in7Days"
                                     : isAbgefahrenInterface
                                       ? "Hochgeladenes Bild zur Anfrage bei Abgefahren"
+                                      : isSchelfInterface
+                                        ? "Hochgeladenes Bild zur Anfrage bei der Schelf-Fahrschule"
                                       : isPetermaennchenInterface
                                         ? "Hochgeladenes Bild zur Anfrage bei der Petermännchen Fahrschule"
                                       : isFahrwerkBInterface
@@ -11508,6 +11854,8 @@ body::after {
                           ? "Schreib z. B. Intensivkurs, THEO App oder Umschreibung…"
                           : isAbgefahrenInterface
                             ? "Schreib z. B. B197, 7-Tage-Theorie oder Anmeldung…"
+                            : isSchelfInterface
+                              ? "Schreib z. B. 7-Tage-Kurs, Simulator oder Anmeldung…"
                             : isFahrwerkBInterface
                               ? "Schreib z. B. B197, BF17 oder Beratung…"
                               : isPetermaennchenInterface
