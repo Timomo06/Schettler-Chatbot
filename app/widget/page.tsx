@@ -699,42 +699,58 @@ const PETERMAENNCHEN_START_CARDS: StartCard[] = [
 
 const SCHELF_START_CARDS: StartCard[] = [
   {
-    icon: "🧭",
-    title: "Führerschein finden",
-    description: "Auto, Motorrad oder Anhänger gemeinsam einordnen",
-    message:
-      "Ich weiß noch nicht, welche Führerscheinklasse zu mir passt. Bitte finde sie mit mir gemeinsam heraus.",
+    icon: "🔗",
+    title: "Als Fahrschüler verbinden",
+    description: "Lernstand, Termine und Ausbildungsfortschritt öffnen",
+    action: "hohenbadenPanel",
+    hohenbadenPanel: "connect",
   },
   {
     icon: "⚡",
     title: "Theorie in 7 Tagen",
-    description: "Intensiv- und Ferienkurse in Schwerin oder Crivitz prüfen",
-    message:
-      "Welche kommenden Theorie-Intensivkurse bietet die Schelf-Fahrschule in Schwerin und Crivitz an?",
+    description: "Passenden Intensivkurs in Schwerin oder Crivitz finden",
+    action: "hohenbadenPanel",
+    hohenbadenPanel: "courses",
   },
   {
-    icon: "🎮",
-    title: "Fahrsimulator",
-    description: "Die ersten Fahrstunden ruhig und stressfrei starten",
-    message:
-      "Wie funktioniert der Einstieg mit dem Fahrsimulator bei der Schelf-Fahrschule?",
+    icon: "🪪",
+    title: "Mein Führerschein",
+    description: "Persönliches Cockpit mit deinen nächsten Schritten",
+    action: "hohenbadenPanel",
+    hohenbadenPanel: "dashboard",
+  },
+  {
+    icon: "📅",
+    title: "Fahrstunden planen",
+    description: "Freie Zeiten und Simulator-Einstieg als Demo ansehen",
+    action: "hohenbadenPanel",
+    hohenbadenPanel: "schedule",
+  },
+  {
+    icon: "✨",
+    title: "Persönlicher Begleiter",
+    description: "Lernplan und Empfehlungen passend zu deinem Stand",
+    action: "hohenbadenPanel",
+    hohenbadenPanel: "coach",
   },
   {
     icon: "✅",
-    title: "Unterlagen prüfen",
-    description: "Passbild, Sehtest, Erste Hilfe und Antrag im Blick",
-    message: "Welche Unterlagen brauche ich für meine Anmeldung?",
+    title: "Unterlagen & Behörde",
+    description: "Dokumente und Bearbeitungsstand übersichtlich verfolgen",
+    action: "hohenbadenPanel",
+    hohenbadenPanel: "documents",
   },
   {
-    icon: "💬",
-    title: "Anmeldung & Beratung",
-    description: "Standort wählen und direkt per WhatsApp Kontakt aufnehmen",
-    action: "schelfContact",
+    icon: "🎮",
+    title: "Simulator & Fahrangst",
+    description: "Stressfreien Einstieg und Auffrischung erklären lassen",
+    message:
+      "Wie helfen mir Fahrsimulator, Auffrischungskurs oder Angstbewältigung bei der Schelf-Fahrschule?",
   },
   {
     icon: "🎙️",
-    title: "Einfach sprechen",
-    description: "Frage stellen, unterbrechen und direkt weiterreden",
+    title: "Frage einsprechen",
+    description: "Anliegen einfach erzählen statt tippen",
     action: "voice",
   },
 ];
@@ -2554,6 +2570,7 @@ type HohenbadenCourse = {
 };
 
 type HohenbadenFutureDemoProps = {
+  variant?: "hohenbaden" | "schelf";
   panel: HohenbadenPanel;
   onPanelChange: (panel: HohenbadenPanel) => void;
   accent: string;
@@ -2605,7 +2622,49 @@ const HOHENBADEN_DEMO_DOCUMENTS = [
   { id: "antrag", label: "Fahrerlaubnisantrag", detail: "Digital vorbereitet", initial: true },
 ] as const;
 
+const SCHELF_DEMO_COURSES: HohenbadenCourse[] = [
+  {
+    id: "schelf-herbst-schwerin",
+    title: "Klasse B · Theorie in 7 Tagen",
+    location: "Schwerin",
+    start: "16. Oktober 2026",
+    time: "16.10.–23.10. · kompakter Ferienkurs",
+    seats: 15,
+    tag: "Nächster Ferienkurs",
+    match: "Passt zu: Schwerin und Herbstferien",
+  },
+  {
+    id: "schelf-herbst-crivitz",
+    title: "Klasse B · Theorie in 7 Tagen",
+    location: "Crivitz",
+    start: "16. Oktober 2026",
+    time: "16.10.–23.10. · kompakter Ferienkurs",
+    seats: 15,
+    tag: "Standort-Alternative",
+    match: "Passt zu: Crivitz und Herbstferien",
+  },
+  {
+    id: "schelf-winter-schwerin",
+    title: "Theoriekurs November / Dezember",
+    location: "Schwerin",
+    start: "30. November 2026",
+    time: "30.11.–09.12. · kompakter Theorieplan",
+    seats: 15,
+    tag: "Späterer Start",
+    match: "Passt zu: Start zum Jahresende",
+  },
+];
+
+const SCHELF_DEMO_DOCUMENTS = [
+  { id: "ausweis", label: "Ausweiskopie", detail: "Geprüft", initial: true },
+  { id: "sehtest", label: "Sehtest", detail: "Gültig bis 03/2028", initial: true },
+  { id: "erstehilfe", label: "Erste-Hilfe-Kurs", detail: "Nachweis liegt vor", initial: true },
+  { id: "passbild", label: "Biometrisches Passbild", detail: "Noch hochladen", initial: false },
+  { id: "antrag", label: "Fahrerlaubnisantrag", detail: "Von der Fahrschule vorbereitet", initial: true },
+] as const;
+
 function HohenbadenFutureDemo({
+  variant = "hohenbaden",
   panel,
   onPanelChange,
   accent,
@@ -2615,13 +2674,20 @@ function HohenbadenFutureDemo({
   isMobile,
   onAsk,
 }: HohenbadenFutureDemoProps) {
+  const isSchelf = variant === "schelf";
+  const demoCourses = isSchelf
+    ? SCHELF_DEMO_COURSES
+    : HOHENBADEN_DEMO_COURSES;
+  const demoDocuments = isSchelf
+    ? SCHELF_DEMO_DOCUMENTS
+    : HOHENBADEN_DEMO_DOCUMENTS;
   const [studentCode, setStudentCode] = useState("");
   const [birthDate, setBirthDate] = useState("");
   const [connecting, setConnecting] = useState(false);
   const [connected, setConnected] = useState(false);
   const [courseMode, setCourseMode] = useState<"fast" | "time">("fast");
   const [coursePreference, setCoursePreference] = useState(
-    "Etwa 2 Wochen Urlaub",
+    isSchelf ? "Herbstferien" : "Etwa 2 Wochen Urlaub",
   );
   const [reservedCourseId, setReservedCourseId] = useState<string | null>(null);
   const [selectedDrivingSlot, setSelectedDrivingSlot] = useState<string | null>(
@@ -2629,7 +2695,7 @@ function HohenbadenFutureDemo({
   );
   const [drivingSlotReserved, setDrivingSlotReserved] = useState(false);
   const [documents, setDocuments] = useState<Record<string, boolean>>(() =>
-    HOHENBADEN_DEMO_DOCUMENTS.reduce<Record<string, boolean>>((acc, item) => {
+    demoDocuments.reduce<Record<string, boolean>>((acc, item) => {
       acc[item.id] = item.initial;
       return acc;
     }, {}),
@@ -2637,13 +2703,13 @@ function HohenbadenFutureDemo({
 
   if (panel === "home") return null;
 
-  const completedDocuments = HOHENBADEN_DEMO_DOCUMENTS.filter(
+  const completedDocuments = demoDocuments.filter(
     (item) => documents[item.id],
   ).length;
   const documentProgress = Math.round(
-    (completedDocuments / HOHENBADEN_DEMO_DOCUMENTS.length) * 100,
+    (completedDocuments / demoDocuments.length) * 100,
   );
-  const reservedCourse = HOHENBADEN_DEMO_COURSES.find(
+  const reservedCourse = demoCourses.find(
     (course) => course.id === reservedCourseId,
   );
 
@@ -2712,7 +2778,7 @@ function HohenbadenFutureDemo({
     if (connecting) return;
 
     if (useDemoData) {
-      setStudentCode("HOB-2048");
+      setStudentCode(isSchelf ? "SCHELF-2048" : "HOB-2048");
       setBirthDate("2007-06-12");
     }
 
@@ -2948,7 +3014,9 @@ function HohenbadenFutureDemo({
               Fahrschüler-Zugang
             </div>
             <div style={{ fontSize: 13.5, color: textSecondary }}>
-              Später per Fahrschülernummer, QR-Code oder Verknüpfung mit Fahrschulsoftware und THEO App.
+              {isSchelf
+                ? "Später per Fahrschülernummer, QR-Code oder Verknüpfung mit Fahrschulsoftware und Lern-App."
+                : "Später per Fahrschülernummer, QR-Code oder Verknüpfung mit Fahrschulsoftware und THEO App."}
             </div>
 
             <label style={{ fontSize: 12.5, fontWeight: 850 }}>
@@ -2957,7 +3025,7 @@ function HohenbadenFutureDemo({
             <input
               value={studentCode}
               onChange={(event) => setStudentCode(event.target.value)}
-              placeholder="z. B. HOB-2048"
+              placeholder={isSchelf ? "z. B. SCHELF-2048" : "z. B. HOB-2048"}
               style={inputStyle}
             />
 
@@ -2997,7 +3065,9 @@ function HohenbadenFutureDemo({
               }}
             >
               <span>🔒</span>
-              Die echte Version kann Fahrschulsoftware, THEO-Lernstand und Kursplanung verbinden.
+              {isSchelf
+                ? "Die echte Version kann Fahrschulsoftware, Lernstand, Simulator und Kursplanung verbinden."
+                : "Die echte Version kann Fahrschulsoftware, THEO-Lernstand und Kursplanung verbinden."}
             </div>
           </div>
         </div>
@@ -3067,7 +3137,9 @@ function HohenbadenFutureDemo({
                   textTransform: "uppercase",
                 }}
               >
-                Persönlicher in7Days Führerscheinbegleiter
+                {isSchelf
+                  ? "Persönlicher Schelf-Führerscheinbegleiter"
+                  : "Persönlicher in7Days Führerscheinbegleiter"}
               </div>
               <div
                 style={{
@@ -3076,7 +3148,9 @@ function HohenbadenFutureDemo({
                   marginTop: 4,
                 }}
               >
-                Hallo Max, dein Intensivkurs ist vorbereitet.
+                {isSchelf
+                  ? "Hallo Max, dein 7-Tage-Theoriekurs ist vorbereitet."
+                  : "Hallo Max, dein Intensivkurs ist vorbereitet."}
               </div>
               <div
                 style={{
@@ -3086,7 +3160,9 @@ function HohenbadenFutureDemo({
                   marginTop: 7,
                 }}
               >
-                Dein nächster sinnvoller Schritt: Passbild hochladen, den THEO-Lernstand prüfen und anschließend deinen Intensivplatz bestätigen.
+                {isSchelf
+                  ? "Dein nächster sinnvoller Schritt: Passbild ergänzen, deinen Lernstand prüfen und anschließend den Kursplatz in Schwerin oder Crivitz bestätigen."
+                  : "Dein nächster sinnvoller Schritt: Passbild hochladen, den THEO-Lernstand prüfen und anschließend deinen Intensivplatz bestätigen."}
               </div>
             </div>
 
@@ -3132,9 +3208,9 @@ function HohenbadenFutureDemo({
             }}
           >
             {[
-              ["📱", "THEO App", "72 % Lernstand", "Im Plan"],
+              ["📱", isSchelf ? "Theorie-Lernen" : "THEO App", "72 % Lernstand", "Im Plan"],
               ["✅", "Unterlagen", "4 von 5 vollständig", "80 %"],
-              ["🚘", "Praxis", "6 Fahrstunden geplant", "Intensiv"],
+              ["🚘", "Praxis", isSchelf ? "Simulator + 6 Fahrstunden" : "6 Fahrstunden geplant", isSchelf ? "Im Aufbau" : "Intensiv"],
             ].map(([icon, title, detail, value]) => (
               <button
                 key={title}
@@ -3232,7 +3308,11 @@ function HohenbadenFutureDemo({
                 }}
               >
                 <div>
-                  <div style={{ fontWeight: 950 }}>🚘 Fahrstunde · Stadtverkehr</div>
+                  <div style={{ fontWeight: 950 }}>
+                    {isSchelf
+                      ? "🎮 Fahrsimulator · Block 1"
+                      : "🚘 Fahrstunde · Stadtverkehr"}
+                  </div>
                   <div
                     style={{
                       color: textSecondary,
@@ -3240,7 +3320,9 @@ function HohenbadenFutureDemo({
                       marginTop: 5,
                     }}
                   >
-                    Mittwoch, 5. August · 16:30–17:15 Uhr
+                    {isSchelf
+                      ? "Mittwoch · 16:30–17:15 Uhr · Demo-Termin"
+                      : "Mittwoch, 5. August · 16:30–17:15 Uhr"}
                   </div>
                 </div>
                 <button
@@ -3271,8 +3353,9 @@ function HohenbadenFutureDemo({
                   marginTop: 8,
                 }}
               >
-                Heute noch 15 Minuten Vorfahrt und Geschwindigkeit üben. Das
-                passt zu deiner nächsten Fahrstunde.
+                {isSchelf
+                  ? "Heute noch 15 Minuten Fahrzeugbedienung wiederholen. Das passt zu deinem nächsten Simulator-Block."
+                  : "Heute noch 15 Minuten Vorfahrt und Geschwindigkeit üben. Das passt zu deiner nächsten Fahrstunde."}
               </div>
               <button
                 type="button"
@@ -3297,7 +3380,9 @@ function HohenbadenFutureDemo({
         >
           <div>
             <div style={{ fontSize: isMobile ? 25 : 31, fontWeight: 950 }}>
-              In wenigen Klicks zum passenden Intensivkurs
+              {isSchelf
+                ? "In wenigen Klicks zum passenden 7-Tage-Theoriekurs"
+                : "In wenigen Klicks zum passenden Intensivkurs"}
             </div>
             <div
               style={{
@@ -3307,7 +3392,9 @@ function HohenbadenFutureDemo({
                 marginTop: 6,
               }}
             >
-              Das Interface gleicht Klasse, Standort, Urlaubszeit und Bearbeitungsstand automatisch mit den nächsten Intensivkursen ab.
+              {isSchelf
+                ? "Das Interface gleicht Klasse, Standort, Ferienzeit und Bearbeitungsstand automatisch mit den nächsten Kursen in Schwerin und Crivitz ab."
+                : "Das Interface gleicht Klasse, Standort, Urlaubszeit und Bearbeitungsstand automatisch mit den nächsten Intensivkursen ab."}
             </div>
           </div>
 
@@ -3321,7 +3408,7 @@ function HohenbadenFutureDemo({
             }}
           >
             {[
-              ["1", "Klasse", "B / B197 / A"],
+              ["1", "Klasse", isSchelf ? "B · B197 · Motorrad" : "B / B197 / A"],
               ["2", "Deine Zeit", coursePreference],
               ["3", "Kurs", reservedCourse ? "Vorgemerkt" : "Auswählen"],
             ].map(([number, label, value]) => (
@@ -3410,12 +3497,20 @@ function HohenbadenFutureDemo({
                 marginTop: 14,
               }}
             >
-              {[
-                "Etwa 2 Wochen Urlaub",
-                "Start im August",
-                "Nur Baden-Baden",
-                "Bühl möglich",
-              ].map((preference) => (
+              {(isSchelf
+                ? [
+                    "Herbstferien",
+                    "Start im Oktober",
+                    "Nur Schwerin",
+                    "Crivitz möglich",
+                  ]
+                : [
+                    "Etwa 2 Wochen Urlaub",
+                    "Start im August",
+                    "Nur Baden-Baden",
+                    "Bühl möglich",
+                  ]
+              ).map((preference) => (
                 <button
                   key={preference}
                   type="button"
@@ -3498,7 +3593,9 @@ function HohenbadenFutureDemo({
                       onClick={() => onPanelChange("connect")}
                       style={primaryButton}
                     >
-                      Intensivplatz in 60 Sekunden anfragen
+                      {isSchelf
+                        ? "Kursplatz in 60 Sekunden anfragen"
+                        : "Intensivplatz in 60 Sekunden anfragen"}
                     </button>
                     <button
                       type="button"
@@ -3521,7 +3618,7 @@ function HohenbadenFutureDemo({
                 gap: 11,
               }}
             >
-              {HOHENBADEN_DEMO_COURSES.map((course, index) => (
+              {demoCourses.map((course, index) => (
                 <div
                   key={course.id}
                   style={{
@@ -3595,7 +3692,7 @@ function HohenbadenFutureDemo({
                         fontWeight: 900,
                       }}
                     >
-                      {course.seats} Beispielplätze frei
+                      {course.seats} {isSchelf ? "zuletzt veröffentlichte Plätze" : "Beispielplätze frei"}
                     </span>
                     <button
                       type="button"
@@ -3628,7 +3725,9 @@ function HohenbadenFutureDemo({
         >
           <div>
             <div style={{ fontSize: isMobile ? 25 : 31, fontWeight: 950 }}>
-              Fahrstunden passend zu deinem Intensivplan
+              {isSchelf
+                ? "Fahrstunden passend zu deinem Lern- und Simulatorplan"
+                : "Fahrstunden passend zu deinem Intensivplan"}
             </div>
             <div
               style={{
@@ -3638,8 +3737,9 @@ function HohenbadenFutureDemo({
                 marginTop: 6,
               }}
             >
-              Freie Zeiten werden später automatisch mit deinem Fahrlehrer,
-              Ausbildungsstand und deinen Verfügbarkeiten abgeglichen.
+              {isSchelf
+                ? "Freie Zeiten werden später automatisch mit Fahrsimulator, Fahrlehrer, Ausbildungsstand und deinen Verfügbarkeiten abgeglichen."
+                : "Freie Zeiten werden später automatisch mit deinem Fahrlehrer, Ausbildungsstand und deinen Verfügbarkeiten abgeglichen."}
             </div>
           </div>
 
@@ -3742,11 +3842,18 @@ function HohenbadenFutureDemo({
                   marginTop: 14,
                 }}
               >
-                {[
-                  ["Heute", "17:15", "Grundfahraufgaben"],
-                  ["Mittwoch", "16:30", "Stadtverkehr"],
-                  ["Freitag", "18:00", "Überlandfahrt"],
-                ].map(([day, time, topic]) => {
+                {(isSchelf
+                  ? [
+                      ["Heute", "17:15", "Fahrsimulator · Block 1"],
+                      ["Mittwoch", "16:30", "Stadtverkehr"],
+                      ["Freitag", "18:00", "Überlandfahrt"],
+                    ]
+                  : [
+                      ["Heute", "17:15", "Grundfahraufgaben"],
+                      ["Mittwoch", "16:30", "Stadtverkehr"],
+                      ["Freitag", "18:00", "Überlandfahrt"],
+                    ]
+                ).map(([day, time, topic]) => {
                   const slotId = `${day}-${time}`;
                   const selected = selectedDrivingSlot === slotId;
                   return (
@@ -3931,7 +4038,7 @@ function HohenbadenFutureDemo({
                 gap: 9,
               }}
             >
-              {HOHENBADEN_DEMO_DOCUMENTS.map((item) => {
+              {demoDocuments.map((item) => {
                 const done = documents[item.id];
                 return (
                   <div
@@ -4104,7 +4211,9 @@ function HohenbadenFutureDemo({
                   marginTop: 9,
                 }}
               >
-                Antworten, THEO-Lernempfehlungen und nächste Schritte werden passend zu deiner Klasse, deinem Lernstand, deiner Sprache und deinem Intensivplan vorbereitet.
+                {isSchelf
+                  ? "Antworten, Lernempfehlungen und nächste Schritte werden passend zu deiner Klasse, deinem Lernstand, deinen Unterlagen und deinem Simulator- beziehungsweise Praxisplan vorbereitet."
+                  : "Antworten, THEO-Lernempfehlungen und nächste Schritte werden passend zu deiner Klasse, deinem Lernstand, deiner Sprache und deinem Intensivplan vorbereitet."}
               </div>
             </div>
             <div
@@ -4141,12 +4250,20 @@ function HohenbadenFutureDemo({
                   marginTop: 13,
                 }}
               >
-                {[
-                  ["🪪", "Klasse B197"],
-                  ["📱", "THEO App: 72 % Lernstand"],
-                  ["✅", "Passbild fehlt noch"],
-                  ["🌍", "Lernsprache: Englisch"],
-                ].map(([icon, value]) => (
+                {(isSchelf
+                  ? [
+                      ["🪪", "Klasse B197"],
+                      ["📱", "Theorie: 72 % Lernstand"],
+                      ["✅", "Passbild fehlt noch"],
+                      ["🎮", "Simulator: Block 1 geplant"],
+                    ]
+                  : [
+                      ["🪪", "Klasse B197"],
+                      ["📱", "THEO App: 72 % Lernstand"],
+                      ["✅", "Passbild fehlt noch"],
+                      ["🌍", "Lernsprache: Englisch"],
+                    ]
+                ).map(([icon, value]) => (
                   <div
                     key={value}
                     style={{
@@ -4181,12 +4298,20 @@ function HohenbadenFutureDemo({
                   marginTop: 13,
                 }}
               >
-                {[
-                  "Was soll ich heute in der THEO App lernen?",
-                  "Passt mein Urlaub zum nächsten Intensivkurs?",
-                  "Bin ich bereit für die Theorieprüfung?",
-                  "Welche Fahrstunde passt als Nächstes zu mir?",
-                ].map((question) => (
+                {(isSchelf
+                  ? [
+                      "Was soll ich heute für die Theorie lernen?",
+                      "Welcher 7-Tage-Kurs passt zu meinem Standort?",
+                      "Bin ich bereit für die Theorieprüfung?",
+                      "Was kommt nach dem Fahrsimulator?",
+                    ]
+                  : [
+                      "Was soll ich heute in der THEO App lernen?",
+                      "Passt mein Urlaub zum nächsten Intensivkurs?",
+                      "Bin ich bereit für die Theorieprüfung?",
+                      "Welche Fahrstunde passt als Nächstes zu mir?",
+                    ]
+                ).map((question) => (
                   <button
                     key={question}
                     type="button"
@@ -4229,12 +4354,20 @@ function HohenbadenFutureDemo({
                   marginTop: 4,
                 }}
               >
-                20 Minuten THEO App · Kursplatz bestätigen · Passbild hochladen
+                {isSchelf
+                  ? "20 Minuten Theorie · Kursplatz bestätigen · Passbild ergänzen"
+                  : "20 Minuten THEO App · Kursplatz bestätigen · Passbild hochladen"}
               </div>
             </div>
             <button
               type="button"
-              onClick={() => onAsk("Erstelle mir meinen persönlichen in7Days-Lernplan für heute.")}
+              onClick={() =>
+                onAsk(
+                  isSchelf
+                    ? "Erstelle mir meinen persönlichen Schelf-Lernplan für heute."
+                    : "Erstelle mir meinen persönlichen in7Days-Lernplan für heute.",
+                )
+              }
               style={primaryButton}
             >
               Tagesplan starten
@@ -5818,7 +5951,7 @@ export default function WidgetPage() {
   }
 
   function openHohenbadenPanel(panel: HohenbadenPanel) {
-    if (!isHohenbadenInterface || loading || isVoiceActive) return;
+    if ((!isHohenbadenInterface && !isSchelfInterface) || loading || isVoiceActive) return;
 
     setHohenbadenPanel(panel);
     setShowBadge(false);
@@ -7528,7 +7661,7 @@ export default function WidgetPage() {
     : isAbgefahrenInterface
       ? { label: "Website", url: "https://abgefahren-schwerin.de" }
       : isSchelfInterface
-        ? { label: "WhatsApp", url: SCHELF_WHATSAPP_URL }
+        ? { label: "Website", url: SCHELF_WEBSITE_URL }
       : isPetermaennchenInterface
         ? { label: "Website", url: PETERMAENNCHEN_WEBSITE_URL }
       : cfg.primaryCta;
@@ -7544,7 +7677,8 @@ export default function WidgetPage() {
     msgs[0]?.role === "assistant" &&
     !loading &&
     (!isAbgefahrenInterface || abgefahrenPanel === "home") &&
-    (!isHohenbadenInterface || hohenbadenPanel === "home");
+    (!(isHohenbadenInterface || isSchelfInterface) ||
+      hohenbadenPanel === "home");
 
   const startCards = isHohenbadenInterface
     ? HOHENBADEN_START_CARDS
@@ -9781,7 +9915,7 @@ body::after {
                             : isAbgefahrenInterface
                               ? "Dein Führerschein. Ein persönliches Cockpit."
                               : isSchelfInterface
-                                ? "Dein Führerschein soll Spaß machen."
+                                ? "Dein Führerschein. Persönlich begleitet."
                               : isPetermaennchenInterface
                                 ? "Dein Weg zum Führerschein beginnt hier."
                               : isFahrwerkBInterface
@@ -9805,7 +9939,7 @@ body::after {
                             : isAbgefahrenInterface
                               ? "Verbinde dich als Fahrschüler, buche den nächsten passenden Kurs oder öffne deinen persönlichen Begleiter. Diese Beta zeigt, wie die komplette Ausbildung später an einem Ort zusammenlaufen kann."
                               : isSchelfInterface
-                                ? "Finde deine Führerscheinklasse, entdecke den passenden 7-Tage-Theoriekurs und kläre Unterlagen oder Anmeldung direkt für Schwerin und Crivitz."
+                                ? "Verbinde dich als Fahrschüler, finde deinen 7-Tage-Theoriekurs, verfolge Unterlagen und Lernstand und plane Simulator sowie Praxis. Diese Demo zeigt, wie die komplette Ausbildung in Schwerin und Crivitz digital zusammenlaufen könnte."
                               : isPetermaennchenInterface
                                 ? "Finde die passende Führerscheinklasse, prüfe Kurse und Unterlagen oder bereite deine Anfrage an die Petermännchen Fahrschule direkt vor."
                               : isFahrwerkBInterface
@@ -9849,10 +9983,10 @@ body::after {
                                   ]
                                 : isSchelfInterface
                                   ? [
-                                      "1 Klasse finden",
+                                      "1 Verbinden",
                                       "2 Kurs wählen",
-                                      "3 Simulator & Praxis",
-                                      "4 Direkt anmelden",
+                                      "3 Theorie & Praxis",
+                                      "4 Persönlich begleiten",
                                     ]
                                 : isPetermaennchenInterface
                                   ? [
@@ -10040,8 +10174,10 @@ body::after {
                     />
                   )}
 
-                  {isHohenbadenInterface && hohenbadenPanel !== "home" && (
+                  {(isHohenbadenInterface || isSchelfInterface) &&
+                    hohenbadenPanel !== "home" && (
                     <HohenbadenFutureDemo
+                      variant={isSchelfInterface ? "schelf" : "hohenbaden"}
                       panel={hohenbadenPanel}
                       onPanelChange={openHohenbadenPanel}
                       accent={widgetAccent}
