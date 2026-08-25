@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://schettlers-chatbot-lca3.vercel.app"),
+  metadataBase: new URL("https://ai.btdesigns.de"),
 
   title: "BTAI – KI-Assistent",
   description:
