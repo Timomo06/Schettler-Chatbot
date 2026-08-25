@@ -15,7 +15,8 @@ export type TenantId =
   | "fahrschule-jentsch"
   | "asphaltcrew"
   | "fahrschule-malik"
-  | "fahrschule7";
+  | "fahrschule7"
+  | "fahrschule-niehaus";
 
 export type ThemeConfig = {
   accent: string;
@@ -798,6 +799,45 @@ export const TENANTS: Record<TenantId, TenantConfig> = {
     },
   },
 
+  "fahrschule-niehaus": {
+    id: "fahrschule-niehaus",
+    brandName: "Fahrschule Niehaus",
+    assistantName: "Führerschein-Assistent",
+    language: "de",
+    knowledge: {
+      files: ["eKnowledge.md"],
+    },
+    websiteUrl: "https://www.fahrschule-niehaus.de/",
+    primaryCta: {
+      label: "Website öffnen",
+      url: "https://www.fahrschule-niehaus.de/",
+    },
+    fallbackContact: {
+      label: "Telefon",
+      value: "07221 25257",
+    },
+    companyInfo: {
+      address: "Baden-Baden und Bühl",
+      phone: "07221 25257",
+      email: "info@fahrschule-niehaus.de",
+      openingHours: "Siehe eKnowledge für beide Standorte",
+    },
+    rules: {
+      noMedicalClaims: true,
+      noInventingPrices: false,
+      noGuarantees: true,
+    },
+    theme: {
+      accent: "#245b84",
+      bg: "#f5f9fc",
+      glass: "rgba(36,91,132,0.13)",
+      text: "#142433",
+    },
+    assets: {
+      launcherIcon: "/favicon.ico",
+    },
+  },
+
     txbikesV2: {
     id: "txbikesV2",
     brandName: "TXBIKESV2",
@@ -904,6 +944,11 @@ const TENANT_ALIASES: Record<string, TenantId> = {
   "fahrschule7-buxtehude": "fahrschule7",
   "fahrschule7.de": "fahrschule7",
   "www.fahrschule7.de": "fahrschule7",
+  niehaus: "fahrschule-niehaus",
+  "fahrschule-niehaus.de": "fahrschule-niehaus",
+  "www.fahrschule-niehaus.de": "fahrschule-niehaus",
+  "niehaus-baden-baden": "fahrschule-niehaus",
+  "niehaus-buehl": "fahrschule-niehaus",
 };
 
 export function getTenant(tenant: string | null): TenantConfig {

@@ -32,6 +32,7 @@ const FAHRSCHULE_TENANT_IDS = [
   "asphaltcrew",
   "fahrschule-malik",
   "fahrschule7",
+  "fahrschule-niehaus",
 ] as const;
 
 const VOICE_INTERFACE_TENANT_IDS = [
@@ -43,6 +44,7 @@ const VOICE_INTERFACE_TENANT_IDS = [
   "asphaltcrew",
   "fahrschule-malik",
   "fahrschule7",
+  "fahrschule-niehaus",
 ] as const;
 
 const FAHRSCHULE_INTERFACE_TOOLS = [

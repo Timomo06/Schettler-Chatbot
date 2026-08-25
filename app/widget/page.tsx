@@ -179,6 +179,8 @@ const FAHRSCHULE7_WEBSITE_URL = "https://www.fahrschule7.de/";
 const FAHRSCHULE7_LOGO_SRC =
   "https://www.fahrschule7.de/wp-content/uploads/go-x/u/c2643ae5-b02b-43a3-83a2-59697f58c6c8/image-384x384.png";
 
+const NIEHAUS_WEBSITE_URL = "https://www.fahrschule-niehaus.de/";
+
 const FAHRWERK_LICENSE_CLASSES = [
   "Klasse B",
   "B197",
@@ -606,6 +608,64 @@ const HOHENBADEN_START_CARDS: StartCard[] = [
     icon: "🎙️",
     title: "Frage einsprechen",
     description: "Anliegen einfach erzählen statt tippen",
+    action: "voice",
+  },
+];
+
+const NIEHAUS_START_CARDS: StartCard[] = [
+  {
+    icon: "🔗",
+    title: "Als Fahrschüler verbinden",
+    description: "Lernstand, Unterlagen und nächste Schritte als Demo öffnen",
+    action: "hohenbadenPanel",
+    hohenbadenPanel: "connect",
+  },
+  {
+    icon: "🧭",
+    title: "Klasse finden",
+    description: "B, BF17, B197/B78, BE, B96 oder Motorrad einordnen",
+    action: "hohenbadenPanel",
+    hohenbadenPanel: "courses",
+  },
+  {
+    icon: "🪪",
+    title: "Mein Führerschein",
+    description: "Persönliches Cockpit mit Status und nächsten Schritten",
+    action: "hohenbadenPanel",
+    hohenbadenPanel: "dashboard",
+  },
+  {
+    icon: "📅",
+    title: "Theorie & Praxis planen",
+    description: "Baden-Baden oder Bühl passend zum Alltag zusammenbringen",
+    action: "hohenbadenPanel",
+    hohenbadenPanel: "schedule",
+  },
+  {
+    icon: "✅",
+    title: "Unterlagen & Antrag",
+    description: "Ausweis, Passbild, Sehtest, Erste Hilfe und BF17 prüfen",
+    action: "hohenbadenPanel",
+    hohenbadenPanel: "documents",
+  },
+  {
+    icon: "✨",
+    title: "Persönlicher Begleiter",
+    description: "Nächsten Lern- und Ausbildungsschritt verständlich sehen",
+    action: "hohenbadenPanel",
+    hohenbadenPanel: "coach",
+  },
+  {
+    icon: "€",
+    title: "Preise ansehen",
+    description: "Veröffentlichte Einzelpreise passend zur Klasse einordnen",
+    message:
+      "Zeig mir bitte die veröffentlichten Preise der Fahrschule Niehaus passend zu meiner Führerscheinklasse.",
+  },
+  {
+    icon: "🎙️",
+    title: "Frage einsprechen",
+    description: "Einfach erzählen statt lange auf der Website suchen",
     action: "voice",
   },
 ];
@@ -2836,7 +2896,8 @@ type FutureDemoVariant =
   | "jentsch"
   | "asphaltcrew"
   | "malik"
-  | "fahrschule7";
+  | "fahrschule7"
+  | "niehaus";
 
 type FutureDemoDocument = {
   readonly id: string;
@@ -3177,7 +3238,94 @@ const PETERMAENNCHEN_DEMO_DOCUMENTS = [
   { id: "antrag", label: "Fahrerlaubnisantrag", detail: "Für die Abgabe vorbereitet · Demostatus", initial: true },
 ] as const;
 
+const NIEHAUS_DEMO_COURSES: HohenbadenCourse[] = [
+  {
+    id: "niehaus-b-b197",
+    title: "Klasse B / BF17 / B197 / B78",
+    location: "Baden-Baden oder Bühl",
+    start: "Start nach persönlicher Anmeldung",
+    time: "Theorie nach veröffentlichtem Standortplan",
+    seats: 4,
+    tag: "Pkw-Match",
+    match: "Passt zu: Auto, BF17 oder Automatik/Schaltung",
+  },
+  {
+    id: "niehaus-be-b96",
+    title: "Anhänger BE / B96",
+    location: "Baden-Baden oder Bühl",
+    start: "Termin nach persönlicher Abstimmung",
+    time: "Praxis passend zu Vorbesitz und Ausbildungsziel",
+    seats: 3,
+    tag: "Anhänger",
+    match: "Passt zu: Klasse B plus größerem Anhänger",
+  },
+  {
+    id: "niehaus-motorrad",
+    title: "Motorrad A / A2 / A1 / AM / B196",
+    location: "Baden-Baden oder Bühl",
+    start: "Start nach Klassen- und Alterscheck",
+    time: "Theorie und Praxis passend zur Motorradklasse",
+    seats: 3,
+    tag: "Motorrad",
+    match: "Passt zu: Einstieg, Aufstieg oder B196",
+  },
+];
+
+const NIEHAUS_DEMO_DOCUMENTS = [
+  { id: "ausweis", label: "Personalausweis / Reisepass", detail: "Geprüft", initial: true },
+  { id: "passbild", label: "Biometrisches Passbild", detail: "Noch hochladen", initial: false },
+  { id: "sehtest", label: "Sehtest", detail: "Nachweis liegt vor", initial: true },
+  { id: "erstehilfe", label: "Erste-Hilfe-Kurs", detail: "Nachweis liegt vor", initial: true },
+  { id: "bf17", label: "BF17-Begleitperson", detail: "Nur falls relevant", initial: true },
+] as const;
+
 const FUTURE_DEMO_CONFIGS: Record<FutureDemoVariant, FutureDemoConfig> = {
+  niehaus: {
+    courses: NIEHAUS_DEMO_COURSES,
+    documents: NIEHAUS_DEMO_DOCUMENTS,
+    coursePreference: "Klasse B / B197",
+    coursePreferences: ["Klasse B / B197", "BF17", "BE / B96", "Motorrad"],
+    studentCode: "NIE-2048",
+    connectSource: "In der Demo per Fahrschülernummer. Eine echte Version könnte später Fahrschulsoftware, Lernstand, Unterlagen und Terminplanung verbinden.",
+    connectPotential: "Die echte Version könnte die zwei Standorte, Führerscheinklassen, Preise, Unterlagen, Theoriezeiten und persönliche nächste Schritte in einem Cockpit bündeln.",
+    dashboardEyebrow: "Persönlicher Niehaus Führerscheinbegleiter",
+    dashboardTitle: "Hallo Max, dein nächster Schritt ist vorbereitet.",
+    dashboardNextStep: "Passbild ergänzen, den Standort festlegen und danach Theorie sowie nächste Praxisetappe mit der Fahrschule abstimmen.",
+    theoryTitle: "Theorieplan",
+    theoryDetail: "72 % Beispiel-Lernstand",
+    practiceDetail: "6 Fahrstunden im Demo-Plan",
+    practiceValue: "Persönlich",
+    nextAppointmentTitle: "🚘 Fahrstunde · Stadtverkehr",
+    nextAppointmentDetail: "Mittwoch · 16:30–17:15 Uhr · Demo-Termin",
+    coachRecommendation: "Heute 15 Minuten Vorfahrt und Verkehrszeichen wiederholen. Danach fehlen im Demo-Plan nur noch Passbild und Terminabstimmung.",
+    coursesTitle: "Klasse, Standort und nächsten Schritt in einem Ablauf finden",
+    coursesDescription: "Das Interface gleicht Führerscheinziel, Alter, Vorbesitz und Standort mit den Angeboten in Baden-Baden und Bühl ab und bereitet die passende Anfrage vor.",
+    classesSummary: "B · BF17 · B197/B78 · B96 · BE · A/A2/A1 · AM · B196",
+    reserveButton: "Persönliche Beratung anfragen",
+    seatsLabel: "Demo-Verfügbarkeit",
+    scheduleTitle: "Baden-Baden oder Bühl passend zum Alltag planen",
+    scheduleDescription: "Die Demo verbindet die veröffentlichten Anmelde- und Theoriezeiten mit persönlichen Verfügbarkeiten. Fahrstunden bleiben reine Beispieldaten.",
+    scheduleSlots: [
+      ["Dienstag", "19:30", "Theorie · Baden-Baden"],
+      ["Donnerstag", "19:30", "Theorie · Baden-Baden"],
+      ["Samstag", "11:00", "Theorie · Bühl"],
+    ],
+    coachDescription: "Der Begleiter verbindet Klasse, Standort, Lernstand, Unterlagen, Preise und offene Fragen und zeigt daraus den nächsten sinnvollen Schritt.",
+    coachFacts: [
+      ["🪪", "Klasse B197"],
+      ["📍", "Standort: Baden-Baden"],
+      ["✅", "Unterlagen: 4 von 5"],
+      ["📚", "Theorie: 72 % Demo"],
+    ],
+    coachQuestions: [
+      "Welche Führerscheinklasse passt zu mir?",
+      "Welcher Standort passt besser zu meinen Zeiten?",
+      "Welche Unterlagen brauche ich für den Antrag?",
+      "Was kostet meine Klasse laut aktueller Preisliste?",
+    ],
+    todayPlan: "20 Minuten Theorie · Passbild ergänzen · Standort und nächsten Termin abstimmen",
+    todayPlanPrompt: "Erstelle mir meinen persönlichen Niehaus-Lernplan für heute.",
+  },
   petermaennchen: {
     courses: PETERMAENNCHEN_DEMO_COURSES,
     documents: PETERMAENNCHEN_DEMO_DOCUMENTS,
@@ -5153,6 +5301,14 @@ export default function WidgetPage() {
     "fahrschule-hohenbaden.de",
     "fahrschulehohenbaden",
   ].includes(normalizedTenantId);
+  const isNiehausInterface = [
+    "fahrschule-niehaus",
+    "niehaus",
+    "fahrschule-niehaus.de",
+    "www.fahrschule-niehaus.de",
+    "niehaus-baden-baden",
+    "niehaus-buehl",
+  ].includes(normalizedTenantId);
   const isJentschInterface = [
     "fahrschule-jentsch",
     "jentsch",
@@ -5181,8 +5337,10 @@ export default function WidgetPage() {
     "fahrschule7.de",
     "www.fahrschule7.de",
   ].includes(normalizedTenantId);
-  const futureDemoVariant: FutureDemoVariant | null = isHohenbadenInterface
-    ? "hohenbaden"
+  const futureDemoVariant: FutureDemoVariant | null = isNiehausInterface
+    ? "niehaus"
+    : isHohenbadenInterface
+      ? "hohenbaden"
     : isPetermaennchenInterface
       ? "petermaennchen"
     : isSchelfInterface
@@ -5197,8 +5355,10 @@ export default function WidgetPage() {
               ? "fahrschule7"
               : null;
   const isFutureDemoInterface = futureDemoVariant !== null;
-  const activeFutureTenantId = isHohenbadenInterface
-    ? "fahrschule-hohenbaden"
+  const activeFutureTenantId = isNiehausInterface
+    ? "fahrschule-niehaus"
+    : isHohenbadenInterface
+      ? "fahrschule-hohenbaden"
     : isPetermaennchenInterface
       ? "petermaennchen"
     : isSchelfInterface
@@ -5212,8 +5372,10 @@ export default function WidgetPage() {
             : isFahrschule7Interface
               ? "fahrschule7"
               : null;
-  const activeFutureWebsiteUrl = isHohenbadenInterface
-    ? "https://fahrschule-hohenbaden.de"
+  const activeFutureWebsiteUrl = isNiehausInterface
+    ? NIEHAUS_WEBSITE_URL
+    : isHohenbadenInterface
+      ? "https://fahrschule-hohenbaden.de"
     : isPetermaennchenInterface
       ? PETERMAENNCHEN_WEBSITE_URL
     : isSchelfInterface
@@ -5271,8 +5433,10 @@ export default function WidgetPage() {
       : isWilliInterface
         ? WILLI_BOOKING_SERVICES
         : BTDESIGNS_BOOKING_SERVICES;
-  const displayBrandName = isHohenbadenInterface
-    ? "Fahrschule Hohenbaden · in7Days"
+  const displayBrandName = isNiehausInterface
+    ? "Fahrschule Niehaus"
+    : isHohenbadenInterface
+      ? "Fahrschule Hohenbaden · in7Days"
     : isJentschInterface
       ? "Fahrschule Jentsch"
       : isAsphaltcrewInterface
@@ -5294,8 +5458,10 @@ export default function WidgetPage() {
       : isWilliInterface
         ? "Willi"
         : cfg.brandName;
-  const displayAssistantName = isHohenbadenInterface
+  const displayAssistantName = isNiehausInterface
     ? "Führerschein-Assistent"
+    : isHohenbadenInterface
+      ? "Führerschein-Assistent"
     : isJentschInterface
       ? "KI-Führerscheinbegleiter"
       : isAsphaltcrewInterface
@@ -5328,8 +5494,10 @@ export default function WidgetPage() {
       ? theme.accent || "#2563eb"
       : isMmWartungInterface
         ? theme.accent || "#ff751f"
-        : isHohenbadenInterface
-          ? "#e31e24"
+        : isNiehausInterface
+          ? "#245b84"
+          : isHohenbadenInterface
+            ? "#e31e24"
           : isJentschInterface
             ? "#f28b35"
             : isAsphaltcrewInterface
@@ -5355,8 +5523,10 @@ export default function WidgetPage() {
         ? "#f7fbff"
         : isMmWartungInterface
           ? "#fff7ed"
-          : isHohenbadenInterface
-            ? "#fff8f7"
+          : isNiehausInterface
+            ? "#f5f9fc"
+            : isHohenbadenInterface
+              ? "#fff8f7"
             : isJentschInterface
               ? "#fffaf2"
               : isAsphaltcrewInterface
@@ -5382,8 +5552,10 @@ export default function WidgetPage() {
         ? "#182536"
         : isMmWartungInterface
           ? "#2b1f18"
-          : isHohenbadenInterface
-            ? "#171717"
+          : isNiehausInterface
+            ? "#142433"
+            : isHohenbadenInterface
+              ? "#171717"
             : isJentschInterface
               ? "#25230f"
               : isAsphaltcrewInterface
@@ -5409,8 +5581,10 @@ export default function WidgetPage() {
         ? "#566477"
         : isMmWartungInterface
           ? "#705a4a"
-          : isHohenbadenInterface
-            ? "#6b5555"
+          : isNiehausInterface
+            ? "#5b6b78"
+            : isHohenbadenInterface
+              ? "#6b5555"
             : isJentschInterface
               ? "#6d6147"
               : isAsphaltcrewInterface
@@ -5552,8 +5726,10 @@ export default function WidgetPage() {
   useEffect(() => {
     if (!mounted) return;
 
-    const firstMessage = isHohenbadenInterface
-      ? "Hallo! Ich bin der digitale Führerschein-Assistent der Fahrschule Hohenbaden · in7Days. Ich helfe dir beim Intensivkurs, der THEO App, der Anmeldung und den Standorten Baden-Baden oder Bühl. Womit möchtest du starten?"
+    const firstMessage = isNiehausInterface
+      ? "Hallo! Ich bin der digitale Führerschein-Assistent der Fahrschule Niehaus. Ich helfe dir bei Führerscheinklassen, Preisen, Unterlagen, Anmeldung sowie den Standorten Baden-Baden und Bühl. Womit möchtest du starten?"
+      : isHohenbadenInterface
+        ? "Hallo! Ich bin der digitale Führerschein-Assistent der Fahrschule Hohenbaden · in7Days. Ich helfe dir beim Intensivkurs, der THEO App, der Anmeldung und den Standorten Baden-Baden oder Bühl. Womit möchtest du starten?"
       : isJentschInterface
         ? "Hallo! Ich bin der KI-Führerscheinbegleiter der Fahrschule Jentsch in Schwerin. Du kannst sofort ohne App starten, deine Klasse finden und später vorhandene Drive.Buzz-Daten sinnvoll ergänzen. Womit möchtest du beginnen?"
         : isAsphaltcrewInterface
@@ -5594,6 +5770,7 @@ export default function WidgetPage() {
     displayAssistantName,
     isAbgefahrenInterface,
     isHohenbadenInterface,
+    isNiehausInterface,
     isJentschInterface,
     isAsphaltcrewInterface,
     isMalikInterface,
@@ -8415,8 +8592,10 @@ export default function WidgetPage() {
     setMsgs([
       {
         role: "assistant",
-        content: isHohenbadenInterface
-          ? "Alles klar — wobei soll ich dir rund um Intensivkurs, THEO App oder Führerschein bei Hohenbaden helfen?"
+        content: isNiehausInterface
+          ? "Alles klar — geht es um Klasse, Preise, Unterlagen, Anmeldung oder den Standort Baden-Baden beziehungsweise Bühl?"
+          : isHohenbadenInterface
+            ? "Alles klar — wobei soll ich dir rund um Intensivkurs, THEO App oder Führerschein bei Hohenbaden helfen?"
           : isJentschInterface
             ? "Alles klar — möchtest du ohne App beraten werden, eine Klasse finden oder dein persönliches KI-Cockpit öffnen?"
             : isAsphaltcrewInterface
@@ -8509,8 +8688,10 @@ export default function WidgetPage() {
     (!isAbgefahrenInterface || abgefahrenPanel === "home") &&
     (!isFutureDemoInterface || hohenbadenPanel === "home");
 
-  const startCards = isHohenbadenInterface
-    ? HOHENBADEN_START_CARDS
+  const startCards = isNiehausInterface
+    ? NIEHAUS_START_CARDS
+    : isHohenbadenInterface
+      ? HOHENBADEN_START_CARDS
     : isJentschInterface
       ? JENTSCH_START_CARDS
       : isAsphaltcrewInterface
@@ -10275,8 +10456,10 @@ body::after {
               <div className={`bt-badge ${!showBadge ? "bt-badge-hide" : ""}`}>
                 <span className="bt-badge-dot" />
                 <span>
-                  {isHohenbadenInterface
-                    ? "Intensivkurs finden?"
+                  {isNiehausInterface
+                    ? "Führerschein-Frage?"
+                    : isHohenbadenInterface
+                      ? "Intensivkurs finden?"
                     : isJentschInterface
                       ? "Ohne App starten?"
                       : isAsphaltcrewInterface
@@ -10546,8 +10729,10 @@ body::after {
                           ? voiceStatus.label
                           : loading
                           ? "Tippt…"
-                          : isHohenbadenInterface
-                            ? "Beta: in7Days Führerscheinbegleiter"
+                          : isNiehausInterface
+                            ? "Baden-Baden · Bühl · persönlicher Begleiter"
+                            : isHohenbadenInterface
+                              ? "Beta: in7Days Führerscheinbegleiter"
                             : isJentschInterface
                               ? "Ohne App starten · Drive.Buzz intelligent ergänzen"
                               : isAsphaltcrewInterface
@@ -10753,8 +10938,10 @@ body::after {
                             marginBottom: 6,
                           }}
                         >
-                          {isHohenbadenInterface
-                            ? "Schneller zum Führerschein. Persönlich begleitet."
+                          {isNiehausInterface
+                            ? "Dein Führerschein. Klar geplant und persönlich begleitet."
+                            : isHohenbadenInterface
+                              ? "Schneller zum Führerschein. Persönlich begleitet."
                             : isJentschInterface
                               ? "Mehr als eine App: dein persönlicher KI-Weg."
                               : isAsphaltcrewInterface
@@ -10785,8 +10972,10 @@ body::after {
                             color: textSecondary,
                           }}
                         >
-                          {isHohenbadenInterface
-                            ? "Verbinde dich als Fahrschüler, finde den nächsten Intensivkurs, verfolge deinen THEO-Lernstand und plane deine Praxis. Diese Beta zeigt, wie in7Days die komplette Ausbildung digital an einem Ort bündeln könnte."
+                          {isNiehausInterface
+                            ? "Finde die passende Klasse, vergleiche Baden-Baden und Bühl, behalte Unterlagen sowie Preise im Blick und öffne deinen persönlichen Führerscheinbegleiter. Diese Demo zeigt, wie die Ausbildung bei Niehaus digital an einem Ort zusammenlaufen könnte."
+                            : isHohenbadenInterface
+                              ? "Verbinde dich als Fahrschüler, finde den nächsten Intensivkurs, verfolge deinen THEO-Lernstand und plane deine Praxis. Diese Beta zeigt, wie in7Days die komplette Ausbildung digital an einem Ort bündeln könnte."
                             : isJentschInterface
                               ? "Drive.Buzz bleibt für Theorie, Termine, Kosten und Ausbildungsdaten wertvoll. Diese Demo setzt früher an: sofortige KI-Beratung ohne Download, freie Sprache, Foto-Check, Klassen-Matching und ein persönlicher nächster Schritt – mit späterer Anbindung als Option."
                               : isAsphaltcrewInterface
@@ -10826,8 +11015,15 @@ body::after {
                               marginTop: 18,
                             }}
                           >
-                            {(isHohenbadenInterface
+                            {(isNiehausInterface
                               ? [
+                                  "1 Klasse wählen",
+                                  "2 Standort planen",
+                                  "3 Unterlagen & Preise",
+                                  "4 Persönlich begleiten",
+                                ]
+                              : isHohenbadenInterface
+                                ? [
                                   "1 Verbinden",
                                   "2 Intensivkurs",
                                   "3 THEO & Praxis",

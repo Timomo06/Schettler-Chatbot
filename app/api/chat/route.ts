@@ -208,6 +208,7 @@ const FAHRSCHULE_TENANT_IDS = [
   "asphaltcrew",
   "fahrschule-malik",
   "fahrschule7",
+  "fahrschule-niehaus",
 ] as const;
 
 function isFahrwerkTenant(tenantId: string) {
