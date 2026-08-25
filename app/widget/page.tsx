@@ -5754,7 +5754,7 @@ export default function WidgetPage() {
             : isFahrwerkBInterface
             ? "fahrwerk-b"
             : isPetermaennchenInterface
-              ? "petermaennchen"
+              ? "petermännchen-fahrschule"
             : isLinaInterface
             ? "btai"
             : isTxbikesInterface
@@ -6479,7 +6479,7 @@ export default function WidgetPage() {
           : isFahrwerkBInterface
             ? "fahrwerk-b"
             : isPetermaennchenInterface
-              ? "petermaennchen"
+              ? "petermännchen-fahrschule"
             : cfg.id;
 
       const res = await fetch(
@@ -7985,7 +7985,7 @@ export default function WidgetPage() {
         : isFahrwerkBInterface
           ? "fahrwerk-b"
           : isPetermaennchenInterface
-            ? "petermaennchen"
+            ? "petermännchen-fahrschule"
           : cfg.id;
 
     const handledRealtimeToolCalls = new Set<string>();
