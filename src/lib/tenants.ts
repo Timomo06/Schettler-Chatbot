@@ -10,7 +10,7 @@ export type TenantId =
   | "fahrwerk-b"
   | "fahrschule-hohenbaden"
   | "fahrschule-abgefahren"
-  | "petermännchen-fahrschule"
+  | "petermaennchen-fahrschule"
   | "schelf-fahrschule"
   | "fahrschule-jentsch"
   | "asphaltcrew"
@@ -565,8 +565,8 @@ export const TENANTS: Record<TenantId, TenantConfig> = {
     },
   },
 
-  "petermännchen-fahrschule": {
-    id: "petermännchen-fahrschule",
+  "petermaennchen-fahrschule": {
+    id: "petermaennchen-fahrschule",
     brandName: "Petermännchen Fahrschule",
     assistantName: "Führerschein-Assistent",
     language: "de",
@@ -878,11 +878,11 @@ const TENANT_ALIASES: Record<string, TenantId> = {
   "abgefahren-schwerin": "fahrschule-abgefahren",
   abgefahrenschwerin: "fahrschule-abgefahren",
   "abgefahren-schwerin.de": "fahrschule-abgefahren",
-  petermaennchen: "petermännchen-fahrschule",
-  petermännchen: "petermännchen-fahrschule",
-  "petermaennchen-fahrschule": "petermännchen-fahrschule",
-  "petermaennchen-fahrschule.de": "petermännchen-fahrschule",
-  petermaennchenfahrschule: "petermännchen-fahrschule",
+  petermaennchen: "petermaennchen-fahrschule",
+  petermännchen: "petermaennchen-fahrschule",
+  "petermaennchen-fahrschule": "petermaennchen-fahrschule",
+  "petermaennchen-fahrschule.de": "petermaennchen-fahrschule",
+  petermaennchenfahrschule: "petermaennchen-fahrschule",
   schelf: "schelf-fahrschule",
   schelffahrschule: "schelf-fahrschule",
   "schelf-fahrschule.de": "schelf-fahrschule",
