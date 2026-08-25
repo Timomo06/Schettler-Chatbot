@@ -13,6 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://schettlers-chatbot-lca3.vercel.app"),
+
   title: "BTAI – KI-Assistent",
   description:
     "Der intelligente digitale Assistent von BTDesigns – für schnelle Antworten, Beratung und digitale Kundenkommunikation.",
@@ -23,12 +25,14 @@ export const metadata: Metadata = {
       "Der intelligente digitale Assistent von BTDesigns – für schnelle Antworten, Beratung und digitale Kundenkommunikation.",
     siteName: "BTAI",
     type: "website",
+    locale: "de_DE",
     images: [
       {
         url: "/og-image.png",
         width: 1200,
         height: 630,
         alt: "BTAI – KI-Assistent",
+        type: "image/png",
       },
     ],
   },
