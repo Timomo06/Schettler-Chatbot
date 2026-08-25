@@ -11,56 +11,120 @@ function isMissingFileError(error: unknown) {
   );
 }
 
+async function readKnowledgeFile(
+  tenantDirectory: string,
+  safeTenantRoot: string,
+  fileName: string,
+): Promise<{ content: string; usedFile: string } | null> {
+  const absolutePath = path.resolve(tenantDirectory, fileName);
+
+  if (!absolutePath.startsWith(safeTenantRoot)) {
+    throw new Error(`Ungültiger Knowledge-Pfad: ${fileName}`);
+  }
+
+  try {
+    const content = (await fs.readFile(absolutePath, "utf8")).trim();
+
+    if (!content) {
+      return null;
+    }
+
+    return {
+      content,
+      usedFile: fileName,
+    };
+  } catch (error) {
+    if (isMissingFileError(error)) {
+      return null;
+    }
+
+    throw error;
+  }
+}
+
+function getKnowledgeFileCandidates(configuredFileName: string) {
+  const candidates = [configuredFileName];
+
+  // Fahrschul-Demos existieren im Projekt teils als eKnowledge.md,
+  // teils als knowledge.md. Der Loader akzeptiert deshalb beide Namen.
+  if (configuredFileName === "eKnowledge.md") {
+    candidates.push("knowledge.md");
+  } else if (configuredFileName === "knowledge.md") {
+    candidates.push("eKnowledge.md");
+  }
+
+  return [...new Set(candidates)];
+}
+
 export async function loadTenantKnowledge(
   requestedTenantId: TenantId | string,
 ): Promise<string> {
   const tenant = getTenant(requestedTenantId);
+
   const tenantDirectory = path.resolve(
     process.cwd(),
     "src",
     "tenants",
     tenant.id,
   );
+
   const safeTenantRoot = `${tenantDirectory}${path.sep}`;
 
-  const knowledgeParts = await Promise.all(
-    tenant.knowledge.files.map(async (fileName) => {
-      const absolutePath = path.resolve(tenantDirectory, fileName);
+  const knowledgeParts: string[] = [];
+  const loadedFiles: string[] = [];
 
-      if (!absolutePath.startsWith(safeTenantRoot)) {
-        throw new Error(`Ungültiger Knowledge-Pfad: ${fileName}`);
-      }
+  for (const configuredFileName of tenant.knowledge.files) {
+    const candidates = getKnowledgeFileCandidates(configuredFileName);
 
-      try {
-        return (await fs.readFile(absolutePath, "utf8")).trim();
-      } catch (error) {
-        if (isMissingFileError(error)) {
-          console.error("❌ Knowledge-Datei fehlt:", {
-            requestedTenant: requestedTenantId,
-            tenant: tenant.id,
-            file: absolutePath,
-          });
-
-          return "";
+    let loaded:
+      | {
+          content: string;
+          usedFile: string;
         }
+      | null = null;
 
-        throw error;
+    for (const candidate of candidates) {
+      loaded = await readKnowledgeFile(
+        tenantDirectory,
+        safeTenantRoot,
+        candidate,
+      );
+
+      if (loaded) {
+        break;
       }
-    }),
-  );
+    }
+
+    if (!loaded) {
+      console.error("❌ Knowledge-Datei fehlt:", {
+        requestedTenant: requestedTenantId,
+        tenant: tenant.id,
+        directory: tenantDirectory,
+        triedFiles: candidates,
+      });
+
+      continue;
+    }
+
+    knowledgeParts.push(loaded.content);
+    loadedFiles.push(loaded.usedFile);
+  }
 
   const knowledge = knowledgeParts.filter(Boolean).join("\n\n---\n\n").trim();
 
   console.log("🧠 Tenant-Knowledge geladen:", {
     requestedTenant: requestedTenantId,
     tenant: tenant.id,
-    files: tenant.knowledge.files,
+    configuredFiles: tenant.knowledge.files,
+    loadedFiles,
     knowledgeLength: knowledge.length,
   });
 
   if (!knowledge) {
     throw new Error(
-      `Kein Knowledge für Tenant "${tenant.id}" geladen. Erwartete Datei(en): ${tenant.knowledge.files.join(", ")}`,
+      `Kein Knowledge für Tenant "${tenant.id}" geladen. Geprüft wurden: ${tenant.knowledge.files
+        .flatMap(getKnowledgeFileCandidates)
+        .join(", ")}`,
     );
   }
 
