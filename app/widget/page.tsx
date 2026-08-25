@@ -670,42 +670,57 @@ const FAHRWERK_B_START_CARDS: StartCard[] = [
 
 const PETERMAENNCHEN_START_CARDS: StartCard[] = [
   {
-    icon: "🧭",
-    title: "Führerschein finden",
-    description: "Auto, Motorrad, Lkw, Bus oder Anhänger einordnen",
-    message:
-      "Ich weiß noch nicht genau, welche Führerscheinklasse zu mir passt. Bitte finde sie mit mir gemeinsam heraus.",
+    icon: "🔗",
+    title: "Als Fahrschüler verbinden",
+    description: "Lernstand, Termine und Ausbildungsfortschritt als Demo öffnen",
+    action: "hohenbadenPanel",
+    hohenbadenPanel: "connect",
+  },
+  {
+    icon: "⚡",
+    title: "Kurs & Klasse finden",
+    description: "Passenden Führerscheinweg und nächste Kurse zusammenbringen",
+    action: "hohenbadenPanel",
+    hohenbadenPanel: "courses",
+  },
+  {
+    icon: "🪪",
+    title: "Mein Führerschein",
+    description: "Persönliches Cockpit mit Status und nächsten Schritten",
+    action: "hohenbadenPanel",
+    hohenbadenPanel: "dashboard",
   },
   {
     icon: "📅",
-    title: "Kurse & Termine",
-    description: "Abendkurse, Ferienkurse und Weiterbildungen ansehen",
-    message:
-      "Welche kommenden Kurse und Termine bietet die Petermännchen Fahrschule an?",
-  },
-  {
-    icon: "€",
-    title: "Preise",
-    description: "Bekannte Kosten verständlich aufgeschlüsselt",
-    message:
-      "Was kostet die Ausbildung bei der Petermännchen Fahrschule?",
+    title: "Fahrstunden planen",
+    description: "Beispielzeiten passend zu Ausbildung und Alltag ansehen",
+    action: "hohenbadenPanel",
+    hohenbadenPanel: "schedule",
   },
   {
     icon: "✅",
-    title: "Unterlagen prüfen",
-    description: "Passbild, Sehtest, Erste Hilfe und Antrag",
-    message: "Welche Unterlagen brauche ich für meinen Führerschein?",
+    title: "Unterlagen & Antrag",
+    description: "Passbild, Sehtest, Erste Hilfe und Antrag im Blick behalten",
+    action: "hohenbadenPanel",
+    hohenbadenPanel: "documents",
   },
   {
-    icon: "📝",
-    title: "Anmeldung & Beratung",
-    description: "Anfrage vorbereiten und Fahrschulbüro kontaktieren",
-    action: "petermaennchenContact",
+    icon: "✨",
+    title: "Persönlicher Begleiter",
+    description: "Lernplan und nächste Schritte passend zum eigenen Stand",
+    action: "hohenbadenPanel",
+    hohenbadenPanel: "coach",
+  },
+  {
+    icon: "€",
+    title: "Preise & Beratung",
+    description: "Bekannte Kosten einordnen und persönliche Anfrage vorbereiten",
+    message: "Was kostet die Ausbildung bei der Petermännchen Fahrschule und wie kann ich mich persönlich beraten lassen?",
   },
   {
     icon: "🎙️",
     title: "Frage einsprechen",
-    description: "Einfach erzählen statt tippen",
+    description: "Anliegen einfach erzählen statt tippen",
     action: "voice",
   },
 ];
@@ -2816,6 +2831,7 @@ type HohenbadenCourse = {
 
 type FutureDemoVariant =
   | "hohenbaden"
+  | "petermaennchen"
   | "schelf"
   | "jentsch"
   | "asphaltcrew"
@@ -3120,7 +3136,80 @@ const FAHRSCHULE7_DEMO_DOCUMENTS = [
   { id: "antrag", label: "Fahrerlaubnisantrag", detail: "Behördenservice vorbereitet", initial: true },
 ] as const;
 
+const PETERMAENNCHEN_DEMO_COURSES: HohenbadenCourse[] = [
+  {
+    id: "peter-abendkurs-09-2026",
+    title: "Abendkurs · Klasse B / B197",
+    location: "Schwerin",
+    start: "8. September 2026",
+    time: "Di. & Do. · 17:30 bis ca. 19:15 Uhr · bis 22.10.2026",
+    seats: 4,
+    tag: "Nächster veröffentlichter Kurs",
+    match: "Passt zu: Ausbildung neben Schule, Ausbildung oder Beruf",
+  },
+  {
+    id: "peter-bkf-modul-5",
+    title: "Berufskraftfahrer · Modul 5",
+    location: "NUFA Center Schwerin Süd",
+    start: "5. September 2026",
+    time: "Beginn 08:45 Uhr",
+    seats: 4,
+    tag: "Weiterbildung",
+    match: "Passt zu: Berufskraftfahrer-Weiterbildung",
+  },
+  {
+    id: "peter-bkf-modul-1",
+    title: "Berufskraftfahrer · Modul 1",
+    location: "NUFA Center Schwerin Süd",
+    start: "26. September 2026",
+    time: "Beginn 08:45 Uhr",
+    seats: 4,
+    tag: "Weiterbildung",
+    match: "Passt zu: nächstem Weiterbildungsmodul",
+  },
+];
+
+const PETERMAENNCHEN_DEMO_DOCUMENTS = [
+  { id: "ausweis", label: "Personalausweis oder Reisepass", detail: "Geprüft · Demostatus", initial: true },
+  { id: "passbild", label: "Biometrisches Passbild", detail: "Noch ergänzen", initial: false },
+  { id: "sehtest", label: "Sehtest", detail: "Nachweis liegt vor · Demostatus", initial: true },
+  { id: "erstehilfe", label: "Erste-Hilfe-Nachweis", detail: "Nachweis liegt vor · Demostatus", initial: true },
+  { id: "antrag", label: "Fahrerlaubnisantrag", detail: "Für die Abgabe vorbereitet · Demostatus", initial: true },
+] as const;
+
 const FUTURE_DEMO_CONFIGS: Record<FutureDemoVariant, FutureDemoConfig> = {
+  petermaennchen: {
+    courses: PETERMAENNCHEN_DEMO_COURSES,
+    documents: PETERMAENNCHEN_DEMO_DOCUMENTS,
+    coursePreference: "Klasse B / B197",
+    coursePreferences: ["Klasse B / B197", "BF17", "Motorrad", "Lkw / Bus / Weiterbildung"],
+    studentCode: "PET-2048",
+    connectSource: "In der Demo per Fahrschülernummer. Später könnte eine Verbindung zur eingesetzten Fahrschulsoftware und zu Lern- bzw. Termin-Daten folgen.",
+    connectPotential: "Die echte Version könnte Kurswahl, Lernstand, Unterlagen, Termine, Preise und persönliche nächste Schritte in einem einzigen Führerschein-Cockpit verbinden.",
+    dashboardEyebrow: "Persönlicher Petermännchen Führerscheinbegleiter",
+    dashboardTitle: "Hallo Max, dein nächster Schritt ist schon vorbereitet.",
+    dashboardNextStep: "Passbild ergänzen, den Lernstand prüfen und danach den passenden Kurs beziehungsweise die nächste Praxisetappe mit der Fahrschule abstimmen.",
+    theoryTitle: "Theorie & Lernstand",
+    theoryDetail: "72 % Beispiel-Lernstand",
+    practiceDetail: "6 Fahrstunden im Demo-Plan",
+    practiceValue: "Persönlich",
+    nextAppointmentTitle: "🚘 Fahrstunde · Stadtverkehr",
+    nextAppointmentDetail: "Mittwoch · 16:30–17:15 Uhr · Demo-Termin",
+    coachRecommendation: "Heute noch 15 Minuten Vorfahrt und Verkehrszeichen wiederholen. Danach fehlen im Demo-Plan nur noch das Passbild und die nächste Terminabstimmung.",
+    coursesTitle: "Führerscheinklasse und passenden Kurs in einem Schritt finden",
+    coursesDescription: "Das Interface gleicht Ziel, Vorbesitz, Zeit, Unterlagen und die veröffentlichten Kurse ab und bereitet daraus eine konkrete Anfrage an die Petermännchen Fahrschule vor.",
+    classesSummary: "B · B197 · BF17 · Motorrad · Lkw · Bus",
+    reserveButton: "Persönliche Beratung anfragen",
+    seatsLabel: "Demo-Verfügbarkeit",
+    scheduleTitle: "Fahrstunden passend zu deinem Alltag planen",
+    scheduleDescription: "Beispielzeiten werden später mit Ausbildungsstand, Fahrlehrer und persönlicher Verfügbarkeit abgeglichen. In dieser Demo sind alle Slots reine Beispieldaten.",
+    scheduleSlots: [["Heute", "17:15", "Grundfahraufgaben"], ["Mittwoch", "16:30", "Stadtverkehr"], ["Freitag", "18:00", "Überlandfahrt"]],
+    coachDescription: "Der persönliche Begleiter verbindet Klasse, Lernstand, Unterlagen, Termine und offene Fragen. Dadurch bekommst du nicht nur Antworten, sondern immer den nächsten sinnvollen Schritt.",
+    coachFacts: [["🪪", "Klasse B197"], ["📚", "Theorie: 72 % Demo"], ["✅", "Unterlagen: 4 von 5"], ["📅", "Nächste Praxis: Demo-Slot"]],
+    coachQuestions: ["Was soll ich heute für die Theorie lernen?", "Welche Führerscheinklasse passt zu mir?", "Welche Unterlagen fehlen noch?", "Was ist mein nächster sinnvoller Schritt?"],
+    todayPlan: "20 Minuten Theorie · Passbild ergänzen · nächsten Termin abstimmen",
+    todayPlanPrompt: "Erstelle mir meinen persönlichen Petermännchen-Lernplan für heute.",
+  },
   hohenbaden: {
     courses: HOHENBADEN_DEMO_COURSES,
     documents: HOHENBADEN_DEMO_DOCUMENTS,
@@ -5094,6 +5183,8 @@ export default function WidgetPage() {
   ].includes(normalizedTenantId);
   const futureDemoVariant: FutureDemoVariant | null = isHohenbadenInterface
     ? "hohenbaden"
+    : isPetermaennchenInterface
+      ? "petermaennchen"
     : isSchelfInterface
       ? "schelf"
       : isJentschInterface
@@ -5108,6 +5199,8 @@ export default function WidgetPage() {
   const isFutureDemoInterface = futureDemoVariant !== null;
   const activeFutureTenantId = isHohenbadenInterface
     ? "fahrschule-hohenbaden"
+    : isPetermaennchenInterface
+      ? "petermaennchen"
     : isSchelfInterface
       ? "schelf-fahrschule"
       : isJentschInterface
@@ -5121,6 +5214,8 @@ export default function WidgetPage() {
               : null;
   const activeFutureWebsiteUrl = isHohenbadenInterface
     ? "https://fahrschule-hohenbaden.de"
+    : isPetermaennchenInterface
+      ? PETERMAENNCHEN_WEBSITE_URL
     : isSchelfInterface
       ? SCHELF_WEBSITE_URL
       : isJentschInterface
@@ -10367,9 +10462,7 @@ body::after {
                       : isEnhancedInterface
                         ? "24px 28px 22px"
                         : "16px 14px 14px",
-                    borderBottom: isPetermaennchenInterface
-                      ? "1px solid rgba(249,200,6,0.34)"
-                      : "1px solid rgba(22,49,38,0.12)",
+                    borderBottom: "1px solid rgba(22,49,38,0.12)",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "space-between",
@@ -10380,15 +10473,11 @@ body::after {
                         ? 116
                         : 86,
                     flex: "0 0 auto",
-                    background: isPetermaennchenInterface
-                      ? `radial-gradient(520px 180px at 18% 0%, rgba(${accentRgb},0.13) 0%, transparent 72%), linear-gradient(135deg, #000d1a, #071c2d)`
-                      : `
-              radial-gradient(520px 180px at 18% 0%, ${widgetAccent}14 0%, transparent 72%),
-              linear-gradient(180deg, rgba(255,255,255,0.34), rgba(255,255,255,0.14))
+                    background: `
+              radial-gradient(520px 180px at 18% 0%, ${widgetAccent}18 0%, transparent 72%),
+              linear-gradient(180deg, rgba(255,255,255,0.72), rgba(255,255,255,0.36))
             `,
-                    boxShadow: isPetermaennchenInterface
-                      ? "0 1px 0 rgba(255,255,255,0.10) inset, 0 12px 32px rgba(0,13,26,0.16)"
-                      : "0 1px 0 rgba(255,255,255,0.22) inset",
+                    boxShadow: "0 1px 0 rgba(255,255,255,0.42) inset",
                   }}
                 >
                   <div
@@ -10435,9 +10524,7 @@ body::after {
                           fontWeight: 700,
                           letterSpacing: 0.3,
                           opacity: 0.96,
-                          color: isPetermaennchenInterface
-                            ? "#ffffff"
-                            : textPrimary,
+                          color: textPrimary,
                         }}
                       >
                         {displayBrandName} – {displayAssistantName}
@@ -10452,9 +10539,7 @@ body::after {
                               : 12.5,
                           opacity: 0.9,
                           marginTop: 3,
-                          color: isPetermaennchenInterface
-                            ? "#f9c806"
-                            : textSecondary,
+                          color: isPetermaennchenInterface ? "#9a7800" : textSecondary,
                         }}
                       >
                         {isVoiceActive
@@ -10478,7 +10563,7 @@ body::after {
                             : isFahrwerkBInterface
                                 ? "In 1 Minute zum passenden Einstieg"
                                 : isPetermaennchenInterface
-                                  ? "Persönlich · regional · sicher ans Ziel"
+                                  ? "Beta: persönlicher Führerscheinbegleiter"
                                 : "Online verfügbar"}
                       </div>
                     </div>
@@ -10683,7 +10768,7 @@ body::after {
                               : isSchelfInterface
                                 ? "Dein Führerschein. Persönlich begleitet."
                               : isPetermaennchenInterface
-                                ? "Dein Weg zum Führerschein beginnt hier."
+                                ? "Dein Führerschein. Persönlich begleitet."
                               : isFahrwerkBInterface
                               ? "Dein Führerschein-Cockpit"
                               : "Was möchtest du machen?"}
@@ -10715,7 +10800,7 @@ body::after {
                               : isSchelfInterface
                                 ? "Verbinde dich als Fahrschüler, finde deinen 7-Tage-Theoriekurs, verfolge Unterlagen und Lernstand und plane Simulator sowie Praxis. Diese Demo zeigt, wie die komplette Ausbildung in Schwerin und Crivitz digital zusammenlaufen könnte."
                               : isPetermaennchenInterface
-                                ? "Finde die passende Führerscheinklasse, prüfe Kurse und Unterlagen oder bereite deine Anfrage an die Petermännchen Fahrschule direkt vor."
+                                ? "Verbinde dich als Fahrschüler, finde die passende Klasse und den nächsten Kurs, behalte Unterlagen sowie Lernstand im Blick und plane deine nächsten Schritte. Diese Demo zeigt, wie die Ausbildung später digital an einem Ort zusammenlaufen könnte."
                               : isFahrwerkBInterface
                               ? "Wähle aus, wo du gerade stehst. Das Interface zeigt dir den nächsten Schritt, prüft Unterlagen und bereitet Anfragen sauber vor."
                               : isLinaInterface
@@ -10792,10 +10877,10 @@ body::after {
                                     ]
                                 : isPetermaennchenInterface
                                   ? [
-                                      "1 Klasse finden",
-                                      "2 Kurs wählen",
-                                      "3 Unterlagen",
-                                      "4 Anfrage",
+                                      "1 Verbinden",
+                                      "2 Klasse & Kurs",
+                                      "3 Theorie & Praxis",
+                                      "4 Persönlich begleiten",
                                     ]
                                 : [
                                   "1 Orientierung",
