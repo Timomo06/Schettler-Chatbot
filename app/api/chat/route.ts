@@ -19,6 +19,7 @@ const allowedOrigins = [
   "https://fahrwerk-b.de",
   "https://www.fahrwerk-b.de",
   "https://schettlers-chatbot-lca3.vercel.app",
+  "https://ai.btdesigns.de",
   "http://localhost:3000",
 ];
 
