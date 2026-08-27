@@ -612,6 +612,64 @@ const HOHENBADEN_START_CARDS: StartCard[] = [
   },
 ];
 
+const REGIONAL_FAHRSCHULE_START_CARDS: StartCard[] = [
+  {
+    icon: "🔗",
+    title: "Als Fahrschüler verbinden",
+    description: "Persönliches Demo-Cockpit mit Lernstand und nächsten Schritten",
+    action: "hohenbadenPanel",
+    hohenbadenPanel: "connect",
+  },
+  {
+    icon: "🧭",
+    title: "Angebot finden",
+    description: "Klasse, Kurs oder Ausbildung passend zum eigenen Ziel finden",
+    action: "hohenbadenPanel",
+    hohenbadenPanel: "courses",
+  },
+  {
+    icon: "🪪",
+    title: "Mein Führerschein",
+    description: "Ausbildungsstand und nächsten sinnvollen Schritt öffnen",
+    action: "hohenbadenPanel",
+    hohenbadenPanel: "dashboard",
+  },
+  {
+    icon: "📅",
+    title: "Ausbildung planen",
+    description: "Theorie, Praxis und persönliche Verfügbarkeit bündeln",
+    action: "hohenbadenPanel",
+    hohenbadenPanel: "schedule",
+  },
+  {
+    icon: "✅",
+    title: "Unterlagen prüfen",
+    description: "Dokumente und offenen Anmeldeschritte überblicken",
+    action: "hohenbadenPanel",
+    hohenbadenPanel: "documents",
+  },
+  {
+    icon: "✨",
+    title: "Persönlicher Begleiter",
+    description: "Antworten passend zur Fahrschule und zum Ausbildungsstand",
+    action: "hohenbadenPanel",
+    hohenbadenPanel: "coach",
+  },
+  {
+    icon: "💬",
+    title: "Frage stellen",
+    description: "Klasse, Kurs, Anmeldung oder Kontakt direkt klären",
+    message:
+      "Ich interessiere mich für eine Ausbildung. Bitte hilf mir, das passende Angebot und meinen nächsten Schritt zu finden.",
+  },
+  {
+    icon: "🎙️",
+    title: "Frage einsprechen",
+    description: "Anliegen einfach erzählen statt tippen",
+    action: "voice",
+  },
+];
+
 const NIEHAUS_START_CARDS: StartCard[] = [
   {
     icon: "🔗",
@@ -8928,9 +8986,11 @@ export default function WidgetPage() {
       ? TXBIKES_START_CARDS
       : isWilliInterface
         ? WILLI_START_CARDS
-        : isMmWartungInterface
-          ? MM_WARTUNG_START_CARDS
-          : BTDESIGNS_START_CARDS;
+          : isMmWartungInterface
+            ? MM_WARTUNG_START_CARDS
+          : regionalDemoVariant
+            ? REGIONAL_FAHRSCHULE_START_CARDS
+            : BTDESIGNS_START_CARDS;
 
   const fahrwerkActiveStage =
     FAHRWERK_STAGES.find((stage) => stage.id === fahrwerkStage) ||
@@ -11174,7 +11234,9 @@ body::after {
                                 ? "Dein Führerschein. Persönlich begleitet."
                               : isFahrwerkBInterface
                               ? "Dein Führerschein-Cockpit"
-                              : "Was möchtest du machen?"}
+                              : regionalDemoVariant
+                                ? `Dein Weg mit ${displayBrandName}. Persönlich begleitet.`
+                                : "Was möchtest du machen?"}
                         </div>
                         <div
                           className="bt-start-description"
@@ -11214,9 +11276,11 @@ body::after {
                                 ? `Wähle aus, worum es geht. Danach nimmt ${displayAssistantName} dein Anliegen für Moritz sauber auf.`
                                 : isTxbikesInterface
                                   ? `Wähle aus, worum es geht. Danach nimmt ${displayAssistantName} dein Anliegen für TXBikes sauber auf.`
-                                  : isWilliInterface
+                              : isWilliInterface
                                     ? `Wähle aus, worum es geht. Danach führt dich ${displayAssistantName} gezielt weiter.`
-                                    : `Wähle einen Einstieg aus. Danach führt dich ${displayAssistantName} gezielt weiter.`}
+                                    : regionalDemoVariant
+                                      ? `Finde das passende Angebot, prüfe deine Unterlagen und öffne dein persönliches Cockpit. Diese Demo zeigt, wie ${displayBrandName} die Ausbildung digital an einem Ort begleiten könnte.`
+                                      : `Wähle einen Einstieg aus. Danach führt dich ${displayAssistantName} gezielt weiter.`}
                         </div>
 
                         {(isFahrwerkBInterface || isPetermaennchenInterface || isAbgefahrenInterface || isFutureDemoInterface) && (
