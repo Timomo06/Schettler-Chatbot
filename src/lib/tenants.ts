@@ -16,7 +16,19 @@ export type TenantId =
   | "asphaltcrew"
   | "fahrschule-malik"
   | "fahrschule7"
-  | "fahrschule-niehaus";
+  | "fahrschule-niehaus"
+  | "fahrschule-fritz"
+  | "fahrschule-fahrtwind"
+  | "fahrschule-wiesenberg"
+  | "fahrschule-pawlowski"
+  | "bootsfahrschule-schwerin"
+  | "fahrschule-westedt"
+  | "fahrschule-bollow"
+  | "fahrschule-hoenemann"
+  | "fahrschule-jantzen"
+  | "fahrschule-neptun"
+  | "bb-fahrschule"
+  | "hansefahrschule-rennhack";
 
 export type ThemeConfig = {
   accent: string;
@@ -838,6 +850,240 @@ export const TENANTS: Record<TenantId, TenantConfig> = {
     },
   },
 
+  "fahrschule-fritz": {
+    id: "fahrschule-fritz",
+    brandName: "Fahrschule Fritz",
+    assistantName: "Ferienkurs- & Führerschein-Assistent",
+    language: "de",
+    knowledge: { files: ["eKnowledge.md"] },
+    websiteUrl: "https://www.fahrschulefritz.de/",
+    primaryCta: { label: "Website öffnen", url: "https://www.fahrschulefritz.de/" },
+    fallbackContact: { label: "Telefon", value: "0385 / 64 63 70" },
+    companyInfo: {
+      address: "Goethestraße 68, 19053 Schwerin",
+      phone: "0385 / 64 63 70",
+      email: "info@fahrschulefritz.de",
+      openingHours: "Aktuelle Zeiten bitte auf der Website prüfen",
+    },
+    rules: { noMedicalClaims: true, noInventingPrices: true, noGuarantees: true },
+    theme: { accent: "#e30613", bg: "#fff7f7", glass: "#e3061320", text: "#1c1c1c" },
+    assets: { launcherIcon: "/favicon.ico" },
+  },
+
+  "fahrschule-fahrtwind": {
+    id: "fahrschule-fahrtwind",
+    brandName: "Fahrschule Fahrtwind",
+    assistantName: "Dein Führerschein-Begleiter",
+    language: "de",
+    knowledge: { files: ["eKnowledge.md"] },
+    websiteUrl: "https://fahrtwind-fahrschule.de/",
+    primaryCta: { label: "Website öffnen", url: "https://fahrtwind-fahrschule.de/" },
+    fallbackContact: { label: "Telefon", value: "0385 / 480 71 100" },
+    companyInfo: {
+      address: "Büdnerstraße 9, 19057 Schwerin",
+      phone: "0385 / 480 71 100",
+      email: "info@fahrtwind-fahrschule.de",
+      openingHours: "Aktuelle Zeiten bitte auf der Website prüfen",
+    },
+    rules: { noMedicalClaims: true, noInventingPrices: true, noGuarantees: true },
+    theme: { accent: "#18a6b8", bg: "#f2fbfc", glass: "#18a6b820", text: "#14272b" },
+    assets: { launcherIcon: "/favicon.ico" },
+  },
+
+  "fahrschule-wiesenberg": {
+    id: "fahrschule-wiesenberg",
+    brandName: "Fahrschule Wiesenberg",
+    assistantName: "Mobilitäts- & Führerschein-Assistent",
+    language: "de",
+    knowledge: { files: ["eKnowledge.md"] },
+    websiteUrl: "https://fs-wiesenberg.de/",
+    primaryCta: { label: "Website öffnen", url: "https://fs-wiesenberg.de/" },
+    fallbackContact: { label: "Telefon", value: "0385 / 555 7 555" },
+    companyInfo: {
+      address: "Wismarsche Straße 137, 19053 Schwerin",
+      phone: "0385 / 555 7 555",
+      email: "info@fs-wiesenberg.de",
+      openingHours: "Aktuelle Zeiten bitte auf der Website prüfen",
+    },
+    rules: { noMedicalClaims: true, noInventingPrices: true, noGuarantees: true },
+    theme: { accent: "#2f7d32", bg: "#f5fbf5", glass: "#2f7d3220", text: "#173019" },
+    assets: { launcherIcon: "/favicon.ico" },
+  },
+
+  "fahrschule-pawlowski": {
+    id: "fahrschule-pawlowski",
+    brandName: "Fahrschule Pawlowski",
+    assistantName: "Ferienkurs-Assistent",
+    language: "de",
+    knowledge: { files: ["eKnowledge.md"] },
+    websiteUrl: "https://www.fahrschule-pawlowski.de/",
+    primaryCta: { label: "Website öffnen", url: "https://www.fahrschule-pawlowski.de/" },
+    fallbackContact: { label: "Telefon", value: "0177 / 2433181" },
+    companyInfo: {
+      address: "Schwerin",
+      phone: "0177 / 2433181",
+      openingHours: "Aktuelle Zeiten bitte auf der Website prüfen",
+    },
+    rules: { noMedicalClaims: true, noInventingPrices: true, noGuarantees: true },
+    theme: { accent: "#d71920", bg: "#fff7f7", glass: "#d7192020", text: "#211719" },
+    assets: { launcherIcon: "/favicon.ico" },
+  },
+
+  "bootsfahrschule-schwerin": {
+    id: "bootsfahrschule-schwerin",
+    brandName: "Bootsfahrschule Schwerin",
+    assistantName: "Bootsführerschein-Lotse",
+    language: "de",
+    knowledge: { files: ["eKnowledge.md"] },
+    websiteUrl: "https://bootsfahrschule-schwerin.net/",
+    primaryCta: { label: "Website öffnen", url: "https://bootsfahrschule-schwerin.net/" },
+    fallbackContact: { label: "Telefon", value: "0385 / 20 79 683" },
+    companyInfo: {
+      address: "Schwerin",
+      phone: "0385 / 20 79 683",
+      email: "kopplin@freenet.de",
+      openingHours: "Aktuelle Zeiten bitte auf der Website prüfen",
+    },
+    rules: { noMedicalClaims: true, noInventingPrices: true, noGuarantees: true },
+    theme: { accent: "#087ca7", bg: "#f0f9fc", glass: "#087ca720", text: "#102d38" },
+    assets: { launcherIcon: "/favicon.ico" },
+  },
+
+  "fahrschule-westedt": {
+    id: "fahrschule-westedt",
+    brandName: "Verkehrsinstitut Fahrschule Westedt",
+    assistantName: "Führerschein- & Lehrgangsassistent",
+    language: "de",
+    knowledge: { files: ["eKnowledge.md"] },
+    websiteUrl: "https://www.fahrschule-westedt.de/",
+    primaryCta: { label: "Website öffnen", url: "https://www.fahrschule-westedt.de/" },
+    fallbackContact: { label: "Telefon", value: "0173 / 6104348" },
+    companyInfo: {
+      address: "Ludwigslust",
+      phone: "0173 / 6104348",
+      openingHours: "Aktuelle Zeiten bitte auf der Website prüfen",
+    },
+    rules: { noMedicalClaims: true, noInventingPrices: true, noGuarantees: true },
+    theme: { accent: "#d5232a", bg: "#fff6f6", glass: "#d5232a20", text: "#20191a" },
+    assets: { launcherIcon: "/favicon.ico" },
+  },
+
+  "fahrschule-bollow": {
+    id: "fahrschule-bollow",
+    brandName: "Fahrschule Familie Bollow",
+    assistantName: "Führerschein- & Mobilitätsassistent",
+    language: "de",
+    knowledge: { files: ["eKnowledge.md"] },
+    websiteUrl: "https://www.bollow-busreisen.de/",
+    primaryCta: { label: "Website öffnen", url: "https://www.bollow-busreisen.de/" },
+    fallbackContact: { label: "Telefon", value: "038751 / 211 08" },
+    companyInfo: {
+      address: "Ludwigsluster Straße 4, 19288 Warlow",
+      phone: "038751 / 211 08",
+      openingHours: "Aktuelle Zeiten bitte auf der Website prüfen",
+    },
+    rules: { noMedicalClaims: true, noInventingPrices: true, noGuarantees: true },
+    theme: { accent: "#b62025", bg: "#fff7f5", glass: "#b6202520", text: "#251a18" },
+    assets: { launcherIcon: "/favicon.ico" },
+  },
+
+  "fahrschule-hoenemann": {
+    id: "fahrschule-hoenemann",
+    brandName: "Fahrschule Hönemann",
+    assistantName: "Führerschein-Assistent",
+    language: "de",
+    knowledge: { files: ["eKnowledge.md"] },
+    websiteUrl: "https://www.fahrschule-hoenemann.de/",
+    primaryCta: { label: "Website öffnen", url: "https://www.fahrschule-hoenemann.de/" },
+    fallbackContact: { label: "Website", value: "https://www.fahrschule-hoenemann.de/" },
+    companyInfo: {
+      address: "Pampin, Parchim, Lübz und Ludwigslust",
+      openingHours: "Aktuelle Zeiten bitte auf der Website prüfen",
+    },
+    rules: { noMedicalClaims: true, noInventingPrices: true, noGuarantees: true },
+    theme: { accent: "#f28c00", bg: "#fff9ef", glass: "#f28c0020", text: "#231d14" },
+    assets: { launcherIcon: "/favicon.ico" },
+  },
+
+  "fahrschule-jantzen": {
+    id: "fahrschule-jantzen",
+    brandName: "Fahrschule C. Jantzen",
+    assistantName: "FUN-LEARN Führerschein-Assistent",
+    language: "de",
+    knowledge: { files: ["eKnowledge.md"] },
+    websiteUrl: "https://www.fahrschule-in-wismar.de/",
+    primaryCta: { label: "Website öffnen", url: "https://www.fahrschule-in-wismar.de/" },
+    fallbackContact: { label: "Telefon", value: "03841 212077" },
+    companyInfo: {
+      address: "Wismar und Neukloster",
+      phone: "03841 212077",
+      openingHours: "Aktuelle Zeiten bitte auf der Website prüfen",
+    },
+    rules: { noMedicalClaims: true, noInventingPrices: true, noGuarantees: true },
+    theme: { accent: "#e52329", bg: "#fff7f7", glass: "#e5232920", text: "#201719" },
+    assets: { launcherIcon: "/favicon.ico" },
+  },
+
+  "fahrschule-neptun": {
+    id: "fahrschule-neptun",
+    brandName: "Fahrschule Neptun",
+    assistantName: "Ausbildungs- & Simulator-Assistent",
+    language: "de",
+    knowledge: { files: ["eKnowledge.md"] },
+    websiteUrl: "https://fahrschule-neptun.de/",
+    primaryCta: { label: "Website öffnen", url: "https://fahrschule-neptun.de/" },
+    fallbackContact: { label: "Telefon", value: "03841 3760808" },
+    companyInfo: {
+      address: "Lübsche Straße 95, 23966 Wismar",
+      phone: "03841 3760808",
+      email: "info@fahrschule-neptun.de",
+      openingHours: "Aktuelle Zeiten bitte auf der Website prüfen",
+    },
+    rules: { noMedicalClaims: true, noInventingPrices: true, noGuarantees: true },
+    theme: { accent: "#0a89a8", bg: "#f1fafc", glass: "#0a89a820", text: "#102b32" },
+    assets: { launcherIcon: "/favicon.ico" },
+  },
+
+  "bb-fahrschule": {
+    id: "bb-fahrschule",
+    brandName: "Fahrschule BB Wismar",
+    assistantName: "Führerschein- & Simulator-Assistent",
+    language: "de",
+    knowledge: { files: ["eKnowledge.md"] },
+    websiteUrl: "https://bb-fahrschule.de/",
+    primaryCta: { label: "Website öffnen", url: "https://bb-fahrschule.de/" },
+    fallbackContact: { label: "Telefon", value: "03841 7387122" },
+    companyInfo: {
+      address: "Wismar",
+      phone: "03841 7387122",
+      email: "info@bb-fahrschule.de",
+      openingHours: "Aktuelle Zeiten bitte auf der Website prüfen",
+    },
+    rules: { noMedicalClaims: true, noInventingPrices: true, noGuarantees: true },
+    theme: { accent: "#e31b23", bg: "#fff6f7", glass: "#e31b2320", text: "#251719" },
+    assets: { launcherIcon: "/favicon.ico" },
+  },
+
+  "hansefahrschule-rennhack": {
+    id: "hansefahrschule-rennhack",
+    brandName: "Hansefahrschule Rennhack",
+    assistantName: "Hanse-Führerschein-Assistent",
+    language: "de",
+    knowledge: { files: ["eKnowledge.md"] },
+    websiteUrl: "https://www.hansefahrschule-rennhack.de/",
+    primaryCta: { label: "Website öffnen", url: "https://www.hansefahrschule-rennhack.de/" },
+    fallbackContact: { label: "Telefon", value: "03841 / 2272733" },
+    companyInfo: {
+      address: "Ulmenstraße 2, 23966 Wismar",
+      phone: "03841 / 2272733",
+      email: "info@hansefahrschule-rennhack.de",
+      openingHours: "Aktuelle Zeiten bitte auf der Website prüfen",
+    },
+    rules: { noMedicalClaims: true, noInventingPrices: true, noGuarantees: true },
+    theme: { accent: "#174a7e", bg: "#f3f7fb", glass: "#174a7e20", text: "#142637" },
+    assets: { launcherIcon: "/favicon.ico" },
+  },
+
     txbikesV2: {
     id: "txbikesV2",
     brandName: "TXBIKESV2",
@@ -949,6 +1195,30 @@ const TENANT_ALIASES: Record<string, TenantId> = {
   "www.fahrschule-niehaus.de": "fahrschule-niehaus",
   "niehaus-baden-baden": "fahrschule-niehaus",
   "niehaus-buehl": "fahrschule-niehaus",
+  "fritz": "fahrschule-fritz",
+  "fahrschulefritz.de": "fahrschule-fritz",
+  "fahrtwind": "fahrschule-fahrtwind",
+  "fahrtwind-fahrschule.de": "fahrschule-fahrtwind",
+  "wiesenberg": "fahrschule-wiesenberg",
+  "fs-wiesenberg.de": "fahrschule-wiesenberg",
+  "pawlowski": "fahrschule-pawlowski",
+  "fahrschule-pawlowski.de": "fahrschule-pawlowski",
+  "bootsfahrschule-schwerin": "bootsfahrschule-schwerin",
+  "bootsfahrschule-schwerin.net": "bootsfahrschule-schwerin",
+  "westedt": "fahrschule-westedt",
+  "fahrschule-westedt.de": "fahrschule-westedt",
+  "bollow": "fahrschule-bollow",
+  "bollow-busreisen.de": "fahrschule-bollow",
+  "hoenemann": "fahrschule-hoenemann",
+  "fahrschule-hoenemann.de": "fahrschule-hoenemann",
+  "jantzen": "fahrschule-jantzen",
+  "fahrschule-in-wismar.de": "fahrschule-jantzen",
+  "neptun": "fahrschule-neptun",
+  "fahrschule-neptun.de": "fahrschule-neptun",
+  "bb-fahrschule": "bb-fahrschule",
+  "bb-fahrschule.de": "bb-fahrschule",
+  "hansefahrschule-rennhack": "hansefahrschule-rennhack",
+  "hansefahrschule-rennhack.de": "hansefahrschule-rennhack",
 };
 
 export function getTenant(tenant: string | null): TenantConfig {

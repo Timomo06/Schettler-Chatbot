@@ -33,6 +33,18 @@ const FAHRSCHULE_TENANT_IDS = [
   "fahrschule-malik",
   "fahrschule7",
   "fahrschule-niehaus",
+  "fahrschule-fritz",
+  "fahrschule-fahrtwind",
+  "fahrschule-wiesenberg",
+  "fahrschule-pawlowski",
+  "bootsfahrschule-schwerin",
+  "fahrschule-westedt",
+  "fahrschule-bollow",
+  "fahrschule-hoenemann",
+  "fahrschule-jantzen",
+  "fahrschule-neptun",
+  "bb-fahrschule",
+  "hansefahrschule-rennhack",
 ] as const;
 
 const VOICE_INTERFACE_TENANT_IDS = [
@@ -45,6 +57,18 @@ const VOICE_INTERFACE_TENANT_IDS = [
   "fahrschule-malik",
   "fahrschule7",
   "fahrschule-niehaus",
+  "fahrschule-fritz",
+  "fahrschule-fahrtwind",
+  "fahrschule-wiesenberg",
+  "fahrschule-pawlowski",
+  "bootsfahrschule-schwerin",
+  "fahrschule-westedt",
+  "fahrschule-bollow",
+  "fahrschule-hoenemann",
+  "fahrschule-jantzen",
+  "fahrschule-neptun",
+  "bb-fahrschule",
+  "hansefahrschule-rennhack",
 ] as const;
 
 const FAHRSCHULE_INTERFACE_TOOLS = [

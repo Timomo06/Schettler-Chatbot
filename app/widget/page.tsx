@@ -2897,7 +2897,19 @@ type FutureDemoVariant =
   | "asphaltcrew"
   | "malik"
   | "fahrschule7"
-  | "niehaus";
+  | "niehaus"
+  | "fritz"
+  | "fahrtwind"
+  | "wiesenberg"
+  | "pawlowski"
+  | "bootsfahrschule"
+  | "westedt"
+  | "bollow"
+  | "hoenemann"
+  | "jantzen"
+  | "neptun"
+  | "bb"
+  | "rennhack";
 
 type FutureDemoDocument = {
   readonly id: string;
@@ -3279,7 +3291,205 @@ const NIEHAUS_DEMO_DOCUMENTS = [
   { id: "bf17", label: "BF17-Begleitperson", detail: "Nur falls relevant", initial: true },
 ] as const;
 
+type RegionalDemoVariant =
+  | "fritz"
+  | "fahrtwind"
+  | "wiesenberg"
+  | "pawlowski"
+  | "bootsfahrschule"
+  | "westedt"
+  | "bollow"
+  | "hoenemann"
+  | "jantzen"
+  | "neptun"
+  | "bb"
+  | "rennhack";
+
+const REGIONAL_TENANT_VARIANTS: Record<string, RegionalDemoVariant> = {
+  "fahrschule-fritz": "fritz",
+  "fahrschule-fahrtwind": "fahrtwind",
+  "fahrschule-wiesenberg": "wiesenberg",
+  "fahrschule-pawlowski": "pawlowski",
+  "bootsfahrschule-schwerin": "bootsfahrschule",
+  "fahrschule-westedt": "westedt",
+  "fahrschule-bollow": "bollow",
+  "fahrschule-hoenemann": "hoenemann",
+  "fahrschule-jantzen": "jantzen",
+  "fahrschule-neptun": "neptun",
+  "bb-fahrschule": "bb",
+  "hansefahrschule-rennhack": "rennhack",
+};
+
+function createRegionalDemoConfig(input: {
+  brand: string;
+  code: string;
+  focus: string;
+  classes: string;
+  offers: ReadonlyArray<readonly [string, string, string, string]>;
+}): FutureDemoConfig {
+  const courses = input.offers.map((offer, index) => ({
+    id: `regional-${index + 1}`,
+    title: offer[0],
+    start: offer[1],
+    location: offer[2],
+    time: offer[3],
+    seats: 3,
+    tag: index === 0 ? "Empfohlener Einstieg" : "Weitere Möglichkeit",
+    match: "Persönlich mit der Fahrschule abstimmen",
+  }));
+  return {
+    courses,
+    documents: [
+      { id: "ausweis", label: "Ausweis", detail: "Demo: geprüft", initial: true },
+      { id: "sehtest", label: "Sehtest", detail: "Je nach Klasse erforderlich", initial: true },
+      { id: "erstehilfe", label: "Erste-Hilfe-Nachweis", detail: "Je nach Angebot erforderlich", initial: true },
+      { id: "passbild", label: "Biometrisches Passbild", detail: "Noch ergänzen", initial: false },
+      { id: "antrag", label: "Antrag / Anmeldung", detail: "Zur Abstimmung vorbereitet", initial: true },
+    ],
+    coursePreference: input.focus,
+    coursePreferences: [input.focus, "Schnell starten", "Erst beraten lassen", "Termine prüfen"],
+    studentCode: input.code,
+    connectSource: "Demo-Verknüpfung per Fahrschülernummer. Eine echte Version kann später Lernstand, Termine, Dokumente und Fahrschulsoftware verbinden.",
+    connectPotential: `Die echte Version bündelt das Angebot von ${input.brand}, persönliche Daten und die nächsten Schritte in einem Cockpit.`,
+    dashboardEyebrow: `Persönlicher Begleiter · ${input.brand}`,
+    dashboardTitle: "Hallo Max, dein nächster sinnvoller Schritt ist vorbereitet.",
+    dashboardNextStep: "Fehlende Unterlagen ergänzen und anschließend Angebot, Kurs beziehungsweise Termin direkt mit der Fahrschule abstimmen.",
+    theoryTitle: "Theorie & Lernstand",
+    theoryDetail: "72 % Beispiel-Lernstand",
+    practiceDetail: "Persönlicher Demo-Plan",
+    practiceValue: "Im Aufbau",
+    nextAppointmentTitle: "📅 Nächster Schritt · Demo-Termin",
+    nextAppointmentDetail: "Mittwoch · 16:30 Uhr · reine Beispielangabe",
+    coachRecommendation: "Heute 15 Minuten Theorie wiederholen und danach die offene Unterlage ergänzen.",
+    coursesTitle: input.focus,
+    coursesDescription: "Das Interface gleicht Ziel, Vorbesitz, Standort, Zeit und Unterlagen mit den veröffentlichten Angeboten ab.",
+    classesSummary: input.classes,
+    reserveButton: "Persönliche Beratung anfragen",
+    seatsLabel: "Demo-Verfügbarkeit",
+    scheduleTitle: "Ausbildung passend zum Alltag planen",
+    scheduleDescription: "Alle angezeigten Fahrstunden sind Beispieldaten. Echte Termine und Verfügbarkeit bestätigt ausschließlich die Fahrschule.",
+    scheduleSlots: [["Heute", "17:15", "Theorie-Check"], ["Mittwoch", "16:30", "Praxis · Demo"], ["Freitag", "18:00", "Beratung · Demo"]],
+    coachDescription: "Der Begleiter verbindet Angebot, Lernstand, Unterlagen und offene Fragen und zeigt daraus den nächsten sinnvollen Schritt.",
+    coachFacts: [["🎯", input.focus], ["📚", "Theorie: 72 % Demo"], ["✅", "Unterlagen: 4 von 5"], ["📅", "Nächster Termin: Demo"]],
+    coachQuestions: ["Welches Angebot passt zu mir?", "Welche Unterlagen brauche ich?", "Wie kann ich mich anmelden?", "Was ist mein nächster sinnvoller Schritt?"],
+    todayPlan: "15 Minuten Theorie · Unterlage ergänzen · Beratung vorbereiten",
+    todayPlanPrompt: `Erstelle mir meinen persönlichen Lern- und Startplan für ${input.brand}.`,
+  };
+}
+
+const REGIONAL_DEMO_CONFIGS: Record<RegionalDemoVariant, FutureDemoConfig> = {
+  fritz: createRegionalDemoConfig({
+    brand: "Fahrschule Fritz", code: "FRITZ-2048",
+    focus: "Ferienkurs & Auto/Motorrad", classes: "B · B96 · BE · A-Klassen · AM · Mofa",
+    offers: [
+      ["Ferienkurs Theorie", "17. Oktober 2026", "Schwerin", "Theorie in 7 Werktagen"],
+      ["Ferienfahrschule", "Ausbildung kompakt nach Beratung", "Schwerin", "Auto oder Motorrad"],
+      ["ASF / FES", "Termin auf Anfrage", "Schwerin", "Seminare und Auffrischung"],
+    ],
+  }),
+  fahrtwind: createRegionalDemoConfig({
+    brand: "Fahrschule Fahrtwind", code: "FAHRT-2048",
+    focus: "Auto, Motorrad & AZAV", classes: "B · B197 · B78 · B96 · BE · A-Klassen · B196",
+    offers: [
+      ["Klasse B / B197", "Start nach Online-Anmeldung", "Schwerin", "Modern und individuell"],
+      ["Motorrad-Ausbildung", "Start nach Alters- und Klassencheck", "Schwerin", "A, A1, A2, AM oder B196"],
+      ["Anhänger B96 / BE", "Termin nach Abstimmung", "Schwerin", "Passend zu Vorbesitz und Ziel"],
+    ],
+  }),
+  wiesenberg: createRegionalDemoConfig({
+    brand: "Fahrschule Wiesenberg", code: "WIESE-2048",
+    focus: "Führerschein, Boot & Mobilität", classes: "Führerscheinklassen · Bootskurse · Handicap-Ausbildung",
+    offers: [
+      ["Führerscheinausbildung", "Start nach Beratung", "Schwerin oder Sülte", "Zwei Standorte"],
+      ["Bootskurs", "Individuelle Kurse möglich", "Schwerin", "Sportboot-Angebot"],
+      ["Handicap-Ausbildung", "Termin nach Beratung", "Schwerin", "Umgebautes Ausbildungsfahrzeug"],
+    ],
+  }),
+  pawlowski: createRegionalDemoConfig({
+    brand: "Fahrschule Pawlowski", code: "PAWLO-2048",
+    focus: "Ferienkurs & Klasse B", classes: "B · weitere Klassen bitte aktuell anfragen",
+    offers: [
+      ["Ferienkurs", "Termin laut aktueller Website", "Schwerin", "Kompakte Theorieplanung"],
+      ["Klasse B", "Start nach Anmeldung", "Schwerin", "Persönlich abstimmen"],
+      ["Preisberatung", "Aktuelle Preisliste prüfen", "Schwerin", "Keine Preise in der Demo erfinden"],
+    ],
+  }),
+  bootsfahrschule: createRegionalDemoConfig({
+    brand: "Bootsfahrschule Schwerin", code: "BOOT-2048",
+    focus: "Bootsführerschein & Funk", classes: "SBF Binnen · SBF See · UBI · SRC · SKS-Theorie",
+    offers: [
+      ["Sportbootführerschein Binnen", "Kursstart auf Anfrage", "Schwerin", "Theorie und Praxis abstimmen"],
+      ["Sportbootführerschein See", "Kursstart auf Anfrage", "Schwerin", "Passend zum Revier"],
+      ["Funkzeugnisse UBI / SRC", "Kurstermine auf Anfrage", "Schwerin", "Funk und Navigation"],
+    ],
+  }),
+  westedt: createRegionalDemoConfig({
+    brand: "Fahrschule Westedt", code: "WESTE-2048",
+    focus: "Alle Klassen & Verkehrsberufe", classes: "B · B96 · B196 · BE · C/CE · D · ADR · BKF · Stapler",
+    offers: [
+      ["Pkw / Anhänger", "Start nach Abstimmung", "Ludwigslust", "B, B96, B196 oder BE"],
+      ["Lkw / Bus", "Theorielehrgang September 2026", "Ludwigslust", "C, CE oder D"],
+      ["Berufs-Lehrgänge", "Termin laut Lehrgangsplan", "Ludwigslust", "ADR, BKF, Stapler"],
+    ],
+  }),
+  bollow: createRegionalDemoConfig({
+    brand: "Fahrschule Familie Bollow", code: "BOLLO-2048",
+    focus: "Führerschein & Personenbeförderung", classes: "AM · A1 · A2 · A · B · B96 · B196 · BE · B197 · T",
+    offers: [
+      ["Klasse B / B197", "Start nach Beratung", "Warlow", "Auto und Automatik"],
+      ["Motorrad", "Start nach Klassencheck", "Warlow", "AM bis A"],
+      ["Anhänger / Traktor", "Termin nach Abstimmung", "Warlow", "B96, BE oder T"],
+    ],
+  }),
+  hoenemann: createRegionalDemoConfig({
+    brand: "Fahrschule Hönemann", code: "HÖNEM-2048",
+    focus: "Flexible Kurse an 4 Standorten", classes: "Pkw-Ausbildung · aktuelle Klassen bitte anfragen",
+    offers: [
+      ["All-Inclusive Starter-Paket", "Start nach Beratung", "Pampin / Parchim / Lübz / Ludwigslust", "Unterlagen gebündelt"],
+      ["Theorie-Kurs", "Termin laut Website", "Vier Standorte", "Flexible Kurswahl"],
+      ["Persönliche Ausbildung", "Termin nach Abstimmung", "Vier Standorte", "Rundum-Betreuung"],
+    ],
+  }),
+  jantzen: createRegionalDemoConfig({
+    brand: "Fahrschule C. Jantzen", code: "JANTZ-2048",
+    focus: "FUN LEARN & Intensivkurse", classes: "Pkw · BKF · ASF · FES · Auffrischung",
+    offers: [
+      ["FUN-LEARN Theorie", "Rollender Unterricht", "Wismar oder Neukloster", "Täglich und lerntyporientiert"],
+      ["Intensivkurs", "Start laut aktuellem Plan", "Wismar", "Kompakter Ausbildungsweg"],
+      ["Starter-Paket", "Termin nach Beratung", "Wismar", "Passbild, Erste Hilfe, Sehtest"],
+    ],
+  }),
+  neptun: createRegionalDemoConfig({
+    brand: "Fahrschule Neptun", code: "NEPTU-2048",
+    focus: "Simulator & breite Ausbildung", classes: "Auto · Motorrad · Lkw · Traktor · Berufskraftfahrer",
+    offers: [
+      ["Auto-Ausbildung", "Start nach Beratung", "Wismar", "Mit Fahrsimulator"],
+      ["Motorrad / Lkw", "Start nach Klassencheck", "Wismar", "Breites Ausbildungsangebot"],
+      ["AZAV-Lehrgang", "Termin nach Beratung", "Wismar", "Bildungsgutschein möglich"],
+    ],
+  }),
+  bb: createRegionalDemoConfig({
+    brand: "Fahrschule BB Wismar", code: "BB-2048",
+    focus: "B/BE/B96 & Simulator", classes: "B · BE · B96",
+    offers: [
+      ["Klasse B", "Start nach Beratung", "Wismar", "Mit realitätsnaher Simulation"],
+      ["Anhänger BE", "Termin nach Abstimmung", "Wismar", "Praktische Erweiterung"],
+      ["B96-Schulung", "Bei Bedarf", "Wismar", "Ohne erfundene Verfügbarkeit"],
+    ],
+  }),
+  rennhack: createRegionalDemoConfig({
+    brand: "Hansefahrschule Rennhack", code: "HANSE-2048",
+    focus: "B/BE/B197 in Wismar", classes: "B · BE · B197",
+    offers: [
+      ["Klasse B / B197", "Start nach Beratung", "Wismar", "Schaltung oder Automatik"],
+      ["Klasse BE", "Termin nach Abstimmung", "Wismar", "Anhänger-Ausbildung"],
+      ["Erste Hilfe / MPU", "Aktuelle Termine anfragen", "Wismar", "Zusätzliche Unterstützung"],
+    ],
+  }),
+};
+
 const FUTURE_DEMO_CONFIGS: Record<FutureDemoVariant, FutureDemoConfig> = {
+  ...REGIONAL_DEMO_CONFIGS,
   niehaus: {
     courses: NIEHAUS_DEMO_COURSES,
     documents: NIEHAUS_DEMO_DOCUMENTS,
@@ -5229,6 +5439,8 @@ export default function WidgetPage() {
   }, [tenantId]);
   const theme = cfg.theme;
   const normalizedTenantId = tenantId.toLowerCase();
+  const regionalDemoVariant =
+    REGIONAL_TENANT_VARIANTS[normalizedTenantId] ?? null;
   const isTxbikesInterface = [
     "txbikesv2",
     "txbikes",
@@ -5353,7 +5565,7 @@ export default function WidgetPage() {
             ? "malik"
             : isFahrschule7Interface
               ? "fahrschule7"
-              : null;
+              : regionalDemoVariant;
   const isFutureDemoInterface = futureDemoVariant !== null;
   const activeFutureTenantId = isNiehausInterface
     ? "fahrschule-niehaus"
@@ -5371,7 +5583,9 @@ export default function WidgetPage() {
             ? "fahrschule-malik"
             : isFahrschule7Interface
               ? "fahrschule7"
-              : null;
+              : regionalDemoVariant
+                ? cfg.id
+                : null;
   const activeFutureWebsiteUrl = isNiehausInterface
     ? NIEHAUS_WEBSITE_URL
     : isHohenbadenInterface
@@ -5388,7 +5602,9 @@ export default function WidgetPage() {
             ? MALIK_WEBSITE_URL
             : isFahrschule7Interface
               ? FAHRSCHULE7_WEBSITE_URL
-              : undefined;
+              : regionalDemoVariant
+                ? cfg.websiteUrl
+                : undefined;
   const isEnhancedInterface =
     isTxbikesInterface ||
     isWilliInterface ||
