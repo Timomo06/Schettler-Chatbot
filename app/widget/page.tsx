@@ -6,6 +6,7 @@ import {
   type ChangeEvent,
   type CSSProperties,
   type FormEvent,
+  type ReactNode,
   useEffect,
   useMemo,
   useRef,
@@ -410,47 +411,47 @@ const WILLI_START_CARDS: StartCard[] = [
 
 const BTDESIGNS_START_CARDS: StartCard[] = [
   {
-    icon: "✨",
+    icon: "social",
     title: "Social Media",
     description: "Pakete, Reels oder Betreuung einschätzen",
     message:
       "Ich möchte wissen, welches Social-Media-Paket für mein Unternehmen sinnvoll ist.",
   },
   {
-    icon: "🌐",
+    icon: "website",
     title: "Website",
     description: "Neue Website, Relaunch oder Shop besprechen",
     message:
       "Ich interessiere mich für eine Website oder einen Online-Shop von BTDesigns.",
   },
   {
-    icon: "🤖",
+    icon: "interface",
     title: "AI Interface",
     description: "LINA, Website-KI oder Automatisierung planen",
     message:
       "Ich möchte wissen, wie ein AI Interface von BTDesigns meinem Unternehmen helfen kann.",
   },
   {
-    icon: "🧢",
+    icon: "media",
     title: "Werbemittel",
     description: "Textilien, Drucksachen oder Giveaways anfragen",
     message:
       "Ich interessiere mich für Werbemittel von BTDesigns und möchte eine Anfrage stellen.",
   },
   {
-    icon: "📅",
+    icon: "calendar",
     title: "Termin buchen",
     description: "Beratung direkt in deinen Apple Kalender eintragen",
     action: "booking",
   },
   {
-    icon: "💬",
+    icon: "voice",
     title: "Kurz erzählen",
     description: "Sprich deine Anfrage direkt ein",
     action: "voice",
   },
   {
-    icon: "📷",
+    icon: "upload",
     title: "Beispiel zeigen",
     description: "Bild, Screenshot oder Idee hochladen",
     action: "photo",
@@ -2651,7 +2652,6 @@ function AbgefahrenFutureDemo({
                           {item.label}
                         </div>
                         <div
-                          className="bt-fahrwerk-overview"
                           style={{
                             color: textSecondary,
                             fontSize: 11.5,
@@ -5447,6 +5447,83 @@ function HohenbadenFutureDemo({
 }
 
 
+type BtServiceIconProps = {
+  name: string;
+  size?: number;
+};
+
+function BtServiceIcon({ name, size = 30 }: BtServiceIconProps) {
+  const common = {
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth: 1.75,
+    strokeLinecap: "round" as const,
+    strokeLinejoin: "round" as const,
+  };
+
+  const paths: Record<string, ReactNode> = {
+    social: (
+      <>
+        <path {...common} d="M7.5 10.2a3.6 3.6 0 0 1 3.6-3.6h11.8a3.6 3.6 0 0 1 3.6 3.6v7.1a3.6 3.6 0 0 1-3.6 3.6h-6.3l-5.1 4v-4h-.4a3.6 3.6 0 0 1-3.6-3.6Z" />
+        <path {...common} d="M13 13.2c1.7-2.2 4.4-.8 4.4 1.2 0-2 2.8-3.4 4.4-1.2 1.9 2.6-1.4 5.2-4.4 7.1-3-1.9-6.3-4.5-4.4-7.1Z" />
+      </>
+    ),
+    website: (
+      <>
+        <rect {...common} x="6.5" y="7.5" width="21" height="18" rx="3.2" />
+        <path {...common} d="M6.5 12.7h21M10.1 10.2h.1m3 0h.1M11 17h8m-8 4h12" />
+      </>
+    ),
+    interface: (
+      <>
+        <path {...common} d="M8 11a3 3 0 0 1 3-3h7.5v17H11a3 3 0 0 1-3-3Z" />
+        <circle {...common} cx="24" cy="10" r="3" />
+        <circle {...common} cx="24" cy="24" r="3" />
+        <path {...common} d="M18.5 12h2.7m-2.7 9.5h2.8M24 13v8" />
+      </>
+    ),
+    media: (
+      <>
+        <path {...common} d="M10 6.8h10l5 5v14.4H10Z" />
+        <path {...common} d="M20 6.8v5h5M13.5 17h7M13.5 21h5" />
+        <path {...common} d="m20.5 24.7 5.8-5.8 2.2 2.2-5.8 5.8-3 .8Z" />
+      </>
+    ),
+    calendar: (
+      <>
+        <rect {...common} x="6.5" y="8.5" width="21" height="19" rx="4" />
+        <path {...common} d="M11.5 5.8v5.4m11-5.4v5.4M6.5 14h21" />
+        <path {...common} d="M13 19.5h3.5V23H13Zm7 0h3.5V23H20Z" />
+      </>
+    ),
+    voice: (
+      <>
+        <rect {...common} x="12" y="6" width="10" height="16" rx="5" />
+        <path {...common} d="M8.5 17.5a8.5 8.5 0 0 0 17 0M17 26v3m-4 0h8" />
+      </>
+    ),
+    upload: (
+      <>
+        <rect {...common} x="6.5" y="7" width="21" height="20" rx="4" />
+        <circle {...common} cx="13" cy="13" r="2" />
+        <path {...common} d="m9.5 23 5.2-5.2 3.4 3.4 2.4-2.4 4 4.2M23.5 5v7m-3-3 3-3 3 3" />
+      </>
+    ),
+  };
+
+  return (
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 34 34"
+      width={size}
+      height={size}
+      focusable="false"
+    >
+      {paths[name] || paths.interface}
+    </svg>
+  );
+}
+
 export default function WidgetPage() {
   const [mounted, setMounted] = useState(false);
   const [tenantId, setTenantId] = useState("demo");
@@ -5940,7 +6017,6 @@ export default function WidgetPage() {
   const silenceStartedAtRef = useRef<number | null>(null);
   const cancelVoiceRef = useRef(false);
   const voiceAbortControllerRef = useRef<AbortController | null>(null);
-  const chatAbortControllerRef = useRef<AbortController | null>(null);
   const voiceAudioRef = useRef<HTMLAudioElement | null>(null);
   const voiceAudioUrlRef = useRef<string | null>(null);
   const voiceAudioUnlockedRef = useRef(false);
@@ -6149,8 +6225,8 @@ export default function WidgetPage() {
       Math.min(window.screen?.width || 430, 560),
     );
     const mobileHeight = Math.max(
-      520,
-      Math.min((window.screen?.height || 820) - 170, 760),
+      560,
+      Math.min((window.screen?.height || 820) - 12, 900),
     );
 
     const size = open
@@ -6924,12 +7000,6 @@ export default function WidgetPage() {
     loadingRef.current = true;
     setLoading(true);
 
-    const chatController = options.signal ? null : new AbortController();
-    if (chatController) {
-      chatAbortControllerRef.current?.abort();
-      chatAbortControllerRef.current = chatController;
-    }
-
     try {
       const activeTenantId = activeFutureTenantId
         ? activeFutureTenantId
@@ -6951,7 +7021,7 @@ export default function WidgetPage() {
             voiceMode: options.fromVoice === true,
             messages: next.map(({ role, content }) => ({ role, content })),
           }),
-          signal: options.signal ?? chatController?.signal,
+          signal: options.signal,
         },
       );
 
@@ -6987,9 +7057,6 @@ export default function WidgetPage() {
       setMsgs(failedConversation);
       return null;
     } finally {
-      if (chatAbortControllerRef.current === chatController) {
-        chatAbortControllerRef.current = null;
-      }
       loadingRef.current = false;
       setLoading(false);
     }
@@ -8860,10 +8927,6 @@ export default function WidgetPage() {
   }
 
   function resetChat() {
-    chatAbortControllerRef.current?.abort();
-    chatAbortControllerRef.current = null;
-    loadingRef.current = false;
-    setLoading(false);
     cancelVoiceMode();
     setVoiceUiAction(null);
     setBookingOpen(false);
@@ -8875,11 +8938,10 @@ export default function WidgetPage() {
     });
     setFahrwerkSignupOpen(false);
     setFahrwerkSignupForm(DEFAULT_FAHRWERK_SIGNUP_FORM);
-    resetFahrwerkProgress();
     setFahrwerkPanel("dashboard");
     setAbgefahrenPanel("home");
     setHohenbadenPanel("home");
-    const resetMessages: Msg[] = [
+    setMsgs([
       {
         role: "assistant",
         content: isNiehausInterface
@@ -8912,15 +8974,8 @@ export default function WidgetPage() {
                   ? "Alles klar — wobei soll ich dir bei Willi helfen?"
                   : "Alles klar — womit kann ich dir helfen?",
       },
-    ];
-    msgsRef.current = resetMessages;
-    setMsgs(resetMessages);
+    ]);
     setInput("");
-    setShowBadge(false);
-
-    window.requestAnimationFrame(() => {
-      listRef.current?.scrollTo({ top: 0, behavior: "auto" });
-    });
   }
 
   const panelW = isBookingInterface
@@ -9142,6 +9197,8 @@ export default function WidgetPage() {
   return (
     <div
       className={`${isMobileViewport ? "bt-mobile-viewport" : ""} ${
+        isLinaInterface ? "bt-lina-interface" : ""
+      } ${
         voiceVisualVisible ? "bt-voice-mode-open" : ""
       }`.trim()}
       style={{
@@ -9526,6 +9583,175 @@ body::after {
     inset 0 1px 0 rgba(255,255,255,.92),
     0 0 0 1px rgba(${accentRgb},.12),
     0 0 24px rgba(${accentRgb},.16) !important;
+}
+
+/* BTDesigns / LINA — eigenständiges Liquid-Glass-System. */
+.bt-panel--lina {
+  border: 1px solid rgba(255,255,255,.86) !important;
+  background:
+    radial-gradient(70% 58% at 8% 8%, rgba(45,143,255,.25), transparent 68%),
+    radial-gradient(52% 48% at 92% 18%, rgba(136,103,255,.20), transparent 72%),
+    radial-gradient(58% 48% at 76% 96%, rgba(255,153,126,.18), transparent 70%),
+    radial-gradient(46% 44% at 2% 96%, rgba(40,205,224,.22), transparent 68%),
+    linear-gradient(145deg, rgba(246,251,255,.82), rgba(226,239,252,.64)) !important;
+  backdrop-filter: blur(38px) saturate(185%) !important;
+  -webkit-backdrop-filter: blur(38px) saturate(185%) !important;
+  box-shadow:
+    0 30px 110px rgba(29,67,112,.24),
+    0 0 0 1px rgba(255,255,255,.34) inset,
+    0 1px 0 rgba(255,255,255,.92) inset !important;
+}
+
+.bt-lina-interface .bt-panel-header,
+.bt-lina-interface .bt-composer {
+  background: linear-gradient(180deg, rgba(255,255,255,.68), rgba(244,249,255,.46)) !important;
+  border-color: rgba(255,255,255,.70) !important;
+  backdrop-filter: blur(30px) saturate(175%) !important;
+  -webkit-backdrop-filter: blur(30px) saturate(175%) !important;
+}
+
+.bt-lina-interface .bt-panel-scroll {
+  background:
+    radial-gradient(52% 48% at 12% 10%, rgba(47,153,255,.12), transparent 72%),
+    radial-gradient(46% 40% at 88% 78%, rgba(150,102,255,.10), transparent 72%),
+    linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.02)) !important;
+}
+
+.bt-start-card--lina {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,.78) !important;
+  background:
+    radial-gradient(130% 90% at 4% 0%, rgba(255,255,255,.82), transparent 54%),
+    linear-gradient(145deg, rgba(255,255,255,.60), rgba(239,247,255,.34)) !important;
+  backdrop-filter: blur(24px) saturate(170%) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(170%) !important;
+  box-shadow:
+    0 14px 34px rgba(31,68,111,.10),
+    0 0 0 1px rgba(255,255,255,.22) inset,
+    inset 0 1px 0 rgba(255,255,255,.94) !important;
+}
+
+.bt-start-card--lina::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(118deg, rgba(255,255,255,.32), transparent 30%, transparent 70%, rgba(145,104,255,.08));
+  opacity: .85;
+}
+
+.bt-start-card--lina:hover:not(:disabled) {
+  border-color: rgba(255,255,255,.94) !important;
+  background:
+    radial-gradient(120% 92% at 4% 0%, rgba(255,255,255,.94), transparent 58%),
+    linear-gradient(145deg, rgba(255,255,255,.72), rgba(226,241,255,.46)) !important;
+  box-shadow:
+    0 19px 44px rgba(31,68,111,.16),
+    0 0 0 1px rgba(67,143,255,.18) inset,
+    inset 0 1px 0 rgba(255,255,255,.98) !important;
+}
+
+.bt-service-icon {
+  position: relative;
+  z-index: 1;
+  color: #1678ed;
+  border: 1px solid rgba(255,255,255,.86) !important;
+  background: linear-gradient(145deg, rgba(209,240,255,.86), rgba(91,178,255,.28)) !important;
+  box-shadow:
+    0 9px 22px rgba(30,111,196,.16),
+    inset 0 1px 0 rgba(255,255,255,.98),
+    inset 0 -7px 16px rgba(54,151,255,.11) !important;
+  backdrop-filter: blur(14px) saturate(190%);
+  -webkit-backdrop-filter: blur(14px) saturate(190%);
+}
+
+.bt-service-icon[data-icon="social"] { color:#dc3470; background:linear-gradient(145deg,rgba(255,226,232,.94),rgba(183,119,255,.35)) !important; }
+.bt-service-icon[data-icon="website"] { color:#087ff5; background:linear-gradient(145deg,rgba(205,250,255,.94),rgba(65,161,255,.34)) !important; }
+.bt-service-icon[data-icon="interface"] { color:#6649f5; background:linear-gradient(145deg,rgba(237,226,255,.96),rgba(68,161,255,.30)) !important; }
+.bt-service-icon[data-icon="media"] { color:#ed6b22; background:linear-gradient(145deg,rgba(255,239,211,.96),rgba(255,164,101,.31)) !important; }
+.bt-service-icon[data-icon="calendar"] { color:#078da8; background:linear-gradient(145deg,rgba(213,255,248,.94),rgba(81,192,238,.30)) !important; }
+.bt-service-icon[data-icon="voice"] { color:#7053e8; background:linear-gradient(145deg,rgba(239,228,255,.96),rgba(105,155,255,.30)) !important; }
+.bt-service-icon[data-icon="upload"] { color:#008fc8; background:linear-gradient(145deg,rgba(207,255,250,.96),rgba(121,126,255,.27)) !important; }
+
+.bt-lina-interface .bt-message-input,
+.bt-lina-interface .bt-round-action-button {
+  border-color: rgba(255,255,255,.78) !important;
+  background: linear-gradient(145deg, rgba(255,255,255,.76), rgba(236,246,255,.50)) !important;
+  backdrop-filter: blur(20px) saturate(170%);
+  -webkit-backdrop-filter: blur(20px) saturate(170%);
+}
+
+.bt-lina-interface .bt-round-action-button[data-icon="upload"] {
+  color: #078ac3;
+  background: linear-gradient(145deg, rgba(212,255,250,.88), rgba(119,151,255,.32)) !important;
+}
+
+.bt-lina-interface .bt-round-action-button[data-icon="voice"] {
+  color: #684be5;
+  background: linear-gradient(145deg, rgba(241,229,255,.90), rgba(95,166,255,.31)) !important;
+}
+
+/* Auf kleinen Displays bleiben alle sieben Einstiege ohne lange Kartenliste erfassbar. */
+.bt-mobile-viewport.bt-lina-interface .bt-panel-header {
+  min-height: 72px !important;
+  padding-top: 11px !important;
+  padding-bottom: 10px !important;
+}
+
+.bt-mobile-viewport.bt-lina-interface .bt-panel-scroll {
+  padding: 8px 10px !important;
+  gap: 7px !important;
+}
+
+.bt-mobile-viewport.bt-lina-interface .bt-start-intro {
+  padding: 5px 4px 2px !important;
+}
+
+.bt-mobile-viewport.bt-lina-interface .bt-start-title {
+  font-size: 19px !important;
+  margin-bottom: 3px !important;
+}
+
+.bt-mobile-viewport.bt-lina-interface .bt-start-description {
+  font-size: 12px !important;
+  line-height: 1.28 !important;
+}
+
+.bt-mobile-viewport.bt-lina-interface .bt-start-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: 7px !important;
+}
+
+.bt-mobile-viewport.bt-lina-interface .bt-start-card--lina {
+  min-height: 94px !important;
+  padding: 10px !important;
+  border-radius: 17px !important;
+}
+
+.bt-mobile-viewport.bt-lina-interface .bt-start-card--lina > div:first-child {
+  gap: 7px !important;
+  margin-bottom: 6px !important;
+}
+
+.bt-mobile-viewport.bt-lina-interface .bt-service-icon {
+  width: 31px !important;
+  height: 31px !important;
+  border-radius: 11px !important;
+}
+
+.bt-mobile-viewport.bt-lina-interface .bt-service-icon svg {
+  width: 21px;
+  height: 21px;
+}
+
+.bt-mobile-viewport.bt-lina-interface .bt-start-card--lina > div:first-child > span:last-child {
+  font-size: 12px !important;
+}
+
+.bt-mobile-viewport.bt-lina-interface .bt-start-card--lina > div:last-child {
+  font-size: 10.5px !important;
+  line-height: 1.25 !important;
 }
 
 .bt-voice-action-dock {
@@ -10040,9 +10266,9 @@ body::after {
 }
 
 .bt-mobile-viewport .bt-panel-header {
-  padding: 10px 118px 10px 15px !important;
-  min-height: 64px !important;
-  gap: 8px !important;
+  padding: 15px 62px 14px 16px !important;
+  min-height: 88px !important;
+  gap: 10px !important;
 }
 
 .bt-mobile-viewport .bt-brand-block {
@@ -10052,22 +10278,19 @@ body::after {
 
 .bt-mobile-viewport .bt-brand-title {
   max-width: 245px !important;
-  font-size: 15.5px !important;
+  font-size: 17px !important;
   line-height: 1.18 !important;
   letter-spacing: -0.01em !important;
   overflow-wrap: anywhere !important;
 }
 
 .bt-mobile-viewport .bt-brand-subtitle {
-  display: none !important;
+  font-size: 12.5px !important;
+  line-height: 1.3 !important;
 }
 
 .bt-mobile-viewport .bt-header-actions {
-  position: absolute !important;
-  top: 50% !important;
-  right: 64px !important;
-  transform: translateY(-50%) !important;
-  z-index: 5 !important;
+  flex: 0 0 auto !important;
 }
 
 .bt-mobile-viewport .bt-powered-logo,
@@ -10076,19 +10299,16 @@ body::after {
 }
 
 .bt-mobile-viewport .bt-reset-button {
-  display: inline-flex !important;
-  align-items: center !important;
-  justify-content: center !important;
   min-width: 44px !important;
-  height: 32px !important;
+  height: 36px !important;
   padding: 0 10px !important;
-  border-radius: 999px !important;
-  font-size: 11px !important;
+  border-radius: 12px !important;
+  font-size: 12px !important;
 }
 
 .bt-mobile-viewport .bt-panel-scroll {
-  padding: 10px !important;
-  gap: 10px !important;
+  padding: 12px !important;
+  gap: 12px !important;
   overscroll-behavior: contain !important;
   -webkit-overflow-scrolling: touch !important;
   scroll-padding-bottom: 90px !important;
@@ -10101,22 +10321,24 @@ body::after {
 }
 
 .bt-mobile-viewport .bt-start-intro {
-  padding: 4px 3px 2px !important;
+  padding: 10px 5px 4px !important;
 }
 
 .bt-mobile-viewport .bt-start-title {
-  font-size: 20px !important;
-  line-height: 1.12 !important;
+  font-size: 24px !important;
+  line-height: 1.08 !important;
   letter-spacing: -0.025em !important;
-  margin-bottom: 3px !important;
 }
 
 .bt-mobile-viewport .bt-start-description {
-  display: none !important;
+  font-size: 14px !important;
+  line-height: 1.45 !important;
 }
 
 .bt-mobile-viewport .bt-fahrwerk-steps {
-  display: none !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: 7px !important;
+  margin-top: 14px !important;
 }
 
 .bt-mobile-viewport .bt-fahrwerk-steps > div {
@@ -10128,156 +10350,51 @@ body::after {
 }
 
 .bt-mobile-viewport .bt-start-grid {
-  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-  gap: 8px !important;
+  grid-template-columns: 1fr !important;
+  gap: 10px !important;
 }
 
-.bt-mobile-viewport .bt-panel-scroll--start .bt-start-card {
-  min-width: 0 !important;
-  min-height: 58px !important;
-  height: 58px !important;
-  padding: 8px 9px !important;
-  border-radius: 16px !important;
-  touch-action: manipulation !important;
-  display: flex !important;
-  align-items: center !important;
-}
-
-.bt-mobile-viewport .bt-start-screen {
-  flex: 1 1 auto !important;
+.bt-mobile-viewport .bt-start-card {
   min-height: 0 !important;
-  gap: 8px !important;
-  justify-content: flex-start !important;
-  margin-bottom: 0 !important;
-}
-
-.bt-mobile-viewport .bt-panel-scroll--start {
-  overflow-y: hidden !important;
-  touch-action: none !important;
-  justify-content: flex-start !important;
-}
-
-.bt-mobile-viewport .bt-panel-scroll--start .bt-start-card-head {
-  width: 100% !important;
-  min-width: 0 !important;
-  gap: 8px !important;
-  margin-bottom: 0 !important;
-}
-
-.bt-mobile-viewport .bt-panel-scroll--start .bt-start-card-icon {
-  width: 34px !important;
-  height: 34px !important;
-  flex: 0 0 34px !important;
-  border-radius: 11px !important;
-  font-size: 17px !important;
-}
-
-.bt-mobile-viewport .bt-panel-scroll--start .bt-start-card-title {
-  min-width: 0 !important;
-  font-size: 13px !important;
-  line-height: 1.15 !important;
-  overflow-wrap: anywhere !important;
-}
-
-.bt-mobile-viewport .bt-panel-scroll--start .bt-start-card-description {
-  display: none !important;
+  padding: 14px !important;
+  border-radius: 20px !important;
+  touch-action: manipulation !important;
 }
 
 .bt-mobile-viewport .bt-fahrwerk-panel {
-  padding: 12px !important;
-  border-radius: 20px !important;
-  gap: 11px !important;
-}
-
-.bt-mobile-viewport .bt-fahrwerk-overview {
-  gap: 8px !important;
-}
-
-.bt-mobile-viewport .bt-fahrwerk-progress-reset {
-  display: none !important;
-}
-
-.bt-mobile-viewport .bt-fahrwerk-nav {
-  display: grid !important;
-  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
-  gap: 6px !important;
-  width: 100% !important;
-}
-
-.bt-mobile-viewport .bt-fahrwerk-nav-button {
-  min-width: 0 !important;
-  padding: 8px 4px !important;
-  font-size: 10.5px !important;
-  line-height: 1.1 !important;
-  text-align: center !important;
-  white-space: normal !important;
+  padding: 15px !important;
+  border-radius: 24px !important;
+  gap: 13px !important;
 }
 
 .bt-mobile-viewport .bt-composer {
-  padding: 8px !important;
-  padding-bottom: calc(8px + env(safe-area-inset-bottom)) !important;
-  gap: 6px !important;
+  padding: 10px !important;
+  padding-bottom: calc(10px + env(safe-area-inset-bottom)) !important;
+  gap: 8px !important;
 }
 
 .bt-mobile-viewport .bt-round-action-button {
-  width: 44px !important;
-  height: 44px !important;
-  border-radius: 14px !important;
-  font-size: 18px !important;
+  width: 48px !important;
+  height: 48px !important;
+  border-radius: 15px !important;
+  font-size: 19px !important;
 }
 
 .bt-mobile-viewport .bt-message-input {
   min-width: 0 !important;
-  height: 44px !important;
-  padding: 0 11px !important;
-  border-radius: 14px !important;
+  height: 50px !important;
+  padding: 0 13px !important;
+  border-radius: 16px !important;
   font-size: 16px !important;
 }
 
 .bt-mobile-viewport .bt-send-button {
-  flex: 0 0 44px !important;
-  width: 44px !important;
-  height: 44px !important;
+  flex: 0 0 50px !important;
+  width: 50px !important;
+  height: 50px !important;
   padding: 0 !important;
   border-radius: 16px !important;
   font-size: 0 !important;
-}
-
-@media (max-width: 380px), (max-height: 620px) {
-  .bt-mobile-viewport .bt-panel {
-    left: max(4px, env(safe-area-inset-left)) !important;
-    right: max(4px, env(safe-area-inset-right)) !important;
-    top: max(4px, env(safe-area-inset-top)) !important;
-    bottom: max(4px, env(safe-area-inset-bottom)) !important;
-    border-radius: 22px !important;
-  }
-
-  .bt-mobile-viewport .bt-panel-header {
-    min-height: 56px !important;
-    padding-top: 7px !important;
-    padding-bottom: 7px !important;
-  }
-
-  .bt-mobile-viewport .bt-start-title {
-    font-size: 18px !important;
-  }
-
-  .bt-mobile-viewport .bt-panel-scroll--start .bt-start-card {
-    height: 50px !important;
-    min-height: 50px !important;
-    padding: 6px 8px !important;
-  }
-
-  .bt-mobile-viewport .bt-panel-scroll--start .bt-start-card-icon {
-    width: 30px !important;
-    height: 30px !important;
-    flex-basis: 30px !important;
-    font-size: 15px !important;
-  }
-
-  .bt-mobile-viewport .bt-panel-scroll--start .bt-start-card-title {
-    font-size: 12px !important;
-  }
 }
 
 .bt-mobile-viewport .bt-send-button::after {
@@ -10935,7 +11052,7 @@ body::after {
           {open && (
             <div
               ref={voiceStageRef}
-              className={`bt-panel ${
+              className={`bt-panel ${isLinaInterface ? "bt-panel--lina" : ""} ${
                 voiceVisualVisible
                   ? `bt-panel--voice bt-panel--voice-${
                       isVoiceActive ? voicePhase : "closing"
@@ -11283,9 +11400,7 @@ body::after {
 
                 <div
                   ref={listRef}
-                  className={`bt-panel-scroll ${
-                    showStartCards ? "bt-panel-scroll--start" : ""
-                  }`}
+                  className="bt-panel-scroll"
                   style={{
                     position: "relative",
                     zIndex: 3,
@@ -11316,7 +11431,6 @@ body::after {
                 >
                   {showStartCards && (
                     <div
-                      className="bt-start-screen"
                       style={{
                         width: "100%",
                         display: "flex",
@@ -11540,7 +11654,9 @@ body::after {
                           <button
                             key={card.title}
                             type="button"
-                            className="bt-start-card"
+                            className={`bt-start-card ${
+                              isLinaInterface ? "bt-start-card--lina" : ""
+                            }`}
                             disabled={loading}
                             onClick={(event) => {
                               if (card.action === "photo") {
@@ -11611,7 +11727,6 @@ body::after {
                             }}
                           >
                             <div
-                              className="bt-start-card-head"
                               style={{
                                 display: "flex",
                                 alignItems: "center",
@@ -11620,7 +11735,10 @@ body::after {
                               }}
                             >
                               <span
-                                className="bt-start-card-icon"
+                                className={
+                                  isLinaInterface ? "bt-service-icon" : undefined
+                                }
+                                data-icon={isLinaInterface ? card.icon : undefined}
                                 style={{
                                   width: isEnhancedInterface ? 42 : 30,
                                   height: isEnhancedInterface ? 42 : 30,
@@ -11633,10 +11751,16 @@ body::after {
                                   flex: "0 0 auto",
                                 }}
                               >
-                                {card.icon}
+                                {isLinaInterface ? (
+                                  <BtServiceIcon
+                                    name={card.icon}
+                                    size={isEnhancedInterface ? 30 : 23}
+                                  />
+                                ) : (
+                                  card.icon
+                                )}
                               </span>
                               <span
-                                className="bt-start-card-title"
                                 style={{
                                   fontSize: isEnhancedInterface ? 16.5 : 13,
                                   fontWeight: 800,
@@ -11648,7 +11772,6 @@ body::after {
                             </div>
 
                             <div
-                              className="bt-start-card-description"
                               style={{
                                 fontSize: isEnhancedInterface ? 14.5 : 12,
                                 lineHeight: 1.45,
@@ -11749,7 +11872,6 @@ body::after {
                           </div>
 
                           <button
-                            className="bt-fahrwerk-progress-reset"
                             type="button"
                             onClick={resetFahrwerkProgress}
                             style={{
@@ -11789,7 +11911,6 @@ body::after {
                         </div>
 
                         <div
-                          className="bt-fahrwerk-nav"
                           style={{ display: "flex", gap: 8, flexWrap: "wrap" }}
                         >
                           {[
@@ -11802,7 +11923,6 @@ body::after {
                             ["contact", "Hilfe"],
                           ].map(([panel, label]) => (
                             <button
-                              className="bt-fahrwerk-nav-button"
                               key={panel}
                               type="button"
                               onClick={() =>
@@ -13211,13 +13331,6 @@ body::after {
                   )}
 
                   {msgs.map((m, i) => {
-                    // Die Begrüßung steckt auf dem Handy bereits in der
-                    // kompakten Startmaske. Ein zweites großes Chat-Bubble
-                    // würde die Ansicht unnötig nach unten drücken.
-                    if (isMobileViewport && showStartCards && i === 0) {
-                      return null;
-                    }
-
                     const isUser = m.role === "user";
                     return (
                       <div
@@ -13433,18 +13546,20 @@ body::after {
                     <button
                       type="button"
                       className="bt-round-action-button"
+                      data-icon="upload"
                       onClick={openPhotoPicker}
                       disabled={loading}
                       title="Foto hinzufügen"
                       aria-label="Foto hinzufügen"
                     >
-                      📷
+                      <BtServiceIcon name="upload" size={24} />
                     </button>
                   )}
 
                   <button
                     type="button"
                     className={`bt-round-action-button ${isVoiceActive ? "bt-listening" : ""}`}
+                    data-icon="voice"
                     onClick={(event) => {
                       if (isVoiceActive) {
                         cancelVoiceMode();
@@ -13464,7 +13579,7 @@ body::after {
                         : "Sprachmodus starten"
                     }
                   >
-                    🎙️
+                    <BtServiceIcon name="voice" size={24} />
                   </button>
 
                   {isVoiceActive ? (
