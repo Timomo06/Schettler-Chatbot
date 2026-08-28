@@ -10017,9 +10017,9 @@ body::after {
 }
 
 .bt-mobile-viewport .bt-panel-header {
-  padding: 15px 62px 14px 16px !important;
-  min-height: 88px !important;
-  gap: 10px !important;
+  padding: 10px 60px 10px 15px !important;
+  min-height: 64px !important;
+  gap: 8px !important;
 }
 
 .bt-mobile-viewport .bt-brand-block {
@@ -10029,15 +10029,14 @@ body::after {
 
 .bt-mobile-viewport .bt-brand-title {
   max-width: 245px !important;
-  font-size: 17px !important;
+  font-size: 15.5px !important;
   line-height: 1.18 !important;
   letter-spacing: -0.01em !important;
   overflow-wrap: anywhere !important;
 }
 
 .bt-mobile-viewport .bt-brand-subtitle {
-  font-size: 12.5px !important;
-  line-height: 1.3 !important;
+  display: none !important;
 }
 
 .bt-mobile-viewport .bt-header-actions {
@@ -10058,8 +10057,8 @@ body::after {
 }
 
 .bt-mobile-viewport .bt-panel-scroll {
-  padding: 12px !important;
-  gap: 12px !important;
+  padding: 10px !important;
+  gap: 10px !important;
   overscroll-behavior: contain !important;
   -webkit-overflow-scrolling: touch !important;
   scroll-padding-bottom: 90px !important;
@@ -10072,24 +10071,22 @@ body::after {
 }
 
 .bt-mobile-viewport .bt-start-intro {
-  padding: 10px 5px 4px !important;
+  padding: 4px 3px 2px !important;
 }
 
 .bt-mobile-viewport .bt-start-title {
-  font-size: 24px !important;
-  line-height: 1.08 !important;
+  font-size: 20px !important;
+  line-height: 1.12 !important;
   letter-spacing: -0.025em !important;
+  margin-bottom: 3px !important;
 }
 
 .bt-mobile-viewport .bt-start-description {
-  font-size: 14px !important;
-  line-height: 1.45 !important;
+  display: none !important;
 }
 
 .bt-mobile-viewport .bt-fahrwerk-steps {
-  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-  gap: 7px !important;
-  margin-top: 14px !important;
+  display: none !important;
 }
 
 .bt-mobile-viewport .bt-fahrwerk-steps > div {
@@ -10101,15 +10098,59 @@ body::after {
 }
 
 .bt-mobile-viewport .bt-start-grid {
-  grid-template-columns: 1fr !important;
-  gap: 10px !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: 8px !important;
 }
 
 .bt-mobile-viewport .bt-start-card {
-  min-height: 0 !important;
-  padding: 14px !important;
-  border-radius: 20px !important;
+  min-width: 0 !important;
+  min-height: 58px !important;
+  height: 58px !important;
+  padding: 8px 9px !important;
+  border-radius: 16px !important;
   touch-action: manipulation !important;
+  display: flex !important;
+  align-items: center !important;
+}
+
+.bt-mobile-viewport .bt-start-screen {
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  gap: 8px !important;
+  justify-content: center !important;
+  margin-bottom: 0 !important;
+}
+
+.bt-mobile-viewport .bt-panel-scroll--start {
+  overflow-y: hidden !important;
+  touch-action: none !important;
+  justify-content: center !important;
+}
+
+.bt-mobile-viewport .bt-start-card-head {
+  width: 100% !important;
+  min-width: 0 !important;
+  gap: 8px !important;
+  margin-bottom: 0 !important;
+}
+
+.bt-mobile-viewport .bt-start-card-icon {
+  width: 34px !important;
+  height: 34px !important;
+  flex: 0 0 34px !important;
+  border-radius: 11px !important;
+  font-size: 17px !important;
+}
+
+.bt-mobile-viewport .bt-start-card-title {
+  min-width: 0 !important;
+  font-size: 13px !important;
+  line-height: 1.15 !important;
+  overflow-wrap: anywhere !important;
+}
+
+.bt-mobile-viewport .bt-start-card-description {
+  display: none !important;
 }
 
 .bt-mobile-viewport .bt-fahrwerk-panel {
@@ -10119,33 +10160,70 @@ body::after {
 }
 
 .bt-mobile-viewport .bt-composer {
-  padding: 10px !important;
-  padding-bottom: calc(10px + env(safe-area-inset-bottom)) !important;
-  gap: 8px !important;
+  padding: 8px !important;
+  padding-bottom: calc(8px + env(safe-area-inset-bottom)) !important;
+  gap: 6px !important;
 }
 
 .bt-mobile-viewport .bt-round-action-button {
-  width: 48px !important;
-  height: 48px !important;
-  border-radius: 15px !important;
-  font-size: 19px !important;
+  width: 44px !important;
+  height: 44px !important;
+  border-radius: 14px !important;
+  font-size: 18px !important;
 }
 
 .bt-mobile-viewport .bt-message-input {
   min-width: 0 !important;
-  height: 50px !important;
-  padding: 0 13px !important;
-  border-radius: 16px !important;
+  height: 44px !important;
+  padding: 0 11px !important;
+  border-radius: 14px !important;
   font-size: 16px !important;
 }
 
 .bt-mobile-viewport .bt-send-button {
-  flex: 0 0 50px !important;
-  width: 50px !important;
-  height: 50px !important;
+  flex: 0 0 44px !important;
+  width: 44px !important;
+  height: 44px !important;
   padding: 0 !important;
   border-radius: 16px !important;
   font-size: 0 !important;
+}
+
+@media (max-width: 380px), (max-height: 620px) {
+  .bt-mobile-viewport .bt-panel {
+    left: max(4px, env(safe-area-inset-left)) !important;
+    right: max(4px, env(safe-area-inset-right)) !important;
+    top: max(4px, env(safe-area-inset-top)) !important;
+    bottom: max(4px, env(safe-area-inset-bottom)) !important;
+    border-radius: 22px !important;
+  }
+
+  .bt-mobile-viewport .bt-panel-header {
+    min-height: 56px !important;
+    padding-top: 7px !important;
+    padding-bottom: 7px !important;
+  }
+
+  .bt-mobile-viewport .bt-start-title {
+    font-size: 18px !important;
+  }
+
+  .bt-mobile-viewport .bt-start-card {
+    height: 50px !important;
+    min-height: 50px !important;
+    padding: 6px 8px !important;
+  }
+
+  .bt-mobile-viewport .bt-start-card-icon {
+    width: 30px !important;
+    height: 30px !important;
+    flex-basis: 30px !important;
+    font-size: 15px !important;
+  }
+
+  .bt-mobile-viewport .bt-start-card-title {
+    font-size: 12px !important;
+  }
 }
 
 .bt-mobile-viewport .bt-send-button::after {
@@ -11151,7 +11229,9 @@ body::after {
 
                 <div
                   ref={listRef}
-                  className="bt-panel-scroll"
+                  className={`bt-panel-scroll ${
+                    showStartCards ? "bt-panel-scroll--start" : ""
+                  }`}
                   style={{
                     position: "relative",
                     zIndex: 3,
@@ -11182,6 +11262,7 @@ body::after {
                 >
                   {showStartCards && (
                     <div
+                      className="bt-start-screen"
                       style={{
                         width: "100%",
                         display: "flex",
@@ -11476,6 +11557,7 @@ body::after {
                             }}
                           >
                             <div
+                              className="bt-start-card-head"
                               style={{
                                 display: "flex",
                                 alignItems: "center",
@@ -11484,6 +11566,7 @@ body::after {
                               }}
                             >
                               <span
+                                className="bt-start-card-icon"
                                 style={{
                                   width: isEnhancedInterface ? 42 : 30,
                                   height: isEnhancedInterface ? 42 : 30,
@@ -11499,6 +11582,7 @@ body::after {
                                 {card.icon}
                               </span>
                               <span
+                                className="bt-start-card-title"
                                 style={{
                                   fontSize: isEnhancedInterface ? 16.5 : 13,
                                   fontWeight: 800,
@@ -11510,6 +11594,7 @@ body::after {
                             </div>
 
                             <div
+                              className="bt-start-card-description"
                               style={{
                                 fontSize: isEnhancedInterface ? 14.5 : 12,
                                 lineHeight: 1.45,
