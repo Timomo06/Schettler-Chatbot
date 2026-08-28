@@ -5545,13 +5545,28 @@ export default function WidgetPage() {
     if (!mounted) return;
 
     const updateViewportMode = () => {
+      /*
+       * Wichtig bei der eingebetteten Version:
+       * Das geschlossene Widget startet in einem sehr kleinen iframe. Dessen
+       * innerWidth/visualViewport darf deshalb NICHT zur Geräteerkennung
+       * verwendet werden – sonst wird auch ein Laptop als Handy eingestuft
+       * und bleibt anschließend in der schmalen Darstellung hängen.
+       */
       const screenWidth = window.screen?.width || window.innerWidth;
-      const visualWidth = window.visualViewport?.width || window.innerWidth;
-      const narrowScreen = Math.min(screenWidth, visualWidth) <= 700;
-      const compactTouchDevice =
-        window.matchMedia("(pointer: coarse)").matches && screenWidth <= 900;
+      const screenHeight = window.screen?.height || window.innerHeight;
+      const screenShortSide = Math.min(screenWidth, screenHeight);
+      const hasCoarsePointer = window.matchMedia("(pointer: coarse)").matches;
+      const hasTouch = (navigator.maxTouchPoints || 0) > 0;
+      const mobileUserAgent =
+        /Android|iPhone|iPod|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
-      setIsMobileViewport(narrowScreen || compactTouchDevice);
+      const phoneSizedScreen = screenShortSide <= 700;
+      const touchTabletSizedScreen =
+        hasCoarsePointer && hasTouch && screenShortSide <= 900;
+
+      setIsMobileViewport(
+        phoneSizedScreen || touchTabletSizedScreen || mobileUserAgent,
+      );
     };
 
     updateViewportMode();
@@ -6185,22 +6200,11 @@ export default function WidgetPage() {
   }, [open]);
 
   useEffect(() => {
-    const isInitialOverview =
-      isEnhancedInterface &&
-      msgs.length === 1 &&
-      msgs[0]?.role === "assistant" &&
-      !loading;
-
-    if (isInitialOverview) {
-      listRef.current?.scrollTo({ top: 0, behavior: "auto" });
-      return;
-    }
-
     listRef.current?.scrollTo({
       top: listRef.current.scrollHeight,
       behavior: "smooth",
     });
-  }, [msgs, loading, voicePhase, isEnhancedInterface]);
+  }, [msgs, loading, voicePhase]);
 
   useEffect(() => {
     const t = setTimeout(() => setShowBadge(false), 5000);
@@ -8950,8 +8954,18 @@ export default function WidgetPage() {
     setFahrwerkSignupOpen(false);
     setFahrwerkSignupForm(DEFAULT_FAHRWERK_SIGNUP_FORM);
     setFahrwerkPanel("dashboard");
+    setFahrwerkStage("new");
+    setFahrwerkChecklist(DEFAULT_FAHRWERK_CHECKLIST);
     setAbgefahrenPanel("home");
     setHohenbadenPanel("home");
+    if (typeof window !== "undefined") {
+      try {
+        window.localStorage.removeItem("fahrwerk-b-stage");
+        window.localStorage.removeItem("fahrwerk-b-checklist");
+      } catch {
+        // Der sichtbare Reset funktioniert auch, wenn localStorage blockiert ist.
+      }
+    }
     setMsgs([
       {
         role: "assistant",
@@ -9209,6 +9223,8 @@ export default function WidgetPage() {
     <div
       className={`${isMobileViewport ? "bt-mobile-viewport" : ""} ${
         isLinaInterface ? "bt-lina-interface" : ""
+      } ${
+        isFahrwerkBInterface ? "bt-fahrwerk-interface" : ""
       } ${
         voiceVisualVisible ? "bt-voice-mode-open" : ""
       }`.trim()}
@@ -9600,36 +9616,25 @@ body::after {
 .bt-panel--lina {
   border: 1px solid rgba(255,255,255,.86) !important;
   background:
-    radial-gradient(70% 58% at 8% 8%, rgba(45,143,255,.17), transparent 68%),
-    radial-gradient(52% 48% at 92% 18%, rgba(136,103,255,.14), transparent 72%),
-    radial-gradient(58% 48% at 76% 96%, rgba(255,153,126,.11), transparent 70%),
-    radial-gradient(46% 44% at 2% 96%, rgba(40,205,224,.15), transparent 68%),
-    linear-gradient(145deg, rgba(246,251,255,.48), rgba(226,239,252,.27)) !important;
-  backdrop-filter: blur(20px) saturate(180%) contrast(104%) !important;
-  -webkit-backdrop-filter: blur(20px) saturate(180%) contrast(104%) !important;
+    radial-gradient(70% 58% at 8% 8%, rgba(45,143,255,.25), transparent 68%),
+    radial-gradient(52% 48% at 92% 18%, rgba(136,103,255,.20), transparent 72%),
+    radial-gradient(58% 48% at 76% 96%, rgba(255,153,126,.18), transparent 70%),
+    radial-gradient(46% 44% at 2% 96%, rgba(40,205,224,.22), transparent 68%),
+    linear-gradient(145deg, rgba(246,251,255,.82), rgba(226,239,252,.64)) !important;
+  backdrop-filter: blur(38px) saturate(185%) !important;
+  -webkit-backdrop-filter: blur(38px) saturate(185%) !important;
   box-shadow:
     0 30px 110px rgba(29,67,112,.24),
     0 0 0 1px rgba(255,255,255,.34) inset,
     0 1px 0 rgba(255,255,255,.92) inset !important;
 }
 
-@media (min-width: 701px) {
-  .bt-panel--lina {
-    width: min(1160px, calc(100vw - 32px)) !important;
-    max-width: calc(100vw - 32px) !important;
-    height: min(880px, calc(100dvh - 96px)) !important;
-    max-height: calc(100dvh - 96px) !important;
-    right: 16px !important;
-    bottom: 80px !important;
-  }
-}
-
 .bt-lina-interface .bt-panel-header,
 .bt-lina-interface .bt-composer {
-  background: linear-gradient(180deg, rgba(255,255,255,.46), rgba(244,249,255,.25)) !important;
+  background: linear-gradient(180deg, rgba(255,255,255,.68), rgba(244,249,255,.46)) !important;
   border-color: rgba(255,255,255,.70) !important;
-  backdrop-filter: blur(18px) saturate(175%) !important;
-  -webkit-backdrop-filter: blur(18px) saturate(175%) !important;
+  backdrop-filter: blur(30px) saturate(175%) !important;
+  -webkit-backdrop-filter: blur(30px) saturate(175%) !important;
 }
 
 .bt-lina-interface .bt-panel-scroll {
@@ -9644,10 +9649,10 @@ body::after {
   overflow: hidden;
   border: 1px solid rgba(255,255,255,.78) !important;
   background:
-    radial-gradient(130% 90% at 4% 0%, rgba(255,255,255,.56), transparent 54%),
-    linear-gradient(145deg, rgba(255,255,255,.36), rgba(239,247,255,.17)) !important;
-  backdrop-filter: blur(13px) saturate(175%) !important;
-  -webkit-backdrop-filter: blur(13px) saturate(175%) !important;
+    radial-gradient(130% 90% at 4% 0%, rgba(255,255,255,.82), transparent 54%),
+    linear-gradient(145deg, rgba(255,255,255,.60), rgba(239,247,255,.34)) !important;
+  backdrop-filter: blur(24px) saturate(170%) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(170%) !important;
   box-shadow:
     0 14px 34px rgba(31,68,111,.10),
     0 0 0 1px rgba(255,255,255,.22) inset,
@@ -9666,8 +9671,8 @@ body::after {
 .bt-start-card--lina:hover:not(:disabled) {
   border-color: rgba(255,255,255,.94) !important;
   background:
-    radial-gradient(120% 92% at 4% 0%, rgba(255,255,255,.69), transparent 58%),
-    linear-gradient(145deg, rgba(255,255,255,.48), rgba(226,241,255,.25)) !important;
+    radial-gradient(120% 92% at 4% 0%, rgba(255,255,255,.94), transparent 58%),
+    linear-gradient(145deg, rgba(255,255,255,.72), rgba(226,241,255,.46)) !important;
   box-shadow:
     0 19px 44px rgba(31,68,111,.16),
     0 0 0 1px rgba(67,143,255,.18) inset,
@@ -9699,27 +9704,9 @@ body::after {
 .bt-lina-interface .bt-message-input,
 .bt-lina-interface .bt-round-action-button {
   border-color: rgba(255,255,255,.78) !important;
-  background: linear-gradient(145deg, rgba(255,255,255,.50), rgba(236,246,255,.25)) !important;
-  backdrop-filter: blur(14px) saturate(170%);
-  -webkit-backdrop-filter: blur(14px) saturate(170%);
-}
-
-.bt-lina-interface .bt-start-title {
-  font-size: 34px !important;
-  letter-spacing: -.025em !important;
-}
-
-.bt-lina-interface .bt-start-description {
-  font-size: 16.5px !important;
-}
-
-.bt-lina-interface .bt-start-card--lina > div:first-child > span:last-child {
-  font-size: 17.5px !important;
-}
-
-.bt-lina-interface .bt-start-card--lina > div:last-child {
-  font-size: 15px !important;
-  line-height: 1.46 !important;
+  background: linear-gradient(145deg, rgba(255,255,255,.76), rgba(236,246,255,.50)) !important;
+  backdrop-filter: blur(20px) saturate(170%);
+  -webkit-backdrop-filter: blur(20px) saturate(170%);
 }
 
 .bt-lina-interface .bt-round-action-button[data-icon="upload"] {
@@ -10442,6 +10429,212 @@ body::after {
   font-size: 22px;
   line-height: 1;
   font-weight: 900;
+}
+
+/*
+  FAHRWERK B – ECHTES RESPONSIVE COCKPIT
+  Desktop bleibt die breite 940px-Cockpitansicht. Nur ein wirklich als mobil
+  erkanntes Gerät erhält diese kompakte, berührungsfreundliche Startmaske.
+*/
+.bt-fahrwerk-interface .bt-chat-message--welcome {
+  display: none !important;
+}
+
+.bt-mobile-viewport.bt-fahrwerk-interface .bt-panel {
+  left: max(6px, env(safe-area-inset-left)) !important;
+  right: max(6px, env(safe-area-inset-right)) !important;
+  top: max(6px, env(safe-area-inset-top)) !important;
+  bottom: max(6px, env(safe-area-inset-bottom)) !important;
+  border-radius: 24px !important;
+}
+
+.bt-mobile-viewport.bt-fahrwerk-interface .bt-panel-header {
+  min-height: 72px !important;
+  padding: 10px 58px 10px 14px !important;
+}
+
+.bt-mobile-viewport.bt-fahrwerk-interface .bt-brand-block {
+  gap: 9px !important;
+}
+
+.bt-mobile-viewport.bt-fahrwerk-interface .bt-brand-status-dot {
+  width: 10px !important;
+  height: 10px !important;
+  box-shadow: 0 0 0 6px rgba(${accentRgb}, 0.12) !important;
+}
+
+.bt-mobile-viewport.bt-fahrwerk-interface .bt-brand-title {
+  max-width: 210px !important;
+  font-size: 15.5px !important;
+  line-height: 1.12 !important;
+}
+
+.bt-mobile-viewport.bt-fahrwerk-interface .bt-brand-subtitle {
+  margin-top: 2px !important;
+  font-size: 11.5px !important;
+  line-height: 1.18 !important;
+}
+
+.bt-mobile-viewport.bt-fahrwerk-interface .bt-reset-button {
+  min-width: 40px !important;
+  height: 32px !important;
+  padding: 0 8px !important;
+  border-radius: 11px !important;
+  font-size: 11px !important;
+}
+
+.bt-mobile-viewport.bt-fahrwerk-interface .bt-launcher-shell--open {
+  top: calc(max(6px, env(safe-area-inset-top)) + 8px) !important;
+  right: 14px !important;
+  width: 42px !important;
+  height: 42px !important;
+}
+
+.bt-mobile-viewport.bt-fahrwerk-interface .bt-launcher-shell--open .bt-launcher {
+  width: 40px !important;
+  height: 40px !important;
+}
+
+.bt-mobile-viewport.bt-fahrwerk-interface .bt-panel-scroll {
+  padding: 8px !important;
+  gap: 8px !important;
+  scrollbar-width: none !important;
+  scroll-padding-bottom: 74px !important;
+}
+
+.bt-mobile-viewport.bt-fahrwerk-interface .bt-panel-scroll::-webkit-scrollbar {
+  display: none !important;
+}
+
+.bt-mobile-viewport.bt-fahrwerk-interface .bt-start-intro {
+  padding: 3px 3px 1px !important;
+}
+
+.bt-mobile-viewport.bt-fahrwerk-interface .bt-start-title {
+  margin-bottom: 4px !important;
+  font-size: 20px !important;
+  line-height: 1.05 !important;
+}
+
+.bt-mobile-viewport.bt-fahrwerk-interface .bt-start-description {
+  font-size: 12.25px !important;
+  line-height: 1.3 !important;
+}
+
+.bt-mobile-viewport.bt-fahrwerk-interface .bt-fahrwerk-steps {
+  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  gap: 5px !important;
+  margin-top: 8px !important;
+}
+
+.bt-mobile-viewport.bt-fahrwerk-interface .bt-fahrwerk-steps > div {
+  min-height: 34px !important;
+  padding: 5px 3px !important;
+  display: grid !important;
+  place-items: center !important;
+  font-size: 9.25px !important;
+  line-height: 1.08 !important;
+}
+
+.bt-mobile-viewport.bt-fahrwerk-interface .bt-start-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: 7px !important;
+}
+
+.bt-mobile-viewport.bt-fahrwerk-interface .bt-start-card {
+  min-width: 0 !important;
+  min-height: 82px !important;
+  padding: 9px !important;
+  border-radius: 16px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: flex-start !important;
+}
+
+.bt-mobile-viewport.bt-fahrwerk-interface .bt-start-card > div:first-child {
+  gap: 7px !important;
+  margin-bottom: 5px !important;
+}
+
+.bt-mobile-viewport.bt-fahrwerk-interface .bt-start-card > div:first-child > span:first-child {
+  width: 32px !important;
+  height: 32px !important;
+  border-radius: 11px !important;
+  font-size: 17px !important;
+}
+
+.bt-mobile-viewport.bt-fahrwerk-interface .bt-start-card > div:first-child > span:last-child {
+  min-width: 0 !important;
+  font-size: 13px !important;
+  line-height: 1.08 !important;
+}
+
+.bt-mobile-viewport.bt-fahrwerk-interface .bt-start-card > div:last-child {
+  overflow: hidden !important;
+  display: -webkit-box !important;
+  -webkit-box-orient: vertical !important;
+  -webkit-line-clamp: 2 !important;
+  font-size: 11px !important;
+  line-height: 1.22 !important;
+}
+
+.bt-mobile-viewport.bt-fahrwerk-interface .bt-composer {
+  padding: 7px !important;
+  padding-bottom: calc(7px + env(safe-area-inset-bottom)) !important;
+  gap: 6px !important;
+}
+
+.bt-mobile-viewport.bt-fahrwerk-interface .bt-round-action-button {
+  width: 42px !important;
+  height: 42px !important;
+  border-radius: 13px !important;
+}
+
+.bt-mobile-viewport.bt-fahrwerk-interface .bt-message-input {
+  height: 42px !important;
+  padding: 0 11px !important;
+  border-radius: 14px !important;
+  font-size: 14px !important;
+}
+
+.bt-mobile-viewport.bt-fahrwerk-interface .bt-send-button {
+  flex-basis: 42px !important;
+  width: 42px !important;
+  height: 42px !important;
+  border-radius: 14px !important;
+}
+
+@media (max-height: 720px) {
+  .bt-mobile-viewport.bt-fahrwerk-interface .bt-panel-header {
+    min-height: 64px !important;
+    padding-top: 8px !important;
+    padding-bottom: 8px !important;
+  }
+
+  .bt-mobile-viewport.bt-fahrwerk-interface .bt-start-description,
+  .bt-mobile-viewport.bt-fahrwerk-interface .bt-fahrwerk-steps {
+    display: none !important;
+  }
+
+  .bt-mobile-viewport.bt-fahrwerk-interface .bt-start-card {
+    min-height: 68px !important;
+    padding: 7px 8px !important;
+  }
+
+  .bt-mobile-viewport.bt-fahrwerk-interface .bt-start-card > div:first-child {
+    margin-bottom: 3px !important;
+  }
+
+  .bt-mobile-viewport.bt-fahrwerk-interface .bt-start-card > div:first-child > span:first-child {
+    width: 28px !important;
+    height: 28px !important;
+    font-size: 15px !important;
+  }
+
+  .bt-mobile-viewport.bt-fahrwerk-interface .bt-start-card > div:last-child {
+    -webkit-line-clamp: 1 !important;
+    font-size: 10.5px !important;
+  }
 }
 
 @media (max-width: 680px) {
@@ -13375,6 +13568,11 @@ body::after {
                     return (
                       <div
                         key={i}
+                        className={`bt-chat-message ${
+                          showStartCards && i === 0
+                            ? "bt-chat-message--welcome"
+                            : ""
+                        }`}
                         style={{
                           alignSelf: isUser ? "flex-end" : "flex-start",
                           maxWidth: isEnhancedInterface ? "78%" : "86%",
