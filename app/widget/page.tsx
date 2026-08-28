@@ -6185,11 +6185,22 @@ export default function WidgetPage() {
   }, [open]);
 
   useEffect(() => {
+    const isInitialOverview =
+      isEnhancedInterface &&
+      msgs.length === 1 &&
+      msgs[0]?.role === "assistant" &&
+      !loading;
+
+    if (isInitialOverview) {
+      listRef.current?.scrollTo({ top: 0, behavior: "auto" });
+      return;
+    }
+
     listRef.current?.scrollTo({
       top: listRef.current.scrollHeight,
       behavior: "smooth",
     });
-  }, [msgs, loading, voicePhase]);
+  }, [msgs, loading, voicePhase, isEnhancedInterface]);
 
   useEffect(() => {
     const t = setTimeout(() => setShowBadge(false), 5000);
@@ -9589,25 +9600,36 @@ body::after {
 .bt-panel--lina {
   border: 1px solid rgba(255,255,255,.86) !important;
   background:
-    radial-gradient(70% 58% at 8% 8%, rgba(45,143,255,.25), transparent 68%),
-    radial-gradient(52% 48% at 92% 18%, rgba(136,103,255,.20), transparent 72%),
-    radial-gradient(58% 48% at 76% 96%, rgba(255,153,126,.18), transparent 70%),
-    radial-gradient(46% 44% at 2% 96%, rgba(40,205,224,.22), transparent 68%),
-    linear-gradient(145deg, rgba(246,251,255,.82), rgba(226,239,252,.64)) !important;
-  backdrop-filter: blur(38px) saturate(185%) !important;
-  -webkit-backdrop-filter: blur(38px) saturate(185%) !important;
+    radial-gradient(70% 58% at 8% 8%, rgba(45,143,255,.17), transparent 68%),
+    radial-gradient(52% 48% at 92% 18%, rgba(136,103,255,.14), transparent 72%),
+    radial-gradient(58% 48% at 76% 96%, rgba(255,153,126,.11), transparent 70%),
+    radial-gradient(46% 44% at 2% 96%, rgba(40,205,224,.15), transparent 68%),
+    linear-gradient(145deg, rgba(246,251,255,.48), rgba(226,239,252,.27)) !important;
+  backdrop-filter: blur(20px) saturate(180%) contrast(104%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(180%) contrast(104%) !important;
   box-shadow:
     0 30px 110px rgba(29,67,112,.24),
     0 0 0 1px rgba(255,255,255,.34) inset,
     0 1px 0 rgba(255,255,255,.92) inset !important;
 }
 
+@media (min-width: 701px) {
+  .bt-panel--lina {
+    width: min(1160px, calc(100vw - 32px)) !important;
+    max-width: calc(100vw - 32px) !important;
+    height: min(880px, calc(100dvh - 96px)) !important;
+    max-height: calc(100dvh - 96px) !important;
+    right: 16px !important;
+    bottom: 80px !important;
+  }
+}
+
 .bt-lina-interface .bt-panel-header,
 .bt-lina-interface .bt-composer {
-  background: linear-gradient(180deg, rgba(255,255,255,.68), rgba(244,249,255,.46)) !important;
+  background: linear-gradient(180deg, rgba(255,255,255,.46), rgba(244,249,255,.25)) !important;
   border-color: rgba(255,255,255,.70) !important;
-  backdrop-filter: blur(30px) saturate(175%) !important;
-  -webkit-backdrop-filter: blur(30px) saturate(175%) !important;
+  backdrop-filter: blur(18px) saturate(175%) !important;
+  -webkit-backdrop-filter: blur(18px) saturate(175%) !important;
 }
 
 .bt-lina-interface .bt-panel-scroll {
@@ -9622,10 +9644,10 @@ body::after {
   overflow: hidden;
   border: 1px solid rgba(255,255,255,.78) !important;
   background:
-    radial-gradient(130% 90% at 4% 0%, rgba(255,255,255,.82), transparent 54%),
-    linear-gradient(145deg, rgba(255,255,255,.60), rgba(239,247,255,.34)) !important;
-  backdrop-filter: blur(24px) saturate(170%) !important;
-  -webkit-backdrop-filter: blur(24px) saturate(170%) !important;
+    radial-gradient(130% 90% at 4% 0%, rgba(255,255,255,.56), transparent 54%),
+    linear-gradient(145deg, rgba(255,255,255,.36), rgba(239,247,255,.17)) !important;
+  backdrop-filter: blur(13px) saturate(175%) !important;
+  -webkit-backdrop-filter: blur(13px) saturate(175%) !important;
   box-shadow:
     0 14px 34px rgba(31,68,111,.10),
     0 0 0 1px rgba(255,255,255,.22) inset,
@@ -9644,8 +9666,8 @@ body::after {
 .bt-start-card--lina:hover:not(:disabled) {
   border-color: rgba(255,255,255,.94) !important;
   background:
-    radial-gradient(120% 92% at 4% 0%, rgba(255,255,255,.94), transparent 58%),
-    linear-gradient(145deg, rgba(255,255,255,.72), rgba(226,241,255,.46)) !important;
+    radial-gradient(120% 92% at 4% 0%, rgba(255,255,255,.69), transparent 58%),
+    linear-gradient(145deg, rgba(255,255,255,.48), rgba(226,241,255,.25)) !important;
   box-shadow:
     0 19px 44px rgba(31,68,111,.16),
     0 0 0 1px rgba(67,143,255,.18) inset,
@@ -9677,9 +9699,27 @@ body::after {
 .bt-lina-interface .bt-message-input,
 .bt-lina-interface .bt-round-action-button {
   border-color: rgba(255,255,255,.78) !important;
-  background: linear-gradient(145deg, rgba(255,255,255,.76), rgba(236,246,255,.50)) !important;
-  backdrop-filter: blur(20px) saturate(170%);
-  -webkit-backdrop-filter: blur(20px) saturate(170%);
+  background: linear-gradient(145deg, rgba(255,255,255,.50), rgba(236,246,255,.25)) !important;
+  backdrop-filter: blur(14px) saturate(170%);
+  -webkit-backdrop-filter: blur(14px) saturate(170%);
+}
+
+.bt-lina-interface .bt-start-title {
+  font-size: 34px !important;
+  letter-spacing: -.025em !important;
+}
+
+.bt-lina-interface .bt-start-description {
+  font-size: 16.5px !important;
+}
+
+.bt-lina-interface .bt-start-card--lina > div:first-child > span:last-child {
+  font-size: 17.5px !important;
+}
+
+.bt-lina-interface .bt-start-card--lina > div:last-child {
+  font-size: 15px !important;
+  line-height: 1.46 !important;
 }
 
 .bt-lina-interface .bt-round-action-button[data-icon="upload"] {
