@@ -10049,11 +10049,7 @@ body::after {
 }
 
 .bt-mobile-viewport .bt-reset-button {
-  min-width: 44px !important;
-  height: 36px !important;
-  padding: 0 10px !important;
-  border-radius: 12px !important;
-  font-size: 12px !important;
+  display: none !important;
 }
 
 .bt-mobile-viewport .bt-panel-scroll {
@@ -10102,7 +10098,7 @@ body::after {
   gap: 8px !important;
 }
 
-.bt-mobile-viewport .bt-start-card {
+.bt-mobile-viewport .bt-panel-scroll--start .bt-start-card {
   min-width: 0 !important;
   min-height: 58px !important;
   height: 58px !important;
@@ -10127,14 +10123,14 @@ body::after {
   justify-content: center !important;
 }
 
-.bt-mobile-viewport .bt-start-card-head {
+.bt-mobile-viewport .bt-panel-scroll--start .bt-start-card-head {
   width: 100% !important;
   min-width: 0 !important;
   gap: 8px !important;
   margin-bottom: 0 !important;
 }
 
-.bt-mobile-viewport .bt-start-card-icon {
+.bt-mobile-viewport .bt-panel-scroll--start .bt-start-card-icon {
   width: 34px !important;
   height: 34px !important;
   flex: 0 0 34px !important;
@@ -10142,14 +10138,14 @@ body::after {
   font-size: 17px !important;
 }
 
-.bt-mobile-viewport .bt-start-card-title {
+.bt-mobile-viewport .bt-panel-scroll--start .bt-start-card-title {
   min-width: 0 !important;
   font-size: 13px !important;
   line-height: 1.15 !important;
   overflow-wrap: anywhere !important;
 }
 
-.bt-mobile-viewport .bt-start-card-description {
+.bt-mobile-viewport .bt-panel-scroll--start .bt-start-card-description {
   display: none !important;
 }
 
@@ -10208,20 +10204,20 @@ body::after {
     font-size: 18px !important;
   }
 
-  .bt-mobile-viewport .bt-start-card {
+  .bt-mobile-viewport .bt-panel-scroll--start .bt-start-card {
     height: 50px !important;
     min-height: 50px !important;
     padding: 6px 8px !important;
   }
 
-  .bt-mobile-viewport .bt-start-card-icon {
+  .bt-mobile-viewport .bt-panel-scroll--start .bt-start-card-icon {
     width: 30px !important;
     height: 30px !important;
     flex-basis: 30px !important;
     font-size: 15px !important;
   }
 
-  .bt-mobile-viewport .bt-start-card-title {
+  .bt-mobile-viewport .bt-panel-scroll--start .bt-start-card-title {
     font-size: 12px !important;
   }
 }
@@ -13154,6 +13150,13 @@ body::after {
                   )}
 
                   {msgs.map((m, i) => {
+                    // Die Begrüßung steckt auf dem Handy bereits in der
+                    // kompakten Startmaske. Ein zweites großes Chat-Bubble
+                    // würde die Ansicht unnötig nach unten drücken.
+                    if (isMobileViewport && showStartCards && i === 0) {
+                      return null;
+                    }
+
                     const isUser = m.role === "user";
                     return (
                       <div
