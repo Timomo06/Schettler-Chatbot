@@ -2651,6 +2651,7 @@ function AbgefahrenFutureDemo({
                           {item.label}
                         </div>
                         <div
+                          className="bt-fahrwerk-overview"
                           style={{
                             color: textSecondary,
                             fontSize: 11.5,
@@ -5939,6 +5940,7 @@ export default function WidgetPage() {
   const silenceStartedAtRef = useRef<number | null>(null);
   const cancelVoiceRef = useRef(false);
   const voiceAbortControllerRef = useRef<AbortController | null>(null);
+  const chatAbortControllerRef = useRef<AbortController | null>(null);
   const voiceAudioRef = useRef<HTMLAudioElement | null>(null);
   const voiceAudioUrlRef = useRef<string | null>(null);
   const voiceAudioUnlockedRef = useRef(false);
@@ -6147,8 +6149,8 @@ export default function WidgetPage() {
       Math.min(window.screen?.width || 430, 560),
     );
     const mobileHeight = Math.max(
-      560,
-      Math.min((window.screen?.height || 820) - 12, 900),
+      520,
+      Math.min((window.screen?.height || 820) - 170, 760),
     );
 
     const size = open
@@ -6922,6 +6924,12 @@ export default function WidgetPage() {
     loadingRef.current = true;
     setLoading(true);
 
+    const chatController = options.signal ? null : new AbortController();
+    if (chatController) {
+      chatAbortControllerRef.current?.abort();
+      chatAbortControllerRef.current = chatController;
+    }
+
     try {
       const activeTenantId = activeFutureTenantId
         ? activeFutureTenantId
@@ -6943,7 +6951,7 @@ export default function WidgetPage() {
             voiceMode: options.fromVoice === true,
             messages: next.map(({ role, content }) => ({ role, content })),
           }),
-          signal: options.signal,
+          signal: options.signal ?? chatController?.signal,
         },
       );
 
@@ -6979,6 +6987,9 @@ export default function WidgetPage() {
       setMsgs(failedConversation);
       return null;
     } finally {
+      if (chatAbortControllerRef.current === chatController) {
+        chatAbortControllerRef.current = null;
+      }
       loadingRef.current = false;
       setLoading(false);
     }
@@ -8849,6 +8860,10 @@ export default function WidgetPage() {
   }
 
   function resetChat() {
+    chatAbortControllerRef.current?.abort();
+    chatAbortControllerRef.current = null;
+    loadingRef.current = false;
+    setLoading(false);
     cancelVoiceMode();
     setVoiceUiAction(null);
     setBookingOpen(false);
@@ -8860,10 +8875,11 @@ export default function WidgetPage() {
     });
     setFahrwerkSignupOpen(false);
     setFahrwerkSignupForm(DEFAULT_FAHRWERK_SIGNUP_FORM);
+    resetFahrwerkProgress();
     setFahrwerkPanel("dashboard");
     setAbgefahrenPanel("home");
     setHohenbadenPanel("home");
-    setMsgs([
+    const resetMessages: Msg[] = [
       {
         role: "assistant",
         content: isNiehausInterface
@@ -8896,8 +8912,15 @@ export default function WidgetPage() {
                   ? "Alles klar — wobei soll ich dir bei Willi helfen?"
                   : "Alles klar — womit kann ich dir helfen?",
       },
-    ]);
+    ];
+    msgsRef.current = resetMessages;
+    setMsgs(resetMessages);
     setInput("");
+    setShowBadge(false);
+
+    window.requestAnimationFrame(() => {
+      listRef.current?.scrollTo({ top: 0, behavior: "auto" });
+    });
   }
 
   const panelW = isBookingInterface
@@ -10017,7 +10040,7 @@ body::after {
 }
 
 .bt-mobile-viewport .bt-panel-header {
-  padding: 10px 60px 10px 15px !important;
+  padding: 10px 118px 10px 15px !important;
   min-height: 64px !important;
   gap: 8px !important;
 }
@@ -10040,7 +10063,11 @@ body::after {
 }
 
 .bt-mobile-viewport .bt-header-actions {
-  flex: 0 0 auto !important;
+  position: absolute !important;
+  top: 50% !important;
+  right: 64px !important;
+  transform: translateY(-50%) !important;
+  z-index: 5 !important;
 }
 
 .bt-mobile-viewport .bt-powered-logo,
@@ -10049,7 +10076,14 @@ body::after {
 }
 
 .bt-mobile-viewport .bt-reset-button {
-  display: none !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-width: 44px !important;
+  height: 32px !important;
+  padding: 0 10px !important;
+  border-radius: 999px !important;
+  font-size: 11px !important;
 }
 
 .bt-mobile-viewport .bt-panel-scroll {
@@ -10113,14 +10147,14 @@ body::after {
   flex: 1 1 auto !important;
   min-height: 0 !important;
   gap: 8px !important;
-  justify-content: center !important;
+  justify-content: flex-start !important;
   margin-bottom: 0 !important;
 }
 
 .bt-mobile-viewport .bt-panel-scroll--start {
   overflow-y: hidden !important;
   touch-action: none !important;
-  justify-content: center !important;
+  justify-content: flex-start !important;
 }
 
 .bt-mobile-viewport .bt-panel-scroll--start .bt-start-card-head {
@@ -10150,9 +10184,33 @@ body::after {
 }
 
 .bt-mobile-viewport .bt-fahrwerk-panel {
-  padding: 15px !important;
-  border-radius: 24px !important;
-  gap: 13px !important;
+  padding: 12px !important;
+  border-radius: 20px !important;
+  gap: 11px !important;
+}
+
+.bt-mobile-viewport .bt-fahrwerk-overview {
+  gap: 8px !important;
+}
+
+.bt-mobile-viewport .bt-fahrwerk-progress-reset {
+  display: none !important;
+}
+
+.bt-mobile-viewport .bt-fahrwerk-nav {
+  display: grid !important;
+  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  gap: 6px !important;
+  width: 100% !important;
+}
+
+.bt-mobile-viewport .bt-fahrwerk-nav-button {
+  min-width: 0 !important;
+  padding: 8px 4px !important;
+  font-size: 10.5px !important;
+  line-height: 1.1 !important;
+  text-align: center !important;
+  white-space: normal !important;
 }
 
 .bt-mobile-viewport .bt-composer {
@@ -11691,6 +11749,7 @@ body::after {
                           </div>
 
                           <button
+                            className="bt-fahrwerk-progress-reset"
                             type="button"
                             onClick={resetFahrwerkProgress}
                             style={{
@@ -11730,6 +11789,7 @@ body::after {
                         </div>
 
                         <div
+                          className="bt-fahrwerk-nav"
                           style={{ display: "flex", gap: 8, flexWrap: "wrap" }}
                         >
                           {[
@@ -11742,6 +11802,7 @@ body::after {
                             ["contact", "Hilfe"],
                           ].map(([panel, label]) => (
                             <button
+                              className="bt-fahrwerk-nav-button"
                               key={panel}
                               type="button"
                               onClick={() =>
