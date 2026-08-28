@@ -60,6 +60,8 @@ type StartCard = {
   icon: string;
   title: string;
   description: string;
+  mobileTitle?: string;
+  mobileDescription?: string;
   message?: string;
   action?:
     | "photo"
@@ -735,12 +737,16 @@ const FAHRWERK_B_START_CARDS: StartCard[] = [
     title: "Online anmelden",
     description:
       "Offizielle Anmeldung bei Fahrwerk B über Fahrschule.live öffnen",
+    mobileTitle: "Anmelden",
+    mobileDescription: "Direkt über Fahrschule.live starten",
     action: "fahrwerkLiveSignup",
   },
   {
     icon: "🧭",
     title: "Beratung & Start",
     description: "Klasse finden, Fragen klären und nächsten Schritt sehen",
+    mobileTitle: "Beratung",
+    mobileDescription: "Klasse und Start gemeinsam klären",
     action: "fahrwerkPanel",
     fahrwerkPanel: "start",
   },
@@ -748,6 +754,8 @@ const FAHRWERK_B_START_CARDS: StartCard[] = [
     icon: "✅",
     title: "Unterlagen prüfen",
     description: "Sehtest, Erste Hilfe, Passbild, Antrag und BF17-Check",
+    mobileTitle: "Unterlagen",
+    mobileDescription: "Dokumente prüfen und abhaken",
     action: "fahrwerkPanel",
     fahrwerkPanel: "documents",
   },
@@ -755,6 +763,8 @@ const FAHRWERK_B_START_CARDS: StartCard[] = [
     icon: "📚",
     title: "Theorie begleiten",
     description: "Theorie-Einstieg, Lernen und Prüfung besser einordnen",
+    mobileTitle: "Theorie",
+    mobileDescription: "Lernen und Prüfung vorbereiten",
     action: "fahrwerkPanel",
     fahrwerkPanel: "theory",
   },
@@ -762,6 +772,8 @@ const FAHRWERK_B_START_CARDS: StartCard[] = [
     icon: "🚘",
     title: "Praxisphase",
     description: "Fahrstunden, Sonderfahrten und praktische Prüfung verstehen",
+    mobileTitle: "Praxis",
+    mobileDescription: "Fahrstunden und Sonderfahrten",
     action: "fahrwerkPanel",
     fahrwerkPanel: "practice",
   },
@@ -769,6 +781,8 @@ const FAHRWERK_B_START_CARDS: StartCard[] = [
     icon: "🎯",
     title: "Prüfungsmodus",
     description: "Theorie- oder Praxisprüfung mit Checkliste vorbereiten",
+    mobileTitle: "Prüfung",
+    mobileDescription: "Mit Checkliste sicher vorbereiten",
     action: "fahrwerkPanel",
     fahrwerkPanel: "exam",
   },
@@ -776,6 +790,8 @@ const FAHRWERK_B_START_CARDS: StartCard[] = [
     icon: "👤",
     title: "Ich bin Fahrschüler",
     description: "Stand auswählen und den nächsten sinnvollen Schritt sehen",
+    mobileTitle: "Mein Stand",
+    mobileDescription: "Den nächsten Schritt anzeigen",
     action: "fahrwerkPanel",
     fahrwerkPanel: "student",
   },
@@ -783,6 +799,8 @@ const FAHRWERK_B_START_CARDS: StartCard[] = [
     icon: "🎙️",
     title: "Einfach sprechen",
     description: "Frage stellen, unterbrechen und direkt weiterreden",
+    mobileTitle: "Sprechen",
+    mobileDescription: "Frage einfach direkt einsprechen",
     action: "voice",
   },
 ];
@@ -10517,14 +10535,12 @@ body::after {
 }
 
 .bt-mobile-viewport.bt-fahrwerk-interface .bt-start-description {
-  font-size: 12.25px !important;
-  line-height: 1.3 !important;
+  font-size: 11.75px !important;
+  line-height: 1.25 !important;
 }
 
 .bt-mobile-viewport.bt-fahrwerk-interface .bt-fahrwerk-steps {
-  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
-  gap: 5px !important;
-  margin-top: 8px !important;
+  display: none !important;
 }
 
 .bt-mobile-viewport.bt-fahrwerk-interface .bt-fahrwerk-steps > div {
@@ -10538,35 +10554,45 @@ body::after {
 
 .bt-mobile-viewport.bt-fahrwerk-interface .bt-start-grid {
   grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-  gap: 7px !important;
+  gap: 8px !important;
+}
+
+.bt-mobile-viewport.bt-fahrwerk-interface .bt-start-view {
+  gap: 8px !important;
 }
 
 .bt-mobile-viewport.bt-fahrwerk-interface .bt-start-card {
   min-width: 0 !important;
-  min-height: 82px !important;
-  padding: 9px !important;
+  height: 88px !important;
+  min-height: 88px !important;
+  padding: 10px !important;
   border-radius: 16px !important;
   display: flex !important;
   flex-direction: column !important;
   justify-content: flex-start !important;
+  overflow: hidden !important;
 }
 
 .bt-mobile-viewport.bt-fahrwerk-interface .bt-start-card > div:first-child {
   gap: 7px !important;
-  margin-bottom: 5px !important;
+  min-height: 30px !important;
+  margin-bottom: 6px !important;
 }
 
 .bt-mobile-viewport.bt-fahrwerk-interface .bt-start-card > div:first-child > span:first-child {
-  width: 32px !important;
-  height: 32px !important;
-  border-radius: 11px !important;
-  font-size: 17px !important;
+  width: 30px !important;
+  height: 30px !important;
+  border-radius: 10px !important;
+  font-size: 16px !important;
 }
 
 .bt-mobile-viewport.bt-fahrwerk-interface .bt-start-card > div:first-child > span:last-child {
   min-width: 0 !important;
-  font-size: 13px !important;
-  line-height: 1.08 !important;
+  font-size: 13.5px !important;
+  line-height: 1.1 !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
 }
 
 .bt-mobile-viewport.bt-fahrwerk-interface .bt-start-card > div:last-child {
@@ -10574,8 +10600,10 @@ body::after {
   display: -webkit-box !important;
   -webkit-box-orient: vertical !important;
   -webkit-line-clamp: 2 !important;
-  font-size: 11px !important;
-  line-height: 1.22 !important;
+  white-space: normal !important;
+  text-overflow: clip !important;
+  font-size: 11.25px !important;
+  line-height: 1.2 !important;
 }
 
 .bt-mobile-viewport.bt-fahrwerk-interface .bt-composer {
@@ -10604,21 +10632,21 @@ body::after {
   border-radius: 14px !important;
 }
 
-@media (max-height: 720px) {
+@media (max-height: 540px) {
   .bt-mobile-viewport.bt-fahrwerk-interface .bt-panel-header {
     min-height: 64px !important;
     padding-top: 8px !important;
     padding-bottom: 8px !important;
   }
 
-  .bt-mobile-viewport.bt-fahrwerk-interface .bt-start-description,
-  .bt-mobile-viewport.bt-fahrwerk-interface .bt-fahrwerk-steps {
+  .bt-mobile-viewport.bt-fahrwerk-interface .bt-start-description {
     display: none !important;
   }
 
   .bt-mobile-viewport.bt-fahrwerk-interface .bt-start-card {
-    min-height: 68px !important;
-    padding: 7px 8px !important;
+    height: 78px !important;
+    min-height: 78px !important;
+    padding: 8px !important;
   }
 
   .bt-mobile-viewport.bt-fahrwerk-interface .bt-start-card > div:first-child {
@@ -10632,7 +10660,7 @@ body::after {
   }
 
   .bt-mobile-viewport.bt-fahrwerk-interface .bt-start-card > div:last-child {
-    -webkit-line-clamp: 1 !important;
+    -webkit-line-clamp: 2 !important;
     font-size: 10.5px !important;
   }
 }
@@ -11468,7 +11496,9 @@ body::after {
                           color: textPrimary,
                         }}
                       >
-                        {displayBrandName} – {displayAssistantName}
+                        {isFahrwerkBInterface && isMobileViewport
+                          ? "Fahrwerk B · Cockpit"
+                          : `${displayBrandName} – ${displayAssistantName}`}
                       </div>
                       <div
                         className="bt-brand-subtitle"
@@ -11664,6 +11694,7 @@ body::after {
                 >
                   {showStartCards && (
                     <div
+                      className="bt-start-view"
                       style={{
                         width: "100%",
                         display: "flex",
@@ -11751,7 +11782,9 @@ body::after {
                               : isPetermaennchenInterface
                                 ? "Verbinde dich als Fahrschüler, finde die passende Klasse und den nächsten Kurs, behalte Unterlagen sowie Lernstand im Blick und plane deine nächsten Schritte. Diese Demo zeigt, wie die Ausbildung später digital an einem Ort zusammenlaufen könnte."
                               : isFahrwerkBInterface
-                              ? "Wähle aus, wo du gerade stehst. Das Interface zeigt dir den nächsten Schritt, prüft Unterlagen und bereitet Anfragen sauber vor."
+                              ? isMobileViewport
+                                ? "Wähle deinen Bereich – alles Wichtige direkt auf einen Blick."
+                                : "Wähle aus, wo du gerade stehst. Das Interface zeigt dir den nächsten Schritt, prüft Unterlagen und bereitet Anfragen sauber vor."
                               : isLinaInterface
                               ? `Wähle einen Einstieg aus. Danach führt dich ${displayAssistantName} gezielt zur passenden Lösung.`
                               : isMmWartungInterface
@@ -12000,7 +12033,9 @@ body::after {
                                   lineHeight: 1.18,
                                 }}
                               >
-                                {card.title}
+                                {isFahrwerkBInterface && isMobileViewport
+                                  ? card.mobileTitle || card.title
+                                  : card.title}
                               </span>
                             </div>
 
@@ -12011,7 +12046,9 @@ body::after {
                                 color: textSecondary,
                               }}
                             >
-                              {card.description}
+                              {isFahrwerkBInterface && isMobileViewport
+                                ? card.mobileDescription || card.description
+                                : card.description}
                             </div>
                           </button>
                         ))}
