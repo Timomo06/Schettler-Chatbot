@@ -9,6 +9,8 @@ export type TenantId =
   | "txbikesV2"
   | "fahrwerk-b"
   | "fahrschule-hohenbaden"
+  | "fahrschule-hopla"
+  | "fahrschule-alamir"
   | "fahrschule-abgefahren"
   | "petermaennchen-fahrschule"
   | "schelf-fahrschule"
@@ -535,6 +537,84 @@ export const TENANTS: Record<TenantId, TenantConfig> = {
       bg: "#fff8f7",
       glass: "rgba(227,30,36,0.12)",
       text: "#171717",
+    },
+    assets: {
+      launcherIcon: "/favicon.ico",
+    },
+  },
+
+  "fahrschule-hopla": {
+    id: "fahrschule-hopla",
+    brandName: "Fahrschule Hopla",
+    assistantName: "Digitaler Führerscheinbegleiter",
+    language: "de",
+    knowledge: {
+      files: ["eKnowledge.md"],
+    },
+    websiteUrl: "https://www.fahrschule-hopla.de/",
+    primaryCta: {
+      label: "Per WhatsApp anfragen",
+      url: "https://wa.me/491632695307",
+    },
+    fallbackContact: {
+      label: "Telefon / WhatsApp",
+      value: "0163 269 53 07",
+    },
+    companyInfo: {
+      address: "Holländische Str. 27, 34127 Kassel",
+      phone: "0163 269 53 07",
+      email: "info@fahrschule-hopla.de",
+      openingHours: "Büro: Mo 14:30–18:00, Di 11:00–14:30, Mi–Do 12:30–16:00",
+    },
+    rules: {
+      noMedicalClaims: true,
+      noInventingPrices: true,
+      noGuarantees: true,
+    },
+    theme: {
+      accent: "#e53935",
+      bg: "#fff8f6",
+      glass: "rgba(229,57,53,0.12)",
+      text: "#1f2428",
+    },
+    assets: {
+      launcherIcon: "/favicon.ico",
+    },
+  },
+
+  "fahrschule-alamir": {
+    id: "fahrschule-alamir",
+    brandName: "Fahrschule Al-Amir",
+    assistantName: "Digitaler Führerscheinbegleiter",
+    language: "de",
+    knowledge: {
+      files: ["eKnowledge.md"],
+    },
+    websiteUrl: "https://www.fahrschulealamir.de/",
+    primaryCta: {
+      label: "Online anmelden",
+      url: "https://api.fahrschulmanager.de/oa/qr/903516285",
+    },
+    fallbackContact: {
+      label: "Telefon / WhatsApp",
+      value: "0163 907 8887",
+    },
+    companyInfo: {
+      address: "Leipziger Str. 211, 34123 Kassel",
+      phone: "0163 907 8887",
+      email: "info@fahrschulealamir.de",
+      openingHours: "Mo–Fr 16:00–19:00 Uhr während der Unterrichtszeiten",
+    },
+    rules: {
+      noMedicalClaims: true,
+      noInventingPrices: true,
+      noGuarantees: true,
+    },
+    theme: {
+      accent: "#e60015",
+      bg: "#fff7f8",
+      glass: "rgba(230,0,21,0.12)",
+      text: "#1f2024",
     },
     assets: {
       launcherIcon: "/favicon.ico",
@@ -1160,6 +1240,15 @@ const TENANT_ALIASES: Record<string, TenantId> = {
   "in7-days": "fahrschule-hohenbaden",
   "fahrschule-hohenbaden.de": "fahrschule-hohenbaden",
   fahrschulehohenbaden: "fahrschule-hohenbaden",
+  hopla: "fahrschule-hopla",
+  "fahrschule-hopla.de": "fahrschule-hopla",
+  "www.fahrschule-hopla.de": "fahrschule-hopla",
+  fahrschulehopla: "fahrschule-hopla",
+  alamir: "fahrschule-alamir",
+  "al-amir": "fahrschule-alamir",
+  "fahrschulealamir.de": "fahrschule-alamir",
+  "www.fahrschulealamir.de": "fahrschule-alamir",
+  fahrschulealamir: "fahrschule-alamir",
   abgefahren: "fahrschule-abgefahren",
   "abgefahren-schwerin": "fahrschule-abgefahren",
   abgefahrenschwerin: "fahrschule-abgefahren",

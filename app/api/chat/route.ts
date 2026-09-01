@@ -201,6 +201,8 @@ const FAHRWERK_TENANT_ALIASES = [
 const FAHRSCHULE_TENANT_IDS = [
   "fahrwerk-b",
   "fahrschule-hohenbaden",
+  "fahrschule-hopla",
+  "fahrschule-alamir",
   "fahrschule-abgefahren",
   "petermännchen-fahrschule",
   "schelf-fahrschule",

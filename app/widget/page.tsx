@@ -1,5 +1,5 @@
 // TEXTEDIT-KOPIE – Zielpfad im Projekt: app/widget/page.tsx
-// Gemeinsame Widget-Version inkl. Jentsch, AsphaltCrew, Malik und Fahrschule7
+// Gemeinsame Widget-Version inkl. Hopla, Al-Amir und weiterer Fahrschul-Demos
 "use client";
 
 import {
@@ -2975,6 +2975,8 @@ type FutureDemoVariant =
   | "malik"
   | "fahrschule7"
   | "niehaus"
+  | "hopla"
+  | "alamir"
   | "fritz"
   | "fahrtwind"
   | "wiesenberg"
@@ -3369,6 +3371,8 @@ const NIEHAUS_DEMO_DOCUMENTS = [
 ] as const;
 
 type RegionalDemoVariant =
+  | "hopla"
+  | "alamir"
   | "fritz"
   | "fahrtwind"
   | "wiesenberg"
@@ -3383,6 +3387,8 @@ type RegionalDemoVariant =
   | "rennhack";
 
 const REGIONAL_TENANT_VARIANTS: Record<string, RegionalDemoVariant> = {
+  "fahrschule-hopla": "hopla",
+  "fahrschule-alamir": "alamir",
   "fahrschule-fritz": "fritz",
   "fahrschule-fahrtwind": "fahrtwind",
   "fahrschule-wiesenberg": "wiesenberg",
@@ -3455,6 +3461,58 @@ function createRegionalDemoConfig(input: {
 }
 
 const REGIONAL_DEMO_CONFIGS: Record<RegionalDemoVariant, FutureDemoConfig> = {
+  hopla: createRegionalDemoConfig({
+    brand: "Fahrschule Hopla",
+    code: "HOPLA-2048",
+    focus: "Persönlich & mehrsprachig zum Führerschein",
+    classes: "B · BF17 · B197 · BE",
+    offers: [
+      [
+        "Klasse B / BF17",
+        "Start nach persönlicher Anmeldung",
+        "Kassel · Holländische Str. 27",
+        "Schaltung oder begleitetes Fahren",
+      ],
+      [
+        "Klasse B197",
+        "Start nach Beratung",
+        "Kassel",
+        "Automatikprüfung plus Schaltkompetenz",
+      ],
+      [
+        "Klasse BE",
+        "Termin nach Abstimmung",
+        "Kassel",
+        "Anhänger-Ausbildung bei Klasse-B-Vorbesitz",
+      ],
+    ],
+  }),
+  alamir: createRegionalDemoConfig({
+    brand: "Fahrschule Al-Amir",
+    code: "ALAMIR-2048",
+    focus: "Moderner Führerschein & Intensivkurs",
+    classes: "B · BF17 · A · A2 · A1 · AM",
+    offers: [
+      [
+        "Klasse B / BF17",
+        "Online-Anmeldung über MAXI",
+        "Kassel · Leipziger Str. 211",
+        "Schaltung oder Automatik",
+      ],
+      [
+        "Motorrad A / A2 / A1 / AM",
+        "Start nach Klassen- und Alterscheck",
+        "Kassel",
+        "Theorie und Praxis passend zur Klasse",
+      ],
+      [
+        "Intensivkurs",
+        "Termin und Dauer persönlich abstimmen",
+        "Kassel",
+        "Strukturierter, kompakter Ausbildungsweg",
+      ],
+    ],
+  }),
   fritz: createRegionalDemoConfig({
     brand: "Fahrschule Fritz", code: "FRITZ-2048",
     focus: "Ferienkurs & Auto/Motorrad", classes: "B · B96 · BE · A-Klassen · AM · Mofa",
