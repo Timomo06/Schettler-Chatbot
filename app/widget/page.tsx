@@ -5795,9 +5795,9 @@ function ProfCarDemo({ embedded }: { embedded: boolean }) {
 
     const normalized = cleanedQuery.toLowerCase();
     const numbers = normalized.match(/\d[\d.]*/g) || [];
-    const detectedBudget = numbers.length
-      ? Number(numbers[0].replaceAll(".", ""))
-      : null;
+    const detectedBudget = numbers[0]
+  ? Number(numbers[0].replaceAll(".", ""))
+  : null;
     const meansMonthly =
       normalized.includes("monat") || normalized.includes("rate");
 
