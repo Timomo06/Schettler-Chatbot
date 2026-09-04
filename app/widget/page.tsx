@@ -5675,6 +5675,20 @@ type ProfCarVehicle = {
   tags: string[];
 };
 
+type ProfCarVehicleInsight = {
+  engine: string;
+  voiceAliases: string[];
+  images: string[];
+  typicalChecks: string[];
+  listingEvidence: string;
+  evidenceState: "open" | "documented" | "critical";
+};
+
+type ProfCarVoiceVehicleSelection = {
+  id: string;
+  requestId: number;
+};
+
 type ProfCarPanel =
   | "home"
   | "finder"
@@ -5842,8 +5856,213 @@ const PROFCAR_VEHICLES: ProfCarVehicle[] = [
   },
 ];
 
+const PROFCAR_VEHICLE_INSIGHTS: Record<string, ProfCarVehicleInsight> = {
+  "golf-gti": {
+    engine: "2,0 TSI · EA888 evo4 · 245 PS",
+    voiceAliases: ["golf", "golf 8", "golf viii", "gti", "volkswagen gti"],
+    images: [
+      "https://img.classistatic.de/api/v1/mo-prod/images/d1/d18f6cdc-0ff9-48bd-8c9a-437760ed6258?rule=mo-1600",
+    ],
+    typicalChecks: [
+      "Kühlmittelverlust sowie Wasserpumpen-/Thermostatbereich prüfen",
+      "DSG-Schaltverhalten und dokumentierte Wartung kontrollieren",
+      "Assistenzsysteme, Softwarestand und 12-Volt-Batterie testen",
+    ],
+    listingEvidence:
+      "Im sichtbaren Inserat steht „CarVertical geprüft“. Ein erledigter Tausch von Wasserpumpe, Thermostat oder anderen Motorteilen ist dort nicht ausdrücklich genannt – Belege bei ProfCar prüfen.",
+    evidenceState: "open",
+  },
+  "bmw-520d": {
+    engine: "2,0 Diesel · BMW B47 · 190 PS",
+    voiceAliases: ["520d", "5er", "bmw 5er", "bmw 520", "luxury line"],
+    images: [
+      "https://img.classistatic.de/api/v1/mo-prod/images/7b/7bb33bd1-71df-4fa4-a59f-78158c068688?rule=mo-1600",
+    ],
+    typicalChecks: [
+      "Rückruf- und Aktionsstatus über die Fahrgestellnummer prüfen",
+      "DPF-, AGR-, SCR-/AdBlue-System und Regenerationshistorie auslesen",
+      "xDrive, Automatik und Wartungsnachweise bei knapp 100.000 km prüfen",
+    ],
+    listingEvidence:
+      "Das Inserat nennt unfallfrei, Leder und Anhängerkupplung. Erledigte Arbeiten an AGR, DPF, AdBlue-System oder Antrieb sind im sichtbaren Kurztext nicht dokumentiert.",
+    evidenceState: "open",
+  },
+  "mercedes-gla": {
+    engine: "1,6 Turbo-Benziner · Mercedes M270 · 156 PS",
+    voiceAliases: ["gla", "gla 200", "mercedes gla", "amg line"],
+    images: [
+      "https://img.classistatic.de/api/v1/mo-prod/images/63/63da69d1-29bc-443f-a834-7c93f3f3e8e3?rule=mo-1600",
+      "https://img.classistatic.de/api/v1/mo-prod/images/63/63ec9e91-5687-4dc4-ae13-1ec43deee73f?rule=mo-1600",
+      "https://img.classistatic.de/api/v1/mo-prod/images/14/14abe514-9df4-49b9-8708-ebd465f475a5?rule=mo-1600",
+    ],
+    typicalChecks: [
+      "Kaltstart auf auffällige Steuertrieb- oder Verstellergeräusche prüfen",
+      "Kühlkreislauf, Thermostat und Wasserpumpenbereich kontrollieren",
+      "Ölverlust, Zündaussetzer und Wartungshistorie prüfen",
+    ],
+    listingEvidence:
+      "Im Inserat werden Mercedes-Scheckheft und Unfallfreiheit genannt. Welche konkreten Motorarbeiten bereits erledigt wurden, muss anhand der Rechnungen bestätigt werden.",
+    evidenceState: "documented",
+  },
+  "seat-arona": {
+    engine: "1,0 TSI · VW EA211 · 95 PS",
+    voiceAliases: ["arona", "seat arona", "1.0 tsi style"],
+    images: [
+      "https://img.classistatic.de/api/v1/mo-prod/images/76/76d2cc28-8e52-46ab-8643-61de8616554e?rule=mo-1600",
+      "https://img.classistatic.de/api/v1/mo-prod/images/f2/f26f1a0d-72d7-4fc6-9e53-c391dec986fb?rule=mo-1600",
+      "https://img.classistatic.de/api/v1/mo-prod/images/3b/3baa746d-80ae-4641-b05d-e0e98801662b?rule=mo-1600",
+    ],
+    typicalChecks: [
+      "Kühlmittelstand und Wasserpumpen-/Thermostatbereich prüfen",
+      "Zahnriemen- und Wartungsstatus nach Herstellervorgabe belegen lassen",
+      "Turbo-Ladedruck, ruhigen Motorlauf und Kupplung/Getriebe testen",
+    ],
+    listingEvidence:
+      "Das Inserat nennt das Fahrzeug als unfallfrei. Konkrete erledigte Motor- oder Kühlmittelarbeiten sind im sichtbaren Kurztext nicht aufgeführt.",
+    evidenceState: "open",
+  },
+  "mercedes-e63": {
+    engine: "5,5 V8 Biturbo · Mercedes-AMG M157 · 557 PS",
+    voiceAliases: ["e63", "e 63", "amg", "mercedes amg", "e63 amg"],
+    images: [
+      "https://img.classistatic.de/api/v1/mo-prod/images/99/99ad591c-a573-4c9e-818a-0fae6f09e523?rule=mo-1600",
+    ],
+    typicalChecks: [
+      "Kalt- und Warmstart, Zündung sowie gleichmäßigen Motorlauf prüfen",
+      "Öl- und Kühlmittelleitungen im heißen Turbobereich kontrollieren",
+      "Motor-/Getriebelager, Wartung und nachvollziehbare Ölwechsel belegen lassen",
+    ],
+    listingEvidence:
+      "Das Inserat nennt Unfallfreiheit und umfangreiche Komfortausstattung. Reparaturen im Motor- oder Turbobereich sind im sichtbaren Kurztext nicht bestätigt.",
+    evidenceState: "open",
+  },
+  "audi-a3": {
+    engine: "1,0 TFSI · VW EA211 · 116 PS",
+    voiceAliases: ["a3", "audi a3", "a3 sportback", "1.0 tfsi"],
+    images: [
+      "https://img.classistatic.de/api/v1/mo-prod/images/99/99801808-dcb6-4ed2-bb0e-e61b1afa28f4?rule=mo-1600",
+    ],
+    typicalChecks: [
+      "Kühlmittelstand sowie Wasserpumpen-/Thermostatbereich kontrollieren",
+      "Zahnriemen- und Wartungsstatus anhand des Serviceplans prüfen",
+      "Turbo-Ladedruck, Zündaussetzer und ruhigen Kaltstart testen",
+    ],
+    listingEvidence:
+      "Das Inserat nennt ein lückenloses Scheckheft und Unfallfreiheit. Einzelne bereits erneuerte Motorbauteile sind im sichtbaren Kurztext nicht genannt.",
+    evidenceState: "documented",
+  },
+  "bmw-x3": {
+    engine: "3,0 Diesel · BMW B57 · 326 PS",
+    voiceAliases: ["x3", "m40d", "x3 m40d", "bmw x3"],
+    images: [
+      "https://img.classistatic.de/api/v1/mo-prod/images/16/16f185d6-55af-4eba-a0e9-606be9e0af6c?rule=mo-1600",
+      "https://img.classistatic.de/api/v1/mo-prod/images/e2/e2b9919c-b535-4f4e-95b1-346b6399925f?rule=mo-1600",
+      "https://img.classistatic.de/api/v1/mo-prod/images/3f/3f6e6e98-1a08-46ec-92a3-c5d5d750bec6?rule=mo-1600",
+    ],
+    typicalChecks: [
+      "Rückruf- und Aktionsstatus über die Fahrgestellnummer prüfen",
+      "AGR, DPF, SCR-/AdBlue-System und Ansaugtrakt auslesen",
+      "xDrive-Verteilergetriebe, Automatik und Wartungshistorie prüfen",
+    ],
+    listingEvidence:
+      "Laut Inserat ist das Fahrzeug unfallfrei. Konkrete Arbeiten an Abgasnachbehandlung, AGR oder xDrive sind im sichtbaren Kurztext nicht dokumentiert.",
+    evidenceState: "open",
+  },
+  "bmw-840d": {
+    engine: "3,0 Diesel · BMW B57 · 320 PS",
+    voiceAliases: ["840d", "8er", "bmw 8er", "gran coupe", "gran coupé"],
+    images: [
+      "https://img.classistatic.de/api/v1/mo-prod/images/f8/f81d310c-b0a9-4925-97ba-e8b373d254bc?rule=mo-1600",
+    ],
+    typicalChecks: [
+      "Rückruf- und Aktionsstatus über die Fahrgestellnummer prüfen",
+      "AGR, DPF, SCR-/AdBlue-System sowie Ansaugtrakt auslesen",
+      "xDrive, Automatik, Fahrwerk und Wartung bei hoher Laufleistung prüfen",
+    ],
+    listingEvidence:
+      "Das Inserat hebt Bowers & Wilkins und die Ausstattung hervor. Erledigte technische Arbeiten am Motor oder Abgassystem sind im sichtbaren Kurztext nicht genannt.",
+    evidenceState: "open",
+  },
+  "audi-a8": {
+    engine: "3,0 TDI · Audi/VW EA897 evo · 262 PS",
+    voiceAliases: ["a8", "audi a8", "3.0 tdi", "a8 quattro"],
+    images: [
+      "https://img.classistatic.de/api/v1/mo-prod/images/3a/3ab03047-409e-4ed6-bbdc-9663f5e9309c?rule=mo-1600",
+    ],
+    typicalChecks: [
+      "Kaltstart auf auffällige Steuerkettengeräusche prüfen",
+      "AGR, DPF, SCR-/AdBlue-System und Regenerationswerte auslesen",
+      "Öl-/Kühlmittelverlust, quattro, Automatik und Luftfahrwerk prüfen",
+    ],
+    listingEvidence:
+      "Im sichtbaren Inserat werden Ausstattung und Laufleistung genannt. Ein erledigter Steuertrieb-, AGR- oder DPF-Eingriff ist dort nicht dokumentiert.",
+    evidenceState: "open",
+  },
+  "seat-leon": {
+    engine: "1,5 eTSI Mildhybrid · VW EA211 evo · 150 PS",
+    voiceAliases: ["leon", "seat leon", "sportstourer", "1.5 etsi"],
+    images: [
+      "https://img.classistatic.de/api/v1/mo-prod/images/fa/fa5b5191-3729-4159-a807-d69cc0335b2e?rule=mo-1600",
+      "https://img.classistatic.de/api/v1/mo-prod/images/3f/3f632142-1a81-4217-bd2c-b25acde264b2?rule=mo-1600",
+      "https://img.classistatic.de/api/v1/mo-prod/images/c7/c7cce494-86c9-47ce-8d03-7c9783c75b05?rule=mo-1600",
+    ],
+    typicalChecks: [
+      "48-Volt-Mildhybridsystem und Fehlerspeicher prüfen",
+      "DSG-Anfahr- und Schaltverhalten sowie Softwarestand testen",
+      "Kühlmittelstand, Assistenzsysteme und vollständige Wartung prüfen",
+    ],
+    listingEvidence:
+      "Das Inserat nennt Unfallfreiheit und nur 7.983 km. Konkrete Reparaturen sind im sichtbaren Kurztext nicht genannt; bei der geringen Laufleistung sind Übergabecheck und Garantieunterlagen besonders relevant.",
+    evidenceState: "documented",
+  },
+  "bmw-m6": {
+    engine: "4,4 V8 Biturbo · BMW S63TU · 575 PS",
+    voiceAliases: ["m6", "bmw m6", "m6 cabrio", "competition"],
+    images: [
+      "https://img.classistatic.de/api/v1/mo-prod/images/99/99020ed0-5258-425b-bd1f-0fea407571a3?rule=mo-1600",
+    ],
+    typicalChecks: [
+      "Schadensursache, Kompression und Umfang des Motorschadens fachlich klären",
+      "Kostenvoranschlag, benötigte Aggregate und Folgeschäden dokumentieren",
+      "Kühlung, Turbolader, Ölversorgung und vollständige Historie prüfen",
+    ],
+    listingEvidence:
+      "Eindeutig dokumentiert: Motorschaden, beschädigt und nicht fahrtauglich. Das Problem ist nicht als erledigt ausgewiesen – dieses Fahrzeug ist ein Projektfahrzeug.",
+    evidenceState: "critical",
+  },
+};
+
 const PROFCAR_LOGO_SRC = "https://profcar.com/logo-transparent.png";
 const PROFCAR_WEBSITE_URL = "https://profcar.com/";
+const PROFCAR_HERO_VIDEO_SRC = "https://profcar.com/Neu.mp4";
+
+function getProfCarInsight(vehicleId: string) {
+  return PROFCAR_VEHICLE_INSIGHTS[vehicleId];
+}
+
+function findProfCarVehicleFromText(rawText: string) {
+  const normalized = rawText
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9\s.-]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  if (!normalized) return undefined;
+
+  return PROFCAR_VEHICLES.find((vehicle) => {
+    const insight = getProfCarInsight(vehicle.id);
+    return insight?.voiceAliases.some((alias) =>
+      normalized.includes(
+        alias
+          .toLowerCase()
+          .normalize("NFD")
+          .replace(/[\u0300-\u036f]/g, ""),
+      ),
+    );
+  });
+}
 
 function formatProfCarPrice(value: number) {
   return new Intl.NumberFormat("de-DE", {
@@ -5858,11 +6077,15 @@ function ProfCarHub({
   onPanelChange,
   isMobile,
   onAsk,
+  voiceVehicle,
+  onVoiceVehicleHandled,
 }: {
   panel: ProfCarPanel;
   onPanelChange: (panel: ProfCarPanel) => void;
   isMobile: boolean;
   onAsk: (message: string) => void;
+  voiceVehicle: ProfCarVoiceVehicleSelection | null;
+  onVoiceVehicleHandled: () => void;
 }) {
   const [inventorySearch, setInventorySearch] = useState("");
   const [finderBudget, setFinderBudget] = useState("30000");
@@ -5876,6 +6099,7 @@ function ProfCarHub({
   );
   const [focusedVehicle, setFocusedVehicle] =
     useState<ProfCarVehicle | null>(null);
+  const [galleryIndex, setGalleryIndex] = useState(0);
   const [completedAction, setCompletedAction] = useState<string | null>(null);
   const [serviceType, setServiceType] = useState("TÜV / HU");
 
@@ -5883,6 +6107,21 @@ function ProfCarHub({
     setCompletedAction(null);
     setFocusedVehicle(null);
   }, [panel]);
+
+  useEffect(() => {
+    if (!voiceVehicle) return;
+
+    const vehicle = PROFCAR_VEHICLES.find(
+      (entry) => entry.id === voiceVehicle.id,
+    );
+
+    if (vehicle) {
+      setFocusedVehicle(vehicle);
+      setGalleryIndex(0);
+    }
+
+    onVoiceVehicleHandled();
+  }, [voiceVehicle, onVoiceVehicleHandled]);
 
   const panelCopy: Record<
     Exclude<ProfCarPanel, "home">,
@@ -5988,6 +6227,9 @@ function ProfCarHub({
     panel === "testdrive" && rawSelectedVehicle.id === "bmw-m6"
       ? PROFCAR_VEHICLES[0]
       : rawSelectedVehicle;
+  const focusedInsight = focusedVehicle
+    ? getProfCarInsight(focusedVehicle.id)
+    : undefined;
 
   const inputStyle: CSSProperties = {
     width: "100%",
@@ -6063,6 +6305,41 @@ function ProfCarHub({
         boxShadow: "0 9px 24px rgba(15,23,42,.06)",
       }}
     >
+      {getProfCarInsight(vehicle.id)?.images[0] ? (
+        <button
+          type="button"
+          onClick={() => {
+            setGalleryIndex(0);
+            setFocusedVehicle(vehicle);
+          }}
+          aria-label={`Bilder von ${vehicle.brand} ${vehicle.name} öffnen`}
+          style={{
+            width: "calc(100% + 34px)",
+            height: 148,
+            margin: "-17px -17px 15px",
+            padding: 0,
+            overflow: "hidden",
+            border: 0,
+            borderRadius: "19px 19px 0 0",
+            background: "#dfe3e8",
+            cursor: "pointer",
+          }}
+        >
+          <img
+            src={getProfCarInsight(vehicle.id)?.images[0]}
+            alt={`${vehicle.brand} ${vehicle.name} aus dem ProfCar-Bestand`}
+            loading="lazy"
+            referrerPolicy="no-referrer"
+            style={{
+              display: "block",
+              width: "100%",
+              height: "100%",
+              objectFit: "cover",
+              transition: "transform 220ms ease",
+            }}
+          />
+        </button>
+      ) : null}
       <div
         style={{
           display: "flex",
@@ -6075,7 +6352,7 @@ function ProfCarHub({
           letterSpacing: ".05em",
         }}
       >
-        <span>{vehicle.id === "bmw-m6" ? "⚠ BESONDERER HINWEIS" : "● IM DEMO-BESTAND"}</span>
+        <span>{vehicle.id === "bmw-m6" ? "⚠ BESONDERER HINWEIS" : "● IM BESTAND-SNAPSHOT"}</span>
         {rank ? <span style={{ color: "#dc1f2b" }}>MATCH {rank}</span> : null}
       </div>
       <h3
@@ -6139,9 +6416,12 @@ function ProfCarHub({
         <button
           type="button"
           style={secondaryButton}
-          onClick={() => setFocusedVehicle(vehicle)}
+          onClick={() => {
+            setGalleryIndex(0);
+            setFocusedVehicle(vehicle);
+          }}
         >
-          Details
+          Bilder & Check
         </button>
       </div>
     </article>
@@ -6271,7 +6551,7 @@ function ProfCarHub({
               fontWeight: 850,
             }}
           >
-            ● Demo-Bestand synchronisiert
+            ● mobile.de-Snapshot · 04.09.2026
           </div>
         ) : null}
       </div>
@@ -6890,8 +7170,23 @@ function ProfCarHub({
           >
             <div style={{ display: "flex", justifyContent: "space-between", gap: 14 }}>
               <div>
-                <div style={{ color: "#168453", fontSize: 11, fontWeight: 900 }}>
-                  ● IM DEMO-BESTAND
+                <div
+                  style={{
+                    color:
+                      focusedInsight?.evidenceState === "critical"
+                        ? "#b4232d"
+                        : focusedInsight?.evidenceState === "documented"
+                          ? "#168453"
+                          : "#a56408",
+                    fontSize: 11,
+                    fontWeight: 900,
+                  }}
+                >
+                  {focusedInsight?.evidenceState === "critical"
+                    ? "⚠ BEKANNTER SCHADEN"
+                    : focusedInsight?.evidenceState === "documented"
+                      ? "● HISTORIE IM INSERAT GENANNT"
+                      : "● BELEGPRÜFUNG NOCH OFFEN"}
                 </div>
                 <h3 style={{ margin: "7px 0 5px", fontSize: 25 }}>
                   {focusedVehicle.brand} {focusedVehicle.name}
@@ -6908,6 +7203,96 @@ function ProfCarHub({
                 ×
               </button>
             </div>
+
+            {focusedInsight?.images.length ? (
+              <div style={{ marginTop: 20 }}>
+                <div
+                  style={{
+                    position: "relative",
+                    height: isMobile ? 210 : 300,
+                    overflow: "hidden",
+                    borderRadius: 19,
+                    background: "linear-gradient(145deg, #dfe3e8, #eef1f4)",
+                  }}
+                >
+                  <img
+                    src={
+                      focusedInsight.images[galleryIndex] ||
+                      focusedInsight.images[0]
+                    }
+                    alt={`${focusedVehicle.brand} ${focusedVehicle.name} – Fahrzeugbild ${galleryIndex + 1}`}
+                    referrerPolicy="no-referrer"
+                    style={{
+                      display: "block",
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "cover",
+                    }}
+                  />
+                  <div
+                    style={{
+                      position: "absolute",
+                      right: 10,
+                      bottom: 10,
+                      padding: "6px 9px",
+                      borderRadius: 999,
+                      background: "rgba(10,13,18,.72)",
+                      color: "#ffffff",
+                      fontSize: 10.5,
+                      fontWeight: 800,
+                      backdropFilter: "blur(8px)",
+                    }}
+                  >
+                    Bild {galleryIndex + 1} / {focusedInsight.images.length}
+                  </div>
+                </div>
+                {focusedInsight.images.length > 1 ? (
+                  <div
+                    style={{
+                      display: "grid",
+                      gridTemplateColumns: `repeat(${focusedInsight.images.length}, minmax(0, 1fr))`,
+                      gap: 7,
+                      marginTop: 8,
+                    }}
+                  >
+                    {focusedInsight.images.map((imageUrl, index) => (
+                      <button
+                        type="button"
+                        key={imageUrl}
+                        onClick={() => setGalleryIndex(index)}
+                        aria-label={`Fahrzeugbild ${index + 1} anzeigen`}
+                        style={{
+                          height: isMobile ? 54 : 72,
+                          overflow: "hidden",
+                          padding: 0,
+                          borderRadius: 11,
+                          border:
+                            galleryIndex === index
+                              ? "2px solid #dc1f2b"
+                              : "1px solid #d8dde4",
+                          background: "#e7eaee",
+                          cursor: "pointer",
+                        }}
+                      >
+                        <img
+                          src={imageUrl}
+                          alt=""
+                          loading="lazy"
+                          referrerPolicy="no-referrer"
+                          style={{
+                            display: "block",
+                            width: "100%",
+                            height: "100%",
+                            objectFit: "cover",
+                          }}
+                        />
+                      </button>
+                    ))}
+                  </div>
+                ) : null}
+              </div>
+            ) : null}
+
             <div
               style={{
                 display: "grid",
@@ -6931,6 +7316,133 @@ function ProfCarHub({
             <p style={{ color: "#555f6f", fontSize: 13, lineHeight: 1.5 }}>
               {focusedVehicle.note}
             </p>
+
+            {focusedInsight ? (
+              <div
+                style={{
+                  marginTop: 17,
+                  padding: isMobile ? 16 : 19,
+                  borderRadius: 18,
+                  border:
+                    focusedInsight.evidenceState === "critical"
+                      ? "1px solid #efb6ba"
+                      : focusedInsight.evidenceState === "documented"
+                        ? "1px solid #b9dfca"
+                        : "1px solid #edd6aa",
+                  background:
+                    focusedInsight.evidenceState === "critical"
+                      ? "#fff3f3"
+                      : focusedInsight.evidenceState === "documented"
+                        ? "#f2fbf6"
+                        : "#fff9ed",
+                }}
+              >
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    flexWrap: "wrap",
+                    gap: 8,
+                  }}
+                >
+                  <div>
+                    <small
+                      style={{
+                        display: "block",
+                        color: "#717a87",
+                        fontSize: 10.5,
+                        fontWeight: 850,
+                        letterSpacing: ".08em",
+                      }}
+                    >
+                      MOTOR- & FAHRZEUG-CHECK
+                    </small>
+                    <strong
+                      style={{
+                        display: "block",
+                        marginTop: 4,
+                        color: "#171b24",
+                        fontSize: 15.5,
+                      }}
+                    >
+                      {focusedInsight.engine}
+                    </strong>
+                  </div>
+                  <span
+                    style={{
+                      padding: "6px 9px",
+                      borderRadius: 999,
+                      background:
+                        focusedInsight.evidenceState === "critical"
+                          ? "#b4232d"
+                          : focusedInsight.evidenceState === "documented"
+                            ? "#168453"
+                            : "#b87710",
+                      color: "#ffffff",
+                      fontSize: 10,
+                      fontWeight: 900,
+                    }}
+                  >
+                    {focusedInsight.evidenceState === "critical"
+                      ? "SCHADEN OFFEN"
+                      : focusedInsight.evidenceState === "documented"
+                        ? "HISTORIE GENANNT"
+                        : "NACHWEIS PRÜFEN"}
+                  </span>
+                </div>
+                <div style={{ marginTop: 14 }}>
+                  <strong style={{ color: "#343b47", fontSize: 12.5 }}>
+                    Typische Prüfpunkte bei diesem Antrieb
+                  </strong>
+                  <div style={{ display: "grid", gap: 7, marginTop: 8 }}>
+                    {focusedInsight.typicalChecks.map((check) => (
+                      <div
+                        key={check}
+                        style={{
+                          display: "grid",
+                          gridTemplateColumns: "18px 1fr",
+                          gap: 6,
+                          color: "#4f5967",
+                          fontSize: 12,
+                          lineHeight: 1.42,
+                        }}
+                      >
+                        <span style={{ color: "#dc1f2b", fontWeight: 900 }}>✓</span>
+                        <span>{check}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                <div
+                  style={{
+                    marginTop: 13,
+                    padding: 11,
+                    borderRadius: 12,
+                    background: "rgba(255,255,255,.72)",
+                    color: "#505a68",
+                    fontSize: 11.5,
+                    lineHeight: 1.48,
+                  }}
+                >
+                  <strong style={{ color: "#282f3a" }}>
+                    Bei diesem ProfCar-Fahrzeug: {" "}
+                  </strong>
+                  {focusedInsight.listingEvidence}
+                </div>
+                <p
+                  style={{
+                    margin: "10px 2px 0",
+                    color: "#737c89",
+                    fontSize: 10.5,
+                    lineHeight: 1.42,
+                  }}
+                >
+                  Typische Prüfpunkte sind keine Diagnose. Verbindlich sind nur
+                  Fahrzeugprüfung, Fahrgestellnummer und nachvollziehbare Belege.
+                </p>
+              </div>
+            ) : null}
             <div style={{ display: "flex", flexWrap: "wrap", gap: 9, marginTop: 18 }}>
               {focusedVehicle.id !== "bmw-m6" ? (
                 <button
@@ -8050,6 +8562,8 @@ export default function WidgetPage() {
   const [hohenbadenPanel, setHohenbadenPanel] =
     useState<HohenbadenPanel>("home");
   const [profcarPanel, setProfCarPanel] = useState<ProfCarPanel>("home");
+  const [profCarVoiceVehicle, setProfCarVoiceVehicle] =
+    useState<ProfCarVoiceVehicleSelection | null>(null);
 
   const isEmbedClosed = isEmbedded && !open;
   const listRef = useRef<HTMLDivElement | null>(null);
@@ -8304,12 +8818,12 @@ export default function WidgetPage() {
             type: "bt-chat-resize",
             width: isBookingInterface
               ? 1080
-              : isTxbikesInterface || isFahrwerkBInterface || isPetermaennchenInterface || isAbgefahrenInterface || isFutureDemoInterface
+              : isTxbikesInterface || isFahrwerkBInterface || isPetermaennchenInterface || isAbgefahrenInterface || isFutureDemoInterface || isProfCarInterface
                 ? 980
                 : 500,
             height: isBookingInterface
               ? 920
-              : isTxbikesInterface || isFahrwerkBInterface || isPetermaennchenInterface || isAbgefahrenInterface || isFutureDemoInterface
+              : isTxbikesInterface || isFahrwerkBInterface || isPetermaennchenInterface || isAbgefahrenInterface || isFutureDemoInterface || isProfCarInterface
                 ? 880
                 : 760,
           }
@@ -8330,6 +8844,7 @@ export default function WidgetPage() {
     isPetermaennchenInterface,
     isAbgefahrenInterface,
     isFutureDemoInterface,
+    isProfCarInterface,
     embedClosedSize,
   ]);
 
@@ -8340,7 +8855,9 @@ export default function WidgetPage() {
       {
         type: "bt-chat-ready",
         tenant: tenantId,
-        interface: activeFutureTenantId
+        interface: isProfCarInterface
+          ? "profcar"
+          : activeFutureTenantId
           ? activeFutureTenantId
           : isAbgefahrenInterface
             ? "fahrschule-abgefahren"
@@ -8395,6 +8912,7 @@ export default function WidgetPage() {
     mounted,
     tenantId,
     activeFutureTenantId,
+    isProfCarInterface,
     isAbgefahrenInterface,
     isFahrwerkBInterface,
     isPetermaennchenInterface,
@@ -8801,8 +9319,84 @@ export default function WidgetPage() {
     }
   }
 
+  function showProfCarVehicleCheck(vehicle: ProfCarVehicle) {
+    const insight = getProfCarInsight(vehicle.id);
+    if (!insight) return false;
+
+    setProfCarPanel("inventory");
+    setProfCarVoiceVehicle({ id: vehicle.id, requestId: Date.now() });
+    setVoiceUiAction({
+      id: `profcar-vehicle-check-${vehicle.id}-${Date.now()}`,
+      kind: "checklist",
+      eyebrow: "ProfCar · Fahrzeug-Check",
+      title: `${vehicle.brand} ${vehicle.name}`,
+      description:
+        insight.evidenceState === "critical"
+          ? "Bekannter Schaden im Inserat – technische und wirtschaftliche Prüfung zwingend erforderlich."
+          : "Typische Prüfpunkte des Antriebs und der aktuelle Nachweisstand für dieses konkrete Fahrzeug.",
+      items: [
+        {
+          label: "Motorisierung",
+          value: insight.engine,
+        },
+        ...insight.typicalChecks.slice(0, 3).map((check) => ({
+          label: check,
+        })),
+        {
+          label:
+            insight.evidenceState === "critical"
+              ? "Bei diesem Fahrzeug: Schaden offen"
+              : insight.evidenceState === "documented"
+                ? "Bei diesem Fahrzeug: Historie genannt"
+                : "Bei diesem Fahrzeug: Nachweis offen",
+          detail: insight.listingEvidence,
+        },
+      ],
+    });
+
+    return true;
+  }
+
+  function applyProfCarSurfaceIntent(rawText: string) {
+    const vehicle = findProfCarVehicleFromText(rawText);
+    if (vehicle && showProfCarVehicleCheck(vehicle)) return;
+
+    const normalized = rawText
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/[^a-z0-9\s-]/g, " ")
+      .replace(/\s+/g, " ")
+      .trim();
+
+    if (!normalized) return;
+
+    if (/vergleich|gegenuber|gegenüber|unterschied/.test(normalized)) {
+      setProfCarPanel("compare");
+    } else if (/finanz|rate|anzahlung|kredit/.test(normalized)) {
+      setProfCarPanel("finance");
+    } else if (/inzahlung|ankauf|mein auto verkaufen/.test(normalized)) {
+      setProfCarPanel("tradein");
+    } else if (/probefahrt|probe fahren|termin fahren/.test(normalized)) {
+      setProfCarPanel("testdrive");
+    } else if (/tuv|tuev|hu|reifen|fahrwerk|werkstatt|service/.test(normalized)) {
+      setProfCarPanel("service");
+    } else if (/bestand|fahrzeuge|welche autos|autos zeigen/.test(normalized)) {
+      setProfCarPanel("inventory");
+    } else if (/auto finden|suche ein auto|welches auto|empfehl/.test(normalized)) {
+      setProfCarPanel("finder");
+    }
+  }
+
   function applyRealtimeInterfaceTool(rawArguments: unknown) {
-    if (!isFahrwerkBInterface && !isPetermaennchenInterface && !isFutureDemoInterface) return false;
+    if (
+      !isProfCarInterface &&
+      !isFahrwerkBInterface &&
+      !isPetermaennchenInterface &&
+      !isFutureDemoInterface
+    ) {
+      return false;
+    }
 
     let parsed: Record<string, unknown>;
 
@@ -8874,6 +9468,19 @@ export default function WidgetPage() {
       "documents",
       "coach",
     ];
+    const requestedProfCarPanel = String(
+      parsed.panel || "",
+    ).trim() as ProfCarPanel;
+    const validProfCarPanels: ProfCarPanel[] = [
+      "home",
+      "finder",
+      "inventory",
+      "compare",
+      "finance",
+      "tradein",
+      "testdrive",
+      "service",
+    ];
 
     if (isFahrwerkBInterface && validPanels.includes(requestedPanel)) {
       setFahrwerkPanel(requestedPanel);
@@ -8884,6 +9491,29 @@ export default function WidgetPage() {
       validFuturePanels.includes(requestedFuturePanel)
     ) {
       setHohenbadenPanel(requestedFuturePanel);
+    }
+
+    if (
+      isProfCarInterface &&
+      validProfCarPanels.includes(requestedProfCarPanel)
+    ) {
+      setProfCarPanel(requestedProfCarPanel);
+    }
+
+    if (isProfCarInterface) {
+      const mentionedVehicle = findProfCarVehicleFromText(
+        `${title} ${description} ${items
+          .map((item) => `${item.label} ${item.value || ""} ${item.detail || ""}`)
+          .join(" ")}`,
+      );
+
+      if (mentionedVehicle) {
+        setProfCarPanel("inventory");
+        setProfCarVoiceVehicle({
+          id: mentionedVehicle.id,
+          requestId: Date.now(),
+        });
+      }
     }
 
     let url = getSafeInterfaceUrl(parsed.url);
@@ -8907,6 +9537,8 @@ export default function WidgetPage() {
         parsed.eyebrow ||
           (isFutureDemoInterface
             ? displayBrandName
+            : isProfCarInterface
+              ? "ProfCar Köln"
             : isPetermaennchenInterface
             ? "Petermännchen Fahrschule"
             : "Fahrwerk B"),
@@ -8926,6 +9558,11 @@ export default function WidgetPage() {
   }
 
   function applyVoiceSurfaceIntent(rawText: string) {
+    if (isProfCarInterface) {
+      applyProfCarSurfaceIntent(rawText);
+      return;
+    }
+
     if (isSchelfInterface) {
       applySchelfSurfaceIntent(rawText);
       return;
@@ -9010,7 +9647,12 @@ export default function WidgetPage() {
     const text = rawText.trim();
     if (!text || loadingRef.current) return null;
 
-    if (options.fromVoice || isPetermaennchenInterface || isFutureDemoInterface) {
+    if (
+      options.fromVoice ||
+      isProfCarInterface ||
+      isPetermaennchenInterface ||
+      isFutureDemoInterface
+    ) {
       applyVoiceSurfaceIntent(text);
     }
 
@@ -11028,6 +11670,7 @@ export default function WidgetPage() {
     setAbgefahrenPanel("home");
     setHohenbadenPanel("home");
     setProfCarPanel("home");
+    setProfCarVoiceVehicle(null);
     if (typeof window !== "undefined") {
       try {
         window.localStorage.removeItem("fahrwerk-b-stage");
@@ -11322,6 +11965,31 @@ export default function WidgetPage() {
         pointerEvents: isEmbedClosed ? "none" : "auto",
       }}
     >
+      {isProfCarInterface && !isEmbedded ? (
+        <div className="bt-profcar-stage" aria-hidden="true">
+          <video
+            className="bt-profcar-stage-video"
+            src={PROFCAR_HERO_VIDEO_SRC}
+            autoPlay
+            muted
+            loop
+            playsInline
+            preload="metadata"
+          />
+          <div className="bt-profcar-stage-shade" />
+          <div className="bt-profcar-stage-copy">
+            <img src={PROFCAR_LOGO_SRC} alt="" />
+            <div className="bt-profcar-stage-kicker">PROFCAR KÖLN</div>
+            <div className="bt-profcar-stage-title">
+              Dein Fahrzeug.<br />Deine Entscheidung.
+            </div>
+            <div className="bt-profcar-stage-subtitle">
+              Aktueller Bestand, Bilder und technischer Fahrzeug-Check –
+              persönlich begleitet durch das ProfCar-Team.
+            </div>
+          </div>
+        </div>
+      ) : null}
       <style>{`html, body {
   width: 100% !important;
   height: 100% !important;
@@ -11692,6 +12360,99 @@ body::after {
     inset 0 1px 0 rgba(255,255,255,.92),
     0 0 0 1px rgba(${accentRgb},.12),
     0 0 24px rgba(${accentRgb},.16) !important;
+}
+
+@keyframes bt-profcar-stage-drift {
+  0% { transform: scale(1.025) translate3d(0,0,0); }
+  50% { transform: scale(1.055) translate3d(-.7%, -.4%, 0); }
+  100% { transform: scale(1.025) translate3d(0,0,0); }
+}
+
+.bt-profcar-stage {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+  background: #080a0f;
+}
+
+.bt-profcar-stage-video {
+  position: absolute;
+  inset: -3%;
+  width: 106%;
+  height: 106%;
+  object-fit: cover;
+  filter: saturate(1.13) contrast(1.05) brightness(.72);
+  animation: bt-profcar-stage-drift 18s ease-in-out infinite;
+}
+
+.bt-profcar-stage-shade {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(760px 620px at 18% 50%, rgba(0,0,0,.12), rgba(0,0,0,.56) 72%),
+    linear-gradient(90deg, rgba(5,7,11,.34), rgba(5,7,11,.62) 48%, rgba(5,7,11,.88));
+  backdrop-filter: blur(1.5px);
+  -webkit-backdrop-filter: blur(1.5px);
+}
+
+.bt-profcar-stage-copy {
+  position: absolute;
+  left: clamp(36px, 6vw, 118px);
+  top: 50%;
+  width: min(39vw, 560px);
+  transform: translateY(-50%);
+  color: #ffffff;
+  text-shadow: 0 10px 30px rgba(0,0,0,.42);
+}
+
+.bt-profcar-stage-copy img {
+  width: clamp(128px, 12vw, 210px);
+  max-height: 86px;
+  object-fit: contain;
+  object-position: left center;
+  filter: brightness(0) invert(1) drop-shadow(0 12px 24px rgba(0,0,0,.36));
+  margin-bottom: 20px;
+}
+
+.bt-profcar-stage-kicker {
+  color: #ff5963;
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: .18em;
+}
+
+.bt-profcar-stage-title {
+  margin-top: 10px;
+  font-size: clamp(42px, 5.1vw, 82px);
+  line-height: .96;
+  letter-spacing: -.055em;
+  font-weight: 900;
+}
+
+.bt-profcar-stage-subtitle {
+  max-width: 510px;
+  margin-top: 19px;
+  color: rgba(255,255,255,.82);
+  font-size: clamp(14px, 1.35vw, 19px);
+  line-height: 1.5;
+  font-weight: 550;
+}
+
+@media (max-width: 1180px) {
+  .bt-profcar-stage-copy { opacity: .44; width: 42vw; }
+}
+
+@media (max-width: 760px) {
+  .bt-profcar-stage-copy { display: none; }
+  .bt-profcar-stage-shade {
+    background: linear-gradient(180deg, rgba(5,7,11,.60), rgba(5,7,11,.86));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bt-profcar-stage-video { animation: none; }
 }
 
 /* ProfCar nutzt bewusst helle, kontrastreiche Arbeitsflächen im BTDesigns-Rahmen. */
@@ -15015,6 +15776,10 @@ body::after {
                       onPanelChange={openProfCarPanel}
                       isMobile={isMobileViewport}
                       onAsk={sendProfCarGuidedMessage}
+                      voiceVehicle={profCarVoiceVehicle}
+                      onVoiceVehicleHandled={() =>
+                        setProfCarVoiceVehicle(null)
+                      }
                     />
                   )}
 

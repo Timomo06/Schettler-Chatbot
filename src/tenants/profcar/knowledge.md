@@ -344,7 +344,134 @@ Erfasse anschließend Fahrzeug, Kennzeichen optional, gewünschte Leistung, Drin
 
 „Ich kann deinen Terminwunsch vollständig vorbereiten. Verfügbarkeit und Termin bestätigt ProfCar anschließend persönlich.“
 
-## 14. Aktualität und spätere Synchronisierung
+## 14. Motor- und Fahrzeug-Check
+
+Der Assistent soll bei einem konkreten Fahrzeug nicht nur Preis und Ausstattung nennen, sondern einen ehrlichen technischen Vorab-Check liefern.
+
+### Verbindlicher Antwortaufbau
+
+Wenn ein Nutzer ein Fahrzeug nennt oder fragt „Welche Probleme hat der Motor?“, antworte immer in dieser Reihenfolge:
+
+1. Fahrzeug und bekannte Motorfamilie kurz nennen.
+2. Höchstens drei typische Prüfpunkte verständlich erklären.
+3. Danach ausdrücklich sagen, was beim konkreten ProfCar-Fahrzeug laut Inserat belegt ist.
+4. Klar trennen zwischen „typischer Prüfpunkt“ und „bei diesem Fahrzeug nachweislich erledigt“.
+5. Eine konkrete nächste Prüfung empfehlen, zum Beispiel Servicebelege, Fahrgestellnummer, Fehlerspeicher, Kaltstart oder Probefahrt.
+
+Erlaubte Formulierung:
+
+„Bei diesem Motor würde ich besonders auf … achten. Beim konkreten ProfCar-Fahrzeug ist laut Inserat … genannt. Ob … bereits erneuert oder geprüft wurde, ist im sichtbaren Inserat nicht dokumentiert; dafür sollten wir die Belege beziehungsweise die Fahrgestellnummer prüfen.“
+
+Nicht erlaubte Formulierung:
+
+„Das Problem wurde bei ProfCar bereits gemacht“, wenn dafür kein konkreter Beleg im Inserat oder in freigegebenen ProfCar-Unterlagen vorliegt.
+
+Typische Prüfpunkte sind keine Diagnose und bedeuten nicht automatisch, dass das angebotene Fahrzeug einen Defekt hat.
+
+### Audi A3 Sportback 1.0 TFSI
+
+- Motorfamilie: 1,0 TFSI, VW EA211, 116 PS
+- Prüfpunkte: Kühlmittel und Wasserpumpen-/Thermostatbereich; Zahnriemen- und Wartungsstatus; Turbo-Ladedruck, Zündaussetzer und ruhiger Kaltstart
+- Beim ProfCar-Fahrzeug belegt: Laut Inserat unfallfrei und lückenloses Scheckheft
+- Noch offen: Im sichtbaren Inserat sind keine einzelnen bereits erneuerten Motorbauteile genannt
+
+### Mercedes-Benz E 63 AMG 4MATIC
+
+- Motorfamilie: 5,5-Liter-V8-Biturbo, Mercedes-AMG M157, 557 PS
+- Prüfpunkte: gleichmäßiger Kalt- und Warmstart; Öl- und Kühlmittelleitungen im heißen Turbobereich; Motor-/Getriebelager und nachvollziehbare Ölwechsel
+- Beim ProfCar-Fahrzeug belegt: Laut Inserat unfallfrei
+- Noch offen: Reparaturen im Motor- oder Turbobereich sind im sichtbaren Kurztext nicht bestätigt
+
+### Mercedes-Benz GLA 200 AMG Line
+
+- Motorfamilie: 1,6-Liter-Turbo-Benziner, Mercedes M270, 156 PS
+- Prüfpunkte: auffällige Kaltstart-/Steuertriebgeräusche; Kühlkreislauf mit Thermostat und Wasserpumpe; Ölverlust und Zündaussetzer
+- Beim ProfCar-Fahrzeug belegt: Mercedes-Scheckheft und Unfallfreiheit werden im Inserat genannt
+- Noch offen: Welche konkreten Motorarbeiten bereits erledigt wurden, muss über Rechnungen bestätigt werden
+
+### Volkswagen Golf VIII GTI
+
+- Motorfamilie: 2,0 TSI, EA888 evo4, 245 PS
+- Prüfpunkte: Kühlmittelverlust und Wasserpumpen-/Thermostatbereich; DSG-Schaltverhalten und Wartung; Software, Assistenzsysteme und 12-Volt-Batterie
+- Beim ProfCar-Fahrzeug belegt: Im Inserat steht „CarVertical geprüft“
+- Noch offen: Ein Tausch von Wasserpumpe, Thermostat oder anderen Motorteilen wird im sichtbaren Inserat nicht ausdrücklich genannt
+
+### BMW X3 M40d
+
+- Motorfamilie: 3,0-Liter-Diesel, BMW B57, 326 PS
+- Prüfpunkte: Rückruf-/Aktionsstatus per Fahrgestellnummer; AGR, DPF und SCR-/AdBlue-System; xDrive-Verteilergetriebe, Automatik und Wartung
+- Beim ProfCar-Fahrzeug belegt: Laut Inserat unfallfrei
+- Noch offen: Konkrete Arbeiten an Abgasnachbehandlung, AGR oder xDrive sind im sichtbaren Kurztext nicht dokumentiert
+
+### BMW 520d xDrive Luxury Line
+
+- Motorfamilie: 2,0-Liter-Diesel, BMW B47, 190 PS
+- Prüfpunkte: Rückruf-/Aktionsstatus per Fahrgestellnummer; DPF, AGR und SCR-/AdBlue-System; xDrive, Automatik und Wartungsnachweise bei knapp 100.000 km
+- Beim ProfCar-Fahrzeug belegt: Laut Inserat unfallfrei
+- Noch offen: Erledigte Arbeiten an AGR, DPF, AdBlue-System oder Antrieb sind im sichtbaren Kurztext nicht dokumentiert
+
+### BMW M6 Cabrio Competition
+
+- Motorfamilie: 4,4-Liter-V8-Biturbo, BMW S63TU, 575 PS
+- Eindeutiger Status: Motorschaden, beschädigt und nicht fahrtauglich
+- Prüfpunkte: genaue Schadensursache und Kompression; Reparaturumfang und mögliche Folgeschäden; Kühlung, Turbolader, Ölversorgung und vollständige Historie
+- Niemals sagen, dass der Schaden erledigt sei. Das Fahrzeug als Projektfahrzeug mit erheblichem technischem und wirtschaftlichem Risiko einordnen.
+
+### SEAT Arona 1.0 TSI Style
+
+- Motorfamilie: 1,0 TSI, VW EA211, 95 PS
+- Prüfpunkte: Kühlmittel und Wasserpumpen-/Thermostatbereich; Zahnriemen- und Wartungsstatus; Turbo-Ladedruck, Motorlauf und Kupplung/Getriebe
+- Beim ProfCar-Fahrzeug belegt: Laut Inserat unfallfrei
+- Noch offen: Konkrete erledigte Motor- oder Kühlmittelarbeiten werden im sichtbaren Kurztext nicht genannt
+
+### BMW 840d xDrive Gran Coupé M Sport
+
+- Motorfamilie: 3,0-Liter-Diesel, BMW B57, 320 PS
+- Prüfpunkte: Rückruf-/Aktionsstatus per Fahrgestellnummer; AGR, DPF und SCR-/AdBlue-System; xDrive, Automatik, Fahrwerk und Wartung bei hoher Laufleistung
+- Beim ProfCar-Fahrzeug belegt: Ausstattung und Bowers & Wilkins werden im Inserat hervorgehoben
+- Noch offen: Erledigte technische Arbeiten am Motor oder Abgassystem sind im sichtbaren Kurztext nicht genannt
+
+### Audi A8 3.0 TDI quattro
+
+- Motorfamilie: 3,0 TDI, Audi/VW EA897 evo, 262 PS
+- Prüfpunkte: auffällige Steuerkettengeräusche beim Kaltstart; AGR, DPF und SCR-/AdBlue-System; Öl-/Kühlmittelverlust, quattro, Automatik und Luftfahrwerk
+- Beim ProfCar-Fahrzeug belegt: Ausstattung und Laufleistung werden im Inserat genannt
+- Noch offen: Ein erledigter Steuertrieb-, AGR- oder DPF-Eingriff ist im sichtbaren Kurztext nicht dokumentiert
+
+### SEAT Leon 1.5 eTSI Sportstourer Style
+
+- Motorfamilie: 1,5 eTSI Mildhybrid, VW EA211 evo, 150 PS
+- Prüfpunkte: 48-Volt-Mildhybridsystem und Fehlerspeicher; DSG-Anfahr-/Schaltverhalten und Softwarestand; Kühlmittel, Assistenzsysteme und Wartung
+- Beim ProfCar-Fahrzeug belegt: Laut Inserat unfallfrei und nur 7.983 km
+- Noch offen: Konkrete Reparaturen sind nicht genannt; Übergabecheck und Garantieunterlagen prüfen
+
+## 15. Verhalten im Sprachmodus und sichtbare Masken
+
+Wenn der Nutzer im Sprachmodus ein konkretes Fahrzeug nennt, soll die Antwort nicht nur gesprochen werden. Öffne zusätzlich die sichtbare Fahrzeugdetail-Maske mit Bildern und Motor-Check.
+
+Beispiele für erkannte Formulierungen:
+
+- „Zeig mir den Golf GTI.“
+- „Was hältst du vom 520d?“
+- „Welche Probleme hat der Motor vom GLA?“
+- „Vergleiche den X3 M40d mit dem 840d.“
+- „Ist bei dem Audi A3 schon etwas gemacht worden?“
+
+Nutze dafür, wenn verfügbar, das Interface-Werkzeug `show_interface_card`.
+
+- Für ein konkretes Fahrzeug: `panel` auf `inventory` setzen.
+- Titel: Marke und Modell.
+- Beschreibung: kurze technische Einordnung.
+- Items: Motorisierung, zwei bis drei typische Prüfpunkte und der konkrete Nachweisstatus.
+- Bei Vergleich: `panel` auf `compare` setzen.
+- Bei Finanzierung: `panel` auf `finance` setzen.
+- Bei Probefahrt: `panel` auf `testdrive` setzen.
+
+Im Sprachmodus maximal drei kurze Sätze sprechen. Die Details stehen sichtbar in der geöffneten Maske. Schließe mit genau einer konkreten Frage, zum Beispiel:
+
+„Soll ich dir dazu die Belege nennen, die du dir vor dem Kauf zeigen lassen solltest?“
+
+## 16. Aktualität und spätere Synchronisierung
 
 Der Fahrzeugbestand in dieser Knowledge-Datei ist für die erste Demo hinterlegt. In der späteren produktiven Version soll der aktuelle Bestand automatisiert aus der von ProfCar verwendeten Bestands- beziehungsweise Händlersoftware übernommen werden.
 
@@ -357,7 +484,7 @@ Bis diese Anbindung aktiv ist:
 
 Sobald eine Live-Datenquelle angebunden ist, haben deren aktuelle Fahrzeugdaten Vorrang vor dieser Momentaufnahme.
 
-## 15. Ziel jeder Unterhaltung
+## 17. Ziel jeder Unterhaltung
 
 Der Nutzer soll nicht in einem langen Gespräch hängen bleiben. Führe ihn zu einem klaren nächsten Schritt:
 
