@@ -1152,6 +1152,64 @@ const FAHRSCHULE7_START_CARDS: StartCard[] = [
   },
 ];
 
+const PROFCAR_START_CARDS: StartCard[] = [
+  {
+    icon: "🚘",
+    title: "Passendes Auto finden",
+    description: "Budget, Alltag und Wünsche kurz gemeinsam eingrenzen",
+    message:
+      "Hilf mir, ein passendes Fahrzeug aus dem aktuellen ProfCar-Bestand zu finden. Frage mich nacheinander nach Budget oder Monatsrate, Nutzung, Platzbedarf und gewünschter Ausstattung.",
+  },
+  {
+    icon: "✨",
+    title: "Aktuelle Fahrzeuge",
+    description: "Verfügbare Modelle und ihre wichtigsten Daten ansehen",
+    message:
+      "Welche Fahrzeuge sind aktuell bei ProfCar verfügbar? Zeige mir eine kurze übersichtliche Auswahl und frage danach, welches Modell mich interessiert.",
+  },
+  {
+    icon: "⚖️",
+    title: "Fahrzeuge vergleichen",
+    description: "Zwei Modelle ehrlich nach meinem Bedarf einordnen",
+    message:
+      "Ich möchte zwei Fahrzeuge aus dem ProfCar-Bestand vergleichen. Frage zuerst, zwischen welchen Modellen ich schwanke und was mir besonders wichtig ist.",
+  },
+  {
+    icon: "💶",
+    title: "Finanzierung prüfen",
+    description: "Anzahlung, Laufzeit und gewünschte Rate vorbereiten",
+    message:
+      "Ich interessiere mich für eine Finanzierung. Frage nach Wunschfahrzeug, möglicher Anzahlung und gewünschter Monatsrate. Gib nur unverbindliche Hinweise und bereite danach den Kontakt zu ProfCar vor.",
+  },
+  {
+    icon: "🔁",
+    title: "Inzahlungnahme",
+    description: "Aktuelles Fahrzeug strukturiert bewerten lassen",
+    message:
+      "Ich möchte mein aktuelles Fahrzeug in Zahlung geben. Frage mich nacheinander nach Marke, Modell, Erstzulassung, Kilometerstand, Zustand und bekannten Schäden. Nenne keinen verbindlichen Ankaufspreis.",
+  },
+  {
+    icon: "📅",
+    title: "Probefahrt anfragen",
+    description: "Wunschfahrzeug und Termin für ProfCar vorbereiten",
+    message:
+      "Ich möchte eine Probefahrt anfragen. Frage nach dem Fahrzeug, meinem Namen, meiner Telefonnummer und einem Wunschtermin. Erkläre, dass ProfCar den Termin persönlich bestätigt.",
+  },
+  {
+    icon: "🛠️",
+    title: "Service & Werkstatt",
+    description: "TÜV/HU, Reifen, Fahrwerk und Einlagerung klären",
+    message:
+      "Ich habe eine Frage zu den ProfCar-Services TÜV/HU, Reifen, Fahrwerk oder Reifeneinlagerung. Hilf mir, mein Anliegen einzuordnen und den Kontakt vorzubereiten.",
+  },
+  {
+    icon: "🎙️",
+    title: "Einfach sprechen",
+    description: "Fahrzeugwunsch oder Frage natürlich einsprechen",
+    action: "voice",
+  },
+];
+
 function hexToRgb(hex: string) {
   const clean = hex.replace("#", "");
   const full =
@@ -5600,6 +5658,706 @@ function BtServiceIcon({ name, size = 30 }: BtServiceIconProps) {
   );
 }
 
+type ProfCarVehicle = {
+  id: string;
+  brand: string;
+  name: string;
+  price: number;
+  monthly: number;
+  year: number;
+  km: number;
+  power: number;
+  fuel: string;
+  note: string;
+  strength: string;
+  tags: string[];
+};
+
+const PROFCAR_VEHICLES: ProfCarVehicle[] = [
+  {
+    id: "golf-gti",
+    brand: "Volkswagen",
+    name: "Golf VIII GTI",
+    price: 24990,
+    monthly: 227,
+    year: 2024,
+    km: 86188,
+    power: 245,
+    fuel: "Benzin",
+    note: "Standheizung · HUD · Matrix · ACC · Rückfahrkamera",
+    strength: "Sportlich, modern und trotzdem alltagstauglich",
+    tags: ["sportlich", "alltag", "gti", "volkswagen", "vw", "schnell"],
+  },
+  {
+    id: "bmw-520d",
+    brand: "BMW",
+    name: "520d xDrive Luxury Line",
+    price: 27590,
+    monthly: 250,
+    year: 2021,
+    km: 98574,
+    power: 190,
+    fuel: "Diesel",
+    note: "Laserlicht · ACC · 360° · AHK · Nappa",
+    strength: "Komfortabel und besonders stark auf langen Strecken",
+    tags: ["komfort", "autobahn", "langstrecke", "diesel", "bmw"],
+  },
+  {
+    id: "mercedes-gla",
+    brand: "Mercedes-Benz",
+    name: "GLA 200 AMG Line",
+    price: 20499,
+    monthly: 186,
+    year: 2019,
+    km: 72500,
+    power: 156,
+    fuel: "Benzin",
+    note: "AHK · Totwinkel · Memory · LED · PDC",
+    strength: "Kompakter Premium-SUV für Alltag und Familie",
+    tags: ["suv", "komfort", "alltag", "familie", "mercedes", "gla"],
+  },
+  {
+    id: "seat-arona",
+    brand: "SEAT",
+    name: "Arona 1.0 TSI Style",
+    price: 14999,
+    monthly: 136,
+    year: 2022,
+    km: 49300,
+    power: 95,
+    fuel: "Benzin",
+    note: "ACC · Kamera · Voll-LED · CarPlay · Sitzheizung",
+    strength: "Preisbewusster, moderner Alltags-SUV",
+    tags: ["günstig", "suv", "alltag", "seat", "sparsam"],
+  },
+  {
+    id: "mercedes-e63",
+    brand: "Mercedes-AMG",
+    name: "E 63 AMG 4MATIC",
+    price: 33199,
+    monthly: 301,
+    year: 2014,
+    km: 117850,
+    power: 557,
+    fuel: "Benzin",
+    note: "Panorama · Massage · Belüftung · Harman Kardon",
+    strength: "Maximale Leistung mit Oberklasse-Komfort",
+    tags: ["sportlich", "leistung", "schnell", "amg", "mercedes"],
+  },
+  {
+    id: "audi-a3",
+    brand: "Audi",
+    name: "A3 Sportback 1.0 TFSI",
+    price: 17390,
+    monthly: 158,
+    year: 2018,
+    km: 28600,
+    power: 116,
+    fuel: "Benzin",
+    note: "PDC · Xenon · Navigation · Bluetooth · Klimaautomatik",
+    strength: "Kompakt, hochwertig und mit geringer Laufleistung",
+    tags: ["alltag", "kompakt", "audi", "günstig", "wenig kilometer"],
+  },
+];
+
+const PROFCAR_LOGO_SRC = "https://profcar.com/logo-transparent.png";
+const PROFCAR_WEBSITE_URL = "https://profcar.com/";
+
+function formatProfCarPrice(value: number) {
+  return new Intl.NumberFormat("de-DE", {
+    style: "currency",
+    currency: "EUR",
+    maximumFractionDigits: 0,
+  }).format(value);
+}
+
+function ProfCarDemo({ embedded }: { embedded: boolean }) {
+  const [query, setQuery] = useState("");
+  const [resultVehicles, setResultVehicles] = useState(
+    PROFCAR_VEHICLES.slice(0, 4),
+  );
+  const [assistantText, setAssistantText] = useState(
+    "Willkommen bei ProfCar. Beschreibe dein Wunschauto oder wähle eine Schnellfrage – ich finde passende Fahrzeuge aus dem aktuellen Bestand.",
+  );
+  const [comparedIds, setComparedIds] = useState<string[]>([]);
+  const [showComparison, setShowComparison] = useState(false);
+  const [selectedVehicle, setSelectedVehicle] =
+    useState<ProfCarVehicle | null>(null);
+  const [showLead, setShowLead] = useState(false);
+  const [tradeIn, setTradeIn] = useState(false);
+  const [leadSent, setLeadSent] = useState(false);
+  const [isListening, setIsListening] = useState(false);
+  const [voiceHint, setVoiceHint] = useState("");
+
+  const runSearch = (rawQuery: string) => {
+    const cleanedQuery = rawQuery.trim();
+    if (!cleanedQuery) return;
+
+    const normalized = cleanedQuery.toLowerCase();
+    const numbers = normalized.match(/\d[\d.]*/g) || [];
+    const detectedBudget = numbers.length
+      ? Number(numbers[0].replaceAll(".", ""))
+      : null;
+    const meansMonthly =
+      normalized.includes("monat") || normalized.includes("rate");
+
+    const ranked = PROFCAR_VEHICLES.map((vehicle) => {
+      let score = 48;
+
+      vehicle.tags.forEach((tag) => {
+        if (normalized.includes(tag)) score += 17;
+      });
+
+      if (normalized.includes("autobahn") && vehicle.fuel === "Diesel") {
+        score += 24;
+      }
+      if (
+        (normalized.includes("sport") || normalized.includes("schnell")) &&
+        vehicle.power >= 200
+      ) {
+        score += 22;
+      }
+      if (
+        (normalized.includes("familie") || normalized.includes("platz")) &&
+        ["mercedes-gla", "bmw-520d"].includes(vehicle.id)
+      ) {
+        score += 20;
+      }
+      if (
+        detectedBudget &&
+        (meansMonthly
+          ? vehicle.monthly <= detectedBudget
+          : vehicle.price <= detectedBudget)
+      ) {
+        score += 26;
+      }
+
+      return { vehicle, score };
+    }).sort((a, b) => b.score - a.score);
+
+    const nextVehicles = ranked.slice(0, 4).map((entry) => entry.vehicle);
+    setResultVehicles(nextVehicles);
+    setAssistantText(
+      `Meine stärkste Empfehlung ist der ${nextVehicles[0].brand} ${nextVehicles[0].name}: ${nextVehicles[0].strength}. Als Alternative passt der ${nextVehicles[1].brand} ${nextVehicles[1].name}.`,
+    );
+    setQuery("");
+  };
+
+  const startTradeIn = () => {
+    setTradeIn(true);
+    setSelectedVehicle(PROFCAR_VEHICLES[0]);
+    setShowLead(true);
+    setLeadSent(false);
+    setAssistantText(
+      "Gerne. Ich erfasse dein aktuelles Fahrzeug zusammen mit deinem Wunschfahrzeug. ProfCar kann die Inzahlungnahme anschließend persönlich einschätzen.",
+    );
+  };
+
+  const toggleComparison = (vehicleId: string) => {
+    setComparedIds((current) => {
+      if (current.includes(vehicleId)) {
+        return current.filter((id) => id !== vehicleId);
+      }
+      if (current.length >= 3) return current;
+      return [...current, vehicleId];
+    });
+  };
+
+  const startVoiceInput = () => {
+    type RecognitionResult = {
+      results: { 0: { 0: { transcript: string } } };
+    };
+    type RecognitionInstance = {
+      lang: string;
+      interimResults: boolean;
+      start: () => void;
+      onresult: ((event: RecognitionResult) => void) | null;
+      onend: (() => void) | null;
+      onerror: (() => void) | null;
+    };
+    type RecognitionConstructor = new () => RecognitionInstance;
+
+    const voiceWindow = window as typeof window & {
+      SpeechRecognition?: RecognitionConstructor;
+      webkitSpeechRecognition?: RecognitionConstructor;
+    };
+    const Recognition =
+      voiceWindow.SpeechRecognition || voiceWindow.webkitSpeechRecognition;
+
+    if (!Recognition) {
+      setVoiceHint(
+        "Dieser Browser unterstützt die Spracheingabe nicht. Die Texteingabe funktioniert weiterhin.",
+      );
+      return;
+    }
+
+    const recognition = new Recognition();
+    recognition.lang = "de-DE";
+    recognition.interimResults = false;
+    recognition.onresult = (event) => {
+      const transcript = event.results[0][0].transcript;
+      setQuery(transcript);
+      runSearch(transcript);
+    };
+    recognition.onend = () => {
+      setIsListening(false);
+      setVoiceHint("");
+    };
+    recognition.onerror = () => {
+      setIsListening(false);
+      setVoiceHint("Spracheingabe unterbrochen – bitte erneut versuchen.");
+    };
+
+    setIsListening(true);
+    setVoiceHint("Ich höre zu …");
+    recognition.start();
+  };
+
+  const comparedVehicles = comparedIds
+    .map((id) => PROFCAR_VEHICLES.find((vehicle) => vehicle.id === id))
+    .filter((vehicle): vehicle is ProfCarVehicle => Boolean(vehicle));
+
+  return (
+    <main
+      className={`profcar-root ${embedded ? "profcar-root--embedded" : ""}`}
+    >
+      <style>{`
+        html, body { margin: 0; min-height: 100%; background: #07090d; }
+        * { box-sizing: border-box; }
+        button, input, select { font: inherit; }
+        button { -webkit-tap-highlight-color: transparent; }
+
+        .profcar-root {
+          --pc-red: #ec202b;
+          --pc-text: #f7f8fb;
+          --pc-muted: #a9afba;
+          min-height: 100vh;
+          color: var(--pc-text);
+          font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+          background:
+            radial-gradient(850px 620px at 84% 8%, rgba(236,32,43,.18), transparent 62%),
+            radial-gradient(620px 520px at 8% 86%, rgba(63,76,98,.18), transparent 65%),
+            linear-gradient(145deg, #06070a, #0c1017 52%, #07090d);
+          padding: 22px;
+          overflow-x: hidden;
+        }
+        .profcar-root--embedded { min-height: 100%; }
+        .profcar-shell { max-width: 1480px; margin: 0 auto; }
+        .profcar-topbar {
+          height: 68px; display: flex; align-items: center; justify-content: space-between;
+          gap: 18px; margin-bottom: 18px;
+        }
+        .profcar-brand { display: flex; align-items: center; gap: 13px; min-width: 0; }
+        .profcar-brand img { width: 74px; height: 48px; object-fit: contain; filter: drop-shadow(0 8px 14px #000); }
+        .profcar-brand-copy { display: flex; flex-direction: column; min-width: 0; }
+        .profcar-brand-copy strong { font-size: 15px; }
+        .profcar-brand-copy span { color: var(--pc-muted); font-size: 12px; margin-top: 3px; }
+        .profcar-sync {
+          display: grid; grid-template-columns: auto auto; gap: 0 9px; align-items: center;
+          padding: 10px 14px; border: 1px solid rgba(255,255,255,.13);
+          border-radius: 17px; background: rgba(13,17,23,.7); backdrop-filter: blur(20px);
+        }
+        .profcar-sync-dot { grid-row: 1 / 3; width: 9px; height: 9px; border-radius: 50%; background: #5ee39b; box-shadow: 0 0 14px #5ee39b; }
+        .profcar-sync strong { font-size: 12px; }
+        .profcar-sync small { color: var(--pc-muted); font-size: 10px; }
+        .profcar-grid { display: grid; grid-template-columns: minmax(330px,.8fr) minmax(520px,1.25fr); gap: 18px; }
+        .profcar-glass {
+          border: 1px solid rgba(255,255,255,.13); border-radius: 28px;
+          background: rgba(12,15,21,.72); backdrop-filter: blur(30px) saturate(1.25);
+          box-shadow: 0 30px 90px rgba(0,0,0,.42);
+        }
+        .profcar-intro { padding: clamp(26px,3vw,46px); display: flex; flex-direction: column; justify-content: center; min-height: 710px; }
+        .profcar-eyebrow { margin: 0 0 13px; color: #d8dce3; font-size: 11px; letter-spacing: .16em; font-weight: 800; }
+        .profcar-intro h1 { margin: 0; max-width: 620px; font-size: clamp(40px,4.4vw,70px); line-height: .98; letter-spacing: -.055em; }
+        .profcar-lead { max-width: 590px; margin: 22px 0 28px; color: var(--pc-muted); font-size: 16px; line-height: 1.55; }
+        .profcar-quick { display: flex; flex-wrap: wrap; gap: 8px; }
+        .profcar-chip {
+          border: 1px solid rgba(255,255,255,.13); border-radius: 13px; padding: 11px 13px;
+          color: #fff; background: rgba(255,255,255,.06); cursor: pointer; transition: .2s ease;
+          font-size: 13px;
+        }
+        .profcar-chip:hover { background: rgba(255,255,255,.12); transform: translateY(-1px); }
+        .profcar-input-block { margin-top: 30px; }
+        .profcar-input-block > label { display: block; color: var(--pc-muted); font-size: 12px; margin: 0 0 8px 4px; }
+        .profcar-input-row {
+          display: grid; grid-template-columns: 1fr 46px auto; gap: 7px; padding: 7px;
+          border: 1px solid rgba(255,255,255,.16); border-radius: 18px; background: rgba(255,255,255,.075);
+        }
+        .profcar-input-row input { min-width: 0; border: 0; outline: 0; color: #fff; background: transparent; padding: 0 8px; font-size: 15px; }
+        .profcar-input-row input::placeholder { color: #858c97; }
+        .profcar-voice, .profcar-send { border: 0; color: #fff; cursor: pointer; font-weight: 800; }
+        .profcar-voice { border-radius: 12px; background: rgba(255,255,255,.1); font-size: 17px; }
+        .profcar-voice--active { background: var(--pc-red); animation: profcarPulse 1.2s infinite; }
+        .profcar-send { border-radius: 12px; padding: 0 18px; background: var(--pc-red); }
+        .profcar-voice-hint { height: 18px; margin: 8px 4px 0; color: var(--pc-muted); font-size: 12px; }
+        .profcar-results { padding: clamp(22px,2.5vw,36px); min-height: 710px; overflow: hidden; }
+        .profcar-results-head { display: flex; align-items: start; justify-content: space-between; gap: 18px; }
+        .profcar-results h2 { margin: 0; font-size: 25px; letter-spacing: -.03em; }
+        .profcar-compare-button {
+          border: 1px solid rgba(255,255,255,.13); border-radius: 13px; background: rgba(255,255,255,.06);
+          color: #fff; padding: 10px 13px; cursor: pointer; white-space: nowrap;
+        }
+        .profcar-compare-button:disabled { opacity: .35; cursor: not-allowed; }
+        .profcar-assistant {
+          display: flex; gap: 11px; margin: 19px 0; padding: 14px 15px; border-radius: 17px;
+          border: 1px solid rgba(255,255,255,.12); background: rgba(255,255,255,.055);
+        }
+        .profcar-avatar { flex: 0 0 auto; width: 30px; height: 30px; display: grid; place-items: center; border-radius: 10px; background: var(--pc-red); font-weight: 900; }
+        .profcar-assistant p { margin: 3px 0; color: #d7dae0; font-size: 14px; line-height: 1.45; }
+        .profcar-cars { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 12px; }
+        .profcar-car {
+          position: relative; min-height: 230px; overflow: hidden; display: flex; flex-direction: column;
+          padding: 17px; border: 1px solid rgba(255,255,255,.12); border-radius: 20px;
+          background: linear-gradient(145deg,rgba(255,255,255,.085),rgba(255,255,255,.035));
+        }
+        .profcar-car::after { content: attr(data-brand); position: absolute; right: -4px; top: 0; color: rgba(255,255,255,.035); font-size: 42px; font-weight: 900; letter-spacing: -.07em; }
+        .profcar-car-top { position: relative; z-index: 1; display: flex; justify-content: space-between; gap: 10px; }
+        .profcar-live { color: #5ee39b; font-size: 10px; font-weight: 800; }
+        .profcar-check { display: flex; align-items: center; gap: 5px; color: var(--pc-muted); font-size: 10px; cursor: pointer; }
+        .profcar-car h3 { position: relative; z-index: 1; max-width: 88%; margin: 16px 0 5px; font-size: 17px; line-height: 1.2; }
+        .profcar-car-note { margin: 0 0 14px; color: var(--pc-muted); font-size: 11px; line-height: 1.4; }
+        .profcar-specs { display: flex; flex-wrap: wrap; gap: 5px; }
+        .profcar-specs span { padding: 6px 7px; border-radius: 8px; background: rgba(255,255,255,.065); color: #cdd1d8; font-size: 10px; }
+        .profcar-price-row { display: flex; align-items: end; justify-content: space-between; gap: 10px; margin-top: auto; padding-top: 15px; }
+        .profcar-price strong { display: block; font-size: 19px; }
+        .profcar-price small { color: var(--pc-muted); font-size: 10px; }
+        .profcar-action { border: 0; border-radius: 10px; background: #fff; color: #090b0e; padding: 10px 11px; font-size: 11px; font-weight: 850; cursor: pointer; }
+        .profcar-overlay { position: fixed; inset: 0; z-index: 1000; display: grid; place-items: center; padding: 18px; background: rgba(0,0,0,.76); backdrop-filter: blur(10px); }
+        .profcar-modal { position: relative; width: min(650px,100%); max-height: 88vh; overflow: auto; padding: 30px; border: 1px solid rgba(255,255,255,.14); border-radius: 26px; background: #11151c; box-shadow: 0 28px 90px rgba(0,0,0,.56); }
+        .profcar-close { position: absolute; top: 15px; right: 15px; width: 38px; height: 38px; border: 0; border-radius: 12px; color: #fff; background: rgba(255,255,255,.08); font-size: 22px; cursor: pointer; }
+        .profcar-modal h2 { margin: 0; font-size: 28px; }
+        .profcar-modal-copy { color: var(--pc-muted); font-size: 14px; line-height: 1.5; }
+        .profcar-form { display: grid; grid-template-columns: 1fr 1fr; gap: 13px; margin: 22px 0 15px; }
+        .profcar-form label { color: var(--pc-muted); font-size: 12px; }
+        .profcar-form input, .profcar-form select { width: 100%; margin-top: 6px; padding: 12px; border: 1px solid rgba(255,255,255,.13); border-radius: 11px; color: #fff; background: #1b2029; }
+        .profcar-trade { display: flex; gap: 8px; align-items: center; margin: 17px 0; color: #d9dce1; font-size: 13px; }
+        .profcar-primary { width: 100%; border: 0; border-radius: 13px; padding: 14px; background: var(--pc-red); color: #fff; font-weight: 850; cursor: pointer; }
+        .profcar-success { padding: 20px; border-radius: 18px; background: rgba(94,227,155,.1); border: 1px solid rgba(94,227,155,.24); color: #caffdf; line-height: 1.5; }
+        .profcar-table { width: 100%; margin-top: 20px; border-collapse: collapse; }
+        .profcar-table th, .profcar-table td { padding: 12px; border-bottom: 1px solid rgba(255,255,255,.12); text-align: left; font-size: 12px; }
+        .profcar-table th { color: var(--pc-muted); font-weight: 600; }
+        @keyframes profcarPulse { 50% { box-shadow: 0 0 0 10px rgba(236,32,43,0); } }
+
+        @media (max-width: 980px) {
+          .profcar-root { padding: 12px; }
+          .profcar-grid { grid-template-columns: 1fr; }
+          .profcar-intro { min-height: auto; }
+          .profcar-results { min-height: auto; }
+          .profcar-intro h1 { font-size: 44px; }
+        }
+        @media (max-width: 620px) {
+          .profcar-root { padding: 9px; }
+          .profcar-topbar { height: 58px; margin-bottom: 9px; }
+          .profcar-brand img { width: 58px; }
+          .profcar-brand-copy span, .profcar-sync small { display: none; }
+          .profcar-sync-dot { grid-row: auto; }
+          .profcar-glass { border-radius: 21px; }
+          .profcar-intro, .profcar-results { padding: 19px; }
+          .profcar-intro h1 { font-size: 36px; }
+          .profcar-lead { margin: 16px 0 20px; font-size: 14px; }
+          .profcar-quick { display: grid; grid-template-columns: 1fr 1fr; }
+          .profcar-chip { padding: 10px; text-align: left; }
+          .profcar-input-block { margin-top: 20px; }
+          .profcar-input-row { grid-template-columns: 1fr 42px; }
+          .profcar-send { grid-column: 1 / 3; min-height: 42px; }
+          .profcar-cars { grid-template-columns: 1fr; }
+          .profcar-results h2 { font-size: 21px; }
+          .profcar-form { grid-template-columns: 1fr; }
+          .profcar-modal { padding: 25px 18px; }
+          .profcar-table { display: block; overflow-x: auto; }
+        }
+      `}</style>
+
+      <div className="profcar-shell">
+        <header className="profcar-topbar">
+          <div className="profcar-brand">
+            <img src={PROFCAR_LOGO_SRC} alt="ProfCar" />
+            <div className="profcar-brand-copy">
+              <strong>Digitaler Fahrzeugberater</strong>
+              <span>ProfCar Köln · Demo</span>
+            </div>
+          </div>
+          <div className="profcar-sync">
+            <span className="profcar-sync-dot" />
+            <strong>Bestand aktuell</strong>
+            <small>Demo · 12 Fahrzeuge</small>
+          </div>
+        </header>
+
+        <section className="profcar-grid">
+          <div className="profcar-glass profcar-intro">
+            <p className="profcar-eyebrow">DEIN NÄCHSTES AUTO</p>
+            <h1>Welches Auto passt wirklich zu dir?</h1>
+            <p className="profcar-lead">
+              Sag mir Budget, Alltag und Wünsche. Ich finde passende Fahrzeuge
+              aus dem aktuellen ProfCar-Bestand.
+            </p>
+
+            <div className="profcar-quick">
+              <button
+                className="profcar-chip"
+                onClick={() =>
+                  runSearch("Ich suche ein sportliches Auto bis 25.000 Euro")
+                }
+              >
+                Sportlich bis 25.000 €
+              </button>
+              <button
+                className="profcar-chip"
+                onClick={() =>
+                  runSearch("Ich brauche ein komfortables Auto für viel Autobahn")
+                }
+              >
+                Viel Autobahn
+              </button>
+              <button
+                className="profcar-chip"
+                onClick={() => runSearch("Maximal 300 Euro monatliche Rate")}
+              >
+                Max. 300 € monatlich
+              </button>
+              <button className="profcar-chip" onClick={startTradeIn}>
+                Inzahlungnahme
+              </button>
+            </div>
+
+            <div className="profcar-input-block">
+              <label htmlFor="profcar-search">Was suchst du?</label>
+              <form
+                className="profcar-input-row"
+                onSubmit={(event) => {
+                  event.preventDefault();
+                  runSearch(query);
+                }}
+              >
+                <input
+                  id="profcar-search"
+                  value={query}
+                  onChange={(event) => setQuery(event.target.value)}
+                  placeholder="z. B. sportlich, alltagstauglich, bis 25.000 €"
+                />
+                <button
+                  type="button"
+                  className={`profcar-voice ${
+                    isListening ? "profcar-voice--active" : ""
+                  }`}
+                  onClick={startVoiceInput}
+                  aria-label="Spracheingabe starten"
+                >
+                  ◉
+                </button>
+                <button className="profcar-send" type="submit">
+                  Finden →
+                </button>
+              </form>
+              <p className="profcar-voice-hint">{voiceHint}</p>
+            </div>
+          </div>
+
+          <div className="profcar-glass profcar-results">
+            <div className="profcar-results-head">
+              <div>
+                <p className="profcar-eyebrow">LIVE-AUSWAHL</p>
+                <h2>Empfehlungen für dich</h2>
+              </div>
+              <button
+                className="profcar-compare-button"
+                disabled={comparedIds.length < 2}
+                onClick={() => setShowComparison(true)}
+              >
+                Vergleichen · {comparedIds.length}
+              </button>
+            </div>
+
+            <div className="profcar-assistant">
+              <span className="profcar-avatar">P</span>
+              <p>{assistantText}</p>
+            </div>
+
+            <div className="profcar-cars">
+              {resultVehicles.map((vehicle) => (
+                <article
+                  className="profcar-car"
+                  data-brand={vehicle.brand}
+                  key={vehicle.id}
+                >
+                  <div className="profcar-car-top">
+                    <span className="profcar-live">● IM BESTAND</span>
+                    <label className="profcar-check">
+                      <input
+                        type="checkbox"
+                        checked={comparedIds.includes(vehicle.id)}
+                        onChange={() => toggleComparison(vehicle.id)}
+                      />
+                      Vergleich
+                    </label>
+                  </div>
+                  <h3>
+                    {vehicle.brand} {vehicle.name}
+                  </h3>
+                  <p className="profcar-car-note">{vehicle.note}</p>
+                  <div className="profcar-specs">
+                    <span>{vehicle.year}</span>
+                    <span>{vehicle.km.toLocaleString("de-DE")} km</span>
+                    <span>{vehicle.power} PS</span>
+                    <span>{vehicle.fuel}</span>
+                  </div>
+                  <div className="profcar-price-row">
+                    <div className="profcar-price">
+                      <strong>{formatProfCarPrice(vehicle.price)}</strong>
+                      <small>
+                        ab {formatProfCarPrice(vehicle.monthly)} mtl.*
+                      </small>
+                    </div>
+                    <button
+                      className="profcar-action"
+                      onClick={() => {
+                        setSelectedVehicle(vehicle);
+                        setTradeIn(false);
+                        setLeadSent(false);
+                        setShowLead(true);
+                      }}
+                    >
+                      Probefahrt
+                    </button>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </div>
+        </section>
+      </div>
+
+      {showLead && selectedVehicle ? (
+        <div className="profcar-overlay" role="dialog" aria-modal="true">
+          <div className="profcar-modal">
+            <button
+              className="profcar-close"
+              onClick={() => setShowLead(false)}
+              aria-label="Fenster schließen"
+            >
+              ×
+            </button>
+            <p className="profcar-eyebrow">PROBEFAHRT VORBEREITEN</p>
+            <h2>
+              {selectedVehicle.brand} {selectedVehicle.name}
+            </h2>
+            <p className="profcar-modal-copy">
+              ProfCar bestätigt den Termin anschließend persönlich. In dieser
+              Demo werden keine Daten versendet.
+            </p>
+
+            {leadSent ? (
+              <div className="profcar-success">
+                <strong>✓ Anfrage erfolgreich vorbereitet</strong>
+                <br />
+                In der echten Version erhält ProfCar jetzt alle Angaben als
+                strukturierten Lead und kann direkt per WhatsApp oder Telefon
+                reagieren.
+              </div>
+            ) : (
+              <form
+                onSubmit={(event) => {
+                  event.preventDefault();
+                  setLeadSent(true);
+                }}
+              >
+                <div className="profcar-form">
+                  <label>
+                    Name
+                    <input required placeholder="Vor- und Nachname" />
+                  </label>
+                  <label>
+                    Telefon
+                    <input required inputMode="tel" placeholder="0151 …" />
+                  </label>
+                  <label>
+                    Wunschtermin
+                    <input required type="date" />
+                  </label>
+                  <label>
+                    Bevorzugter Kontakt
+                    <select defaultValue="WhatsApp">
+                      <option>WhatsApp</option>
+                      <option>Telefon</option>
+                      <option>E-Mail</option>
+                    </select>
+                  </label>
+                </div>
+                <label className="profcar-trade">
+                  <input
+                    type="checkbox"
+                    checked={tradeIn}
+                    onChange={(event) => setTradeIn(event.target.checked)}
+                  />
+                  Ich möchte ein Fahrzeug in Zahlung geben
+                </label>
+                <button className="profcar-primary" type="submit">
+                  Unverbindliche Anfrage vorbereiten
+                </button>
+              </form>
+            )}
+          </div>
+        </div>
+      ) : null}
+
+      {showComparison ? (
+        <div className="profcar-overlay" role="dialog" aria-modal="true">
+          <div className="profcar-modal">
+            <button
+              className="profcar-close"
+              onClick={() => setShowComparison(false)}
+              aria-label="Vergleich schließen"
+            >
+              ×
+            </button>
+            <p className="profcar-eyebrow">DIREKTER VERGLEICH</p>
+            <h2>Welcher passt besser?</h2>
+            <table className="profcar-table">
+              <tbody>
+                <tr>
+                  <th>Fahrzeug</th>
+                  {comparedVehicles.map((vehicle) => (
+                    <td key={vehicle.id}>
+                      <strong>{vehicle.name}</strong>
+                    </td>
+                  ))}
+                </tr>
+                <tr>
+                  <th>Preis</th>
+                  {comparedVehicles.map((vehicle) => (
+                    <td key={vehicle.id}>{formatProfCarPrice(vehicle.price)}</td>
+                  ))}
+                </tr>
+                <tr>
+                  <th>Monatlich*</th>
+                  {comparedVehicles.map((vehicle) => (
+                    <td key={vehicle.id}>
+                      ab {formatProfCarPrice(vehicle.monthly)}
+                    </td>
+                  ))}
+                </tr>
+                <tr>
+                  <th>Leistung</th>
+                  {comparedVehicles.map((vehicle) => (
+                    <td key={vehicle.id}>{vehicle.power} PS</td>
+                  ))}
+                </tr>
+                <tr>
+                  <th>Stärke</th>
+                  {comparedVehicles.map((vehicle) => (
+                    <td key={vehicle.id}>{vehicle.strength}</td>
+                  ))}
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      ) : null}
+    </main>
+  );
+}
+
 export default function WidgetPage() {
   const [mounted, setMounted] = useState(false);
   const [tenantId, setTenantId] = useState("demo");
@@ -5776,6 +6534,13 @@ export default function WidgetPage() {
     "fahrschule7.de",
     "www.fahrschule7.de",
   ].includes(normalizedTenantId);
+  const isProfCarInterface = [
+    "profcar",
+    "prof-car",
+    "profcar-koeln",
+    "profcar.com",
+    "www.profcar.com",
+  ].includes(normalizedTenantId);
   const futureDemoVariant: FutureDemoVariant | null = isNiehausInterface
     ? "niehaus"
     : isHohenbadenInterface
@@ -5840,7 +6605,8 @@ export default function WidgetPage() {
     isFahrwerkBInterface ||
     isPetermaennchenInterface ||
     isAbgefahrenInterface ||
-    isFutureDemoInterface;
+    isFutureDemoInterface ||
+    isProfCarInterface;
   const isBookingInterface =
     isLinaInterface ||
     isMmWartungInterface ||
@@ -5876,7 +6642,9 @@ export default function WidgetPage() {
       : isWilliInterface
         ? WILLI_BOOKING_SERVICES
         : BTDESIGNS_BOOKING_SERVICES;
-  const displayBrandName = isNiehausInterface
+  const displayBrandName = isProfCarInterface
+    ? "ProfCar Köln"
+    : isNiehausInterface
     ? "Fahrschule Niehaus"
     : isHohenbadenInterface
       ? "Fahrschule Hohenbaden · in7Days"
@@ -5901,7 +6669,9 @@ export default function WidgetPage() {
       : isWilliInterface
         ? "Willi"
         : cfg.brandName;
-  const displayAssistantName = isNiehausInterface
+  const displayAssistantName = isProfCarInterface
+    ? "digitaler Fahrzeugberater"
+    : isNiehausInterface
     ? "Führerschein-Assistent"
     : isHohenbadenInterface
       ? "Führerschein-Assistent"
@@ -5931,7 +6701,9 @@ export default function WidgetPage() {
   const launcherButtonSize = isEnhancedInterface ? 74 : 60;
   const launcherIconSize = isEnhancedInterface ? 32 : 26;
   const launcherXIconSize = isEnhancedInterface ? 24 : 19;
-  const widgetAccent = isTxbikesInterface
+  const widgetAccent = isProfCarInterface
+    ? "#dc1f2b"
+    : isTxbikesInterface
     ? "#8b5cf6"
     : isWilliInterface
       ? theme.accent || "#2563eb"
@@ -5958,7 +6730,9 @@ export default function WidgetPage() {
             : isPetermaennchenInterface
               ? "#f9c806"
             : theme.accent;
-  const widgetBackground = isTxbikesInterface
+  const widgetBackground = isProfCarInterface
+    ? "#0b0e13"
+    : isTxbikesInterface
     ? "#f6f2ff"
     : isWilliInterface
       ? "#f8fbff"
@@ -5987,7 +6761,9 @@ export default function WidgetPage() {
               : isPetermaennchenInterface
                 ? "#fefefe"
               : theme.bg;
-  const textPrimary = isTxbikesInterface
+  const textPrimary = isProfCarInterface
+    ? "#f7f8fb"
+    : isTxbikesInterface
     ? "#1f1636"
     : isWilliInterface
       ? "#172033"
@@ -6169,7 +6945,9 @@ export default function WidgetPage() {
   useEffect(() => {
     if (!mounted) return;
 
-    const firstMessage = isNiehausInterface
+    const firstMessage = isProfCarInterface
+      ? "Willkommen bei ProfCar in Köln. Ich bin dein digitaler Fahrzeugberater und helfe dir dabei, ein passendes Auto zu finden, Fahrzeuge zu vergleichen, Finanzierung oder Inzahlungnahme vorzubereiten und eine Probefahrt anzufragen. Womit möchtest du starten?"
+      : isNiehausInterface
       ? "Hallo! Ich bin der digitale Führerschein-Assistent der Fahrschule Niehaus. Ich helfe dir bei Führerscheinklassen, Preisen, Unterlagen, Anmeldung sowie den Standorten Baden-Baden und Bühl. Womit möchtest du starten?"
       : isHohenbadenInterface
         ? "Hallo! Ich bin der digitale Führerschein-Assistent der Fahrschule Hohenbaden · in7Days. Ich helfe dir beim Intensivkurs, der THEO App, der Anmeldung und den Standorten Baden-Baden oder Bühl. Womit möchtest du starten?"
@@ -6211,6 +6989,7 @@ export default function WidgetPage() {
   }, [
     mounted,
     displayAssistantName,
+    isProfCarInterface,
     isAbgefahrenInterface,
     isHohenbadenInterface,
     isNiehausInterface,
@@ -9045,7 +9824,9 @@ export default function WidgetPage() {
     setMsgs([
       {
         role: "assistant",
-        content: isNiehausInterface
+        content: isProfCarInterface
+          ? "Alles klar — möchtest du ein Fahrzeug finden, zwei Modelle vergleichen, eine Finanzierung prüfen, dein Auto in Zahlung geben oder eine Probefahrt vorbereiten?"
+          : isNiehausInterface
           ? "Alles klar — geht es um Klasse, Preise, Unterlagen, Anmeldung oder den Standort Baden-Baden beziehungsweise Bühl?"
           : isHohenbadenInterface
             ? "Alles klar — wobei soll ich dir rund um Intensivkurs, THEO App oder Führerschein bei Hohenbaden helfen?"
@@ -9081,14 +9862,14 @@ export default function WidgetPage() {
 
   const panelW = isBookingInterface
     ? 1040
-    : isTxbikesInterface || isFahrwerkBInterface || isPetermaennchenInterface || isAbgefahrenInterface || isFutureDemoInterface
+    : isTxbikesInterface || isFahrwerkBInterface || isPetermaennchenInterface || isAbgefahrenInterface || isFutureDemoInterface || isProfCarInterface
       ? 940
       : isEmbedded
         ? 460
         : 500;
   const panelH = isBookingInterface
     ? 840
-    : isTxbikesInterface || isFahrwerkBInterface || isPetermaennchenInterface || isAbgefahrenInterface || isFutureDemoInterface
+    : isTxbikesInterface || isFahrwerkBInterface || isPetermaennchenInterface || isAbgefahrenInterface || isFutureDemoInterface || isProfCarInterface
       ? 820
       : isEmbedded
         ? 660
@@ -9100,7 +9881,9 @@ export default function WidgetPage() {
     : 28;
   // Personalisierte Vertriebsversionen erhalten das jeweilige Markenlogo.
   // Alle anderen Interfaces behalten weiterhin das BTDesigns-/BTAI-Logo.
-  const GLOBAL_LOGO_SRC = isJentschInterface
+  const GLOBAL_LOGO_SRC = isProfCarInterface
+    ? PROFCAR_LOGO_SRC
+    : isJentschInterface
     ? JENTSCH_LOGO_SRC
     : isAsphaltcrewInterface
       ? ASPHALTCREW_LOGO_SRC
@@ -9114,13 +9897,16 @@ export default function WidgetPage() {
       ? PETERMAENNCHEN_LOGO_SRC
       : "/brand/btai-logo.png";
   const hasBrandedSchoolLogo =
+    isProfCarInterface ||
     isPetermaennchenInterface ||
     isSchelfInterface ||
     isJentschInterface ||
     isAsphaltcrewInterface ||
     isMalikInterface ||
     isFahrschule7Interface;
-  const headerPrimaryCta = activeFutureWebsiteUrl
+  const headerPrimaryCta = isProfCarInterface
+    ? { label: "Fahrzeuge", url: PROFCAR_WEBSITE_URL }
+    : activeFutureWebsiteUrl
     ? { label: "Website", url: activeFutureWebsiteUrl }
     : isAbgefahrenInterface
       ? { label: "Website", url: "https://abgefahren-schwerin.de" }
@@ -9141,7 +9927,9 @@ export default function WidgetPage() {
     (!isAbgefahrenInterface || abgefahrenPanel === "home") &&
     (!isFutureDemoInterface || hohenbadenPanel === "home");
 
-  const startCards = isNiehausInterface
+  const startCards = isProfCarInterface
+    ? PROFCAR_START_CARDS
+    : isNiehausInterface
     ? NIEHAUS_START_CARDS
     : isHohenbadenInterface
       ? HOHENBADEN_START_CARDS
