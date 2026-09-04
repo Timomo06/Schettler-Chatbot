@@ -73,10 +73,12 @@ type StartCard = {
     | "schelfContact"
     | "fahrwerkPanel"
     | "abgefahrenPanel"
-    | "hohenbadenPanel";
+    | "hohenbadenPanel"
+    | "profcarPanel";
   fahrwerkPanel?: FahrwerkPanel;
   abgefahrenPanel?: AbgefahrenPanel;
   hohenbadenPanel?: HohenbadenPanel;
+  profcarPanel?: ProfCarPanel;
   prefillLicenseClass?: string;
   prefillStartWish?: string;
 };
@@ -1157,50 +1159,50 @@ const PROFCAR_START_CARDS: StartCard[] = [
     icon: "🚘",
     title: "Passendes Auto finden",
     description: "Budget, Alltag und Wünsche kurz gemeinsam eingrenzen",
-    message:
-      "Hilf mir, ein passendes Fahrzeug aus dem aktuellen ProfCar-Bestand zu finden. Frage mich nacheinander nach Budget oder Monatsrate, Nutzung, Platzbedarf und gewünschter Ausstattung.",
+    action: "profcarPanel",
+    profcarPanel: "finder",
   },
   {
     icon: "✨",
     title: "Aktuelle Fahrzeuge",
     description: "Verfügbare Modelle und ihre wichtigsten Daten ansehen",
-    message:
-      "Welche Fahrzeuge sind aktuell bei ProfCar verfügbar? Zeige mir eine kurze übersichtliche Auswahl und frage danach, welches Modell mich interessiert.",
+    action: "profcarPanel",
+    profcarPanel: "inventory",
   },
   {
     icon: "⚖️",
     title: "Fahrzeuge vergleichen",
     description: "Zwei Modelle ehrlich nach meinem Bedarf einordnen",
-    message:
-      "Ich möchte zwei Fahrzeuge aus dem ProfCar-Bestand vergleichen. Frage zuerst, zwischen welchen Modellen ich schwanke und was mir besonders wichtig ist.",
+    action: "profcarPanel",
+    profcarPanel: "compare",
   },
   {
     icon: "💶",
     title: "Finanzierung prüfen",
     description: "Anzahlung, Laufzeit und gewünschte Rate vorbereiten",
-    message:
-      "Ich interessiere mich für eine Finanzierung. Frage nach Wunschfahrzeug, möglicher Anzahlung und gewünschter Monatsrate. Gib nur unverbindliche Hinweise und bereite danach den Kontakt zu ProfCar vor.",
+    action: "profcarPanel",
+    profcarPanel: "finance",
   },
   {
     icon: "🔁",
     title: "Inzahlungnahme",
     description: "Aktuelles Fahrzeug strukturiert bewerten lassen",
-    message:
-      "Ich möchte mein aktuelles Fahrzeug in Zahlung geben. Frage mich nacheinander nach Marke, Modell, Erstzulassung, Kilometerstand, Zustand und bekannten Schäden. Nenne keinen verbindlichen Ankaufspreis.",
+    action: "profcarPanel",
+    profcarPanel: "tradein",
   },
   {
     icon: "📅",
     title: "Probefahrt anfragen",
     description: "Wunschfahrzeug und Termin für ProfCar vorbereiten",
-    message:
-      "Ich möchte eine Probefahrt anfragen. Frage nach dem Fahrzeug, meinem Namen, meiner Telefonnummer und einem Wunschtermin. Erkläre, dass ProfCar den Termin persönlich bestätigt.",
+    action: "profcarPanel",
+    profcarPanel: "testdrive",
   },
   {
     icon: "🛠️",
     title: "Service & Werkstatt",
     description: "TÜV/HU, Reifen, Fahrwerk und Einlagerung klären",
-    message:
-      "Ich habe eine Frage zu den ProfCar-Services TÜV/HU, Reifen, Fahrwerk oder Reifeneinlagerung. Hilf mir, mein Anliegen einzuordnen und den Kontakt vorzubereiten.",
+    action: "profcarPanel",
+    profcarPanel: "service",
   },
   {
     icon: "🎙️",
@@ -5673,6 +5675,16 @@ type ProfCarVehicle = {
   tags: string[];
 };
 
+type ProfCarPanel =
+  | "home"
+  | "finder"
+  | "inventory"
+  | "compare"
+  | "finance"
+  | "tradein"
+  | "testdrive"
+  | "service";
+
 const PROFCAR_VEHICLES: ProfCarVehicle[] = [
   {
     id: "golf-gti",
@@ -5706,8 +5718,8 @@ const PROFCAR_VEHICLES: ProfCarVehicle[] = [
     id: "mercedes-gla",
     brand: "Mercedes-Benz",
     name: "GLA 200 AMG Line",
-    price: 20499,
-    monthly: 186,
+    price: 20299,
+    monthly: 184,
     year: 2019,
     km: 72500,
     power: 156,
@@ -5720,8 +5732,8 @@ const PROFCAR_VEHICLES: ProfCarVehicle[] = [
     id: "seat-arona",
     brand: "SEAT",
     name: "Arona 1.0 TSI Style",
-    price: 14999,
-    monthly: 136,
+    price: 14599,
+    monthly: 133,
     year: 2022,
     km: 49300,
     power: 95,
@@ -5758,6 +5770,76 @@ const PROFCAR_VEHICLES: ProfCarVehicle[] = [
     strength: "Kompakt, hochwertig und mit geringer Laufleistung",
     tags: ["alltag", "kompakt", "audi", "günstig", "wenig kilometer"],
   },
+  {
+    id: "bmw-x3",
+    brand: "BMW",
+    name: "X3 M40d",
+    price: 31499,
+    monthly: 286,
+    year: 2019,
+    km: 89900,
+    power: 326,
+    fuel: "Diesel",
+    note: "M Performance · xDrive · Premium-SUV · Langstreckenkomfort",
+    strength: "Kräftiger Premium-SUV mit viel Platz und Langstreckenqualität",
+    tags: ["suv", "familie", "autobahn", "diesel", "bmw", "leistung"],
+  },
+  {
+    id: "bmw-840d",
+    brand: "BMW",
+    name: "840d xDrive",
+    price: 42599,
+    monthly: 386,
+    year: 2020,
+    km: 148102,
+    power: 320,
+    fuel: "Diesel",
+    note: "Gran Turismo · xDrive · Oberklasse · 320 PS",
+    strength: "Luxuriöser Reise-GT für Komfort, Leistung und lange Strecken",
+    tags: ["luxus", "komfort", "autobahn", "diesel", "bmw", "sportlich"],
+  },
+  {
+    id: "audi-a8",
+    brand: "Audi",
+    name: "A8 3.0 TDI quattro",
+    price: 22990,
+    monthly: 209,
+    year: 2015,
+    km: 220200,
+    power: 262,
+    fuel: "Diesel",
+    note: "quattro · Oberklasse · Automatik · Langstreckenfahrzeug",
+    strength: "Viel Oberklasse und Komfort zu einem attraktiven Einstiegspreis",
+    tags: ["luxus", "komfort", "autobahn", "diesel", "audi"],
+  },
+  {
+    id: "seat-leon",
+    brand: "SEAT",
+    name: "Leon 1.5 eTSI",
+    price: 24299,
+    monthly: 221,
+    year: 2024,
+    km: 7983,
+    power: 150,
+    fuel: "Benzin",
+    note: "Sehr geringe Laufleistung · modern · kompakt · 150 PS",
+    strength: "Nahezu neuer, moderner Allrounder mit sehr wenig Kilometern",
+    tags: ["alltag", "kompakt", "wenig kilometer", "seat", "modern"],
+  },
+  {
+    id: "bmw-m6",
+    brand: "BMW",
+    name: "M6 Cabrio Competition",
+    price: 22990,
+    monthly: 209,
+    year: 2014,
+    km: 196000,
+    power: 575,
+    fuel: "Benzin",
+    note: "Motorschaden · nicht fahrbereit · Sonderangebot für Fachkundige",
+    strength: "Extrem leistungsstarkes Projektfahrzeug – ausdrücklich mit Motorschaden",
+    tags: ["sportlich", "leistung", "cabrio", "bmw", "projektfahrzeug"],
+  },
 ];
 
 const PROFCAR_LOGO_SRC = "https://profcar.com/logo-transparent.png";
@@ -5769,6 +5851,1115 @@ function formatProfCarPrice(value: number) {
     currency: "EUR",
     maximumFractionDigits: 0,
   }).format(value);
+}
+
+function ProfCarHub({
+  panel,
+  onPanelChange,
+  isMobile,
+  onAsk,
+}: {
+  panel: ProfCarPanel;
+  onPanelChange: (panel: ProfCarPanel) => void;
+  isMobile: boolean;
+  onAsk: (message: string) => void;
+}) {
+  const [inventorySearch, setInventorySearch] = useState("");
+  const [finderBudget, setFinderBudget] = useState("30000");
+  const [finderUse, setFinderUse] = useState("alltag");
+  const [finderFuel, setFinderFuel] = useState("egal");
+  const [finderStarted, setFinderStarted] = useState(false);
+  const [compareLeft, setCompareLeft] = useState(PROFCAR_VEHICLES[0].id);
+  const [compareRight, setCompareRight] = useState(PROFCAR_VEHICLES[1].id);
+  const [selectedVehicleId, setSelectedVehicleId] = useState(
+    PROFCAR_VEHICLES[0].id,
+  );
+  const [focusedVehicle, setFocusedVehicle] =
+    useState<ProfCarVehicle | null>(null);
+  const [completedAction, setCompletedAction] = useState<string | null>(null);
+  const [serviceType, setServiceType] = useState("TÜV / HU");
+
+  useEffect(() => {
+    setCompletedAction(null);
+    setFocusedVehicle(null);
+  }, [panel]);
+
+  const panelCopy: Record<
+    Exclude<ProfCarPanel, "home">,
+    { icon: string; eyebrow: string; title: string; description: string }
+  > = {
+    finder: {
+      icon: "🚘",
+      eyebrow: "FAHRZEUGFINDER",
+      title: "Welches Auto passt zu dir?",
+      description:
+        "Budget und Nutzung auswählen – die Demo filtert direkt passende Fahrzeuge aus dem ProfCar-Bestand.",
+    },
+    inventory: {
+      icon: "✨",
+      eyebrow: "AKTUELLER BESTAND",
+      title: "Fahrzeuge auf einen Blick",
+      description:
+        "Durchsuchen, Eckdaten prüfen und ein Wunschfahrzeug für die nächsten Schritte auswählen.",
+    },
+    compare: {
+      icon: "⚖️",
+      eyebrow: "FAHRZEUGVERGLEICH",
+      title: "Zwei Modelle direkt vergleichen",
+      description:
+        "Preis, Monatsrate, Laufleistung, Leistung und Fahrzeugcharakter übersichtlich gegenüberstellen.",
+    },
+    finance: {
+      icon: "💶",
+      eyebrow: "FINANZIERUNG",
+      title: "Finanzierungswunsch vorbereiten",
+      description:
+        "Wunschfahrzeug, Anzahlung, Laufzeit und Zielrate erfassen. Die verbindliche Prüfung erfolgt persönlich.",
+    },
+    tradein: {
+      icon: "🔁",
+      eyebrow: "INZAHLUNGNAHME",
+      title: "Dein Fahrzeug vorbewerten lassen",
+      description:
+        "Alle wichtigen Daten strukturiert erfassen, damit ProfCar schnell eine persönliche Einschätzung geben kann.",
+    },
+    testdrive: {
+      icon: "📅",
+      eyebrow: "PROBEFAHRT",
+      title: "Wunschfahrzeug live erleben",
+      description:
+        "Fahrzeug und Wunschtermin auswählen. ProfCar bestätigt den Termin anschließend persönlich.",
+    },
+    service: {
+      icon: "🛠️",
+      eyebrow: "SERVICE & WERKSTATT",
+      title: "Serviceanliegen vorbereiten",
+      description:
+        "TÜV/HU, Reifen, Fahrwerk oder Einlagerung auswählen und die wichtigsten Angaben direkt erfassen.",
+    },
+  };
+
+  if (panel === "home") return null;
+
+  const copy = panelCopy[panel];
+  const normalizedSearch = inventorySearch.trim().toLowerCase();
+  const visibleVehicles = normalizedSearch
+    ? PROFCAR_VEHICLES.filter((vehicle) =>
+        [
+          vehicle.brand,
+          vehicle.name,
+          vehicle.fuel,
+          vehicle.note,
+          vehicle.strength,
+          ...vehicle.tags,
+        ]
+          .join(" ")
+          .toLowerCase()
+          .includes(normalizedSearch),
+      )
+    : PROFCAR_VEHICLES;
+
+  const budget = Number(finderBudget) || Number.POSITIVE_INFINITY;
+  const finderResults = PROFCAR_VEHICLES.filter(
+    (vehicle) =>
+      vehicle.price <= budget &&
+      (finderFuel === "egal" || vehicle.fuel === finderFuel),
+  )
+    .map((vehicle) => ({
+      vehicle,
+      score:
+        (vehicle.tags.includes(finderUse) ? 30 : 0) +
+        Math.max(0, 20 - Math.round(vehicle.price / 5000)),
+    }))
+    .sort((a, b) => b.score - a.score)
+    .slice(0, 4)
+    .map((entry) => entry.vehicle);
+
+  const leftVehicle =
+    PROFCAR_VEHICLES.find((vehicle) => vehicle.id === compareLeft) ||
+    PROFCAR_VEHICLES[0];
+  const rightVehicle =
+    PROFCAR_VEHICLES.find((vehicle) => vehicle.id === compareRight) ||
+    PROFCAR_VEHICLES[1];
+  const rawSelectedVehicle =
+    PROFCAR_VEHICLES.find((vehicle) => vehicle.id === selectedVehicleId) ||
+    PROFCAR_VEHICLES[0];
+  const selectedVehicle =
+    panel === "testdrive" && rawSelectedVehicle.id === "bmw-m6"
+      ? PROFCAR_VEHICLES[0]
+      : rawSelectedVehicle;
+
+  const inputStyle: CSSProperties = {
+    width: "100%",
+    minHeight: 46,
+    marginTop: 7,
+    padding: "11px 13px",
+    borderRadius: 13,
+    border: "1px solid #d8dde5",
+    background: "#ffffff",
+    color: "#151922",
+    outline: "none",
+    fontSize: 14,
+    boxShadow: "0 1px 2px rgba(15,23,42,.04)",
+  };
+  const labelStyle: CSSProperties = {
+    color: "#555f6f",
+    fontSize: 12.5,
+    fontWeight: 750,
+    lineHeight: 1.3,
+  };
+  const primaryButton: CSSProperties = {
+    minHeight: 46,
+    border: 0,
+    borderRadius: 14,
+    padding: "0 18px",
+    background: "linear-gradient(180deg, #ed3340, #cf1522)",
+    color: "#ffffff",
+    fontWeight: 850,
+    cursor: "pointer",
+    boxShadow: "0 10px 24px rgba(220,31,43,.22)",
+  };
+  const secondaryButton: CSSProperties = {
+    minHeight: 42,
+    border: "1px solid #d8dde5",
+    borderRadius: 13,
+    padding: "0 14px",
+    background: "#ffffff",
+    color: "#202632",
+    fontWeight: 800,
+    cursor: "pointer",
+  };
+  const formGridStyle: CSSProperties = {
+    display: "grid",
+    gridTemplateColumns: isMobile ? "1fr" : "repeat(2, minmax(0, 1fr))",
+    gap: 14,
+  };
+
+  const openVehicleFlow = (
+    vehicle: ProfCarVehicle,
+    nextPanel: "finance" | "testdrive",
+  ) => {
+    setSelectedVehicleId(vehicle.id);
+    onPanelChange(nextPanel);
+  };
+
+  const renderVehicleCard = (vehicle: ProfCarVehicle, rank?: number) => (
+    <article
+      key={vehicle.id}
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        minHeight: 230,
+        padding: 17,
+        borderRadius: 19,
+        border:
+          vehicle.id === "bmw-m6"
+            ? "1px solid #efb6ba"
+            : "1px solid #dde2e8",
+        background:
+          vehicle.id === "bmw-m6"
+            ? "linear-gradient(150deg, #fff7f7, #ffffff)"
+            : "linear-gradient(150deg, #ffffff, #f7f8fa)",
+        boxShadow: "0 9px 24px rgba(15,23,42,.06)",
+      }}
+    >
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          gap: 10,
+          color: vehicle.id === "bmw-m6" ? "#b4232d" : "#168453",
+          fontSize: 10.5,
+          fontWeight: 900,
+          letterSpacing: ".05em",
+        }}
+      >
+        <span>{vehicle.id === "bmw-m6" ? "⚠ BESONDERER HINWEIS" : "● IM DEMO-BESTAND"}</span>
+        {rank ? <span style={{ color: "#dc1f2b" }}>MATCH {rank}</span> : null}
+      </div>
+      <h3
+        style={{
+          margin: "14px 0 5px",
+          color: "#171b24",
+          fontSize: 17,
+          lineHeight: 1.22,
+        }}
+      >
+        {vehicle.brand} {vehicle.name}
+      </h3>
+      <p
+        style={{
+          minHeight: 34,
+          margin: "0 0 12px",
+          color: "#626c7a",
+          fontSize: 11.5,
+          lineHeight: 1.42,
+        }}
+      >
+        {vehicle.note}
+      </p>
+      <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+        {[`${vehicle.year}`, `${vehicle.km.toLocaleString("de-DE")} km`, `${vehicle.power} PS`, vehicle.fuel].map(
+          (spec) => (
+            <span
+              key={spec}
+              style={{
+                padding: "6px 8px",
+                borderRadius: 9,
+                background: "#edf0f4",
+                color: "#454e5c",
+                fontSize: 10.5,
+                fontWeight: 700,
+              }}
+            >
+              {spec}
+            </span>
+          ),
+        )}
+      </div>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "flex-end",
+          justifyContent: "space-between",
+          gap: 12,
+          marginTop: "auto",
+          paddingTop: 15,
+        }}
+      >
+        <div>
+          <strong style={{ display: "block", color: "#151922", fontSize: 19 }}>
+            {formatProfCarPrice(vehicle.price)}
+          </strong>
+          <small style={{ color: "#697382", fontSize: 10.5 }}>
+            Inserat: ab {formatProfCarPrice(vehicle.monthly)} mtl.*
+          </small>
+        </div>
+        <button
+          type="button"
+          style={secondaryButton}
+          onClick={() => setFocusedVehicle(vehicle)}
+        >
+          Details
+        </button>
+      </div>
+    </article>
+  );
+
+  const successView = (message: string, chatMessage: string) => (
+    <div
+      style={{
+        padding: isMobile ? 18 : 24,
+        border: "1px solid #b9e5cc",
+        borderRadius: 20,
+        background: "linear-gradient(145deg, #f0fbf5, #ffffff)",
+        color: "#184f35",
+      }}
+    >
+      <div style={{ fontSize: 28, marginBottom: 8 }}>✓</div>
+      <strong style={{ display: "block", fontSize: 18 }}>
+        Anfrage in der Demo vorbereitet
+      </strong>
+      <p style={{ margin: "8px 0 16px", color: "#466656", lineHeight: 1.5 }}>
+        {message} Es wurden in dieser Demo keine Daten versendet.
+      </p>
+      <div style={{ display: "flex", flexWrap: "wrap", gap: 9 }}>
+        <button
+          type="button"
+          style={primaryButton}
+          onClick={() => onAsk(chatMessage)}
+        >
+          Im Chat weiterfragen
+        </button>
+        <button
+          type="button"
+          style={secondaryButton}
+          onClick={() => setCompletedAction(null)}
+        >
+          Angaben ändern
+        </button>
+      </div>
+    </div>
+  );
+
+  return (
+    <section
+      className="bt-profcar-hub"
+      style={{
+        width: "100%",
+        minHeight: isMobile ? 560 : 600,
+        padding: isMobile ? 15 : 24,
+        borderRadius: isMobile ? 22 : 28,
+        border: "1px solid #d9dee6",
+        background:
+          "radial-gradient(520px 260px at 100% 0%, rgba(220,31,43,.09), transparent 66%), linear-gradient(180deg, #fbfbfc, #f3f5f7)",
+        color: "#171b24",
+        boxShadow: "0 18px 48px rgba(15,23,42,.09)",
+      }}
+    >
+      <div
+        style={{
+          display: "flex",
+          alignItems: isMobile ? "flex-start" : "center",
+          justifyContent: "space-between",
+          gap: 14,
+          paddingBottom: 18,
+          borderBottom: "1px solid #dde2e8",
+        }}
+      >
+        <div style={{ display: "flex", alignItems: "flex-start", gap: 13 }}>
+          <button
+            type="button"
+            onClick={() => onPanelChange("home")}
+            aria-label="Zurück zur Übersicht"
+            style={{
+              ...secondaryButton,
+              width: 42,
+              minWidth: 42,
+              padding: 0,
+              fontSize: 20,
+            }}
+          >
+            ←
+          </button>
+          <div>
+            <div
+              style={{
+                color: "#c71b27",
+                fontSize: 10.5,
+                fontWeight: 900,
+                letterSpacing: ".12em",
+              }}
+            >
+              {copy.icon} {copy.eyebrow}
+            </div>
+            <h2
+              style={{
+                margin: "5px 0 4px",
+                color: "#141821",
+                fontSize: isMobile ? 22 : 27,
+                lineHeight: 1.12,
+                letterSpacing: "-.025em",
+              }}
+            >
+              {copy.title}
+            </h2>
+            <p
+              style={{
+                maxWidth: 650,
+                margin: 0,
+                color: "#5e6876",
+                fontSize: isMobile ? 12.5 : 13.5,
+                lineHeight: 1.45,
+              }}
+            >
+              {copy.description}
+            </p>
+          </div>
+        </div>
+        {!isMobile ? (
+          <div
+            style={{
+              flex: "0 0 auto",
+              padding: "9px 12px",
+              border: "1px solid #cfe7d9",
+              borderRadius: 13,
+              background: "#f2fbf6",
+              color: "#26724e",
+              fontSize: 11,
+              fontWeight: 850,
+            }}
+          >
+            ● Demo-Bestand synchronisiert
+          </div>
+        ) : null}
+      </div>
+
+      <div style={{ paddingTop: 20 }}>
+        {panel === "inventory" && (
+          <div>
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: isMobile ? "1fr" : "1fr auto",
+                gap: 10,
+                marginBottom: 16,
+              }}
+            >
+              <input
+                value={inventorySearch}
+                onChange={(event) => setInventorySearch(event.target.value)}
+                placeholder="Marke, Modell, Kraftstoff oder Ausstattung suchen …"
+                style={{ ...inputStyle, marginTop: 0 }}
+              />
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  padding: "0 13px",
+                  borderRadius: 13,
+                  background: "#20242c",
+                  color: "#ffffff",
+                  fontSize: 12,
+                  fontWeight: 800,
+                }}
+              >
+                {visibleVehicles.length} Fahrzeuge
+              </div>
+            </div>
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: isMobile
+                  ? "1fr"
+                  : "repeat(2, minmax(0, 1fr))",
+                gap: 12,
+              }}
+            >
+              {visibleVehicles.map((vehicle) => renderVehicleCard(vehicle))}
+            </div>
+            {!visibleVehicles.length ? (
+              <div
+                style={{
+                  padding: 28,
+                  textAlign: "center",
+                  color: "#616b79",
+                  border: "1px dashed #cbd1da",
+                  borderRadius: 18,
+                }}
+              >
+                Kein Treffer. Versuche zum Beispiel „BMW“, „SUV“ oder „Diesel“.
+              </div>
+            ) : null}
+          </div>
+        )}
+
+        {panel === "finder" && (
+          <div>
+            <div style={formGridStyle}>
+              <label style={labelStyle}>
+                Maximales Kaufbudget
+                <select
+                  value={finderBudget}
+                  onChange={(event) => setFinderBudget(event.target.value)}
+                  style={inputStyle}
+                >
+                  <option value="18000">bis 18.000 €</option>
+                  <option value="23000">bis 23.000 €</option>
+                  <option value="30000">bis 30.000 €</option>
+                  <option value="35000">bis 35.000 €</option>
+                  <option value="50000">bis 50.000 €</option>
+                </select>
+              </label>
+              <label style={labelStyle}>
+                Hauptnutzung
+                <select
+                  value={finderUse}
+                  onChange={(event) => setFinderUse(event.target.value)}
+                  style={inputStyle}
+                >
+                  <option value="alltag">Alltag & Stadt</option>
+                  <option value="familie">Familie & Platz</option>
+                  <option value="autobahn">Autobahn & Langstrecke</option>
+                  <option value="sportlich">Sportlich & leistungsstark</option>
+                  <option value="luxus">Komfort & Luxus</option>
+                </select>
+              </label>
+              <label style={labelStyle}>
+                Kraftstoff
+                <select
+                  value={finderFuel}
+                  onChange={(event) => setFinderFuel(event.target.value)}
+                  style={inputStyle}
+                >
+                  <option value="egal">Offen</option>
+                  <option value="Benzin">Benzin</option>
+                  <option value="Diesel">Diesel</option>
+                </select>
+              </label>
+              <div style={{ display: "flex", alignItems: "flex-end" }}>
+                <button
+                  type="button"
+                  style={{ ...primaryButton, width: "100%" }}
+                  onClick={() => setFinderStarted(true)}
+                >
+                  Passende Fahrzeuge anzeigen
+                </button>
+              </div>
+            </div>
+
+            {finderStarted ? (
+              <div style={{ marginTop: 22 }}>
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    gap: 12,
+                    marginBottom: 12,
+                  }}
+                >
+                  <strong style={{ fontSize: 17 }}>
+                    {finderResults.length
+                      ? `${finderResults.length} passende Vorschläge`
+                      : "Noch kein passendes Fahrzeug"}
+                  </strong>
+                  <span style={{ color: "#687281", fontSize: 11.5 }}>
+                    nach Budget & Nutzung sortiert
+                  </span>
+                </div>
+                <div
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: isMobile
+                      ? "1fr"
+                      : "repeat(2, minmax(0, 1fr))",
+                    gap: 12,
+                  }}
+                >
+                  {finderResults.map((vehicle, index) =>
+                    renderVehicleCard(vehicle, index + 1),
+                  )}
+                </div>
+                {!finderResults.length ? (
+                  <div
+                    style={{
+                      padding: 22,
+                      border: "1px dashed #cbd1da",
+                      borderRadius: 18,
+                      color: "#5f6977",
+                    }}
+                  >
+                    Erhöhe das Budget oder wähle beim Kraftstoff „Offen“.
+                  </div>
+                ) : null}
+              </div>
+            ) : (
+              <div
+                style={{
+                  marginTop: 20,
+                  padding: 18,
+                  borderRadius: 17,
+                  background: "#ffffff",
+                  border: "1px solid #dde2e8",
+                  color: "#596372",
+                  lineHeight: 1.5,
+                  fontSize: 13,
+                }}
+              >
+                Tipp: Die Empfehlung bleibt transparent. Du siehst immer,
+                welche Bestandsfahrzeuge zu deinen Angaben passen und kannst
+                anschließend Details, Finanzierung oder Probefahrt öffnen.
+              </div>
+            )}
+          </div>
+        )}
+
+        {panel === "compare" && (
+          <div>
+            <div style={formGridStyle}>
+              <label style={labelStyle}>
+                Fahrzeug 1
+                <select
+                  value={compareLeft}
+                  onChange={(event) => setCompareLeft(event.target.value)}
+                  style={inputStyle}
+                >
+                  {PROFCAR_VEHICLES.map((vehicle) => (
+                    <option key={vehicle.id} value={vehicle.id}>
+                      {vehicle.brand} {vehicle.name}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <label style={labelStyle}>
+                Fahrzeug 2
+                <select
+                  value={compareRight}
+                  onChange={(event) => setCompareRight(event.target.value)}
+                  style={inputStyle}
+                >
+                  {PROFCAR_VEHICLES.map((vehicle) => (
+                    <option key={vehicle.id} value={vehicle.id}>
+                      {vehicle.brand} {vehicle.name}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            </div>
+            <div
+              style={{
+                marginTop: 18,
+                overflowX: "auto",
+                border: "1px solid #dce1e8",
+                borderRadius: 18,
+                background: "#ffffff",
+              }}
+            >
+              {[
+                ["Fahrzeug", `${leftVehicle.brand} ${leftVehicle.name}`, `${rightVehicle.brand} ${rightVehicle.name}`],
+                ["Kaufpreis", formatProfCarPrice(leftVehicle.price), formatProfCarPrice(rightVehicle.price)],
+                ["Inseratsrate*", `ab ${formatProfCarPrice(leftVehicle.monthly)}`, `ab ${formatProfCarPrice(rightVehicle.monthly)}`],
+                ["Erstzulassung", `${leftVehicle.year}`, `${rightVehicle.year}`],
+                ["Kilometer", `${leftVehicle.km.toLocaleString("de-DE")} km`, `${rightVehicle.km.toLocaleString("de-DE")} km`],
+                ["Leistung", `${leftVehicle.power} PS`, `${rightVehicle.power} PS`],
+                ["Kraftstoff", leftVehicle.fuel, rightVehicle.fuel],
+                ["Stärke", leftVehicle.strength, rightVehicle.strength],
+              ].map((row, index) => (
+                <div
+                  key={row[0]}
+                  style={{
+                    minWidth: 650,
+                    display: "grid",
+                    gridTemplateColumns: "150px 1fr 1fr",
+                    borderTop: index ? "1px solid #e5e8ed" : 0,
+                  }}
+                >
+                  {row.map((cell, cellIndex) => (
+                    <div
+                      key={`${row[0]}-${cellIndex}`}
+                      style={{
+                        padding: "13px 15px",
+                        color: cellIndex === 0 ? "#687281" : "#1c222d",
+                        background: cellIndex === 0 ? "#f6f7f9" : "#ffffff",
+                        fontSize: 12.5,
+                        fontWeight: cellIndex === 0 ? 800 : 650,
+                        lineHeight: 1.4,
+                      }}
+                    >
+                      {cell}
+                    </div>
+                  ))}
+                </div>
+              ))}
+            </div>
+            <p style={{ margin: "10px 3px 0", color: "#77808e", fontSize: 10.5 }}>
+              * Beispielhafte Inseratsrate. Konditionen und Bonitätsprüfung erfolgen individuell.
+            </p>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 9, marginTop: 15 }}>
+              <button
+                type="button"
+                style={primaryButton}
+                onClick={() => openVehicleFlow(leftVehicle, "testdrive")}
+              >
+                Fahrzeug 1 probefahren
+              </button>
+              <button
+                type="button"
+                style={secondaryButton}
+                onClick={() => openVehicleFlow(rightVehicle, "finance")}
+              >
+                Finanzierung für Fahrzeug 2
+              </button>
+            </div>
+          </div>
+        )}
+
+        {panel === "finance" &&
+          (completedAction === "finance" ? (
+            successView(
+              `Der Finanzierungswunsch für den ${selectedVehicle.brand} ${selectedVehicle.name} ist vollständig erfasst.`,
+              `Ich möchte die vorbereitete Finanzierung für den ${selectedVehicle.brand} ${selectedVehicle.name} persönlich mit ProfCar klären.`,
+            )
+          ) : (
+            <form
+              onSubmit={(event) => {
+                event.preventDefault();
+                setCompletedAction("finance");
+              }}
+            >
+              <div style={formGridStyle}>
+                <label style={labelStyle}>
+                  Wunschfahrzeug
+                  <select
+                    value={selectedVehicle.id}
+                    onChange={(event) => setSelectedVehicleId(event.target.value)}
+                    style={inputStyle}
+                  >
+                    {PROFCAR_VEHICLES.map((vehicle) => (
+                      <option key={vehicle.id} value={vehicle.id}>
+                        {vehicle.brand} {vehicle.name} · {formatProfCarPrice(vehicle.price)}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <label style={labelStyle}>
+                  Mögliche Anzahlung
+                  <input required type="number" min="0" step="500" placeholder="z. B. 5.000 €" style={inputStyle} />
+                </label>
+                <label style={labelStyle}>
+                  Gewünschte Laufzeit
+                  <select defaultValue="48 Monate" style={inputStyle}>
+                    <option>36 Monate</option>
+                    <option>48 Monate</option>
+                    <option>60 Monate</option>
+                    <option>72 Monate</option>
+                  </select>
+                </label>
+                <label style={labelStyle}>
+                  Gewünschte Monatsrate
+                  <input required type="number" min="50" step="10" placeholder={`Inserat ab ${selectedVehicle.monthly} €`} style={inputStyle} />
+                </label>
+                <label style={labelStyle}>
+                  Name
+                  <input required placeholder="Vor- und Nachname" style={inputStyle} />
+                </label>
+                <label style={labelStyle}>
+                  Telefon oder E-Mail
+                  <input required placeholder="Kontaktmöglichkeit" style={inputStyle} />
+                </label>
+              </div>
+              <div
+                style={{
+                  margin: "17px 0",
+                  padding: 14,
+                  borderRadius: 15,
+                  background: "#fff8e9",
+                  border: "1px solid #f1ddb0",
+                  color: "#72551b",
+                  fontSize: 12,
+                  lineHeight: 1.45,
+                }}
+              >
+                Unverbindliche Vorbereitung: Der gezeigte Monatswert stammt aus dem Inserat. Zins, Schlussrate, Laufzeit und Zusage werden individuell geprüft.
+              </div>
+              <button type="submit" style={primaryButton}>
+                Finanzierung vorbereiten
+              </button>
+            </form>
+          ))}
+
+        {panel === "tradein" &&
+          (completedAction === "tradein" ? (
+            successView(
+              "Fahrzeugdaten, Zustand und Kontaktwunsch sind vollständig zusammengestellt.",
+              "Ich möchte die vorbereitete Inzahlungnahme mit ProfCar besprechen.",
+            )
+          ) : (
+            <form
+              onSubmit={(event) => {
+                event.preventDefault();
+                setCompletedAction("tradein");
+              }}
+            >
+              <div style={formGridStyle}>
+                <label style={labelStyle}>
+                  Marke und Modell
+                  <input required placeholder="z. B. VW Golf 7" style={inputStyle} />
+                </label>
+                <label style={labelStyle}>
+                  Erstzulassung
+                  <input required type="month" style={inputStyle} />
+                </label>
+                <label style={labelStyle}>
+                  Kilometerstand
+                  <input required type="number" min="0" placeholder="z. B. 98.500" style={inputStyle} />
+                </label>
+                <label style={labelStyle}>
+                  Zustand
+                  <select defaultValue="Gebraucht, guter Zustand" style={inputStyle}>
+                    <option>Sehr guter Zustand</option>
+                    <option>Gebraucht, guter Zustand</option>
+                    <option>Reparaturbedarf vorhanden</option>
+                    <option>Nicht fahrbereit</option>
+                  </select>
+                </label>
+                <label style={labelStyle}>
+                  Bekannte Schäden
+                  <input placeholder="Keine oder kurz beschreiben" style={inputStyle} />
+                </label>
+                <label style={labelStyle}>
+                  Wunschfahrzeug bei ProfCar
+                  <select
+                    value={selectedVehicleId}
+                    onChange={(event) => setSelectedVehicleId(event.target.value)}
+                    style={inputStyle}
+                  >
+                    {PROFCAR_VEHICLES.map((vehicle) => (
+                      <option key={vehicle.id} value={vehicle.id}>
+                        {vehicle.brand} {vehicle.name}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <label style={labelStyle}>
+                  Name
+                  <input required placeholder="Vor- und Nachname" style={inputStyle} />
+                </label>
+                <label style={labelStyle}>
+                  Telefon
+                  <input required inputMode="tel" placeholder="0151 …" style={inputStyle} />
+                </label>
+              </div>
+              <p style={{ margin: "15px 0", color: "#687281", fontSize: 11.5, lineHeight: 1.45 }}>
+                Noch kein Ankaufspreis: Die verbindliche Bewertung erfolgt erst nach persönlicher Prüfung des Fahrzeugs.
+              </p>
+              <button type="submit" style={primaryButton}>
+                Vorbewertung vorbereiten
+              </button>
+            </form>
+          ))}
+
+        {panel === "testdrive" &&
+          (completedAction === "testdrive" ? (
+            successView(
+              `Fahrzeug, Terminwunsch und Kontaktdaten für den ${selectedVehicle.brand} ${selectedVehicle.name} sind erfasst.`,
+              `Ich möchte die vorbereitete Probefahrt für den ${selectedVehicle.brand} ${selectedVehicle.name} mit ProfCar abstimmen.`,
+            )
+          ) : (
+            <form
+              onSubmit={(event) => {
+                event.preventDefault();
+                setCompletedAction("testdrive");
+              }}
+            >
+              <div style={formGridStyle}>
+                <label style={labelStyle}>
+                  Wunschfahrzeug
+                  <select
+                    value={selectedVehicle.id}
+                    onChange={(event) => setSelectedVehicleId(event.target.value)}
+                    style={inputStyle}
+                  >
+                    {PROFCAR_VEHICLES.filter((vehicle) => vehicle.id !== "bmw-m6").map((vehicle) => (
+                      <option key={vehicle.id} value={vehicle.id}>
+                        {vehicle.brand} {vehicle.name}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <label style={labelStyle}>
+                  Wunschtag
+                  <input required type="date" style={inputStyle} />
+                </label>
+                <label style={labelStyle}>
+                  Zeitfenster
+                  <select defaultValue="Vormittags" style={inputStyle}>
+                    <option>Vormittags</option>
+                    <option>Mittags</option>
+                    <option>Nachmittags</option>
+                    <option>Flexibel</option>
+                  </select>
+                </label>
+                <label style={labelStyle}>
+                  Bevorzugter Kontakt
+                  <select defaultValue="WhatsApp" style={inputStyle}>
+                    <option>WhatsApp</option>
+                    <option>Telefon</option>
+                    <option>E-Mail</option>
+                  </select>
+                </label>
+                <label style={labelStyle}>
+                  Name
+                  <input required placeholder="Vor- und Nachname" style={inputStyle} />
+                </label>
+                <label style={labelStyle}>
+                  Telefon oder E-Mail
+                  <input required placeholder="Kontaktmöglichkeit" style={inputStyle} />
+                </label>
+              </div>
+              <div
+                style={{
+                  margin: "16px 0",
+                  padding: 14,
+                  borderRadius: 15,
+                  background: "#ffffff",
+                  border: "1px solid #dde2e8",
+                  color: "#596372",
+                  fontSize: 12,
+                  lineHeight: 1.5,
+                }}
+              >
+                ProfCar Köln · Neue Eiler Straße 50–52 · Samstag 08:00–15:00 Uhr. Der Wunschtermin gilt erst nach persönlicher Bestätigung.
+              </div>
+              <button type="submit" style={primaryButton}>
+                Probefahrt vorbereiten
+              </button>
+            </form>
+          ))}
+
+        {panel === "service" &&
+          (completedAction === "service" ? (
+            successView(
+              `Das Anliegen „${serviceType}“ ist mit Fahrzeugdaten und Kontaktwunsch vollständig vorbereitet.`,
+              `Ich möchte mein vorbereitetes Serviceanliegen „${serviceType}“ mit ProfCar abstimmen.`,
+            )
+          ) : (
+            <form
+              onSubmit={(event) => {
+                event.preventDefault();
+                setCompletedAction("service");
+              }}
+            >
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: isMobile
+                    ? "repeat(2, minmax(0, 1fr))"
+                    : "repeat(4, minmax(0, 1fr))",
+                  gap: 9,
+                  marginBottom: 17,
+                }}
+              >
+                {["TÜV / HU", "Reifenwechsel", "Fahrwerk", "Einlagerung"].map((service) => (
+                  <button
+                    type="button"
+                    key={service}
+                    onClick={() => setServiceType(service)}
+                    style={{
+                      minHeight: 62,
+                      padding: 10,
+                      borderRadius: 14,
+                      border:
+                        serviceType === service
+                          ? "1px solid #dc1f2b"
+                          : "1px solid #d9dee5",
+                      background:
+                        serviceType === service ? "#fff1f2" : "#ffffff",
+                      color: serviceType === service ? "#b71722" : "#313845",
+                      fontWeight: 820,
+                      cursor: "pointer",
+                    }}
+                  >
+                    {service}
+                  </button>
+                ))}
+              </div>
+              <div style={formGridStyle}>
+                <label style={labelStyle}>
+                  Fahrzeug
+                  <input required placeholder="Marke, Modell, Baujahr" style={inputStyle} />
+                </label>
+                <label style={labelStyle}>
+                  Kennzeichen
+                  <input placeholder="Optional" style={inputStyle} />
+                </label>
+                <label style={labelStyle}>
+                  Gewünschter Zeitraum
+                  <input required placeholder="z. B. nächste Woche vormittags" style={inputStyle} />
+                </label>
+                <label style={labelStyle}>
+                  Name
+                  <input required placeholder="Vor- und Nachname" style={inputStyle} />
+                </label>
+                <label style={labelStyle}>
+                  Telefon
+                  <input required inputMode="tel" placeholder="0151 …" style={inputStyle} />
+                </label>
+                <label style={labelStyle}>
+                  Zusatzinfo
+                  <input placeholder="z. B. Reifengröße oder Fehlermeldung" style={inputStyle} />
+                </label>
+              </div>
+              <button type="submit" style={{ ...primaryButton, marginTop: 17 }}>
+                Serviceanfrage vorbereiten
+              </button>
+            </form>
+          ))}
+      </div>
+
+      {focusedVehicle ? (
+        <div
+          role="dialog"
+          aria-modal="true"
+          style={{
+            position: "fixed",
+            inset: 0,
+            zIndex: 1000005,
+            display: "grid",
+            placeItems: "center",
+            padding: 16,
+            background: "rgba(10,13,18,.68)",
+            backdropFilter: "blur(9px)",
+          }}
+          onClick={() => setFocusedVehicle(null)}
+        >
+          <div
+            style={{
+              width: "min(620px, 100%)",
+              maxHeight: "88vh",
+              overflowY: "auto",
+              padding: isMobile ? 20 : 28,
+              borderRadius: 24,
+              background: "#ffffff",
+              color: "#171b24",
+              boxShadow: "0 30px 90px rgba(0,0,0,.35)",
+            }}
+            onClick={(event) => event.stopPropagation()}
+          >
+            <div style={{ display: "flex", justifyContent: "space-between", gap: 14 }}>
+              <div>
+                <div style={{ color: "#168453", fontSize: 11, fontWeight: 900 }}>
+                  ● IM DEMO-BESTAND
+                </div>
+                <h3 style={{ margin: "7px 0 5px", fontSize: 25 }}>
+                  {focusedVehicle.brand} {focusedVehicle.name}
+                </h3>
+                <p style={{ margin: 0, color: "#626c7a", lineHeight: 1.5 }}>
+                  {focusedVehicle.strength}
+                </p>
+              </div>
+              <button
+                type="button"
+                style={{ ...secondaryButton, width: 42, minWidth: 42, padding: 0 }}
+                onClick={() => setFocusedVehicle(null)}
+              >
+                ×
+              </button>
+            </div>
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: isMobile ? "1fr 1fr" : "repeat(4, 1fr)",
+                gap: 8,
+                margin: "20px 0",
+              }}
+            >
+              {[
+                ["Preis", formatProfCarPrice(focusedVehicle.price)],
+                ["Inseratsrate", `ab ${formatProfCarPrice(focusedVehicle.monthly)}`],
+                ["Kilometer", focusedVehicle.km.toLocaleString("de-DE")],
+                ["Leistung", `${focusedVehicle.power} PS`],
+              ].map(([label, value]) => (
+                <div key={label} style={{ padding: 12, borderRadius: 13, background: "#f2f4f7" }}>
+                  <small style={{ display: "block", color: "#737c89" }}>{label}</small>
+                  <strong style={{ display: "block", marginTop: 4, fontSize: 13 }}>{value}</strong>
+                </div>
+              ))}
+            </div>
+            <p style={{ color: "#555f6f", fontSize: 13, lineHeight: 1.5 }}>
+              {focusedVehicle.note}
+            </p>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 9, marginTop: 18 }}>
+              {focusedVehicle.id !== "bmw-m6" ? (
+                <button
+                  type="button"
+                  style={primaryButton}
+                  onClick={() => {
+                    setFocusedVehicle(null);
+                    openVehicleFlow(focusedVehicle, "testdrive");
+                  }}
+                >
+                  Probefahrt öffnen
+                </button>
+              ) : null}
+              <button
+                type="button"
+                style={secondaryButton}
+                onClick={() => {
+                  setFocusedVehicle(null);
+                  openVehicleFlow(focusedVehicle, "finance");
+                }}
+              >
+                Finanzierung öffnen
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
+    </section>
+  );
 }
 
 function ProfCarDemo({ embedded }: { embedded: boolean }) {
@@ -5795,9 +6986,9 @@ function ProfCarDemo({ embedded }: { embedded: boolean }) {
 
     const normalized = cleanedQuery.toLowerCase();
     const numbers = normalized.match(/\d[\d.]*/g) || [];
-    const detectedBudget = numbers[0]
-  ? Number(numbers[0].replaceAll(".", ""))
-  : null;
+    const detectedBudget = numbers.length
+      ? Number(numbers[0]!.replaceAll(".", ""))
+      : null;
     const meansMonthly =
       normalized.includes("monat") || normalized.includes("rate");
 
@@ -6762,7 +7953,7 @@ export default function WidgetPage() {
                 ? "#fefefe"
               : theme.bg;
   const textPrimary = isProfCarInterface
-    ? "#f7f8fb"
+    ? "#171b24"
     : isTxbikesInterface
     ? "#1f1636"
     : isWilliInterface
@@ -6792,7 +7983,9 @@ export default function WidgetPage() {
               : isPetermaennchenInterface
                 ? "#000d1a"
               : "#163126";
-  const textSecondary = isTxbikesInterface
+  const textSecondary = isProfCarInterface
+    ? "#5f6977"
+    : isTxbikesInterface
     ? "#6a5f8d"
     : isWilliInterface
       ? "#59667a"
@@ -6856,6 +8049,7 @@ export default function WidgetPage() {
     useState<AbgefahrenPanel>("home");
   const [hohenbadenPanel, setHohenbadenPanel] =
     useState<HohenbadenPanel>("home");
+  const [profcarPanel, setProfCarPanel] = useState<ProfCarPanel>("home");
 
   const isEmbedClosed = isEmbedded && !open;
   const listRef = useRef<HTMLDivElement | null>(null);
@@ -8169,6 +9363,23 @@ export default function WidgetPage() {
     window.requestAnimationFrame(() => {
       listRef.current?.scrollTo({ top: 0, behavior: "smooth" });
     });
+  }
+
+  function openProfCarPanel(panel: ProfCarPanel) {
+    if (!isProfCarInterface || loading || isVoiceActive) return;
+
+    setProfCarPanel(panel);
+    setShowBadge(false);
+
+    window.requestAnimationFrame(() => {
+      listRef.current?.scrollTo({ top: 0, behavior: "smooth" });
+    });
+  }
+
+  function sendProfCarGuidedMessage(message: string) {
+    if (loading || isVoiceActive) return;
+    setProfCarPanel("home");
+    void sendText(message);
   }
 
   function toggleFahrwerkChecklistItem(itemId: string) {
@@ -9793,6 +11004,9 @@ export default function WidgetPage() {
   }
 
   async function send() {
+    if (isProfCarInterface && profcarPanel !== "home") {
+      setProfCarPanel("home");
+    }
     await sendText(input);
   }
 
@@ -9813,6 +11027,7 @@ export default function WidgetPage() {
     setFahrwerkChecklist(DEFAULT_FAHRWERK_CHECKLIST);
     setAbgefahrenPanel("home");
     setHohenbadenPanel("home");
+    setProfCarPanel("home");
     if (typeof window !== "undefined") {
       try {
         window.localStorage.removeItem("fahrwerk-b-stage");
@@ -9925,7 +11140,8 @@ export default function WidgetPage() {
     msgs[0]?.role === "assistant" &&
     !loading &&
     (!isAbgefahrenInterface || abgefahrenPanel === "home") &&
-    (!isFutureDemoInterface || hohenbadenPanel === "home");
+    (!isFutureDemoInterface || hohenbadenPanel === "home") &&
+    (!isProfCarInterface || profcarPanel === "home");
 
   const startCards = isProfCarInterface
     ? PROFCAR_START_CARDS
@@ -10089,6 +11305,8 @@ export default function WidgetPage() {
         isLinaInterface ? "bt-lina-interface" : ""
       } ${
         isFahrwerkBInterface ? "bt-fahrwerk-interface" : ""
+      } ${
+        isProfCarInterface ? "bt-profcar-interface" : ""
       } ${
         voiceVisualVisible ? "bt-voice-mode-open" : ""
       }`.trim()}
@@ -10474,6 +11692,54 @@ body::after {
     inset 0 1px 0 rgba(255,255,255,.92),
     0 0 0 1px rgba(${accentRgb},.12),
     0 0 24px rgba(${accentRgb},.16) !important;
+}
+
+/* ProfCar nutzt bewusst helle, kontrastreiche Arbeitsflächen im BTDesigns-Rahmen. */
+.bt-profcar-interface .bt-panel {
+  border-color: rgba(255,255,255,.82) !important;
+  background:
+    radial-gradient(720px 360px at 96% 0%, rgba(220,31,43,.12), transparent 66%),
+    linear-gradient(180deg, rgba(252,252,253,.98), rgba(240,243,246,.96)) !important;
+  box-shadow:
+    0 30px 100px rgba(0,0,0,.34),
+    inset 0 1px 0 rgba(255,255,255,.92) !important;
+}
+
+.bt-profcar-interface .bt-panel-header,
+.bt-profcar-interface .bt-composer {
+  border-color: #d9dde4 !important;
+  background: rgba(255,255,255,.88) !important;
+  backdrop-filter: blur(26px) saturate(150%) !important;
+  -webkit-backdrop-filter: blur(26px) saturate(150%) !important;
+}
+
+.bt-profcar-interface .bt-panel-scroll {
+  background:
+    radial-gradient(520px 300px at 92% 4%, rgba(220,31,43,.075), transparent 70%),
+    linear-gradient(180deg, #f7f8fa, #edf0f3) !important;
+}
+
+.bt-profcar-interface .bt-start-card {
+  border-color: #d9dee5 !important;
+  background:
+    radial-gradient(180px 100px at 8% 0%, rgba(220,31,43,.10), transparent 72%),
+    linear-gradient(155deg, #ffffff, #f6f7f9) !important;
+  color: #171b24 !important;
+  box-shadow:
+    0 10px 26px rgba(15,23,42,.08),
+    inset 0 1px 0 rgba(255,255,255,.94) !important;
+}
+
+.bt-profcar-interface .bt-start-card:hover:not(:disabled) {
+  border-color: rgba(220,31,43,.46) !important;
+  background:
+    radial-gradient(200px 110px at 8% 0%, rgba(220,31,43,.15), transparent 72%),
+    linear-gradient(155deg, #ffffff, #f7f8fa) !important;
+}
+
+.bt-profcar-interface .bt-message-input::placeholder {
+  color: #7a8491 !important;
+  opacity: 1;
 }
 
 /* BTDesigns / LINA — eigenständiges Liquid-Glass-System. */
@@ -12088,7 +13354,9 @@ body::after {
               <div className={`bt-badge ${!showBadge ? "bt-badge-hide" : ""}`}>
                 <span className="bt-badge-dot" />
                 <span>
-                  {isNiehausInterface
+                  {isProfCarInterface
+                    ? "Fahrzeug finden?"
+                    : isNiehausInterface
                     ? "Führerschein-Frage?"
                     : isHohenbadenInterface
                       ? "Intensivkurs finden?"
@@ -12363,6 +13631,8 @@ body::after {
                           ? voiceStatus.label
                           : loading
                           ? "Tippt…"
+                          : isProfCarInterface
+                            ? "Fahrzeuge · Finanzierung · Service"
                           : isNiehausInterface
                             ? "Baden-Baden · Bühl · persönlicher Begleiter"
                             : isHohenbadenInterface
@@ -12573,7 +13843,9 @@ body::after {
                             marginBottom: 6,
                           }}
                         >
-                          {isNiehausInterface
+                          {isProfCarInterface
+                            ? "Dein nächstes Auto. Klar ausgewählt."
+                            : isNiehausInterface
                             ? "Dein Führerschein. Klar geplant und persönlich begleitet."
                             : isHohenbadenInterface
                               ? "Schneller zum Führerschein. Persönlich begleitet."
@@ -12609,7 +13881,9 @@ body::after {
                             color: textSecondary,
                           }}
                         >
-                          {isNiehausInterface
+                          {isProfCarInterface
+                            ? "Wähle einen Bereich. Jede Karte öffnet eine eigene übersichtliche Maske – der Chat bleibt für persönliche Rückfragen jederzeit verfügbar."
+                            : isNiehausInterface
                             ? "Finde die passende Klasse, vergleiche Baden-Baden und Bühl, behalte Unterlagen sowie Preise im Blick und öffne deinen persönlichen Führerscheinbegleiter. Diese Demo zeigt, wie die Ausbildung bei Niehaus digital an einem Ort zusammenlaufen könnte."
                             : isHohenbadenInterface
                               ? "Verbinde dich als Fahrschüler, finde den nächsten Intensivkurs, verfolge deinen THEO-Lernstand und plane deine Praxis. Diese Beta zeigt, wie in7Days die komplette Ausbildung digital an einem Ort bündeln könnte."
@@ -12644,7 +13918,7 @@ body::after {
                                       : `Wähle einen Einstieg aus. Danach führt dich ${displayAssistantName} gezielt weiter.`}
                         </div>
 
-                        {(isFahrwerkBInterface || isPetermaennchenInterface || isAbgefahrenInterface || isFutureDemoInterface) && (
+                        {(isProfCarInterface || isFahrwerkBInterface || isPetermaennchenInterface || isAbgefahrenInterface || isFutureDemoInterface) && (
                           <div
                             className="bt-fahrwerk-steps"
                             style={{
@@ -12656,7 +13930,14 @@ body::after {
                               marginTop: 18,
                             }}
                           >
-                            {(isNiehausInterface
+                            {(isProfCarInterface
+                              ? [
+                                  "1 Fahrzeug finden",
+                                  "2 Modelle prüfen",
+                                  "3 Anfrage vorbereiten",
+                                  "4 Persönlich abschließen",
+                                ]
+                              : isNiehausInterface
                               ? [
                                   "1 Klasse wählen",
                                   "2 Standort planen",
@@ -12830,6 +14111,14 @@ body::after {
                                 card.hohenbadenPanel
                               ) {
                                 openHohenbadenPanel(card.hohenbadenPanel);
+                                return;
+                              }
+
+                              if (
+                                card.action === "profcarPanel" &&
+                                card.profcarPanel
+                              ) {
+                                openProfCarPanel(card.profcarPanel);
                                 return;
                               }
 
@@ -13720,6 +15009,15 @@ body::after {
                       </div>
                     )}
 
+                  {isProfCarInterface && profcarPanel !== "home" && (
+                    <ProfCarHub
+                      panel={profcarPanel}
+                      onPanelChange={openProfCarPanel}
+                      isMobile={isMobileViewport}
+                      onAsk={sendProfCarGuidedMessage}
+                    />
+                  )}
+
                   {fahrwerkSignupOpen && isFahrwerkBInterface && (
                     <form
                       onSubmit={submitFahrwerkSignup}
@@ -14446,7 +15744,7 @@ body::after {
                     </form>
                   )}
 
-                  {msgs.map((m, i) => {
+                  {(!isProfCarInterface || profcarPanel === "home") && msgs.map((m, i) => {
                     const isUser = m.role === "user";
                     return (
                       <div
@@ -14734,7 +16032,9 @@ body::after {
                         }
                       }}
                       placeholder={
-                        isHohenbadenInterface
+                        isProfCarInterface
+                          ? "Schreib z. B. Golf GTI, Finanzierung oder TÜV …"
+                        : isHohenbadenInterface
                           ? "Schreib z. B. Intensivkurs, THEO App oder Umschreibung…"
                           : isJentschInterface
                             ? "Schreib z. B. Drive.Buzz, B197, Lkw oder Unterlagen…"
