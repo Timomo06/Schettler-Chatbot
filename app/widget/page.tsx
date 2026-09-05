@@ -3048,7 +3048,11 @@ type FutureDemoVariant =
   | "jantzen"
   | "neptun"
   | "bb"
-  | "rennhack";
+  | "rennhack"
+  | "cans"
+  | "tek"
+  | "fix"
+  | "yoendem";
 
 type FutureDemoDocument = {
   readonly id: string;
@@ -3461,6 +3465,10 @@ const REGIONAL_TENANT_VARIANTS: Record<string, RegionalDemoVariant> = {
   "fahrschule-neptun": "neptun",
   "bb-fahrschule": "bb",
   "hansefahrschule-rennhack": "rennhack",
+  "cans-fahrschule": "cans",
+  "tek-fahrschule": "tek",
+  "fahrschule-fix": "fix",
+  "fahrschule-yoendem": "yoendem",
 };
 
 function createRegionalDemoConfig(input: {
@@ -3580,6 +3588,42 @@ const REGIONAL_DEMO_CONFIGS: Record<RegionalDemoVariant, FutureDemoConfig> = {
       ["Ferienkurs Theorie", "17. Oktober 2026", "Schwerin", "Theorie in 7 Werktagen"],
       ["Ferienfahrschule", "Ausbildung kompakt nach Beratung", "Schwerin", "Auto oder Motorrad"],
       ["ASF / FES", "Termin auf Anfrage", "Schwerin", "Seminare und Auffrischung"],
+    ],
+  }),
+  cans: createRegionalDemoConfig({
+    brand: "Can's Fahrschule", code: "CANS-2048",
+    focus: "5-Tage-Theorie & Klasse B", classes: "B · BF17 · B197 · B-Automatik · BE · B96 · Umschreibung",
+    offers: [
+      ["5-Tage-Theorie", "Start nach Online-Voranmeldung", "Köln-Mülheim", "Kompakter Theorie-Weg"],
+      ["Klasse B / BF17 / B197", "Start nach Beratung", "Montanusstraße 1 · Köln-Mülheim", "Schaltung oder Automatik"],
+      ["B96 / BE", "Termin nach Abstimmung", "Köln-Mülheim", "Anhänger-Schulung oder -Ausbildung"],
+    ],
+  }),
+  tek: createRegionalDemoConfig({
+    brand: "TEK Fahrschule", code: "TEK-2048",
+    focus: "LernBoosting & Prüfungssimulation", classes: "B · BF17 · B197 · B78 · B96 · BE · Umschreibung",
+    offers: [
+      ["Klasse B / BF17 / B197 / B78", "Flexibler Start nach Beratung", "Köln-Höhenberg · Fuldaer Str. 19", "Bis zu viermal Theorie pro Woche"],
+      ["LernBoosting am Samstag", "Nur mit Voranmeldung", "TEK Fahrschule Köln", "Intensives Training in kleinen Gruppen"],
+      ["BE / B96 / Umschreibung", "Termin nach Abstimmung", "Köln", "Passend zu Vorbesitz und Ausbildungsziel"],
+    ],
+  }),
+  fix: createRegionalDemoConfig({
+    brand: "Fahrschule FiX", code: "FIX-2048",
+    focus: "Standort-Match & Theorie in 7 Werktagen", classes: "B · B197 · B78 · B96 · BE · A-Klassen · B196 · ASF",
+    offers: [
+      ["Klasse B · Standort-Match", "Start nach Standortauswahl", "6 Standorte in NRW", "Kompakte Theorie in 7 Werktagen"],
+      ["Motorrad A / A1 / A2 / AM / A80", "Standortabhängig", "Bonn, Leichlingen oder Solingen", "Klasse und Filiale gemeinsam prüfen"],
+      ["B96 / BE / B196 / ASF", "Termin nach Abstimmung", "Ausgewählte FiX-Standorte", "Verfügbarkeit ist filialabhängig"],
+    ],
+  }),
+  yoendem: createRegionalDemoConfig({
+    brand: "Fahrschule Yöndem", code: "YONDE-2048",
+    focus: "Mehrsprachig & 6× Theorie pro Woche", classes: "B · BF17 · BE · B96 · A · A2 · A1 · AM",
+    offers: [
+      ["Klasse B / BF17", "Start nach persönlicher Beratung", "Köln-Kalk oder Bayenthal", "Theorie an sechs Terminen pro Woche"],
+      ["Motorrad A / A2 / A1 / AM", "Start nach Klassen- und Alterscheck", "Köln", "Theorie und Praxis passend zur Klasse"],
+      ["Intensivkurs / Fahrschulwechsel", "Termin nach Abstimmung", "Köln", "Beratung in neun Sprachen"],
     ],
   }),
   fahrtwind: createRegionalDemoConfig({

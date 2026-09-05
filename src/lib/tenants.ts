@@ -31,7 +31,11 @@ export type TenantId =
   | "fahrschule-jantzen"
   | "fahrschule-neptun"
   | "bb-fahrschule"
-  | "hansefahrschule-rennhack";
+  | "hansefahrschule-rennhack"
+  | "cans-fahrschule"
+  | "tek-fahrschule"
+  | "fahrschule-fix"
+  | "fahrschule-yoendem";
 
 export type ThemeConfig = {
   accent: string;
@@ -1007,6 +1011,86 @@ export const TENANTS: Record<TenantId, TenantConfig> = {
     assets: { launcherIcon: "/favicon.ico" },
   },
 
+  "cans-fahrschule": {
+    id: "cans-fahrschule",
+    brandName: "Can's Fahrschule",
+    assistantName: "5-Tage-Theorie- & Führerschein-Assistent",
+    language: "de",
+    knowledge: { files: ["eKnowledge.md"] },
+    websiteUrl: "https://www.cansfahrschule.de/",
+    primaryCta: { label: "Online voranmelden", url: "https://www.cansfahrschule.de/preise/" },
+    fallbackContact: { label: "Telefon", value: "+49 221 60854544" },
+    companyInfo: {
+      address: "Montanusstraße 1, 51065 Köln",
+      phone: "+49 221 60854544",
+      email: "kontakt@cansfahrschule.de",
+      openingHours: "Mo–Fr 10:00–19:00 Uhr · Sa 10:00–16:00 Uhr",
+    },
+    rules: { noMedicalClaims: true, noInventingPrices: true, noGuarantees: true },
+    theme: { accent: "#fca700", bg: "#fffaf0", glass: "rgba(252,167,0,0.18)", text: "#0a0a0a" },
+    assets: { launcherIcon: "/favicon.ico" },
+  },
+
+  "tek-fahrschule": {
+    id: "tek-fahrschule",
+    brandName: "TEK Fahrschule",
+    assistantName: "LernBoosting- & Führerschein-Assistent",
+    language: "de",
+    knowledge: { files: ["eKnowledge.md"] },
+    websiteUrl: "https://www.tek-fahrschule.koeln/",
+    primaryCta: { label: "Kontakt aufnehmen", url: "https://www.tek-fahrschule.koeln/Kontakt.html" },
+    fallbackContact: { label: "Telefon", value: "0221-379 038 48" },
+    companyInfo: {
+      address: "Fuldaer Str. 19, 51103 Köln",
+      phone: "0221-379 038 48",
+      email: "info@tek-fahrschule.de",
+      openingHours: "Aktuelle Zeiten bitte auf der Website prüfen",
+    },
+    rules: { noMedicalClaims: true, noInventingPrices: true, noGuarantees: true },
+    theme: { accent: "#ff5e14", bg: "#fff7f3", glass: "rgba(255,94,20,0.18)", text: "#212529" },
+    assets: { launcherIcon: "/favicon.ico" },
+  },
+
+  "fahrschule-fix": {
+    id: "fahrschule-fix",
+    brandName: "Fahrschule FiX",
+    assistantName: "Standort- & Führerschein-Assistent",
+    language: "de",
+    knowledge: { files: ["eKnowledge.md"] },
+    websiteUrl: "https://fahrschule-fix.de/",
+    primaryCta: { label: "Standort auswählen", url: "https://fahrschule-fix.de/standort/" },
+    fallbackContact: { label: "Kontakt", value: "Standort auf der Website auswählen" },
+    companyInfo: {
+      address: "6 Standorte in Bonn, Köln, Leichlingen und Solingen",
+      phone: "Standortabhängig",
+      email: "Standortabhängig",
+      openingHours: "Je nach Filiale – siehe eKnowledge und Standortseite",
+    },
+    rules: { noMedicalClaims: true, noInventingPrices: true, noGuarantees: true },
+    theme: { accent: "#dc2626", bg: "#fff7f7", glass: "rgba(220,38,38,0.17)", text: "#111827" },
+    assets: { launcherIcon: "/favicon.ico" },
+  },
+
+  "fahrschule-yoendem": {
+    id: "fahrschule-yoendem",
+    brandName: "Fahrschule Yöndem",
+    assistantName: "Mehrsprachiger Führerschein-Assistent",
+    language: "de",
+    knowledge: { files: ["eKnowledge.md"] },
+    websiteUrl: "https://xn--fahrschule-yndem-xwb.de/",
+    primaryCta: { label: "Kontakt aufnehmen", url: "https://xn--fahrschule-yndem-xwb.de/contact-us/" },
+    fallbackContact: { label: "Telefon Kalk", value: "0221 16813086" },
+    companyInfo: {
+      address: "Kalk-Mülheimer Str. 99, 51103 Köln · Bonner Str. 233, 50968 Köln",
+      phone: "Kalk: 0221 16813086 · Bayenthal: 0221 96260368",
+      email: "info@fahrschule-yoendem.de",
+      openingHours: "Theorie Mo–Fr 18:30–20:00 Uhr · Sa 10:00–13:00 Uhr",
+    },
+    rules: { noMedicalClaims: true, noInventingPrices: true, noGuarantees: true },
+    theme: { accent: "#b51616", bg: "#fff8f8", glass: "rgba(181,22,22,0.17)", text: "#222222" },
+    assets: { launcherIcon: "/favicon.ico" },
+  },
+
   "fahrschule-fahrtwind": {
     id: "fahrschule-fahrtwind",
     brandName: "Fahrschule Fahrtwind",
@@ -1370,6 +1454,25 @@ const TENANT_ALIASES: Record<string, TenantId> = {
   "bb-fahrschule.de": "bb-fahrschule",
   "hansefahrschule-rennhack": "hansefahrschule-rennhack",
   "hansefahrschule-rennhack.de": "hansefahrschule-rennhack",
+  cans: "cans-fahrschule",
+  "can-fahrschule": "cans-fahrschule",
+  "cans-fahrschule": "cans-fahrschule",
+  "cansfahrschule.de": "cans-fahrschule",
+  "www.cansfahrschule.de": "cans-fahrschule",
+  tek: "tek-fahrschule",
+  "tek-fahrschule": "tek-fahrschule",
+  "tek-fahrschule.koeln": "tek-fahrschule",
+  "www.tek-fahrschule.koeln": "tek-fahrschule",
+  fix: "fahrschule-fix",
+  "fahrschule-fix": "fahrschule-fix",
+  "fahrschule-fix.de": "fahrschule-fix",
+  "www.fahrschule-fix.de": "fahrschule-fix",
+  yoendem: "fahrschule-yoendem",
+  yöndem: "fahrschule-yoendem",
+  "fahrschule-yoendem": "fahrschule-yoendem",
+  "fahrschule-yöndem": "fahrschule-yoendem",
+  "fahrschule-yoendem.de": "fahrschule-yoendem",
+  "xn--fahrschule-yndem-xwb.de": "fahrschule-yoendem",
 };
 
 export function getTenant(tenant: string | null): TenantConfig {

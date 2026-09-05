@@ -47,6 +47,10 @@ const FAHRSCHULE_TENANT_IDS = [
   "fahrschule-neptun",
   "bb-fahrschule",
   "hansefahrschule-rennhack",
+  "cans-fahrschule",
+  "tek-fahrschule",
+  "fahrschule-fix",
+  "fahrschule-yoendem",
 ] as const;
 
 const PROFCAR_TENANT_ALIASES = [
@@ -82,6 +86,10 @@ const VOICE_INTERFACE_TENANT_IDS = [
   "fahrschule-neptun",
   "bb-fahrschule",
   "hansefahrschule-rennhack",
+  "cans-fahrschule",
+  "tek-fahrschule",
+  "fahrschule-fix",
+  "fahrschule-yoendem",
 ] as const;
 
 const VOICE_INTERFACE_TOOLS = [
