@@ -3448,7 +3448,11 @@ type RegionalDemoVariant =
   | "jantzen"
   | "neptun"
   | "bb"
-  | "rennhack";
+  | "rennhack"
+  | "cans"
+  | "tek"
+  | "fix"
+  | "yoendem";
 
 const REGIONAL_TENANT_VARIANTS: Record<string, RegionalDemoVariant> = {
   "fahrschule-hopla": "hopla",
