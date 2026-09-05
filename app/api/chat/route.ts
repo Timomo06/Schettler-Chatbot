@@ -18,6 +18,8 @@ const allowedOrigins = [
   "https://www.mm-wartung.de",
   "https://fahrwerk-b.de",
   "https://www.fahrwerk-b.de",
+  "https://profcar.com",
+  "https://www.profcar.com",
   "https://schettlers-chatbot-lca3.vercel.app",
   "https://ai.btdesigns.de",
   "http://localhost:3000",
@@ -225,6 +227,14 @@ const FAHRSCHULE_TENANT_IDS = [
   "hansefahrschule-rennhack",
 ] as const;
 
+const PROFCAR_TENANT_ALIASES = [
+  "profcar",
+  "prof-car",
+  "profcar-koeln",
+  "profcar.com",
+  "www.profcar.com",
+] as const;
+
 function isFahrwerkTenant(tenantId: string) {
   return FAHRWERK_TENANT_ALIASES.includes(
     tenantId.trim().toLowerCase() as (typeof FAHRWERK_TENANT_ALIASES)[number],
@@ -237,6 +247,10 @@ function isFahrschuleTenant(tenantId: string) {
   );
 }
 
+function isProfCarTenant(tenantId: string) {
+  return tenantId === "profcar";
+}
+
 function normalizeTenantParam(tenantId: string) {
   const normalized = tenantId.trim().toLowerCase();
 
@@ -246,6 +260,14 @@ function normalizeTenantParam(tenantId: string) {
     )
   ) {
     return "fahrwerk-b";
+  }
+
+  if (
+    PROFCAR_TENANT_ALIASES.includes(
+      normalized as (typeof PROFCAR_TENANT_ALIASES)[number],
+    )
+  ) {
+    return "profcar";
   }
 
   return tenantId.trim();
@@ -587,11 +609,18 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // Fahrschul-Demos werden bewusst ohne Cache geladen. Damit gelten
-    // Änderungen an eKnowledge.md im Text- und Sprachmodus ab dem nächsten Chat.
-    const knowledgeText = isFahrschuleTenant(tenant.id)
+    // Live-Demos werden bewusst ohne Cache geladen. Damit gelten Änderungen an
+    // der jeweiligen Knowledge-Datei ab dem nächsten neuen Chat beziehungsweise Gespräch.
+    const knowledgeText =
+      isFahrschuleTenant(tenant.id) || isProfCarTenant(tenant.id)
       ? await loadTenantKnowledge(tenant.id)
       : await getCachedTenantKnowledge(tenant.id);
+
+    if (isProfCarTenant(tenant.id) && !knowledgeText.trim()) {
+      throw new Error(
+        'Für "profcar" wurde kein Knowledge geladen. Prüfe Tenant-Ordner und knowledge.md.',
+      );
+    }
 
     const bookingPromptAddOn = calendarBookingEnabled
       ? `
@@ -649,7 +678,21 @@ ${
     : "- Kennzeichne alle im Demo-Cockpit gezeigten Schülerstände, Plätze und Termine als Beispiel- oder Demo-Daten."
 }
 `
-      : "";
+      : isProfCarTenant(tenant.id)
+        ? `
+Feste Identität:
+- Du bist ${tenant.assistantName} von „${tenant.brandName}“.
+- Du arbeitest ausschließlich als digitaler Fahrzeugberater für ProfCar in Köln.
+- Das geladene ProfCar-Knowledge ist dein verbindliches fachliches Gedächtnis.
+- Nutze für Fahrzeugdaten, Preise, Verfügbarkeit, Ausstattung und Motorhinweise ausschließlich dieses Knowledge.
+- Wenn der Nutzer ein Fahrzeug nennt, ordne genau dieses Fahrzeug aus dem ProfCar-Bestand ein.
+- Erkläre bekannte typische Schwachstellen sachlich, aber stelle niemals eine Diagnose aus der Ferne.
+- Sage nur dann, dass eine Reparatur oder Prüfung am angebotenen Fahrzeug erledigt wurde, wenn das im Knowledge ausdrücklich als belegt steht.
+- Ist ein Punkt nicht dokumentiert, sage klar, dass ProfCar ihn am Fahrzeug beziehungsweise anhand der Unterlagen prüfen muss.
+- Weise beim BMW M6 immer auf den dokumentierten Motorschaden und die fehlende Fahrtauglichkeit hin.
+- Verwechsle allgemeine Modellrisiken niemals mit dem tatsächlichen Zustand des konkreten ProfCar-Fahrzeugs.
+`
+        : "";
 
     const voicePromptAddOn = voiceMode
       ? `

@@ -7,6 +7,7 @@ export type TenantId =
   | "mm-wartung"
   | "txbikes"
   | "txbikesV2"
+  | "profcar"
   | "fahrwerk-b"
   | "fahrschule-hohenbaden"
   | "fahrschule-hopla"
@@ -461,6 +462,62 @@ export const TENANTS: Record<TenantId, TenantConfig> = {
       launcherIcon: "/favicon.ico",
     },
   },
+
+  profcar: {
+    id: "profcar",
+    brandName: "ProfCar Köln",
+    assistantName: "Digitaler Fahrzeugberater",
+    language: "de",
+
+    knowledge: {
+      files: ["knowledge.md"],
+    },
+
+    websiteUrl: "https://profcar.com/",
+    primaryCta: {
+      label: "Fahrzeuge ansehen",
+      url: "https://home.mobile.de/PROFCAR",
+    },
+
+    fallbackContact: {
+      label: "ProfCar kontaktieren",
+      value: "+49 (0) 173 7953151 · info@profcar.com",
+    },
+
+    companyInfo: {
+      address: "Neue Eiler Straße 50–52, 51145 Köln",
+      phone: "+49 (0) 173 7953151",
+      email: "info@profcar.com",
+      openingHours: "Mo–Fr 08:00–18:00, Sa 08:00–15:00",
+    },
+
+    contacts: [
+      {
+        name: "ProfCar Team",
+        role: "Fahrzeugberatung und Service",
+        phone: "+49 (0) 173 7953151",
+        email: "info@profcar.com",
+      },
+    ],
+
+    rules: {
+      noMedicalClaims: true,
+      noInventingPrices: true,
+      noGuarantees: true,
+    },
+
+    theme: {
+      accent: "#dc1f2b",
+      bg: "#0b0e13",
+      glass: "rgba(220,31,43,0.14)",
+      text: "#f7f8fa",
+    },
+
+    assets: {
+      launcherIcon: "https://profcar.com/logo-transparent.png",
+    },
+  },
+
   "fahrwerk-b": {
     id: "fahrwerk-b",
     brandName: "Fahrwerk B",
@@ -1234,6 +1291,11 @@ const TENANT_ALIASES: Record<string, TenantId> = {
   txbikesv2: "txbikesV2",
   "tx-bikes": "txbikes",
   "tx_bikes": "txbikes",
+  profcar: "profcar",
+  "prof-car": "profcar",
+  "profcar-koeln": "profcar",
+  "profcar.com": "profcar",
+  "www.profcar.com": "profcar",
   hohenbaden: "fahrschule-hohenbaden",
   "fahrschule-in7days": "fahrschule-hohenbaden",
   in7days: "fahrschule-hohenbaden",

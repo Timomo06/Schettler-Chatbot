@@ -49,7 +49,16 @@ const FAHRSCHULE_TENANT_IDS = [
   "hansefahrschule-rennhack",
 ] as const;
 
+const PROFCAR_TENANT_ALIASES = [
+  "profcar",
+  "prof-car",
+  "profcar-koeln",
+  "profcar.com",
+  "www.profcar.com",
+] as const;
+
 const VOICE_INTERFACE_TENANT_IDS = [
+  "profcar",
   "fahrwerk-b",
   "fahrschule-hohenbaden",
   "fahrschule-hopla",
@@ -75,12 +84,12 @@ const VOICE_INTERFACE_TENANT_IDS = [
   "hansefahrschule-rennhack",
 ] as const;
 
-const FAHRSCHULE_INTERFACE_TOOLS = [
+const VOICE_INTERFACE_TOOLS = [
   {
     type: "function",
     name: "show_interface_card",
     description:
-      "Zeigt passend zum aktuellen Gespräch eine kompakte Karte im Interface der aktiven Fahrschule. Verwende ausschließlich Informationen aus dem Knowledge des aktuellen Tenants. Nutze das Tool bei Anmeldelinks, Preisen, Unterlagen, Kontaktdaten, Kursen, Öffnungszeiten, Standorten, Führerscheinklassen, Prüfungsvorbereitung oder wenn ein passender Cockpit-Bereich geöffnet werden soll. Erfinde keine Werte.",
+      "Zeigt passend zum aktuellen Gespräch eine kompakte Karte oder öffnet einen Bereich im Interface des aktiven Tenants. Verwende ausschließlich Informationen aus dessen Knowledge. Für ProfCar sind besonders Fahrzeugbestand, Fahrzeugdetails, Vergleich, Finanzierung, Inzahlungnahme, Probefahrt und Service relevant. Erfinde keine Werte und behaupte keine ausgeführte Reparatur ohne Beleg im Knowledge.",
     parameters: {
       type: "object",
       additionalProperties: false,
@@ -159,6 +168,13 @@ const FAHRSCHULE_INTERFACE_TOOLS = [
             "student",
             "contact",
             "coach",
+            "finder",
+            "inventory",
+            "compare",
+            "finance",
+            "tradein",
+            "testdrive",
+            "service",
           ],
           description: "Optional passender Bereich im Interface der aktuellen Fahrschule.",
         },
@@ -182,6 +198,10 @@ function isFahrschuleTenant(tenantId: string) {
   );
 }
 
+function isProfCarTenant(tenantId: string) {
+  return tenantId === "profcar";
+}
+
 function supportsVoiceInterfaceTools(tenantId: string) {
   return VOICE_INTERFACE_TENANT_IDS.includes(
     tenantId as (typeof VOICE_INTERFACE_TENANT_IDS)[number],
@@ -197,6 +217,14 @@ function normalizeTenantParam(tenantId: string) {
     )
   ) {
     return "fahrwerk-b";
+  }
+
+  if (
+    PROFCAR_TENANT_ALIASES.includes(
+      normalized as (typeof PROFCAR_TENANT_ALIASES)[number],
+    )
+  ) {
+    return "profcar";
   }
 
   return tenantId.trim() || "demo";
@@ -225,9 +253,10 @@ async function buildRealtimeInstructions(rawTenantId: string) {
   const normalizedTenantId = normalizeTenantParam(rawTenantId);
   const tenant = getTenant(normalizedTenantId);
 
-  // Fahrschul-Demos werden bewusst ohne Cache geladen, damit Änderungen an
-  // eKnowledge.md beim nächsten Gespräch sofort im Sprachmodus gelten.
-  const knowledgeText = isFahrschuleTenant(tenant.id)
+  // Live-Demos werden bewusst ohne Cache geladen, damit Änderungen an der
+  // jeweiligen Knowledge-Datei beim nächsten Gespräch sofort gelten.
+  const knowledgeText =
+    isFahrschuleTenant(tenant.id) || isProfCarTenant(tenant.id)
     ? await loadTenantKnowledge(tenant.id)
     : await getCachedTenantKnowledge(tenant.id);
 
@@ -238,9 +267,12 @@ async function buildRealtimeInstructions(rawTenantId: string) {
     knowledgeLength: knowledgeText.trim().length,
   });
 
-  if (isFahrschuleTenant(tenant.id) && !knowledgeText.trim()) {
+  if (
+    (isFahrschuleTenant(tenant.id) || isProfCarTenant(tenant.id)) &&
+    !knowledgeText.trim()
+  ) {
     throw new Error(
-      `Die Sprachsession wurde gestoppt, weil für "${tenant.id}" kein Fahrschul-Knowledge geladen wurde.`,
+      `Die Sprachsession wurde gestoppt, weil für "${tenant.id}" kein Knowledge geladen wurde. Prüfe Tenant-ID, Tenant-Ordner und knowledge.md.`,
     );
   }
 
@@ -262,7 +294,21 @@ ${
     : "- Kennzeichne alle im Demo-Cockpit gezeigten Schülerstände, Plätze und Termine als Beispiel- oder Demo-Daten."
 }
 `.trim()
-    : "";
+    : isProfCarTenant(tenant.id)
+      ? `
+Feste Identität:
+- Du bist ${tenant.assistantName} von „${tenant.brandName}“.
+- Du arbeitest in dieser Sitzung ausschließlich als digitaler Fahrzeugberater für ProfCar in Köln.
+- Das geladene ProfCar-Knowledge ist dein verbindliches fachliches Gedächtnis.
+- Nutze für Fahrzeugdaten, Preise, Verfügbarkeit, Ausstattung und Motorhinweise ausschließlich dieses Knowledge.
+- Wenn der Nutzer ein Fahrzeug nennt, ordne genau dieses Fahrzeug aus dem ProfCar-Bestand ein.
+- Erkläre bekannte typische Schwachstellen sachlich, aber stelle niemals eine Diagnose aus der Ferne.
+- Sage nur dann, dass eine Reparatur oder Prüfung am angebotenen Fahrzeug erledigt wurde, wenn das im Knowledge ausdrücklich als belegt steht.
+- Ist ein Punkt nicht dokumentiert, sage klar: „Das ist im aktuellen Datensatz nicht belegt und muss ProfCar am Fahrzeug beziehungsweise anhand der Unterlagen prüfen.“
+- Weise beim BMW M6 immer auf den dokumentierten Motorschaden und die fehlende Fahrtauglichkeit hin.
+- Verwechsle allgemeine Modellrisiken niemals mit dem tatsächlichen Zustand des konkreten ProfCar-Fahrzeugs.
+`.trim()
+      : "";
 
   const realtimeConversationPrompt = `
 Sprachmodus:
@@ -280,8 +326,20 @@ Sprachmodus:
 - Erfinde keine Informationen. Wenn etwas nicht im Wissen steht, sage es offen.
 `.trim();
 
-  const interfacePrompt = supportsVoiceInterfaceTools(tenant.id)
-    ? `
+  const interfacePrompt = !supportsVoiceInterfaceTools(tenant.id)
+    ? ""
+    : isProfCarTenant(tenant.id)
+      ? `
+Aktive ProfCar-Oberfläche:
+- Nutze show_interface_card, sobald das Gespräch ein konkretes Fahrzeug oder einen ProfCar-Bereich betrifft.
+- Wenn ein bestimmtes Fahrzeug genannt wird, öffne panel „inventory“ und nenne den vollständigen Fahrzeugnamen im Titel oder in der Beschreibung. Dadurch öffnet das Interface die zugehörige Fahrzeugmaske mit Bildern.
+- Bei der Fahrzeugsuche nutze panel „finder“, beim Vergleich „compare“, bei Finanzierung „finance“, bei Inzahlungnahme „tradein“, bei Probefahrt „testdrive“ und bei Werkstattfragen „service“.
+- Zeige bei einem konkreten Fahrzeug höchstens die wichtigsten Fakten und Motorprüfpunkte. Lies die sichtbare Liste nicht vollständig vor.
+- Trenne immer zwischen typischen Modell-/Motorproblemen und dem belegten Zustand des konkreten Fahrzeugs.
+- Verwende für Karten, Preise, Fahrzeugdaten, Belegstatus und Links ausschließlich Fakten aus dem ProfCar-Knowledge.
+- Ein nicht dokumentierter Reparaturpunkt ist offen und darf niemals als erledigt dargestellt werden.
+`.trim()
+      : `
 Aktive Cockpit-Oberfläche:
 - Nutze show_interface_card immer dann, wenn sichtbare Informationen dem Nutzer einen konkreten Vorteil geben.
 - Bei einer Frage nach Anmeldung oder Anmeldelink: Zeige direkt eine Link-Karte mit dem offiziellen Anmeldelink.
@@ -292,8 +350,7 @@ Aktive Cockpit-Oberfläche:
 - Lies eine längere sichtbare Liste nicht vollständig vor. Sage kurz, dass du die passenden Informationen eingeblendet hast, und beantworte die Kernfrage mündlich.
 - Zeige keine allgemeine Karte ohne Mehrwert und wiederhole nicht bei jeder Antwort dieselbe Karte.
 - Verwende für Karten ausschließlich Fakten und Links aus dem aktuellen Tenant-Knowledge.
-`.trim()
-    : "";
+`.trim();
 
   const instructions = [
     buildSystemPrompt(tenant, knowledgeText),
@@ -308,7 +365,7 @@ Aktive Cockpit-Oberfläche:
     tenantId: tenant.id,
     instructions,
     tools: supportsVoiceInterfaceTools(tenant.id)
-      ? FAHRSCHULE_INTERFACE_TOOLS
+      ? VOICE_INTERFACE_TOOLS
       : [],
   };
 }
