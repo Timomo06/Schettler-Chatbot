@@ -1,4 +1,8 @@
+import { SCHOOL_DEMOS } from "./schoolDemos";
 export type TenantId =
+  | "fahrschule-rathje"
+  | "fsaz"
+  | "campus-b27"
   | "demo"
   | "zahnputzpulver"
   | "btdesigns"
@@ -53,6 +57,7 @@ export type ContactPerson = {
 
 export type TenantConfig = {
   id: TenantId;
+  companyId?: string;
 
   brandName: string;
   assistantName: string;
@@ -103,6 +108,42 @@ export const DEFAULT_THEME: ThemeConfig = {
 };
 
 export const TENANTS: Record<TenantId, TenantConfig> = {
+  "fahrschule-rathje": {
+    id: "fahrschule-rathje", companyId: SCHOOL_DEMOS["fahrschule-rathje"].companyId,
+    brandName: SCHOOL_DEMOS["fahrschule-rathje"].brand, assistantName: SCHOOL_DEMOS["fahrschule-rathje"].assistant,
+    language: "de", knowledge: { files: ["knowledge.md"] },
+    websiteUrl: SCHOOL_DEMOS["fahrschule-rathje"].website,
+    primaryCta: { label: "Kontakt zur Fahrschule", url: SCHOOL_DEMOS["fahrschule-rathje"].contact },
+    fallbackContact: { label: "Kontakt", value: SCHOOL_DEMOS["fahrschule-rathje"].email },
+    companyInfo: { address: SCHOOL_DEMOS["fahrschule-rathje"].address, phone: SCHOOL_DEMOS["fahrschule-rathje"].phone, email: SCHOOL_DEMOS["fahrschule-rathje"].email, openingHours: SCHOOL_DEMOS["fahrschule-rathje"].hours },
+    rules: { noMedicalClaims: true, noInventingPrices: true, noGuarantees: true },
+    theme: { accent: SCHOOL_DEMOS["fahrschule-rathje"].accent, bg: "#f2f7fa", glass: "rgba(255,255,255,0.72)", text: "#182b37" },
+    assets: { launcherIcon: "/favicon.ico" },
+  },
+  "fsaz": {
+    id: "fsaz", companyId: SCHOOL_DEMOS["fsaz"].companyId,
+    brandName: SCHOOL_DEMOS["fsaz"].brand, assistantName: SCHOOL_DEMOS["fsaz"].assistant,
+    language: "de", knowledge: { files: ["knowledge.md"] },
+    websiteUrl: SCHOOL_DEMOS["fsaz"].website,
+    primaryCta: { label: "Kontakt zur Fahrschule", url: SCHOOL_DEMOS["fsaz"].contact },
+    fallbackContact: { label: "Kontakt", value: SCHOOL_DEMOS["fsaz"].email },
+    companyInfo: { address: SCHOOL_DEMOS["fsaz"].address, phone: SCHOOL_DEMOS["fsaz"].phone, email: SCHOOL_DEMOS["fsaz"].email, openingHours: SCHOOL_DEMOS["fsaz"].hours },
+    rules: { noMedicalClaims: true, noInventingPrices: true, noGuarantees: true },
+    theme: { accent: SCHOOL_DEMOS["fsaz"].accent, bg: "#f2f7fa", glass: "rgba(255,255,255,0.72)", text: "#182b37" },
+    assets: { launcherIcon: "/favicon.ico" },
+  },
+  "campus-b27": {
+    id: "campus-b27", companyId: SCHOOL_DEMOS["campus-b27"].companyId,
+    brandName: SCHOOL_DEMOS["campus-b27"].brand, assistantName: SCHOOL_DEMOS["campus-b27"].assistant,
+    language: "de", knowledge: { files: ["knowledge.md"] },
+    websiteUrl: SCHOOL_DEMOS["campus-b27"].website,
+    primaryCta: { label: "Kontakt zur Fahrschule", url: SCHOOL_DEMOS["campus-b27"].contact },
+    fallbackContact: { label: "Kontakt", value: SCHOOL_DEMOS["campus-b27"].email },
+    companyInfo: { address: SCHOOL_DEMOS["campus-b27"].address, phone: SCHOOL_DEMOS["campus-b27"].phone, email: SCHOOL_DEMOS["campus-b27"].email, openingHours: SCHOOL_DEMOS["campus-b27"].hours },
+    rules: { noMedicalClaims: true, noInventingPrices: true, noGuarantees: true },
+    theme: { accent: SCHOOL_DEMOS["campus-b27"].accent, bg: "#f2f7fa", glass: "rgba(255,255,255,0.72)", text: "#182b37" },
+    assets: { launcherIcon: "/favicon.ico" },
+  },
   demo: {
     id: "demo",
     brandName: "BTDemo",
@@ -1362,6 +1403,9 @@ export const TENANTS: Record<TenantId, TenantConfig> = {
 };
 
 const TENANT_ALIASES: Record<string, TenantId> = {
+  rathje: "fahrschule-rathje", "fahrschule-rathje.de": "fahrschule-rathje", "www.fahrschule-rathje.de": "fahrschule-rathje",
+  "rathje-simulator": "fsaz", "fsaz.de": "fsaz", "www.fsaz.de": "fsaz",
+  campus: "campus-b27", "campus-b27.de": "campus-b27", "www.campus-b27.de": "campus-b27",
   lina: "btdesigns",
   btai: "btdesigns",
   "btdesigns-lina": "btdesigns",

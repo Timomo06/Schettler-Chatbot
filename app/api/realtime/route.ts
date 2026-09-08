@@ -1,3 +1,5 @@
+import { asSchoolDemo } from "@/lib/schoolDemos";
+import { getSchoolDemoKnowledge, schoolDemoSystemPrompt } from "@/lib/schoolDemoKnowledge";
 import { NextRequest, NextResponse } from "next/server";
 
 import { getTenant } from "@/lib/tenants";
@@ -23,6 +25,7 @@ const FAHRWERK_TENANT_ALIASES = [
 ] as const;
 
 const FAHRSCHULE_TENANT_IDS = [
+  "fahrschule-rathje", "fsaz", "campus-b27",
   "fahrwerk-b",
   "fahrschule-hohenbaden",
   "fahrschule-hopla",
@@ -62,6 +65,7 @@ const PROFCAR_TENANT_ALIASES = [
 ] as const;
 
 const VOICE_INTERFACE_TENANT_IDS = [
+  "fahrschule-rathje", "fsaz", "campus-b27",
   "profcar",
   "fahrwerk-b",
   "fahrschule-hohenbaden",
@@ -263,8 +267,9 @@ async function buildRealtimeInstructions(rawTenantId: string) {
 
   // Live-Demos werden bewusst ohne Cache geladen, damit Änderungen an der
   // jeweiligen Knowledge-Datei beim nächsten Gespräch sofort gelten.
-  const knowledgeText =
-    isFahrschuleTenant(tenant.id) || isProfCarTenant(tenant.id)
+  const schoolDemoId = asSchoolDemo(tenant.id);
+  const knowledgeText = schoolDemoId ? getSchoolDemoKnowledge(schoolDemoId)
+    : isFahrschuleTenant(tenant.id) || isProfCarTenant(tenant.id)
     ? await loadTenantKnowledge(tenant.id)
     : await getCachedTenantKnowledge(tenant.id);
 
@@ -361,10 +366,11 @@ Aktive Cockpit-Oberfläche:
 `.trim();
 
   const instructions = [
-    buildSystemPrompt(tenant, knowledgeText),
+    schoolDemoId ? schoolDemoSystemPrompt(schoolDemoId) : buildSystemPrompt(tenant, knowledgeText),
     tenantIdentityPrompt,
     realtimeConversationPrompt,
     interfacePrompt,
+    schoolDemoId ? "Verwende nur diese Panels: courses = Einstieg oder Trainingswunsch; schedule = veröffentlichte Termine und Planer; documents = Vorbereitung; coach = Simulator bei Rathje/FSAZ, Spezialkurse bei Campus; connect = Beispielprofil; dashboard = Preise und Anfrage. Das Interface bereitet E-Mails vor, versendet sie aber nicht selbst. Biete niemals einen echten Login in das Demo-Profil an." : "",
   ]
     .filter(Boolean)
     .join("\n\n");
@@ -421,7 +427,7 @@ export async function POST(req: NextRequest) {
 
     const sessionConfig = JSON.stringify({
       type: "realtime",
-      model: "gpt-realtime-2.1",
+      model: process.env.OPENAI_REALTIME_MODEL || "gpt-realtime-2.1",
       instructions,
       ...(tools.length > 0
         ? {
