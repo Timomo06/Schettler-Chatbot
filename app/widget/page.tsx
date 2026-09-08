@@ -675,6 +675,28 @@ const REGIONAL_FAHRSCHULE_START_CARDS: StartCard[] = [
   },
 ];
 
+const RATHJE_START_CARDS: StartCard[] = [
+  { icon: "🚘", title: "Führerschein starten", description: "B, B197, Automatik oder BE – den passenden Einstieg finden", action: "hohenbadenPanel", hohenbadenPanel: "courses" },
+  { icon: "🎮", title: "Simulator kennenlernen", description: "Ruhiger Einstieg vor der ersten echten Fahrstunde", message: "Ich interessiere mich für den Fahrsimulator von Rathje/FSAZ. Zeig mir bitte, wie der Simulator meinen Einstieg ergänzen kann und welche Trainingsmöglichkeiten es gibt." },
+  { icon: "📅", title: "Theorie & Fahrstunden", description: "Theoriezeiten, Praxisplanung und nächste Schritte bündeln", action: "hohenbadenPanel", hohenbadenPanel: "schedule" },
+  { icon: "📋", title: "Anmeldung vorbereiten", description: "Unterlagen prüfen und offene Punkte vorab klären", action: "hohenbadenPanel", hohenbadenPanel: "documents" },
+  { icon: "🪪", title: "Mein Führerschein-Cockpit", description: "Demo-Zugang mit Ausbildungsstand und nächstem Schritt", action: "hohenbadenPanel", hohenbadenPanel: "connect" },
+  { icon: "✨", title: "Persönlicher Begleiter", description: "Fragen, Lernstand, Simulator und Praxis zusammenführen", action: "hohenbadenPanel", hohenbadenPanel: "coach" },
+  { icon: "💬", title: "Beratung & Preise", description: "Klasse, Ablauf und veröffentlichte Einzelpreise einordnen", message: "Ich möchte meinen Führerschein bei der Fahrschule Rathje machen. Hilf mir bitte, Klasse, Ablauf, Simulator und die nächsten Schritte zu klären." },
+  { icon: "🎙️", title: "Frage einsprechen", description: "Anliegen einfach erzählen statt tippen", action: "voice" },
+];
+
+const FSAZ_START_CARDS: StartCard[] = [
+  { icon: "🎮", title: "Mein Training finden", description: "Erfahrung und Trainingsziel in wenigen Schritten einordnen", action: "hohenbadenPanel", hohenbadenPanel: "courses" },
+  { icon: "🧭", title: "Module kennenlernen", description: "Grundausbildung, Überland, Autobahn und Automatik", action: "hohenbadenPanel", hohenbadenPanel: "coach" },
+  { icon: "💶", title: "Pakete & Preise", description: "Grundausbildung, Komplettpaket und externe Teilnahme", action: "hohenbadenPanel", hohenbadenPanel: "dashboard" },
+  { icon: "📅", title: "Training planen", description: "Wunschzeiten auswählen und Anfrage vorbereiten", action: "hohenbadenPanel", hohenbadenPanel: "schedule" },
+  { icon: "🪪", title: "Mein Demo-Trainingsplan", description: "Beispielzugang mit Einheiten und nächstem Trainingsziel", action: "hohenbadenPanel", hohenbadenPanel: "connect" },
+  { icon: "📍", title: "Teilnahme & Anfahrt", description: "Auch als Fahrschüler einer anderen Fahrschule trainieren", action: "hohenbadenPanel", hohenbadenPanel: "documents" },
+  { icon: "💬", title: "Training beraten lassen", description: "Ziel, Erfahrung, Sprache und Zeit gemeinsam vorbereiten", message: "Ich möchte Simulatortraining bei FSAZ. Bitte frage mich nach meiner Erfahrung, meinem Trainingsziel, meiner aktuellen Fahrschule, meiner Wunschsprache und möglichen Zeiten." },
+  { icon: "🎙️", title: "Frage einsprechen", description: "Simulator-Frage direkt per Sprache stellen", action: "voice" },
+];
+
 const NIEHAUS_START_CARDS: StartCard[] = [
   {
     icon: "🔗",
@@ -3052,7 +3074,9 @@ type FutureDemoVariant =
   | "cans"
   | "tek"
   | "fix"
-  | "yoendem";
+  | "yoendem"
+  | "rathje"
+  | "fsaz";
 
 type FutureDemoDocument = {
   readonly id: string;
@@ -3452,9 +3476,19 @@ type RegionalDemoVariant =
   | "cans"
   | "tek"
   | "fix"
-  | "yoendem";
+  | "yoendem"
+  | "rathje"
+  | "fsaz";
 
 const REGIONAL_TENANT_VARIANTS: Record<string, RegionalDemoVariant> = {
+  "fahrschule-rathje": "rathje",
+  "rathje": "rathje",
+  "fahrschule-rathje.de": "rathje",
+  "www.fahrschule-rathje.de": "rathje",
+  "fsaz": "fsaz",
+  "rathje-simulator": "fsaz",
+  "fsaz.de": "fsaz",
+  "www.fsaz.de": "fsaz",
   "fahrschule-hopla": "hopla",
   "fahrschule-alamir": "alamir",
   "fahrschule-fritz": "fritz",
@@ -3533,6 +3567,90 @@ function createRegionalDemoConfig(input: {
 }
 
 const REGIONAL_DEMO_CONFIGS: Record<RegionalDemoVariant, FutureDemoConfig> = {
+  rathje: {
+    courses: [
+      { id: "rathje-b197", title: "Klasse B197", location: "Hamburg · Alter Zollweg 201", start: "Start nach persönlicher Beratung", time: "Automatikprüfung plus Schaltkompetenz", seats: 1, tag: "Moderner Pkw-Weg", match: "Passt zu: flexibel zwischen Automatik und Schaltung" },
+      { id: "rathje-b78", title: "Klasse B78 / Automatik", location: "Hamburg · Alter Zollweg 201", start: "Start nach persönlicher Anmeldung", time: "Praktische Prüfung auf Automatik", seats: 1, tag: "Automatik", match: "Passt zu: Ausbildung mit Automatikfokus" },
+      { id: "rathje-be", title: "Klasse BE · Anhänger", location: "Hamburg · Alter Zollweg 201", start: "Termin nach Abstimmung", time: "Praxis passend zu Vorbesitz und Ziel", seats: 1, tag: "Erweiterung", match: "Passt zu: Klasse B plus größerem Anhänger" },
+    ],
+    documents: [
+      { id: "ausweis", label: "Ausweis / Reisepass", detail: "Demo: vorbereitet", initial: true },
+      { id: "passbild", label: "Biometrisches Passbild", detail: "Noch ergänzen", initial: false },
+      { id: "sehtest", label: "Sehtest", detail: "Vor Antrag abstimmen", initial: true },
+      { id: "erstehilfe", label: "Erste-Hilfe-Nachweis", detail: "Kurs bei Rathje möglich", initial: true },
+      { id: "anmeldung", label: "Persönliche Anmeldung", detail: "Mit dem Büro abschließen", initial: true },
+    ],
+    coursePreference: "Klasse B197",
+    coursePreferences: ["Klasse B197", "B78 / Automatik", "BE / Anhänger", "Noch unsicher"],
+    studentCode: "RATHJE-2048",
+    connectSource: "Demo-Zugang mit Beispielprofil. Eine echte Version könnte Lernstand, Unterlagen, Theorie, Simulator und Praxisplanung verbinden.",
+    connectPotential: "Rathje und FSAZ gehören zusammen: Führerscheinausbildung und Simulator können in einem persönlichen Ablauf zusammenspielen.",
+    dashboardEyebrow: "Persönlicher Rathje Führerscheinbegleiter",
+    dashboardTitle: "Hallo Alex, dein nächster Schritt ist vorbereitet.",
+    dashboardNextStep: "Passbild ergänzen, B197 bestätigen und anschließend Theorie sowie Simulator-Einstieg mit Rathje abstimmen.",
+    theoryTitle: "Theorieplan",
+    theoryDetail: "Di · Mi · Do · 18:00–19:30",
+    practiceDetail: "Praxis + Simulator als Demo-Plan",
+    practiceValue: "Verknüpft",
+    nextAppointmentTitle: "🎮 Simulator · ruhiger Einstieg",
+    nextAppointmentDetail: "Demo-Termin · anschließend Praxis passend planen",
+    coachRecommendation: "Starte mit einer ruhigen Simulator-Einheit und kläre danach die passende erste Praxisetappe. So wird aus Beratung direkt ein konkreter nächster Schritt.",
+    coursesTitle: "Welcher Führerschein-Weg passt zu dir?",
+    coursesDescription: "Das Interface ordnet Ziel, Vorbesitz und Automatik-/Schaltwunsch ein und verbindet die Führerscheinausbildung direkt mit dem FSAZ-Simulatorangebot.",
+    classesSummary: "B · B197 · B78/Automatik · BE",
+    reserveButton: "Beratung vorbereiten",
+    seatsLabel: "Demo-Option",
+    scheduleTitle: "Theorie, Simulator und Praxis in einem Ablauf",
+    scheduleDescription: "Die Demo zeigt veröffentlichte Theoriezeiten und beispielhafte nächste Schritte. Echte Fahrstunden und Simulator-Slots bestätigt weiterhin die Fahrschule.",
+    scheduleSlots: [["Dienstag", "18:00", "Theorie · veröffentlicht"], ["Mittwoch", "16:30", "Simulator · Demo"], ["Donnerstag", "18:00", "Theorie · veröffentlicht"]],
+    coachDescription: "Der Begleiter verbindet Führerscheinklasse, Unterlagen, Theorie, Simulator und Praxisfragen. Bei Simulatorinteresse führt er direkt zum eigenen FSAZ-Angebot derselben Firma.",
+    coachFacts: [["🪪", "Demo-Ziel: B197"], ["🎮", "FSAZ-Simulator integrierbar"], ["✅", "Unterlagen: 4 von 5"], ["📅", "Theorie Di–Do im Blick"]],
+    coachQuestions: ["Ist B197 oder B78 besser für mich?", "Wie hilft mir der Simulator vor der ersten Fahrstunde?", "Welche Unterlagen fehlen mir noch?", "Wie plane ich Theorie und Praxis sinnvoll zusammen?"],
+    todayPlan: "Klasse bestätigen · Passbild ergänzen · Simulator-Einstieg vorbereiten",
+    todayPlanPrompt: "Erstelle mir meinen persönlichen Rathje-Startplan und berücksichtige den FSAZ-Simulator.",
+  },
+  fsaz: {
+    courses: [
+      { id: "fsaz-grund", title: "Grundausbildung · 6 × 45 Min.", location: "FSAZ · Alter Zollweg 201 · Hamburg", start: "Start nach persönlicher Abstimmung", time: "Bedienung, Anfahren, Schalten und sichere Routinen", seats: 1, tag: "Empfohlener Einstieg", match: "Passt zu: wenig Erfahrung, Nervosität oder ruhigem Einstieg" },
+      { id: "fsaz-komplett", title: "Komplettpaket · 9 × 45 Min.", location: "FSAZ · Hamburg", start: "Nach Trainingsziel abstimmen", time: "Grundausbildung plus weiterführende Module", seats: 1, tag: "Kompletter Trainingsweg", match: "Passt zu: strukturiertem Simulatortraining vor und neben der Praxis" },
+      { id: "fsaz-module", title: "Überland / Autobahn / Automatik", location: "FSAZ · Hamburg", start: "Einzelmodul nach Bedarf", time: "Gezielte Situationen ohne reales Verkehrsrisiko vorbereiten", seats: 1, tag: "Gezielt trainieren", match: "Passt zu: konkreten Unsicherheiten oder Auffrischung" },
+    ],
+    documents: [
+      { id: "ziel", label: "Trainingsziel", detail: "Demo: ruhig einsteigen", initial: true },
+      { id: "fahrschule", label: "Aktuelle Fahrschule", detail: "Externe Teilnahme möglich", initial: true },
+      { id: "sprache", label: "Wunschsprache", detail: "Am Gerät bestätigen lassen", initial: false },
+      { id: "zeit", label: "Mögliche Trainingszeiten", detail: "Zur Anfrage vorbereitet", initial: true },
+      { id: "kontakt", label: "Kontakt für Rückmeldung", detail: "Mit Rathje/FSAZ abstimmen", initial: true },
+    ],
+    coursePreference: "Ruhig einsteigen / Grundausbildung",
+    coursePreferences: ["Ruhig einsteigen", "Schalten & Anfahren", "Überland", "Autobahn", "Automatik"],
+    studentCode: "FSAZ-2048",
+    connectSource: "Demo-Zugang zum persönlichen Trainingsplan. In der echten Version könnten gebuchte Simulator-Einheiten, Ziele und der nächste sinnvolle Schritt zusammenlaufen.",
+    connectPotential: "Du kannst bei deiner bisherigen Fahrschule bleiben. FSAZ ist das Simulatorangebot der Fahrschule Rathje und kann als zusätzliches Training genutzt werden.",
+    dashboardEyebrow: "Persönlicher FSAZ Trainingsbegleiter",
+    dashboardTitle: "Hallo Alex, dein nächstes Trainingsziel steht fest.",
+    dashboardNextStep: "In der Demo sind zwei von sechs Grundeinheiten abgeschlossen. Als Nächstes: Anfahren und Schalten in Ruhe festigen.",
+    theoryTitle: "Grundausbildung",
+    theoryDetail: "2 von 6 Einheiten · Demo",
+    practiceDetail: "Simulator-Trainingsplan",
+    practiceValue: "2/6",
+    nextAppointmentTitle: "🎮 Grundausbildung · Einheit 3",
+    nextAppointmentDetail: "Demo-Slot · Anfahren, Schalten und Blickführung",
+    coachRecommendation: "Trainiere zuerst die Grundroutine, bevor du gezielt Überland oder Autobahn ergänzt. So wird das Training nachvollziehbar aufgebaut statt einfach nur einzelne Module anzuklicken.",
+    coursesTitle: "Welches Simulatortraining passt zu dir?",
+    coursesDescription: "Wähle Erfahrung und Trainingsziel. Das Interface zeigt daraus den passenden Einstieg – auch wenn du bei einer anderen Fahrschule angemeldet bist.",
+    classesSummary: "Grundausbildung · Überland · Autobahn · Automatik",
+    reserveButton: "Training anfragen",
+    seatsLabel: "Demo-Option",
+    scheduleTitle: "Dein Simulatortraining passend zum Alltag",
+    scheduleDescription: "Hier werden Wunschzeiten als Demo gebündelt. Echte freie Simulator-Slots werden nicht behauptet, sondern mit dem Team von Rathje/FSAZ abgestimmt.",
+    scheduleSlots: [["Dienstag", "16:00", "Grundausbildung · Demo"], ["Mittwoch", "17:15", "Schalten & Anfahren · Demo"], ["Donnerstag", "16:30", "Autobahn · Demo"]],
+    coachDescription: "Der Simulator-Begleiter kennt dein Trainingsziel, deine bisherige Erfahrung und deinen Beispiel-Fortschritt. Er erklärt Module, bereitet Fragen vor und führt zum nächsten sinnvollen Training.",
+    coachFacts: [["🎮", "2 von 6 Grundeinheiten · Demo"], ["🚘", "Externe Fahrschüler willkommen"], ["🧭", "Module passend zum Ziel"], ["📅", "Wunschzeiten vorbereiten"]],
+    coachQuestions: ["Welches Training ist für meinen Einstieg sinnvoll?", "Kann ich hier trainieren, obwohl ich bei einer anderen Fahrschule bin?", "Was ist der Unterschied zwischen Grundausbildung und Komplettpaket?", "Welches Modul hilft mir bei Autobahn oder Schalten?"],
+    todayPlan: "Grundroutine festigen · Trainingsziel wählen · Wunschzeit vorbereiten",
+    todayPlanPrompt: "Erstelle mir einen persönlichen FSAZ-Simulatorplan anhand meines Trainingsziels und meiner Erfahrung.",
+  },
   hopla: createRegionalDemoConfig({
     brand: "Fahrschule Hopla",
     code: "HOPLA-2048",
@@ -4017,6 +4135,8 @@ function HohenbadenFutureDemo({
   onAsk,
 }: HohenbadenFutureDemoProps) {
   const demoConfig = FUTURE_DEMO_CONFIGS[variant];
+  const isFsazDemo = variant === "fsaz";
+  const isRathjeDemo = variant === "rathje";
   const demoCourses = demoConfig.courses;
   const demoDocuments = demoConfig.documents;
   const [studentCode, setStudentCode] = useState("");
@@ -4105,11 +4225,11 @@ function HohenbadenFutureDemo({
   };
 
   const navItems: Array<{ id: HohenbadenPanel; label: string; icon: string }> = [
-    { id: "dashboard", label: "Cockpit", icon: "🪪" },
-    { id: "courses", label: "Kurse", icon: "⚡" },
-    { id: "schedule", label: "Fahrstunden", icon: "📅" },
-    { id: "documents", label: "Unterlagen", icon: "✅" },
-    { id: "coach", label: "Begleiter", icon: "✨" },
+    { id: "dashboard", label: isFsazDemo ? "Trainingsplan" : "Cockpit", icon: "🪪" },
+    { id: "courses", label: isFsazDemo ? "Training" : "Klassen & Kurse", icon: isFsazDemo ? "🎮" : "⚡" },
+    { id: "schedule", label: isFsazDemo ? "Zeiten" : "Planung", icon: "📅" },
+    { id: "documents", label: isFsazDemo ? "Teilnahme" : "Unterlagen", icon: "✅" },
+    { id: "coach", label: isFsazDemo ? "Simulator-Coach" : "Begleiter", icon: "✨" },
   ];
 
   function connectDemoStudent(useDemoData = false) {
@@ -4282,22 +4402,19 @@ function HohenbadenFutureDemo({
                   marginBottom: 18,
                 }}
               >
-                🔗
+                {isFsazDemo ? "🎮" : "🔗"}
               </div>
               <div style={{ fontSize: isMobile ? 25 : 31, fontWeight: 950 }}>
-                Mit deiner Fahrschule verbinden
+                {isFsazDemo ? "Deinen Trainingsplan öffnen" : "Mit deiner Fahrschule verbinden"}
               </div>
               <div
-                style={{
-                  marginTop: 9,
-                  color: textSecondary,
-                  fontSize: 14.5,
-                  lineHeight: 1.55,
-                }}
+                style={{ marginTop: 9, color: textSecondary, fontSize: 14.5, lineHeight: 1.55 }}
               >
-                Nach der Verknüpfung wird das Interface zu deinem persönlichen
-                Führerscheinbegleiter. Es kennt deinen Ausbildungsstand,
-                Unterlagen, Termine und die nächsten sinnvollen Schritte.
+                {isFsazDemo
+                  ? "Die Demo zeigt, wie Simulator-Einheiten, Trainingsziel und nächste Schritte in einem persönlichen FSAZ-Trainingsplan zusammenlaufen können."
+                  : isRathjeDemo
+                    ? "Die Demo verbindet Führerscheinklasse, Unterlagen, Theorie, Simulator und Praxis zu einem persönlichen Rathje-Führerscheinbegleiter."
+                    : "Nach der Verknüpfung wird das Interface zu deinem persönlichen Führerscheinbegleiter. Es kennt deinen Ausbildungsstand, Unterlagen, Termine und die nächsten sinnvollen Schritte."}
               </div>
             </div>
 
@@ -4308,11 +4425,10 @@ function HohenbadenFutureDemo({
                 gap: 8,
               }}
             >
-              {[
-                ["62 %", "Fortschritt"],
-                ["4/5", "Unterlagen"],
-                ["2", "Termine"],
-              ].map(([value, label]) => (
+              {(isFsazDemo
+                ? [["2/6", "Einheiten"], ["1", "Trainingsziel"], ["3", "Module"]]
+                : [["62 %", "Fortschritt"], ["4/5", "Unterlagen"], ["2", "Termine"]]
+              ).map(([value, label]) => (
                 <div
                   key={label}
                   style={{
@@ -4349,14 +4465,14 @@ function HohenbadenFutureDemo({
             }}
           >
             <div style={{ fontSize: 20, fontWeight: 950 }}>
-              Fahrschüler-Zugang
+              {isFsazDemo ? "Demo-Trainingszugang" : "Fahrschüler-Zugang"}
             </div>
             <div style={{ fontSize: 13.5, color: textSecondary }}>
               {demoConfig.connectSource}
             </div>
 
             <label style={{ fontSize: 12.5, fontWeight: 850 }}>
-              Fahrschülernummer
+              {isFsazDemo ? "Demo-Code / Kundenzugang" : "Fahrschülernummer"}
             </label>
             <input
               value={studentCode}
@@ -4366,7 +4482,7 @@ function HohenbadenFutureDemo({
             />
 
             <label style={{ fontSize: 12.5, fontWeight: 850 }}>
-              Geburtsdatum
+              {isFsazDemo ? "Geburtsdatum · Demo" : "Geburtsdatum"}
             </label>
             <input
               value={birthDate}
@@ -4380,7 +4496,11 @@ function HohenbadenFutureDemo({
               onClick={() => connectDemoStudent(false)}
               style={primaryButton}
             >
-              {connecting ? "Wird sicher verbunden…" : "Persönliches Cockpit öffnen"}
+              {connecting
+                ? "Wird sicher verbunden…"
+                : isFsazDemo
+                  ? "Persönlichen Trainingsplan öffnen"
+                  : "Persönliches Cockpit öffnen"}
             </button>
             <button
               type="button"
@@ -4429,7 +4549,9 @@ function HohenbadenFutureDemo({
               }}
             >
               <div>
-                <div style={{ fontWeight: 950 }}>Demo-Fahrschüler aktiv</div>
+                <div style={{ fontWeight: 950 }}>
+                  {isFsazDemo ? "Demo-Trainingsprofil aktiv" : "Demo-Fahrschüler aktiv"}
+                </div>
                 <div
                   style={{
                     color: textSecondary,
@@ -4437,7 +4559,9 @@ function HohenbadenFutureDemo({
                     marginTop: 3,
                   }}
                 >
-                  Hier wird gezeigt, wie das persönliche Cockpit später aussieht.
+                  {isFsazDemo
+                    ? "Hier wird gezeigt, wie ein persönlicher Simulator-Trainingsplan später aussehen kann."
+                    : "Hier wird gezeigt, wie das persönliche Cockpit später aussieht."}
                 </div>
               </div>
               <button
@@ -4445,7 +4569,7 @@ function HohenbadenFutureDemo({
                 onClick={() => onPanelChange("connect")}
                 style={secondaryButton}
               >
-                Eigenen Zugang verbinden
+                {isFsazDemo ? "Eigenen Trainingszugang öffnen" : "Eigenen Zugang verbinden"}
               </button>
             </div>
           )}
@@ -4517,9 +4641,11 @@ function HohenbadenFutureDemo({
                 }}
               >
                 <div>
-                  <div style={{ fontSize: 24, fontWeight: 950 }}>62 %</div>
+                  <div style={{ fontSize: 24, fontWeight: 950 }}>
+                    {isFsazDemo ? "2/6" : "62 %"}
+                  </div>
                   <div style={{ fontSize: 10.5, color: textSecondary }}>
-                    Gesamtstand
+                    {isFsazDemo ? "Grundtraining" : "Gesamtstand"}
                   </div>
                 </div>
               </div>
@@ -4535,16 +4661,29 @@ function HohenbadenFutureDemo({
               gap: 10,
             }}
           >
-            {[
-              ["📱", demoConfig.theoryTitle, demoConfig.theoryDetail, "Im Plan"],
-              ["✅", "Unterlagen", "4 von 5 vollständig", "80 %"],
-              ["🚘", "Praxis", demoConfig.practiceDetail, demoConfig.practiceValue],
-            ].map(([icon, title, detail, value]) => (
+            {(isFsazDemo
+              ? [
+                  ["🎮", demoConfig.theoryTitle, demoConfig.theoryDetail, "Aktiv"],
+                  ["🧭", "Trainingsziel", "Ruhig einsteigen & Schalten", "Klar"],
+                  ["📅", "Trainingsplan", demoConfig.practiceDetail, demoConfig.practiceValue],
+                ]
+              : [
+                  ["📱", demoConfig.theoryTitle, demoConfig.theoryDetail, "Im Plan"],
+                  ["✅", "Unterlagen", "4 von 5 vollständig", "80 %"],
+                  ["🚘", "Praxis", demoConfig.practiceDetail, demoConfig.practiceValue],
+                ]
+            ).map(([icon, title, detail, value]) => (
               <button
                 key={title}
                 type="button"
                 onClick={() =>
-                  onPanelChange(title === "Unterlagen" ? "documents" : "coach")
+                  onPanelChange(
+                    title === "Unterlagen"
+                      ? "documents"
+                      : isFsazDemo && title === "Trainingsplan"
+                        ? "schedule"
+                        : "coach",
+                  )
                 }
                 style={{
                   ...glassCard,
@@ -4606,7 +4745,9 @@ function HohenbadenFutureDemo({
                       marginTop: 3,
                     }}
                   >
-                    Automatisch aus deinem Fahrschulkalender
+                    {isFsazDemo
+                      ? "Beispiel aus deinem persönlichen Trainingsplan"
+                      : "Automatisch aus deinem Fahrschulkalender"}
                   </div>
                 </div>
                 <span
@@ -4619,7 +4760,7 @@ function HohenbadenFutureDemo({
                     fontWeight: 950,
                   }}
                 >
-                  MORGEN
+                  {isFsazDemo ? "DEMO" : "MORGEN"}
                 </span>
               </div>
 
@@ -4654,7 +4795,7 @@ function HohenbadenFutureDemo({
                   onClick={() => onPanelChange("schedule")}
                   style={secondaryButton}
                 >
-                  Termin verwalten
+                  {isFsazDemo ? "Training planen" : "Termin verwalten"}
                 </button>
               </div>
             </div>
@@ -4688,6 +4829,31 @@ function HohenbadenFutureDemo({
               </button>
             </div>
           </div>
+
+          {isFsazDemo && (
+            <div style={{ ...glassCard, padding: 18, display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1.2fr 0.8fr", gap: 14 }}>
+              <div>
+                <div style={{ fontSize: 18, fontWeight: 950 }}>Pakete & veröffentlichte Preise</div>
+                <div style={{ color: textSecondary, fontSize: 12.5, marginTop: 5 }}>Preisstand FSAZ-Webseite · 07.09.2026. Vor Abschluss aktuell bestätigen lassen.</div>
+                <div style={{ display: "grid", gap: 8, marginTop: 13 }}>
+                  {[
+                    ["Grundausbildung · 6 × 45 Min.", "180 €"],
+                    ["Überland 1 / 2 oder Autobahn", "je 40 €"],
+                    ["Komplettpaket · 9 × 45 Min.", "270 €"],
+                    ["Zusätzliche Anmeldung für Externe", "30 €"],
+                  ].map(([label, price]) => (
+                    <div key={label} style={{ ...softCard, padding: "11px 13px", display: "flex", justifyContent: "space-between", gap: 12 }}>
+                      <span style={{ fontSize: 12.5, color: textSecondary }}>{label}</span><strong>{price}</strong>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div style={{ ...softCard, padding: 17, display: "flex", flexDirection: "column", justifyContent: "space-between", gap: 12 }}>
+                <div><div style={{ fontWeight: 950 }}>Auch bei anderer Fahrschule?</div><div style={{ color: textSecondary, fontSize: 12.5, lineHeight: 1.5, marginTop: 6 }}>Ja. Für das Simulatortraining ist kein Fahrschulwechsel nötig. Erfahrung, Ziel, Sprache und Wunschzeit können direkt als Anfrage vorbereitet werden.</div></div>
+                <button type="button" onClick={() => onPanelChange("courses")} style={primaryButton}>Passendes Training finden</button>
+              </div>
+            </div>
+          )}
         </div>
       )}
 
@@ -4725,11 +4891,18 @@ function HohenbadenFutureDemo({
               gap: 8,
             }}
           >
-            {[
-              ["1", "Klasse", demoConfig.classesSummary],
-              ["2", "Deine Zeit", coursePreference],
-              ["3", "Kurs", reservedCourse ? "Vorgemerkt" : "Auswählen"],
-            ].map(([number, label, value]) => (
+            {(isFsazDemo
+              ? [
+                  ["1", "Trainingsziel", demoConfig.classesSummary],
+                  ["2", "Dein Fokus", coursePreference],
+                  ["3", "Modul", reservedCourse ? "Ausgewählt" : "Auswählen"],
+                ]
+              : [
+                  ["1", "Klasse", demoConfig.classesSummary],
+                  ["2", "Deine Zeit", coursePreference],
+                  ["3", "Kurs", reservedCourse ? "Vorgemerkt" : "Auswählen"],
+                ]
+            ).map(([number, label, value]) => (
               <div key={number} style={{ ...softCard, padding: 13 }}>
                 <div
                   style={{
@@ -8175,6 +8348,8 @@ export default function WidgetPage() {
   }, [tenantId]);
   const theme = cfg.theme;
   const normalizedTenantId = tenantId.toLowerCase();
+  const isRathjeInterface = ["fahrschule-rathje", "rathje", "fahrschule-rathje.de", "www.fahrschule-rathje.de"].includes(normalizedTenantId);
+  const isFsazInterface = ["fsaz", "rathje-simulator", "fsaz.de", "www.fsaz.de"].includes(normalizedTenantId);
   const regionalDemoVariant =
     REGIONAL_TENANT_VARIANTS[normalizedTenantId] ?? null;
   const isTxbikesInterface = [
@@ -8329,7 +8504,11 @@ export default function WidgetPage() {
               : regionalDemoVariant
                 ? cfg.id
                 : null;
-  const activeFutureWebsiteUrl = isNiehausInterface
+  const activeFutureWebsiteUrl = isRathjeInterface
+    ? "https://www.fahrschule-rathje.de"
+    : isFsazInterface
+      ? "https://www.fsaz.de"
+      : isNiehausInterface
     ? NIEHAUS_WEBSITE_URL
     : isHohenbadenInterface
       ? "https://fahrschule-hohenbaden.de"
@@ -8395,6 +8574,10 @@ export default function WidgetPage() {
         : BTDESIGNS_BOOKING_SERVICES;
   const displayBrandName = isProfCarInterface
     ? "ProfCar Köln"
+    : isRathjeInterface
+      ? "Fahrschule Rathje"
+      : isFsazInterface
+        ? "FSAZ · Fahrschule Rathje"
     : isNiehausInterface
     ? "Fahrschule Niehaus"
     : isHohenbadenInterface
@@ -8422,6 +8605,10 @@ export default function WidgetPage() {
         : cfg.brandName;
   const displayAssistantName = isProfCarInterface
     ? "digitaler Fahrzeugberater"
+    : isRathjeInterface
+      ? "Führerschein-Assistent"
+      : isFsazInterface
+        ? "Simulator-Assistent"
     : isNiehausInterface
     ? "Führerschein-Assistent"
     : isHohenbadenInterface
@@ -8454,6 +8641,10 @@ export default function WidgetPage() {
   const launcherXIconSize = isEnhancedInterface ? 24 : 19;
   const widgetAccent = isProfCarInterface
     ? "#dc1f2b"
+    : isRathjeInterface
+      ? "#17736e"
+      : isFsazInterface
+        ? "#1e639a"
     : isTxbikesInterface
     ? "#8b5cf6"
     : isWilliInterface
@@ -8483,6 +8674,10 @@ export default function WidgetPage() {
             : theme.accent;
   const widgetBackground = isProfCarInterface
     ? "#0b0e13"
+    : isRathjeInterface
+      ? "#f3fbf9"
+      : isFsazInterface
+        ? "#f2f8fc"
     : isTxbikesInterface
     ? "#f6f2ff"
     : isWilliInterface
@@ -8514,6 +8709,10 @@ export default function WidgetPage() {
               : theme.bg;
   const textPrimary = isProfCarInterface
     ? "#171b24"
+    : isRathjeInterface
+      ? "#16312f"
+      : isFsazInterface
+        ? "#153047"
     : isTxbikesInterface
     ? "#1f1636"
     : isWilliInterface
@@ -8545,6 +8744,10 @@ export default function WidgetPage() {
               : "#163126";
   const textSecondary = isProfCarInterface
     ? "#5f6977"
+    : isRathjeInterface
+      ? "#58706d"
+      : isFsazInterface
+        ? "#5a7082"
     : isTxbikesInterface
     ? "#6a5f8d"
     : isWilliInterface
@@ -8703,6 +8906,10 @@ export default function WidgetPage() {
 
     const firstMessage = isProfCarInterface
       ? "Willkommen bei ProfCar in Köln. Ich bin dein digitaler Fahrzeugberater und helfe dir dabei, ein passendes Auto zu finden, Fahrzeuge zu vergleichen, Finanzierung oder Inzahlungnahme vorzubereiten und eine Probefahrt anzufragen. Womit möchtest du starten?"
+      : isRathjeInterface
+        ? "Moin! Ich bin der digitale Führerschein-Assistent der Fahrschule Rathje. Ich helfe dir bei B, B197, Automatik, BE, Theorie, Unterlagen und dem eigenen FSAZ-Simulatorangebot. Womit möchtest du starten?"
+      : isFsazInterface
+        ? "Moin! Hier ist dein FSAZ Simulator-Assistent von der Fahrschule Rathje. Wir finden gemeinsam das passende Training – auch wenn du bei einer anderen Fahrschule bist. Möchtest du ruhig einsteigen, Schalten üben, Überland oder Autobahn trainieren?"
       : isNiehausInterface
       ? "Hallo! Ich bin der digitale Führerschein-Assistent der Fahrschule Niehaus. Ich helfe dir bei Führerscheinklassen, Preisen, Unterlagen, Anmeldung sowie den Standorten Baden-Baden und Bühl. Womit möchtest du starten?"
       : isHohenbadenInterface
@@ -8746,6 +8953,8 @@ export default function WidgetPage() {
     mounted,
     displayAssistantName,
     isProfCarInterface,
+    isRathjeInterface,
+    isFsazInterface,
     isAbgefahrenInterface,
     isHohenbadenInterface,
     isNiehausInterface,
@@ -11732,6 +11941,10 @@ export default function WidgetPage() {
         role: "assistant",
         content: isProfCarInterface
           ? "Alles klar — möchtest du ein Fahrzeug finden, zwei Modelle vergleichen, eine Finanzierung prüfen, dein Auto in Zahlung geben oder eine Probefahrt vorbereiten?"
+          : isRathjeInterface
+          ? "Alles klar — geht es um Führerscheinklasse, Theorie, Simulator, Unterlagen oder Praxisplanung bei Rathje?"
+          : isFsazInterface
+          ? "Alles klar — möchtest du dein Simulatortraining finden, Module vergleichen, Preise ansehen oder eine Trainingsanfrage vorbereiten?"
           : isNiehausInterface
           ? "Alles klar — geht es um Klasse, Preise, Unterlagen, Anmeldung oder den Standort Baden-Baden beziehungsweise Bühl?"
           : isHohenbadenInterface
@@ -11836,6 +12049,10 @@ export default function WidgetPage() {
 
   const startCards = isProfCarInterface
     ? PROFCAR_START_CARDS
+    : isRathjeInterface
+      ? RATHJE_START_CARDS
+      : isFsazInterface
+        ? FSAZ_START_CARDS
     : isNiehausInterface
     ? NIEHAUS_START_CARDS
     : isHohenbadenInterface
@@ -14694,6 +14911,10 @@ body::after {
                                 ? "Dein Führerschein. Persönlich begleitet."
                               : isFahrwerkBInterface
                               ? "Dein Führerschein-Cockpit"
+                              : isRathjeInterface
+                                ? "Dein Führerschein. Theorie, Simulator und Praxis an einem Ort."
+                              : isFsazInterface
+                                ? "Erst Sicherheit gewinnen. Dann losfahren."
                               : regionalDemoVariant
                                 ? `Dein Weg mit ${displayBrandName}. Persönlich begleitet.`
                                 : "Was möchtest du machen?"}
@@ -14734,6 +14955,10 @@ body::after {
                               ? isMobileViewport
                                 ? "Wähle deinen Bereich – alles Wichtige direkt auf einen Blick."
                                 : "Wähle aus, wo du gerade stehst. Das Interface zeigt dir den nächsten Schritt, prüft Unterlagen und bereitet Anfragen sauber vor."
+                              : isRathjeInterface
+                                ? "Diese Demo verbindet Führerscheinklasse, Theorie, Unterlagen, FSAZ-Simulator und Praxisplanung. So sieht man sofort: Das ist mehr als ein Chat – es ist ein persönliches Führerschein-Cockpit mit konkreten nächsten Schritten."
+                              : isFsazInterface
+                                ? "Finde das passende Simulatortraining, sieh Module und veröffentlichte Preise, öffne deinen Demo-Trainingsplan und bereite eine Anfrage vor. Externe Fahrschüler können teilnehmen, ohne ihre Fahrschule zu wechseln."
                               : isLinaInterface
                               ? `Wähle einen Einstieg aus. Danach führt dich ${displayAssistantName} gezielt zur passenden Lösung.`
                               : isMmWartungInterface
@@ -14828,6 +15053,20 @@ body::after {
                                       "2 Klasse & Kurs",
                                       "3 Theorie & Praxis",
                                       "4 Persönlich begleiten",
+                                    ]
+                                : isRathjeInterface
+                                  ? [
+                                      "1 Klasse finden",
+                                      "2 Theorie & Unterlagen",
+                                      "3 Simulator ergänzen",
+                                      "4 Praxis planen",
+                                    ]
+                                : isFsazInterface
+                                  ? [
+                                      "1 Erfahrung klären",
+                                      "2 Trainingsziel",
+                                      "3 Modul auswählen",
+                                      "4 Anfrage vorbereiten",
                                     ]
                                 : [
                                   "1 Orientierung",
