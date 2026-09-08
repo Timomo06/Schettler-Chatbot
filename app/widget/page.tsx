@@ -676,36 +676,96 @@ const REGIONAL_FAHRSCHULE_START_CARDS: StartCard[] = [
 ];
 
 const RATHJE_START_CARDS: StartCard[] = [
-  { icon: "🚘", title: "Führerschein starten", description: "B, B197, Automatik oder BE – den passenden Einstieg finden", action: "hohenbadenPanel", hohenbadenPanel: "courses" },
-  { icon: "🎮", title: "Simulator kennenlernen", description: "Ruhiger Einstieg vor der ersten echten Fahrstunde", message: "Ich interessiere mich für den Fahrsimulator von Rathje/FSAZ. Zeig mir bitte, wie der Simulator meinen Einstieg ergänzen kann und welche Trainingsmöglichkeiten es gibt." },
-  { icon: "📅", title: "Theorie & Fahrstunden", description: "Theoriezeiten, Praxisplanung und nächste Schritte bündeln", action: "hohenbadenPanel", hohenbadenPanel: "schedule" },
-  { icon: "📋", title: "Anmeldung vorbereiten", description: "Unterlagen prüfen und offene Punkte vorab klären", action: "hohenbadenPanel", hohenbadenPanel: "documents" },
-  { icon: "🪪", title: "Mein Führerschein-Cockpit", description: "Demo-Zugang mit Ausbildungsstand und nächstem Schritt", action: "hohenbadenPanel", hohenbadenPanel: "connect" },
-  { icon: "✨", title: "Persönlicher Begleiter", description: "Fragen, Lernstand, Simulator und Praxis zusammenführen", action: "hohenbadenPanel", hohenbadenPanel: "coach" },
-  { icon: "💬", title: "Beratung & Preise", description: "Klasse, Ablauf und veröffentlichte Einzelpreise einordnen", message: "Ich möchte meinen Führerschein bei der Fahrschule Rathje machen. Hilf mir bitte, Klasse, Ablauf, Simulator und die nächsten Schritte zu klären." },
-  { icon: "🎙️", title: "Frage einsprechen", description: "Anliegen einfach erzählen statt tippen", action: "voice" },
+  {
+    icon: "🚘",
+    title: "Führerschein starten",
+    description: "B, B197, Automatik oder BE – zuerst nur den passenden Weg finden",
+    action: "hohenbadenPanel",
+    hohenbadenPanel: "courses",
+  },
+  {
+    icon: "🪪",
+    title: "Mein Führerschein",
+    description: "Demo-Cockpit mit Ausbildungsstand und nächstem Schritt",
+    action: "hohenbadenPanel",
+    hohenbadenPanel: "connect",
+  },
+  {
+    icon: "📅",
+    title: "Theorie & Planung",
+    description: "Theoriezeiten und nächste Praxisetappe kompakt ansehen",
+    action: "hohenbadenPanel",
+    hohenbadenPanel: "schedule",
+  },
+  {
+    icon: "💬",
+    title: "Frage stellen",
+    description: "Ablauf, Unterlagen oder Preise direkt klären",
+    message:
+      "Ich möchte meinen Führerschein bei der Fahrschule Rathje machen. Hilf mir bitte kurz, meinen passenden Einstieg und den nächsten Schritt zu finden.",
+  },
 ];
 
 const FSAZ_START_CARDS: StartCard[] = [
-  { icon: "🎮", title: "Mein Training finden", description: "Erfahrung und Trainingsziel in wenigen Schritten einordnen", action: "hohenbadenPanel", hohenbadenPanel: "courses" },
-  { icon: "🧭", title: "Module kennenlernen", description: "Grundausbildung, Überland, Autobahn und Automatik", action: "hohenbadenPanel", hohenbadenPanel: "coach" },
-  { icon: "💶", title: "Pakete & Preise", description: "Grundausbildung, Komplettpaket und externe Teilnahme", action: "hohenbadenPanel", hohenbadenPanel: "dashboard" },
-  { icon: "📅", title: "Training planen", description: "Wunschzeiten auswählen und Anfrage vorbereiten", action: "hohenbadenPanel", hohenbadenPanel: "schedule" },
-  { icon: "🪪", title: "Mein Demo-Trainingsplan", description: "Beispielzugang mit Einheiten und nächstem Trainingsziel", action: "hohenbadenPanel", hohenbadenPanel: "connect" },
-  { icon: "📍", title: "Teilnahme & Anfahrt", description: "Auch als Fahrschüler einer anderen Fahrschule trainieren", action: "hohenbadenPanel", hohenbadenPanel: "documents" },
-  { icon: "💬", title: "Training beraten lassen", description: "Ziel, Erfahrung, Sprache und Zeit gemeinsam vorbereiten", message: "Ich möchte Simulatortraining bei FSAZ. Bitte frage mich nach meiner Erfahrung, meinem Trainingsziel, meiner aktuellen Fahrschule, meiner Wunschsprache und möglichen Zeiten." },
-  { icon: "🎙️", title: "Frage einsprechen", description: "Simulator-Frage direkt per Sprache stellen", action: "voice" },
+  {
+    icon: "🪪",
+    title: "Ich bin bereits hier Fahrschüler",
+    description: "Mein FSAZ, App-Zugang und Trainingsfortschritt als Demo",
+    action: "hohenbadenPanel",
+    hohenbadenPanel: "connect",
+  },
+  {
+    icon: "↗️",
+    title: "Ich bin bei einer anderen Fahrschule",
+    description: "Simulatortraining nutzen, ohne die Fahrschule zu wechseln",
+    action: "hohenbadenPanel",
+    hohenbadenPanel: "courses",
+  },
+  {
+    icon: "🎮",
+    title: "Simulator entdecken",
+    description: "Technik, Module und Preise in einer ruhigen Übersicht",
+    action: "hohenbadenPanel",
+    hohenbadenPanel: "dashboard",
+  },
+  {
+    icon: "📅",
+    title: "Training anfragen",
+    description: "Status, Trainingsziel und Wunschzeit in wenigen Schritten",
+    action: "hohenbadenPanel",
+    hohenbadenPanel: "schedule",
+  },
 ];
 
 const CAMPUS_B27_START_CARDS: StartCard[] = [
-  { icon: "🚘", title: "Führerschein finden", description: "Auto, Motorrad, Lkw oder Bus passend zu deinem Ziel einordnen", action: "hohenbadenPanel", hohenbadenPanel: "courses" },
-  { icon: "🎓", title: "BKF, ASF & MPU", description: "Spezialkurs auswählen und die richtigen Rückfragen vorbereiten", action: "hohenbadenPanel", hohenbadenPanel: "coach" },
-  { icon: "📅", title: "Theoriezeiten", description: "Veröffentlichte Termine passend zur Klasse übersichtlich sehen", action: "hohenbadenPanel", hohenbadenPanel: "schedule" },
-  { icon: "📋", title: "Meinen Start vorbereiten", description: "Vorbesitz, Unterlagen und offene Punkte strukturiert klären", action: "hohenbadenPanel", hohenbadenPanel: "documents" },
-  { icon: "🪪", title: "Mein Demo-Cockpit", description: "Beispielzugang mit Ausbildungsziel und nächstem Schritt", action: "hohenbadenPanel", hohenbadenPanel: "connect" },
-  { icon: "✨", title: "Persönlicher Begleiter", description: "Klasse, Theorie, Unterlagen und nächsten Schritt zusammenführen", action: "hohenbadenPanel", hohenbadenPanel: "dashboard" },
-  { icon: "💬", title: "Beratung vorbereiten", description: "Dein Anliegen zusammenfassen und gezielt Kontakt aufnehmen", message: "Ich interessiere mich für Campus B27. Hilf mir bitte, Führerscheinklasse oder Spezialkurs, Vorbesitz, Zeitwunsch und die nächsten Schritte zu klären." },
-  { icon: "🎙️", title: "Frage einsprechen", description: "Frage zu Führerschein, Theorie oder Spezialkurs direkt stellen", action: "voice" },
+  {
+    icon: "🚘",
+    title: "Ausbildung finden",
+    description: "Auto, Motorrad, Lkw oder Bus – zuerst das passende Ziel einordnen",
+    action: "hohenbadenPanel",
+    hohenbadenPanel: "courses",
+  },
+  {
+    icon: "📅",
+    title: "Theoriezeiten",
+    description: "Veröffentlichte Termine passend zur Klasse kompakt sehen",
+    action: "hohenbadenPanel",
+    hohenbadenPanel: "schedule",
+  },
+  {
+    icon: "🪪",
+    title: "Mein Ausbildungsplan",
+    description: "Demo-Cockpit mit Ziel, Unterlagen und nächstem Schritt",
+    action: "hohenbadenPanel",
+    hohenbadenPanel: "connect",
+  },
+  {
+    icon: "🎓",
+    title: "Spezialkurse & Fragen",
+    description: "BKF, ASF, MPU oder andere offene Fragen gezielt klären",
+    action: "hohenbadenPanel",
+    hohenbadenPanel: "coach",
+  },
 ];
 
 const NIEHAUS_START_CARDS: StartCard[] = [
@@ -3628,22 +3688,22 @@ const REGIONAL_DEMO_CONFIGS: Record<RegionalDemoVariant, FutureDemoConfig> = {
   },
   fsaz: {
     courses: [
-      { id: "fsaz-grund", title: "Grundausbildung · 6 × 45 Min.", location: "FSAZ · Alter Zollweg 201 · Hamburg", start: "Start nach persönlicher Abstimmung", time: "Bedienung, Anfahren, Schalten und sichere Routinen", seats: 1, tag: "Empfohlener Einstieg", match: "Passt zu: wenig Erfahrung, Nervosität oder ruhigem Einstieg" },
-      { id: "fsaz-komplett", title: "Komplettpaket · 9 × 45 Min.", location: "FSAZ · Hamburg", start: "Nach Trainingsziel abstimmen", time: "Grundausbildung plus weiterführende Module", seats: 1, tag: "Kompletter Trainingsweg", match: "Passt zu: strukturiertem Simulatortraining vor und neben der Praxis" },
-      { id: "fsaz-module", title: "Überland / Autobahn / Automatik", location: "FSAZ · Hamburg", start: "Einzelmodul nach Bedarf", time: "Gezielte Situationen ohne reales Verkehrsrisiko vorbereiten", seats: 1, tag: "Gezielt trainieren", match: "Passt zu: konkreten Unsicherheiten oder Auffrischung" },
+      { id: "fsaz-grund", title: "Grundausbildung · 6 × 45 Min.", location: "FSAZ · Hamburg-Rahlstedt", start: "Start nach persönlicher Abstimmung", time: "Bedienung, Anfahren, Schalten und sichere Routinen", seats: 1, tag: "Empfohlener Einstieg", match: "Passt zu: wenig Erfahrung, Nervosität oder ruhigem Einstieg" },
+      { id: "fsaz-komplett", title: "Komplettpaket · 9 × 45 Min.", location: "FSAZ · Hamburg-Rahlstedt", start: "Nach Trainingsziel abstimmen", time: "Grundausbildung plus weiterführende Module", seats: 1, tag: "Kompletter Trainingsweg", match: "Passt zu: strukturiertem Simulatortraining vor und neben der Praxis" },
+      { id: "fsaz-module", title: "Überland / Autobahn / Automatik", location: "FSAZ · Hamburg-Rahlstedt", start: "Einzelmodul nach Bedarf", time: "Gezielte Situationen ohne reales Verkehrsrisiko vorbereiten", seats: 1, tag: "Gezielt trainieren", match: "Passt zu: konkreten Unsicherheiten oder Auffrischung" },
     ],
     documents: [
       { id: "ziel", label: "Trainingsziel", detail: "Demo: ruhig einsteigen", initial: true },
       { id: "fahrschule", label: "Aktuelle Fahrschule", detail: "Externe Teilnahme möglich", initial: true },
       { id: "sprache", label: "Wunschsprache", detail: "Am Gerät bestätigen lassen", initial: false },
       { id: "zeit", label: "Mögliche Trainingszeiten", detail: "Zur Anfrage vorbereitet", initial: true },
-      { id: "kontakt", label: "Kontakt für Rückmeldung", detail: "Mit Rathje/FSAZ abstimmen", initial: true },
+      { id: "kontakt", label: "Kontakt für Rückmeldung", detail: "Mit FSAZ abstimmen", initial: true },
     ],
     coursePreference: "Ruhig einsteigen / Grundausbildung",
     coursePreferences: ["Ruhig einsteigen", "Schalten & Anfahren", "Überland", "Autobahn", "Automatik"],
     studentCode: "FSAZ-2048",
     connectSource: "Demo-Zugang zum persönlichen Trainingsplan. In der echten Version könnten gebuchte Simulator-Einheiten, Ziele und der nächste sinnvolle Schritt zusammenlaufen.",
-    connectPotential: "Du kannst bei deiner bisherigen Fahrschule bleiben. FSAZ ist das Simulatorangebot der Fahrschule Rathje und kann als zusätzliches Training genutzt werden.",
+    connectPotential: "Du kannst bei deiner bisherigen Fahrschule bleiben. FSAZ kann als eigenständiges Simulatortraining zusätzlich zu deiner laufenden Fahrausbildung genutzt werden.",
     dashboardEyebrow: "Persönlicher FSAZ Trainingsbegleiter",
     dashboardTitle: "Hallo Alex, dein nächstes Trainingsziel steht fest.",
     dashboardNextStep: "In der Demo sind zwei von sechs Grundeinheiten abgeschlossen. Als Nächstes: Anfahren und Schalten in Ruhe festigen.",
@@ -3660,7 +3720,7 @@ const REGIONAL_DEMO_CONFIGS: Record<RegionalDemoVariant, FutureDemoConfig> = {
     reserveButton: "Training anfragen",
     seatsLabel: "Demo-Option",
     scheduleTitle: "Dein Simulatortraining passend zum Alltag",
-    scheduleDescription: "Hier werden Wunschzeiten als Demo gebündelt. Echte freie Simulator-Slots werden nicht behauptet, sondern mit dem Team von Rathje/FSAZ abgestimmt.",
+    scheduleDescription: "Hier werden Wunschzeiten als Demo gebündelt. Echte freie Simulator-Slots werden nicht behauptet, sondern mit dem FSAZ-Team abgestimmt.",
     scheduleSlots: [["Dienstag", "16:00", "Grundausbildung · Demo"], ["Mittwoch", "17:15", "Schalten & Anfahren · Demo"], ["Donnerstag", "16:30", "Autobahn · Demo"]],
     coachDescription: "Der Simulator-Begleiter kennt dein Trainingsziel, deine bisherige Erfahrung und deinen Beispiel-Fortschritt. Er erklärt Module, bereitet Fragen vor und führt zum nächsten sinnvollen Training.",
     coachFacts: [["🎮", "2 von 6 Grundeinheiten · Demo"], ["🚘", "Externe Fahrschüler willkommen"], ["🧭", "Module passend zum Ziel"], ["📅", "Wunschzeiten vorbereiten"]],
@@ -4186,6 +4246,657 @@ const FUTURE_DEMO_CONFIGS: Record<FutureDemoVariant, FutureDemoConfig> = {
   },
 };
 
+
+function FsazFocusedDemo({
+  panel,
+  onPanelChange,
+  accent,
+  accentRgb,
+  textPrimary,
+  textSecondary,
+  isMobile,
+  onAsk,
+}: HohenbadenFutureDemoProps) {
+  const [goal, setGoal] = useState("Ruhig einsteigen");
+  const [language, setLanguage] = useState("Deutsch");
+  const [timeWish, setTimeWish] = useState("");
+  const [studentPath, setStudentPath] = useState<"internal" | "external" | null>(null);
+  const [showAppDemo, setShowAppDemo] = useState(false);
+
+  if (panel === "home") return null;
+
+  const glass: CSSProperties = {
+    borderRadius: isMobile ? 22 : 26,
+    border: "1px solid rgba(255,255,255,0.58)",
+    background:
+      "linear-gradient(180deg, rgba(255,255,255,0.92), rgba(255,255,255,0.70))",
+    boxShadow:
+      "0 18px 54px rgba(25,55,76,0.10), inset 0 1px 0 rgba(255,255,255,0.78)",
+    backdropFilter: "blur(22px) saturate(165%)",
+    WebkitBackdropFilter: "blur(22px) saturate(165%)",
+  };
+
+  const soft: CSSProperties = {
+    borderRadius: 19,
+    border: `1px solid rgba(${accentRgb}, 0.15)`,
+    background: `linear-gradient(145deg, rgba(${accentRgb}, 0.09), rgba(255,255,255,0.70))`,
+  };
+
+  const primary: CSSProperties = {
+    minHeight: 46,
+    border: "1px solid rgba(255,255,255,0.34)",
+    borderRadius: 15,
+    background: `linear-gradient(180deg, ${accent}, ${accent}D0)`,
+    color: "#fff",
+    padding: "0 17px",
+    fontWeight: 900,
+    cursor: "pointer",
+    boxShadow: `0 12px 30px rgba(${accentRgb}, 0.22)`,
+  };
+
+  const secondary: CSSProperties = {
+    minHeight: 43,
+    border: `1px solid rgba(${accentRgb}, 0.17)`,
+    borderRadius: 14,
+    background: "rgba(255,255,255,0.72)",
+    color: textPrimary,
+    padding: "0 15px",
+    fontWeight: 850,
+    cursor: "pointer",
+  };
+
+  const smallLabel: CSSProperties = {
+    color: textSecondary,
+    fontSize: 11.5,
+    fontWeight: 900,
+    letterSpacing: 0.45,
+    textTransform: "uppercase",
+  };
+
+  const goalOptions = [
+    "Ruhig einsteigen",
+    "Schalten & Anfahren",
+    "Überland",
+    "Autobahn",
+    "Automatik",
+  ];
+
+  const featureItems = [
+    ["🖥️", "Großes Sichtfeld", "Drei Monitore für Kreuzungen, Abbiegen und Querverkehr."],
+    ["🚘", "Echtes Fahrgefühl", "Cockpit, Pedalerie und Schaltung nah am Pkw."],
+    ["🔁", "Wiederholen", "Schwierige Situationen ohne realen Verkehr mehrfach trainieren."],
+    ["🎯", "Gezielt üben", "Grundausbildung, Überland, Autobahn und Automatik."],
+  ];
+
+  function requestTraining() {
+    const typeText =
+      studentPath === "external"
+        ? "Ich bin bei einer anderen Fahrschule und möchte zusätzlich bei FSAZ trainieren."
+        : studentPath === "internal"
+          ? "Ich bin bereits FSAZ-Fahrschüler und möchte mein Simulatortraining planen."
+          : "Ich interessiere mich für Simulatortraining bei FSAZ.";
+
+    onAsk(
+      `${typeText} Mein Trainingsziel ist "${goal}". Wunschsprache: ${language}. Zeitwunsch: ${timeWish || "noch offen"}. Bitte bereite mit mir den nächsten sinnvollen Schritt vor.`,
+    );
+    onPanelChange("home");
+  }
+
+  const qrPattern = [
+    1,1,1,0,1,0,
+    1,0,1,1,0,1,
+    1,1,1,0,1,1,
+    0,1,0,1,0,0,
+    1,0,1,1,1,0,
+    0,1,1,0,1,1,
+  ];
+
+  return (
+    <section
+      style={{
+        ...glass,
+        alignSelf: "stretch",
+        padding: isMobile ? 14 : 18,
+        display: "flex",
+        flexDirection: "column",
+        gap: 14,
+        color: textPrimary,
+        position: "relative",
+        flex: "0 0 auto",
+        minHeight: "min-content",
+      }}
+    >
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          gap: 10,
+          flexWrap: "wrap",
+        }}
+      >
+        <button
+          type="button"
+          onClick={() => onPanelChange("home")}
+          style={{ ...secondary, minHeight: 38, padding: "0 12px", fontSize: 12.5 }}
+        >
+          ← Übersicht
+        </button>
+
+        <div
+          style={{
+            borderRadius: 999,
+            padding: "8px 11px",
+            background: `rgba(${accentRgb}, 0.09)`,
+            border: `1px solid rgba(${accentRgb}, 0.15)`,
+            fontSize: 11.5,
+            fontWeight: 900,
+            color: textSecondary,
+          }}
+        >
+          FSAZ · FAHRSIMULATOR
+        </div>
+      </div>
+
+      {panel === "dashboard" && (
+        <>
+          <div style={{ padding: isMobile ? "6px 4px 2px" : "8px 6px 4px" }}>
+            <div style={{ ...smallLabel, color: accent }}>SIMULATOR ENTDECKEN</div>
+            <div style={{ fontSize: isMobile ? 27 : 34, fontWeight: 950, marginTop: 5 }}>
+              Trainieren, bevor es auf der Straße stressig wird.
+            </div>
+            <div style={{ color: textSecondary, fontSize: 14, lineHeight: 1.55, marginTop: 8, maxWidth: 720 }}>
+              Der Simulator ergänzt die praktische Fahrausbildung. Du kannst Abläufe,
+              Blickführung und schwierige Situationen kontrolliert üben und wiederholen.
+            </div>
+          </div>
+
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: isMobile ? "1fr" : "repeat(2, minmax(0, 1fr))",
+              gap: 10,
+            }}
+          >
+            {featureItems.map(([icon, title, detail]) => (
+              <div key={title} style={{ ...soft, padding: 15, display: "flex", gap: 12 }}>
+                <div style={{ fontSize: 23 }}>{icon}</div>
+                <div>
+                  <div style={{ fontWeight: 950 }}>{title}</div>
+                  <div style={{ color: textSecondary, fontSize: 12.5, lineHeight: 1.45, marginTop: 4 }}>
+                    {detail}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div style={{ ...glass, padding: 16 }}>
+            <div style={{ ...smallLabel }}>PREISORIENTIERUNG</div>
+            <div style={{ display: "grid", gap: 8, marginTop: 10 }}>
+              {[
+                ["Grundausbildung · 6 × 45 Min.", "180 €"],
+                ["Komplettpaket · 9 × 45 Min.", "270 €"],
+                ["Externe Fahrschüler · Anmeldung", "+ 30 €"],
+              ].map(([label, value]) => (
+                <div
+                  key={label}
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    gap: 12,
+                    padding: "10px 0",
+                    borderBottom: "1px solid rgba(17,24,39,0.07)",
+                    fontSize: 13.5,
+                  }}
+                >
+                  <span>{label}</span>
+                  <strong>{value}</strong>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr",
+              gap: 10,
+            }}
+          >
+            <button
+              type="button"
+              onClick={() => {
+                setStudentPath("internal");
+                onPanelChange("connect");
+              }}
+              style={{ ...secondary, minHeight: 64, textAlign: "left" }}
+            >
+              <span style={{ display: "block", fontSize: 14, fontWeight: 950 }}>Ich bin bereits FSAZ-Fahrschüler</span>
+              <span style={{ display: "block", marginTop: 3, fontSize: 11.5, color: textSecondary }}>Mein Training & App-Zugang</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setStudentPath("external");
+                onPanelChange("courses");
+              }}
+              style={{ ...primary, minHeight: 64, textAlign: "left" }}
+            >
+              <span style={{ display: "block", fontSize: 14, fontWeight: 950 }}>Ich bin bei einer anderen Fahrschule</span>
+              <span style={{ display: "block", marginTop: 3, fontSize: 11.5, opacity: 0.85 }}>Trotzdem bei FSAZ trainieren</span>
+            </button>
+          </div>
+        </>
+      )}
+
+      {panel === "connect" && (
+        <>
+          <div style={{ padding: isMobile ? "6px 4px 2px" : "8px 6px 4px" }}>
+            <div style={{ ...smallLabel, color: accent }}>MEIN FSAZ</div>
+            <div style={{ fontSize: isMobile ? 27 : 34, fontWeight: 950, marginTop: 5 }}>
+              Dein Training. Dein Fortschritt. Ein klarer nächster Schritt.
+            </div>
+            <div style={{ color: textSecondary, fontSize: 14, lineHeight: 1.55, marginTop: 8 }}>
+              Für eigene Fahrschüler wird der persönliche Trainingszugang nur angedeutet:
+              App, QR-Zugang und Trainingsfortschritt laufen später an einer Stelle zusammen.
+            </div>
+          </div>
+
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: isMobile ? "1fr" : "0.95fr 1.05fr",
+              gap: 10,
+            }}
+          >
+            <div style={{ ...soft, padding: 18 }}>
+              <div style={{ display: "flex", justifyContent: "space-between", gap: 12, alignItems: "center" }}>
+                <div>
+                  <div style={{ ...smallLabel }}>APP-ZUGANG · DEMO</div>
+                  <div style={{ fontSize: 20, fontWeight: 950, marginTop: 4 }}>
+                    Persönlicher QR-Zugang
+                  </div>
+                </div>
+                <div
+                  aria-label="QR-Code Demo"
+                  style={{
+                    width: 78,
+                    height: 78,
+                    borderRadius: 15,
+                    background: "#fff",
+                    padding: 9,
+                    display: "grid",
+                    gridTemplateColumns: "repeat(6, 1fr)",
+                    gap: 2,
+                    boxShadow: "0 8px 24px rgba(0,0,0,0.08)",
+                  }}
+                >
+                  {qrPattern.map((filled, index) => (
+                    <span
+                      key={index}
+                      style={{
+                        borderRadius: 1,
+                        background: filled ? "#1b2e3b" : "transparent",
+                      }}
+                    />
+                  ))}
+                </div>
+              </div>
+              <div style={{ color: textSecondary, fontSize: 12.5, lineHeight: 1.5, marginTop: 14 }}>
+                Kein echter QR-Code in der Demo. Die Oberfläche zeigt nur, wie der
+                App-Zugang später sichtbar eingebunden werden kann.
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowAppDemo((value) => !value)}
+                style={{ ...secondary, width: "100%", marginTop: 14 }}
+              >
+                {showAppDemo ? "Demo-Zugang schließen" : "Demo-Zugang ansehen"}
+              </button>
+            </div>
+
+            <div style={{ ...glass, padding: 18 }}>
+              <div style={{ ...smallLabel }}>TRAININGSPLAN · BEISPIEL</div>
+              <div style={{ fontSize: 21, fontWeight: 950, marginTop: 4 }}>
+                {showAppDemo ? "Alex · Grundausbildung" : "Persönlicher Trainingsstand"}
+              </div>
+              <div style={{ color: textSecondary, fontSize: 12.5, lineHeight: 1.5, marginTop: 7 }}>
+                {showAppDemo
+                  ? "2 von 6 Grundeinheiten abgeschlossen. Als Nächstes: Anfahren, Schalten und Blickführung."
+                  : "Öffne den Demo-Zugang, um beispielhaft zu sehen, wie Fortschritt und nächstes Trainingsziel zusammenlaufen."}
+              </div>
+
+              <div style={{ marginTop: 16, height: 9, borderRadius: 999, background: `rgba(${accentRgb}, 0.10)`, overflow: "hidden" }}>
+                <div
+                  style={{
+                    width: showAppDemo ? "33%" : "0%",
+                    height: "100%",
+                    background: accent,
+                    borderRadius: 999,
+                    transition: "width 220ms ease",
+                  }}
+                />
+              </div>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setStudentPath("internal");
+                  onPanelChange("schedule");
+                }}
+                style={{ ...primary, width: "100%", marginTop: 16 }}
+              >
+                Nächstes Training vorbereiten
+              </button>
+            </div>
+          </div>
+        </>
+      )}
+
+      {panel === "courses" && (
+        <>
+          <div style={{ ...soft, padding: isMobile ? 18 : 22 }}>
+            <div style={{ ...smallLabel, color: accent }}>EXTERNE FAHRSCHÜLER</div>
+            <div style={{ fontSize: isMobile ? 27 : 34, fontWeight: 950, marginTop: 5 }}>
+              Du bleibst bei deiner Fahrschule.
+            </div>
+            <div style={{ color: textSecondary, fontSize: 14, lineHeight: 1.55, marginTop: 8 }}>
+              Für das Simulatortraining ist kein Fahrschulwechsel nötig. Du kannst
+              FSAZ gezielt als zusätzliches Training nutzen.
+            </div>
+            <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginTop: 13 }}>
+              {["Kein Fahrschulwechsel", "Eigene Fahrschule bleibt", "Externe Anmeldung: 30 €"].map((item) => (
+                <span
+                  key={item}
+                  style={{
+                    borderRadius: 999,
+                    padding: "8px 10px",
+                    background: "rgba(255,255,255,0.72)",
+                    border: `1px solid rgba(${accentRgb}, 0.13)`,
+                    fontSize: 11.5,
+                    fontWeight: 850,
+                  }}
+                >
+                  ✓ {item}
+                </span>
+              ))}
+            </div>
+          </div>
+
+          <div style={{ ...glass, padding: 17 }}>
+            <div style={{ fontWeight: 950 }}>Was möchtest du trainieren?</div>
+            <div style={{ color: textSecondary, fontSize: 12.5, marginTop: 4 }}>
+              Eine Auswahl reicht. Weitere Details kommen erst danach.
+            </div>
+            <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginTop: 13 }}>
+              {goalOptions.map((item) => (
+                <button
+                  key={item}
+                  type="button"
+                  onClick={() => setGoal(item)}
+                  style={{
+                    ...secondary,
+                    minHeight: 39,
+                    padding: "0 12px",
+                    background:
+                      goal === item
+                        ? `rgba(${accentRgb}, 0.15)`
+                        : "rgba(255,255,255,0.72)",
+                    border:
+                      goal === item
+                        ? `1px solid rgba(${accentRgb}, 0.34)`
+                        : secondary.border,
+                  }}
+                >
+                  {item}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr",
+              gap: 10,
+            }}
+          >
+            <div style={{ ...soft, padding: 17 }}>
+              <div style={{ ...smallLabel }}>EMPFOHLENER EINSTIEG</div>
+              <div style={{ fontSize: 20, fontWeight: 950, marginTop: 5 }}>
+                {goal === "Ruhig einsteigen" || goal === "Schalten & Anfahren"
+                  ? "Grundausbildung · 6 × 45 Min."
+                  : `${goal} gezielt trainieren`}
+              </div>
+              <div style={{ color: textSecondary, fontSize: 12.5, lineHeight: 1.5, marginTop: 7 }}>
+                {goal === "Ruhig einsteigen" || goal === "Schalten & Anfahren"
+                  ? "Bedienung, Anfahren, Schalten und sichere Routinen Schritt für Schritt aufbauen."
+                  : "Das Trainingsziel wird gezielt vorbereitet. Den konkreten Modulumfang bestätigt FSAZ vor der Anmeldung."}
+              </div>
+            </div>
+
+            <div style={{ ...glass, padding: 17 }}>
+              <div style={{ ...smallLabel }}>PREISE</div>
+              <div style={{ display: "grid", gap: 8, marginTop: 8, fontSize: 13 }}>
+                <div style={{ display: "flex", justifyContent: "space-between", gap: 10 }}>
+                  <span>Grundausbildung</span><strong>180 €</strong>
+                </div>
+                <div style={{ display: "flex", justifyContent: "space-between", gap: 10 }}>
+                  <span>Komplettpaket</span><strong>270 €</strong>
+                </div>
+                <div style={{ display: "flex", justifyContent: "space-between", gap: 10 }}>
+                  <span>Externe Anmeldung</span><strong>30 €</strong>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => {
+              setStudentPath("external");
+              onPanelChange("schedule");
+            }}
+            style={{ ...primary, width: "100%" }}
+          >
+            Training anfragen
+          </button>
+        </>
+      )}
+
+      {panel === "schedule" && (
+        <>
+          <div style={{ padding: isMobile ? "6px 4px 2px" : "8px 6px 4px" }}>
+            <div style={{ ...smallLabel, color: accent }}>TRAINING ANFRAGEN</div>
+            <div style={{ fontSize: isMobile ? 27 : 34, fontWeight: 950, marginTop: 5 }}>
+              Drei Angaben. Dann ist die Anfrage vorbereitet.
+            </div>
+          </div>
+
+          <div style={{ ...glass, padding: 17 }}>
+            <div style={{ fontWeight: 950 }}>1 · Wo machst du deinen Führerschein?</div>
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr",
+                gap: 8,
+                marginTop: 12,
+              }}
+            >
+              <button
+                type="button"
+                onClick={() => setStudentPath("internal")}
+                style={{
+                  ...secondary,
+                  minHeight: 58,
+                  background:
+                    studentPath === "internal"
+                      ? `rgba(${accentRgb}, 0.15)`
+                      : "rgba(255,255,255,0.72)",
+                }}
+              >
+                Bereits FSAZ-Fahrschüler
+              </button>
+              <button
+                type="button"
+                onClick={() => setStudentPath("external")}
+                style={{
+                  ...secondary,
+                  minHeight: 58,
+                  background:
+                    studentPath === "external"
+                      ? `rgba(${accentRgb}, 0.15)`
+                      : "rgba(255,255,255,0.72)",
+                }}
+              >
+                Bei einer anderen Fahrschule
+              </button>
+            </div>
+          </div>
+
+          <div style={{ ...glass, padding: 17 }}>
+            <div style={{ fontWeight: 950 }}>2 · Trainingsziel</div>
+            <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginTop: 12 }}>
+              {goalOptions.map((item) => (
+                <button
+                  key={item}
+                  type="button"
+                  onClick={() => setGoal(item)}
+                  style={{
+                    ...secondary,
+                    minHeight: 39,
+                    padding: "0 12px",
+                    background:
+                      goal === item
+                        ? `rgba(${accentRgb}, 0.15)`
+                        : "rgba(255,255,255,0.72)",
+                  }}
+                >
+                  {item}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr",
+              gap: 10,
+            }}
+          >
+            <label style={{ ...glass, padding: 16, display: "flex", flexDirection: "column", gap: 8 }}>
+              <span style={{ fontWeight: 950 }}>3 · Wunschzeit</span>
+              <input
+                value={timeWish}
+                onChange={(event) => setTimeWish(event.target.value)}
+                placeholder="z. B. Mittwoch ab 16 Uhr"
+                style={{
+                  height: 46,
+                  borderRadius: 13,
+                  border: `1px solid rgba(${accentRgb}, 0.18)`,
+                  background: "rgba(255,255,255,0.78)",
+                  padding: "0 12px",
+                  color: textPrimary,
+                  outline: "none",
+                }}
+              />
+            </label>
+
+            <label style={{ ...glass, padding: 16, display: "flex", flexDirection: "column", gap: 8 }}>
+              <span style={{ fontWeight: 950 }}>Sprache</span>
+              <select
+                value={language}
+                onChange={(event) => setLanguage(event.target.value)}
+                style={{
+                  height: 46,
+                  borderRadius: 13,
+                  border: `1px solid rgba(${accentRgb}, 0.18)`,
+                  background: "rgba(255,255,255,0.78)",
+                  padding: "0 12px",
+                  color: textPrimary,
+                  outline: "none",
+                }}
+              >
+                {["Deutsch", "Englisch", "Türkisch", "Arabisch", "Andere Sprache"].map((item) => (
+                  <option key={item} value={item}>{item}</option>
+                ))}
+              </select>
+            </label>
+          </div>
+
+          {studentPath === "external" && (
+            <div style={{ ...soft, padding: 14, color: textSecondary, fontSize: 12.5, lineHeight: 1.5 }}>
+              Du bleibst bei deiner bisherigen Fahrschule. Für externe Fahrschüler
+              ist laut veröffentlichter Preisliste eine zusätzliche Anmeldung von 30 € vorgesehen.
+            </div>
+          )}
+
+          <button
+            type="button"
+            onClick={requestTraining}
+            disabled={!studentPath}
+            style={{
+              ...primary,
+              width: "100%",
+              opacity: studentPath ? 1 : 0.45,
+              cursor: studentPath ? "pointer" : "not-allowed",
+            }}
+          >
+            Anfrage im Chat vorbereiten
+          </button>
+        </>
+      )}
+
+      {(panel === "documents" || panel === "coach") && (
+        <>
+          <div style={{ ...soft, padding: isMobile ? 18 : 22 }}>
+            <div style={{ ...smallLabel, color: accent }}>ZWEI KLARE WEGE</div>
+            <div style={{ fontSize: isMobile ? 26 : 32, fontWeight: 950, marginTop: 5 }}>
+              Entscheidend ist nur: Wo machst du deinen Führerschein?
+            </div>
+          </div>
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr",
+              gap: 10,
+            }}
+          >
+            <button
+              type="button"
+              onClick={() => {
+                setStudentPath("internal");
+                onPanelChange("connect");
+              }}
+              style={{ ...secondary, minHeight: 76, textAlign: "left" }}
+            >
+              <strong>Bereits FSAZ-Fahrschüler</strong>
+              <span style={{ display: "block", color: textSecondary, fontSize: 11.5, marginTop: 5 }}>
+                App-Zugang und eigener Trainingsplan.
+              </span>
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setStudentPath("external");
+                onPanelChange("courses");
+              }}
+              style={{ ...primary, minHeight: 76, textAlign: "left" }}
+            >
+              <strong>Andere Fahrschule</strong>
+              <span style={{ display: "block", opacity: 0.86, fontSize: 11.5, marginTop: 5 }}>
+                Ohne Wechsel zusätzlich am Simulator trainieren.
+              </span>
+            </button>
+          </div>
+        </>
+      )}
+    </section>
+  );
+}
+
 function HohenbadenFutureDemo({
   variant = "hohenbaden",
   panel,
@@ -4200,6 +4911,7 @@ function HohenbadenFutureDemo({
   const demoConfig = FUTURE_DEMO_CONFIGS[variant];
   const isFsazDemo = variant === "fsaz";
   const isRathjeDemo = variant === "rathje";
+  const isCompactSalesDemo = isRathjeDemo || variant === "campus-b27";
   const demoCourses = demoConfig.courses;
   const demoDocuments = demoConfig.documents;
   const [studentCode, setStudentCode] = useState("");
@@ -4287,13 +4999,20 @@ function HohenbadenFutureDemo({
     boxSizing: "border-box",
   };
 
-  const navItems: Array<{ id: HohenbadenPanel; label: string; icon: string }> = [
-    { id: "dashboard", label: isFsazDemo ? "Trainingsplan" : "Cockpit", icon: "🪪" },
-    { id: "courses", label: isFsazDemo ? "Training" : "Klassen & Kurse", icon: isFsazDemo ? "🎮" : "⚡" },
-    { id: "schedule", label: isFsazDemo ? "Zeiten" : "Planung", icon: "📅" },
-    { id: "documents", label: isFsazDemo ? "Teilnahme" : "Unterlagen", icon: "✅" },
-    { id: "coach", label: isFsazDemo ? "Simulator-Coach" : "Begleiter", icon: "✨" },
-  ];
+  const navItems: Array<{ id: HohenbadenPanel; label: string; icon: string }> =
+    isCompactSalesDemo
+      ? [
+          { id: "dashboard", label: "Übersicht", icon: "🪪" },
+          { id: "schedule", label: "Planung", icon: "📅" },
+          { id: "documents", label: "Unterlagen", icon: "✅" },
+        ]
+      : [
+          { id: "dashboard", label: isFsazDemo ? "Trainingsplan" : "Cockpit", icon: "🪪" },
+          { id: "courses", label: isFsazDemo ? "Training" : "Klassen & Kurse", icon: isFsazDemo ? "🎮" : "⚡" },
+          { id: "schedule", label: isFsazDemo ? "Zeiten" : "Planung", icon: "📅" },
+          { id: "documents", label: isFsazDemo ? "Teilnahme" : "Unterlagen", icon: "✅" },
+          { id: "coach", label: isFsazDemo ? "Simulator-Coach" : "Begleiter", icon: "✨" },
+        ];
 
   function connectDemoStudent(useDemoData = false) {
     if (connecting) return;
@@ -4599,7 +5318,7 @@ function HohenbadenFutureDemo({
             gap: 14,
           }}
         >
-          {!connected && (
+          {!connected && !isCompactSalesDemo && (
             <div
               style={{
                 ...softCard,
@@ -4945,6 +5664,7 @@ function HohenbadenFutureDemo({
             </div>
           </div>
 
+          {!isCompactSalesDemo && (
           <div
             style={{
               display: "grid",
@@ -4991,6 +5711,9 @@ function HohenbadenFutureDemo({
             ))}
           </div>
 
+          )}
+
+          {!isCompactSalesDemo && (
           <div style={{ ...glassCard, padding: 16 }}>
             <div
               style={{
@@ -5075,6 +5798,8 @@ function HohenbadenFutureDemo({
               ))}
             </div>
           </div>
+
+          )}
 
           {reservedCourse ? (
             <div
@@ -8649,7 +9374,7 @@ export default function WidgetPage() {
     : isRathjeInterface
       ? "Fahrschule Rathje"
       : isFsazInterface
-        ? "FSAZ · Fahrschule Rathje"
+        ? "FSAZ · Fahrsimulator-Ausbildungszentrum"
       : isCampusB27Interface
         ? "Campus B27"
     : isNiehausInterface
@@ -8682,7 +9407,7 @@ export default function WidgetPage() {
     : isRathjeInterface
       ? "Führerschein-Assistent"
       : isFsazInterface
-        ? "Simulator-Assistent"
+        ? "Simulator-Coach"
       : isCampusB27Interface
         ? "Ausbildungs-Assistent"
     : isNiehausInterface
@@ -8993,7 +9718,7 @@ export default function WidgetPage() {
       : isRathjeInterface
         ? "Moin! Ich bin der digitale Führerschein-Assistent der Fahrschule Rathje. Ich helfe dir bei B, B197, Automatik, BE, Theorie, Unterlagen und dem eigenen FSAZ-Simulatorangebot. Womit möchtest du starten?"
       : isFsazInterface
-        ? "Moin! Hier ist dein FSAZ Simulator-Assistent von der Fahrschule Rathje. Wir finden gemeinsam das passende Training – auch wenn du bei einer anderen Fahrschule bist. Möchtest du ruhig einsteigen, Schalten üben, Überland oder Autobahn trainieren?"
+        ? "Willkommen bei FSAZ. Ich bin dein Simulator-Coach. Bist du bereits bei FSAZ in Ausbildung oder kommst du von einer anderen Fahrschule? Danach zeige ich dir nur die Schritte, die für dich wirklich relevant sind."
       : isCampusB27Interface
         ? "Hallo bei Campus B27 in Hünfeld! Ich bin dein digitaler Ausbildungs-Assistent. Suchst du Auto, Motorrad, Lkw, Bus oder einen Spezialkurs wie BKF, ASF oder MPU? Ich helfe dir, den passenden Einstieg und die nächsten Schritte vorzubereiten."
       : isNiehausInterface
@@ -12031,7 +12756,7 @@ export default function WidgetPage() {
           : isRathjeInterface
           ? "Alles klar — geht es um Führerscheinklasse, Theorie, Simulator, Unterlagen oder Praxisplanung bei Rathje?"
           : isFsazInterface
-          ? "Alles klar — möchtest du dein Simulatortraining finden, Module vergleichen, Preise ansehen oder eine Trainingsanfrage vorbereiten?"
+          ? "Alles klar — bist du bereits FSAZ-Fahrschüler oder kommst du von einer anderen Fahrschule?"
           : isCampusB27Interface
           ? "Alles klar — geht es um Auto, Motorrad, Lkw, Bus, Theoriezeiten oder einen Spezialkurs bei Campus B27?"
           : isNiehausInterface
@@ -14779,7 +15504,7 @@ body::after {
                               : isAsphaltcrewInterface
                                 ? "Ready for Take-off?"
                                 : isMalikInterface
-                                  ? "Simulator · E-Auto · zwei Standorte"
+                                  ? "Simulator · Training · App-Zugang"
                                   : isFahrschule7Interface
                                     ? "Express-Kurs · Behördenservice · Unterkunft"
                                   : isCampusB27Interface
@@ -15007,7 +15732,7 @@ body::after {
                               : isRathjeInterface
                                 ? "Dein Führerschein. Theorie, Simulator und Praxis an einem Ort."
                               : isFsazInterface
-                                ? "Erst Sicherheit gewinnen. Dann losfahren."
+                                ? "Fahrsimulator. Klarer Einstieg. Dein Training."
                               : isCampusB27Interface
                                 ? "Dein Ziel. Deine passende Ausbildung."
                               : regionalDemoVariant
@@ -15053,7 +15778,7 @@ body::after {
                               : isRathjeInterface
                                 ? "Diese Demo verbindet Führerscheinklasse, Theorie, Unterlagen, FSAZ-Simulator und Praxisplanung. So sieht man sofort: Das ist mehr als ein Chat – es ist ein persönliches Führerschein-Cockpit mit konkreten nächsten Schritten."
                               : isFsazInterface
-                                ? "Finde das passende Simulatortraining, sieh Module und veröffentlichte Preise, öffne deinen Demo-Trainingsplan und bereite eine Anfrage vor. Externe Fahrschüler können teilnehmen, ohne ihre Fahrschule zu wechseln."
+                                ? "Wähle zuerst, welcher Weg zu dir passt: bereits FSAZ-Fahrschüler, Fahrschüler einer anderen Fahrschule oder einfach Simulator entdecken. Erst danach erscheinen die passenden Informationen."
                               : isCampusB27Interface
                                 ? "Auto, Motorrad, Lkw, Bus oder Spezialkurs: Das Interface ordnet dein Ziel, deinen Vorbesitz, Theoriezeiten und offene Unterlagen und macht daraus einen klaren nächsten Schritt statt nur eine Chat-Antwort."
                               : isLinaInterface
@@ -15377,19 +16102,32 @@ body::after {
                   )}
 
                   {futureDemoVariant &&
-                    hohenbadenPanel !== "home" && (
-                    <HohenbadenFutureDemo
-                      variant={futureDemoVariant}
-                      panel={hohenbadenPanel}
-                      onPanelChange={openHohenbadenPanel}
-                      accent={widgetAccent}
-                      accentRgb={accentRgb}
-                      textPrimary={textPrimary}
-                      textSecondary={textSecondary}
-                      isMobile={isMobileViewport}
-                      onAsk={(message) => void sendText(message)}
-                    />
-                  )}
+                    hohenbadenPanel !== "home" &&
+                    (futureDemoVariant === "fsaz" ? (
+                      <FsazFocusedDemo
+                        variant={futureDemoVariant}
+                        panel={hohenbadenPanel}
+                        onPanelChange={openHohenbadenPanel}
+                        accent={widgetAccent}
+                        accentRgb={accentRgb}
+                        textPrimary={textPrimary}
+                        textSecondary={textSecondary}
+                        isMobile={isMobileViewport}
+                        onAsk={(message) => void sendText(message)}
+                      />
+                    ) : (
+                      <HohenbadenFutureDemo
+                        variant={futureDemoVariant}
+                        panel={hohenbadenPanel}
+                        onPanelChange={openHohenbadenPanel}
+                        accent={widgetAccent}
+                        accentRgb={accentRgb}
+                        textPrimary={textPrimary}
+                        textSecondary={textSecondary}
+                        isMobile={isMobileViewport}
+                        onAsk={(message) => void sendText(message)}
+                      />
+                    ))}
 
                   {isFahrwerkBInterface &&
                     (fahrwerkPanel !== "dashboard" ||

@@ -43,14 +43,17 @@ export const SCHOOL_DEMOS = {
     steps: ["1 Ziel klären", "2 Start vorbereiten", "3 Theorie & Simulator", "4 Praxis planen"],
   },
   fsaz: {
-    companyId: "fahrschule-rathje", brand: "FSAZ · Fahrschule Rathje", assistant: "Simulator-Assistent",
+    // Technisch bleibt die gemeinsame companyId erhalten, sichtbar tritt FSAZ
+    // aber als eigenständiges Fahrsimulator-Ausbildungszentrum auf.
+    companyId: "fahrschule-rathje", brand: "FSAZ · Fahrsimulator-Ausbildungszentrum", assistant: "Simulator-Coach",
     accent: "#1e639a", website: "https://www.fsaz.de", contact: "https://www.fsaz.de/kontakt/",
     email: "info@fahrschule-rathje.de", phone: "040 647 62 09", tel: "+49406476209", address: "Alter Zollweg 201 · 22147 Hamburg",
     hours: "Di–Do · 15–18 Uhr", code: "FSAZ-2048",
-    title: "Erst Sicherheit gewinnen. Dann losfahren.", subtitle: "Finde dein Simulatortraining – auch wenn du bei einer anderen Fahrschule lernst.",
-    greeting: "Moin! Hier ist der Simulator-Assistent von FSAZ, einem Angebot der Fahrschule Rathje. Möchtest du entspannt anfangen, Schalten üben oder dich auf Landstraße und Autobahn vorbereiten?",
-    placeholder: "Frag z. B. nach Simulator, Preisen oder Training als externer Schüler …",
-    steps: ["1 Erfahrung klären", "2 Trainingsziel", "3 Modul auswählen", "4 Anfrage vorbereiten"],
+    title: "Fahrsimulator. Klarer Einstieg. Dein Training.",
+    subtitle: "Eigene Fahrschüler und externe Fahrschüler werden von Anfang an getrennt geführt.",
+    greeting: "Willkommen bei FSAZ. Ich bin dein Simulator-Coach. Bist du bereits FSAZ-Fahrschüler oder kommst du von einer anderen Fahrschule?",
+    placeholder: "Frag z. B. nach Einstieg, Modulen, Preisen oder externer Teilnahme …",
+    steps: ["1 Status klären", "2 Trainingsziel", "3 Passendes Training", "4 Anfrage vorbereiten"],
   },
   "campus-b27": {
     companyId: "campus-b27", brand: "Campus B27", assistant: "Ausbildungs-Assistent",
@@ -75,12 +78,10 @@ export const SCHOOL_START_CARDS: Record<SchoolDemoId, SchoolCard[]> = {
     card("💬", "Beratung & Preise", "Veröffentlichte Preise ansehen und eine Anfrage vorbereiten.", "dashboard"),
   ],
   fsaz: [
-    card("🎮", "Mein Training finden", "Erfahrung, Trainingsziel und Sprache gezielt abstimmen.", "courses"),
-    card("🧭", "Module kennenlernen", "Grundausbildung, Überland, Autobahn und Automatik.", "coach"),
-    card("💶", "Pakete & Preise", "Einzelmodule, Gesamtpaket und externe Teilnahme.", "dashboard"),
-    card("📅", "Training anfragen", "Wunschzeiten und passendes Training gemeinsam vorbereiten.", "schedule"),
-    card("👤", "Mein Demo-Trainingsplan", "Beispielzugang: Einheiten und nächste Schritte ansehen.", "connect"),
-    card("📍", "Teilnahme & Anfahrt", "Andere Fahrschule? Du kannst trotzdem hier trainieren.", "documents"),
+    card("🪪", "Bereits FSAZ-Fahrschüler", "App-Zugang und persönlichen Trainingsweg als Demo ansehen.", "connect"),
+    card("↗️", "Andere Fahrschule", "Ohne Fahrschulwechsel zusätzlich am Simulator trainieren.", "courses"),
+    card("🎮", "Simulator entdecken", "Technik, Module und Preise ruhig einordnen.", "dashboard"),
+    card("📅", "Training anfragen", "Status, Ziel und Wunschzeit in wenigen Schritten.", "schedule"),
   ],
   "campus-b27": [
     card("🚘", "Führerschein finden", "Auto, Motorrad, Lkw oder Bus: Dein Ziel zuerst.", "courses"),
