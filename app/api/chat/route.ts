@@ -8,6 +8,8 @@ import { getTenant } from "@/lib/tenants";
 import { buildSystemPrompt } from "@/lib/prompt";
 import { loadTenantKnowledge } from "@/lib/loadTenantKnowledge";
 import { getTenantFromPath } from "@/lib/getTenant";
+import { asSchoolDemo } from "@/lib/schoolDemos";
+import { getSchoolDemoKnowledge } from "@/lib/schoolDemoKnowledge";
 
 export const runtime = "nodejs";
 
@@ -229,6 +231,9 @@ const FAHRSCHULE_TENANT_IDS = [
   "tek-fahrschule",
   "fahrschule-fix",
   "fahrschule-yoendem",
+  "fahrschule-rathje",
+  "fsaz",
+  "campus-b27",
 ] as const;
 
 const PROFCAR_TENANT_ALIASES = [
@@ -257,6 +262,13 @@ function isProfCarTenant(tenantId: string) {
 
 function normalizeTenantParam(tenantId: string) {
   const normalized = tenantId.trim().toLowerCase();
+
+  // Rathje, FSAZ und Campus B27 haben eigene Demo-IDs.
+  // Dadurch landen auch Aliase/Domains immer beim richtigen Tenant.
+  const schoolDemoTenant = asSchoolDemo(normalized);
+  if (schoolDemoTenant) {
+    return schoolDemoTenant;
+  }
 
   if (
     FAHRWERK_TENANT_ALIASES.includes(
@@ -615,10 +627,16 @@ export async function POST(req: NextRequest) {
 
     // Live-Demos werden bewusst ohne Cache geladen. Damit gelten Änderungen an
     // der jeweiligen Knowledge-Datei ab dem nächsten neuen Chat beziehungsweise Gespräch.
-    const knowledgeText =
-      isFahrschuleTenant(tenant.id) || isProfCarTenant(tenant.id)
-      ? await loadTenantKnowledge(tenant.id)
-      : await getCachedTenantKnowledge(tenant.id);
+    const schoolDemoTenant = asSchoolDemo(tenant.id);
+
+    // Rathje/FSAZ/Campus nutzen die speziell für diese Verkaufsdemos
+    // gebündelte Wissensbasis. Der normale Loader sucht im alten
+    // src/tenants/<id>-Schema und würde hier sonst einen 500er auslösen.
+    const knowledgeText = schoolDemoTenant
+      ? getSchoolDemoKnowledge(schoolDemoTenant)
+      : isFahrschuleTenant(tenant.id) || isProfCarTenant(tenant.id)
+        ? await loadTenantKnowledge(tenant.id)
+        : await getCachedTenantKnowledge(tenant.id);
 
     if (isProfCarTenant(tenant.id) && !knowledgeText.trim()) {
       throw new Error(
