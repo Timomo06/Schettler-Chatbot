@@ -697,6 +697,17 @@ const FSAZ_START_CARDS: StartCard[] = [
   { icon: "🎙️", title: "Frage einsprechen", description: "Simulator-Frage direkt per Sprache stellen", action: "voice" },
 ];
 
+const CAMPUS_B27_START_CARDS: StartCard[] = [
+  { icon: "🚘", title: "Führerschein finden", description: "Auto, Motorrad, Lkw oder Bus passend zu deinem Ziel einordnen", action: "hohenbadenPanel", hohenbadenPanel: "courses" },
+  { icon: "🎓", title: "BKF, ASF & MPU", description: "Spezialkurs auswählen und die richtigen Rückfragen vorbereiten", action: "hohenbadenPanel", hohenbadenPanel: "coach" },
+  { icon: "📅", title: "Theoriezeiten", description: "Veröffentlichte Termine passend zur Klasse übersichtlich sehen", action: "hohenbadenPanel", hohenbadenPanel: "schedule" },
+  { icon: "📋", title: "Meinen Start vorbereiten", description: "Vorbesitz, Unterlagen und offene Punkte strukturiert klären", action: "hohenbadenPanel", hohenbadenPanel: "documents" },
+  { icon: "🪪", title: "Mein Demo-Cockpit", description: "Beispielzugang mit Ausbildungsziel und nächstem Schritt", action: "hohenbadenPanel", hohenbadenPanel: "connect" },
+  { icon: "✨", title: "Persönlicher Begleiter", description: "Klasse, Theorie, Unterlagen und nächsten Schritt zusammenführen", action: "hohenbadenPanel", hohenbadenPanel: "dashboard" },
+  { icon: "💬", title: "Beratung vorbereiten", description: "Dein Anliegen zusammenfassen und gezielt Kontakt aufnehmen", message: "Ich interessiere mich für Campus B27. Hilf mir bitte, Führerscheinklasse oder Spezialkurs, Vorbesitz, Zeitwunsch und die nächsten Schritte zu klären." },
+  { icon: "🎙️", title: "Frage einsprechen", description: "Frage zu Führerschein, Theorie oder Spezialkurs direkt stellen", action: "voice" },
+];
+
 const NIEHAUS_START_CARDS: StartCard[] = [
   {
     icon: "🔗",
@@ -3076,7 +3087,8 @@ type FutureDemoVariant =
   | "fix"
   | "yoendem"
   | "rathje"
-  | "fsaz";
+  | "fsaz"
+  | "campus-b27";
 
 type FutureDemoDocument = {
   readonly id: string;
@@ -3478,7 +3490,8 @@ type RegionalDemoVariant =
   | "fix"
   | "yoendem"
   | "rathje"
-  | "fsaz";
+  | "fsaz"
+  | "campus-b27";
 
 const REGIONAL_TENANT_VARIANTS: Record<string, RegionalDemoVariant> = {
   "fahrschule-rathje": "rathje",
@@ -3489,6 +3502,10 @@ const REGIONAL_TENANT_VARIANTS: Record<string, RegionalDemoVariant> = {
   "rathje-simulator": "fsaz",
   "fsaz.de": "fsaz",
   "www.fsaz.de": "fsaz",
+  "campus-b27": "campus-b27",
+  "campus": "campus-b27",
+  "campus-b27.de": "campus-b27",
+  "www.campus-b27.de": "campus-b27",
   "fahrschule-hopla": "hopla",
   "fahrschule-alamir": "alamir",
   "fahrschule-fritz": "fritz",
@@ -3650,6 +3667,52 @@ const REGIONAL_DEMO_CONFIGS: Record<RegionalDemoVariant, FutureDemoConfig> = {
     coachQuestions: ["Welches Training ist für meinen Einstieg sinnvoll?", "Kann ich hier trainieren, obwohl ich bei einer anderen Fahrschule bin?", "Was ist der Unterschied zwischen Grundausbildung und Komplettpaket?", "Welches Modul hilft mir bei Autobahn oder Schalten?"],
     todayPlan: "Grundroutine festigen · Trainingsziel wählen · Wunschzeit vorbereiten",
     todayPlanPrompt: "Erstelle mir einen persönlichen FSAZ-Simulatorplan anhand meines Trainingsziels und meiner Erfahrung.",
+  },
+  "campus-b27": {
+    courses: [
+      { id: "campus-b-pkw", title: "Auto · B / BF17 / B197", location: "Campus B27 · Hünfeld", start: "Start nach persönlicher Beratung", time: "Klasse, Alter, Vorbesitz und Zeitwunsch gemeinsam klären", seats: 1, tag: "Pkw", match: "Passt zu: Auto, begleitetem Fahren oder B197" },
+      { id: "campus-motorrad", title: "Motorrad · AM / A1 / A2 / A", location: "Campus B27 · Hünfeld", start: "Start nach Klassen- und Alterscheck", time: "Passende Motorradklasse vorab einordnen", seats: 1, tag: "Motorrad", match: "Passt zu: Einstieg oder Aufstieg auf zwei Rädern" },
+      { id: "campus-schwer", title: "Lkw C / CE oder Bus D", location: "Campus B27 · Hünfeld", start: "Ausbildungsstart nach persönlicher Abstimmung", time: "Vorbesitz und Voraussetzungen individuell klären", seats: 1, tag: "Beruf & schwere Klassen", match: "Passt zu: Lkw-, Bus- oder beruflichem Ausbildungsziel" },
+    ],
+    documents: [
+      { id: "ziel", label: "Ausbildungsziel", detail: "Demo: B197 ausgewählt", initial: true },
+      { id: "ausweis", label: "Ausweis", detail: "Für den Start vorbereiten", initial: true },
+      { id: "passbild", label: "Biometrisches Passbild", detail: "Noch ergänzen", initial: false },
+      { id: "sehtest", label: "Sehtest", detail: "Je nach Klasse abstimmen", initial: true },
+      { id: "erstehilfe", label: "Erste-Hilfe-Nachweis", detail: "Je nach Klasse abstimmen", initial: true },
+    ],
+    coursePreference: "Auto · B / BF17 / B197",
+    coursePreferences: ["Auto · B / BF17 / B197", "Motorrad", "Lkw C / CE", "Bus D", "BKF / ASF / MPU"],
+    studentCode: "CAMPUS-2048",
+    connectSource: "Demo-Zugang mit Beispielprofil. Eine echte Version könnte Ausbildung, Unterlagen, Theoriezeiten und persönliche nächste Schritte in einem Cockpit bündeln.",
+    connectPotential: "Campus B27 kann Auto, Motorrad, Lkw, Bus und Spezialkurse in einem verständlichen digitalen Einstieg zusammenführen.",
+    dashboardEyebrow: "Persönlicher Campus B27 Ausbildungsbegleiter",
+    dashboardTitle: "Hallo Alex, dein nächster Schritt ist vorbereitet.",
+    dashboardNextStep: "Ausbildungsziel bestätigen, offene Unterlage ergänzen und anschließend Theorie beziehungsweise Beratung passend zur Klasse abstimmen.",
+    theoryTitle: "Theorie & Ausbildungsstart",
+    theoryDetail: "Veröffentlichte Termine im Blick",
+    practiceDetail: "Persönlicher Demo-Plan",
+    practiceValue: "Vorbereitet",
+    nextAppointmentTitle: "📚 Theorie · nächster veröffentlichter Termin",
+    nextAppointmentDetail: "Termine werden als Demo aus dem veröffentlichten Plan eingeordnet",
+    coachRecommendation: "Kläre zuerst Ziel und Vorbesitz. Danach zeigt der Begleiter nur die Informationen, die für deine Klasse oder deinen Spezialkurs wirklich relevant sind.",
+    coursesTitle: "Welcher Weg passt zu deinem Ziel?",
+    coursesDescription: "Das Interface ordnet Auto, Motorrad, Lkw, Bus oder Spezialkurs anhand von Ziel, Alter, Vorbesitz und Zeitwunsch ein und bereitet die passende Anfrage vor.",
+    classesSummary: "B / BF17 / B197 · AM / A1 / A2 / A · C / CE · D · BKF · ASF · MPU",
+    reserveButton: "Beratung vorbereiten",
+    seatsLabel: "Demo-Auswahl",
+    scheduleTitle: "Theoriezeiten passend zur Klasse",
+    scheduleDescription: "Die Demo zeigt veröffentlichte Theorie-Termine als Orientierung. Plätze und Verfügbarkeit werden nicht behauptet; vor dem Besuch wird der aktuelle Plan der Fahrschule geprüft.",
+    scheduleSlots: [
+      ["09.09.2026", "18:00–21:00", "Zusatzstoff B"],
+      ["10.09.2026", "18:00–21:00", "Zusatzstoff A"],
+      ["05.10.2026", "18:00–21:00", "Grundstoff 1 / 2"],
+    ],
+    coachDescription: "Der persönliche Begleiter unterscheidet zwischen Führerscheinausbildung und Spezialkursen. So bekommt ein Pkw-Schüler andere nächste Schritte als jemand mit C/CE, BKF, ASF oder MPU-Anliegen.",
+    coachFacts: [["🪪", "Demo-Ziel: B197"], ["📚", "Theorieplan eingebunden"], ["✅", "Unterlagen: 4 von 5"], ["🎓", "Spezialkurse separat einordnen"]],
+    coachQuestions: ["Welche Führerscheinklasse passt zu mir?", "Wann ist der nächste passende Theorie-Termin?", "Welche Unterlagen sollte ich vorbereiten?", "Was muss ich bei BKF, ASF oder MPU zuerst klären?"],
+    todayPlan: "Ziel bestätigen · Unterlage ergänzen · passenden Theorie- oder Beratungsschritt wählen",
+    todayPlanPrompt: "Erstelle mir meinen persönlichen Campus-B27-Startplan anhand meines Ziels, Vorbesitzes und Zeitwunsches.",
   },
   hopla: createRegionalDemoConfig({
     brand: "Fahrschule Hopla",
@@ -8350,6 +8413,7 @@ export default function WidgetPage() {
   const normalizedTenantId = tenantId.toLowerCase();
   const isRathjeInterface = ["fahrschule-rathje", "rathje", "fahrschule-rathje.de", "www.fahrschule-rathje.de"].includes(normalizedTenantId);
   const isFsazInterface = ["fsaz", "rathje-simulator", "fsaz.de", "www.fsaz.de"].includes(normalizedTenantId);
+  const isCampusB27Interface = ["campus-b27", "campus", "campus-b27.de", "www.campus-b27.de"].includes(normalizedTenantId);
   const regionalDemoVariant =
     REGIONAL_TENANT_VARIANTS[normalizedTenantId] ?? null;
   const isTxbikesInterface = [
@@ -8508,6 +8572,8 @@ export default function WidgetPage() {
     ? "https://www.fahrschule-rathje.de"
     : isFsazInterface
       ? "https://www.fsaz.de"
+      : isCampusB27Interface
+        ? "https://www.campus-b27.de"
       : isNiehausInterface
     ? NIEHAUS_WEBSITE_URL
     : isHohenbadenInterface
@@ -8578,6 +8644,8 @@ export default function WidgetPage() {
       ? "Fahrschule Rathje"
       : isFsazInterface
         ? "FSAZ · Fahrschule Rathje"
+      : isCampusB27Interface
+        ? "Campus B27"
     : isNiehausInterface
     ? "Fahrschule Niehaus"
     : isHohenbadenInterface
@@ -8609,6 +8677,8 @@ export default function WidgetPage() {
       ? "Führerschein-Assistent"
       : isFsazInterface
         ? "Simulator-Assistent"
+      : isCampusB27Interface
+        ? "Ausbildungs-Assistent"
     : isNiehausInterface
     ? "Führerschein-Assistent"
     : isHohenbadenInterface
@@ -8645,6 +8715,8 @@ export default function WidgetPage() {
       ? "#17736e"
       : isFsazInterface
         ? "#1e639a"
+      : isCampusB27Interface
+        ? "#c45a16"
     : isTxbikesInterface
     ? "#8b5cf6"
     : isWilliInterface
@@ -8678,6 +8750,8 @@ export default function WidgetPage() {
       ? "#f3fbf9"
       : isFsazInterface
         ? "#f2f8fc"
+      : isCampusB27Interface
+        ? "#fff8f2"
     : isTxbikesInterface
     ? "#f6f2ff"
     : isWilliInterface
@@ -8713,6 +8787,8 @@ export default function WidgetPage() {
       ? "#16312f"
       : isFsazInterface
         ? "#153047"
+      : isCampusB27Interface
+        ? "#352115"
     : isTxbikesInterface
     ? "#1f1636"
     : isWilliInterface
@@ -8748,6 +8824,8 @@ export default function WidgetPage() {
       ? "#58706d"
       : isFsazInterface
         ? "#5a7082"
+      : isCampusB27Interface
+        ? "#765b49"
     : isTxbikesInterface
     ? "#6a5f8d"
     : isWilliInterface
@@ -8910,6 +8988,8 @@ export default function WidgetPage() {
         ? "Moin! Ich bin der digitale Führerschein-Assistent der Fahrschule Rathje. Ich helfe dir bei B, B197, Automatik, BE, Theorie, Unterlagen und dem eigenen FSAZ-Simulatorangebot. Womit möchtest du starten?"
       : isFsazInterface
         ? "Moin! Hier ist dein FSAZ Simulator-Assistent von der Fahrschule Rathje. Wir finden gemeinsam das passende Training – auch wenn du bei einer anderen Fahrschule bist. Möchtest du ruhig einsteigen, Schalten üben, Überland oder Autobahn trainieren?"
+      : isCampusB27Interface
+        ? "Hallo bei Campus B27 in Hünfeld! Ich bin dein digitaler Ausbildungs-Assistent. Suchst du Auto, Motorrad, Lkw, Bus oder einen Spezialkurs wie BKF, ASF oder MPU? Ich helfe dir, den passenden Einstieg und die nächsten Schritte vorzubereiten."
       : isNiehausInterface
       ? "Hallo! Ich bin der digitale Führerschein-Assistent der Fahrschule Niehaus. Ich helfe dir bei Führerscheinklassen, Preisen, Unterlagen, Anmeldung sowie den Standorten Baden-Baden und Bühl. Womit möchtest du starten?"
       : isHohenbadenInterface
@@ -8955,6 +9035,7 @@ export default function WidgetPage() {
     isProfCarInterface,
     isRathjeInterface,
     isFsazInterface,
+    isCampusB27Interface,
     isAbgefahrenInterface,
     isHohenbadenInterface,
     isNiehausInterface,
@@ -11945,6 +12026,8 @@ export default function WidgetPage() {
           ? "Alles klar — geht es um Führerscheinklasse, Theorie, Simulator, Unterlagen oder Praxisplanung bei Rathje?"
           : isFsazInterface
           ? "Alles klar — möchtest du dein Simulatortraining finden, Module vergleichen, Preise ansehen oder eine Trainingsanfrage vorbereiten?"
+          : isCampusB27Interface
+          ? "Alles klar — geht es um Auto, Motorrad, Lkw, Bus, Theoriezeiten oder einen Spezialkurs bei Campus B27?"
           : isNiehausInterface
           ? "Alles klar — geht es um Klasse, Preise, Unterlagen, Anmeldung oder den Standort Baden-Baden beziehungsweise Bühl?"
           : isHohenbadenInterface
@@ -12053,6 +12136,8 @@ export default function WidgetPage() {
       ? RATHJE_START_CARDS
       : isFsazInterface
         ? FSAZ_START_CARDS
+      : isCampusB27Interface
+        ? CAMPUS_B27_START_CARDS
     : isNiehausInterface
     ? NIEHAUS_START_CARDS
     : isHohenbadenInterface
@@ -14691,6 +14776,8 @@ body::after {
                                   ? "Simulator · E-Auto · zwei Standorte"
                                   : isFahrschule7Interface
                                     ? "Express-Kurs · Behördenservice · Unterkunft"
+                                  : isCampusB27Interface
+                                    ? "Auto · Motorrad · Lkw · Bus · Spezialkurse"
                             : isAbgefahrenInterface
                               ? "Beta: persönlicher Führerscheinbegleiter"
                             : isSchelfInterface
@@ -14915,6 +15002,8 @@ body::after {
                                 ? "Dein Führerschein. Theorie, Simulator und Praxis an einem Ort."
                               : isFsazInterface
                                 ? "Erst Sicherheit gewinnen. Dann losfahren."
+                              : isCampusB27Interface
+                                ? "Dein Ziel. Deine passende Ausbildung."
                               : regionalDemoVariant
                                 ? `Dein Weg mit ${displayBrandName}. Persönlich begleitet.`
                                 : "Was möchtest du machen?"}
@@ -14959,6 +15048,8 @@ body::after {
                                 ? "Diese Demo verbindet Führerscheinklasse, Theorie, Unterlagen, FSAZ-Simulator und Praxisplanung. So sieht man sofort: Das ist mehr als ein Chat – es ist ein persönliches Führerschein-Cockpit mit konkreten nächsten Schritten."
                               : isFsazInterface
                                 ? "Finde das passende Simulatortraining, sieh Module und veröffentlichte Preise, öffne deinen Demo-Trainingsplan und bereite eine Anfrage vor. Externe Fahrschüler können teilnehmen, ohne ihre Fahrschule zu wechseln."
+                              : isCampusB27Interface
+                                ? "Auto, Motorrad, Lkw, Bus oder Spezialkurs: Das Interface ordnet dein Ziel, deinen Vorbesitz, Theoriezeiten und offene Unterlagen und macht daraus einen klaren nächsten Schritt statt nur eine Chat-Antwort."
                               : isLinaInterface
                               ? `Wähle einen Einstieg aus. Danach führt dich ${displayAssistantName} gezielt zur passenden Lösung.`
                               : isMmWartungInterface
@@ -15067,6 +15158,13 @@ body::after {
                                       "2 Trainingsziel",
                                       "3 Modul auswählen",
                                       "4 Anfrage vorbereiten",
+                                    ]
+                                : isCampusB27Interface
+                                  ? [
+                                      "1 Ziel auswählen",
+                                      "2 Vorbesitz klären",
+                                      "3 Theorie & Unterlagen",
+                                      "4 Beratung vorbereiten",
                                     ]
                                 : [
                                   "1 Orientierung",
