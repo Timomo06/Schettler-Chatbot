@@ -4247,6 +4247,1051 @@ const FUTURE_DEMO_CONFIGS: Record<FutureDemoVariant, FutureDemoConfig> = {
 };
 
 
+
+type GuidedTriVariant = "rathje" | "fsaz" | "campus-b27";
+
+type GuidedChoice = {
+  label: string;
+  value: string;
+  detail?: string;
+};
+
+type GuidedQuestion = {
+  id: string;
+  eyebrow: string;
+  question: string;
+  helper?: string;
+  choices?: GuidedChoice[];
+  placeholder?: string;
+};
+
+type GuidedTriDemoProps = Omit<HohenbadenFutureDemoProps, "variant"> & {
+  variant: GuidedTriVariant;
+};
+
+function GuidedTriDemo({
+  variant,
+  panel,
+  onPanelChange,
+  accent,
+  accentRgb,
+  textPrimary,
+  textSecondary,
+  isMobile,
+  onAsk,
+}: GuidedTriDemoProps) {
+  const [step, setStep] = useState(0);
+  const [answers, setAnswers] = useState<Record<string, string>>({});
+  const [freeText, setFreeText] = useState("");
+
+  useEffect(() => {
+    setStep(0);
+    setAnswers({});
+    setFreeText("");
+  }, [panel, variant]);
+
+  if (panel === "home") return null;
+
+  const isFsaz = variant === "fsaz";
+  const isRathje = variant === "rathje";
+  const isCampus = variant === "campus-b27";
+
+  const brand = isFsaz
+    ? "FSAZ"
+    : isRathje
+      ? "Fahrschule Rathje"
+      : "Campus B27";
+
+  const glass: CSSProperties = {
+    borderRadius: isMobile ? 22 : 27,
+    border: "1px solid rgba(255,255,255,0.60)",
+    background:
+      "linear-gradient(180deg, rgba(255,255,255,0.94), rgba(255,255,255,0.72))",
+    boxShadow:
+      "0 20px 58px rgba(30,45,60,0.10), inset 0 1px 0 rgba(255,255,255,0.82)",
+    backdropFilter: "blur(24px) saturate(165%)",
+    WebkitBackdropFilter: "blur(24px) saturate(165%)",
+  };
+
+  const soft: CSSProperties = {
+    borderRadius: 18,
+    border: `1px solid rgba(${accentRgb}, 0.14)`,
+    background: `linear-gradient(145deg, rgba(${accentRgb}, 0.08), rgba(255,255,255,0.70))`,
+  };
+
+  const primary: CSSProperties = {
+    minHeight: 48,
+    border: "1px solid rgba(255,255,255,0.30)",
+    borderRadius: 15,
+    background: `linear-gradient(180deg, ${accent}, ${accent}D2)`,
+    color: "#fff",
+    padding: "0 17px",
+    fontWeight: 900,
+    cursor: "pointer",
+    boxShadow: `0 12px 30px rgba(${accentRgb}, 0.21)`,
+  };
+
+  const secondary: CSSProperties = {
+    minHeight: 42,
+    border: `1px solid rgba(${accentRgb}, 0.16)`,
+    borderRadius: 14,
+    background: "rgba(255,255,255,0.72)",
+    color: textPrimary,
+    padding: "0 14px",
+    fontWeight: 850,
+    cursor: "pointer",
+  };
+
+  const smallLabel: CSSProperties = {
+    color: textSecondary,
+    fontSize: 11.5,
+    fontWeight: 900,
+    letterSpacing: 0.46,
+    textTransform: "uppercase",
+  };
+
+  function flowTitle() {
+    if (isFsaz) {
+      if (panel === "connect") return "Mein FSAZ";
+      if (panel === "courses") return "Extern trainieren";
+      if (panel === "dashboard") return "Simulator entdecken";
+      if (panel === "schedule") return "Training anfragen";
+      return "FSAZ Wegweiser";
+    }
+
+    if (isRathje) {
+      if (panel === "courses") return "Führerschein starten";
+      if (panel === "connect") return "Mein Führerschein";
+      if (panel === "schedule") return "Theorie & Planung";
+      if (panel === "documents") return "Unterlagen vorbereiten";
+      return "Persönlicher Führerschein-Weg";
+    }
+
+    if (panel === "courses") return "Ausbildung finden";
+    if (panel === "connect") return "Mein Ausbildungsplan";
+    if (panel === "schedule") return "Theoriezeiten";
+    if (panel === "coach") return "Spezialkurs finden";
+    if (panel === "documents") return "Start vorbereiten";
+    return "Campus B27 Wegweiser";
+  }
+
+  function getQuestions(): GuidedQuestion[] {
+    if (isFsaz) {
+      if (panel === "connect") {
+        return [
+          {
+            id: "status",
+            eyebrow: "SCHRITT 1",
+            question: "Bist du bereits FSAZ-Fahrschüler?",
+            helper: "Davon hängt ab, ob wir deinen persönlichen Trainingsweg oder den Einstieg als externer Fahrschüler zeigen.",
+            choices: [
+              { label: "Ja, ich bin bereits hier", value: "internal", detail: "Mein Training und App-Zugang" },
+              { label: "Nein, andere Fahrschule", value: "external", detail: "Zusätzlich bei FSAZ trainieren" },
+            ],
+          },
+          ...(answers.status === "external"
+            ? [
+                {
+                  id: "externalGoal",
+                  eyebrow: "SCHRITT 2",
+                  question: "Was möchtest du im Simulator trainieren?",
+                  choices: [
+                    { label: "Ruhig einsteigen", value: "Ruhig einsteigen" },
+                    { label: "Schalten & Anfahren", value: "Schalten & Anfahren" },
+                    { label: "Überland", value: "Überland" },
+                    { label: "Autobahn", value: "Autobahn" },
+                    { label: "Automatik", value: "Automatik" },
+                  ],
+                } satisfies GuidedQuestion,
+              ]
+            : [
+                {
+                  id: "internalAction",
+                  eyebrow: "SCHRITT 2",
+                  question: "Was möchtest du gerade machen?",
+                  choices: [
+                    { label: "App-Zugang ansehen", value: "App-Zugang" },
+                    { label: "Trainingsstand ansehen", value: "Trainingsstand" },
+                    { label: "Nächstes Training planen", value: "Training planen" },
+                  ],
+                } satisfies GuidedQuestion,
+              ]),
+          {
+            id: "next",
+            eyebrow: "SCHRITT 3",
+            question:
+              answers.status === "external"
+                ? "Wann passt dir das Training ungefähr?"
+                : "Was ist dein nächster Wunsch?",
+            helper:
+              answers.status === "external"
+                ? "Ein grober Zeitraum reicht. Die echte Verfügbarkeit bestätigt später das FSAZ-Team."
+                : "Der Demo-Bereich zeigt nur den vorgesehenen Ablauf, keine echten Schülerdaten.",
+            ...(answers.status === "external"
+              ? { placeholder: "z. B. Mittwoch ab 16 Uhr" }
+              : {
+                  choices: [
+                    { label: "Weiter üben", value: "Weiter üben" },
+                    { label: "Neues Modul starten", value: "Neues Modul" },
+                    { label: "Frage an FSAZ", value: "Frage an FSAZ" },
+                  ],
+                }),
+          },
+        ];
+      }
+
+      if (panel === "courses") {
+        return [
+          {
+            id: "status",
+            eyebrow: "SCHRITT 1",
+            question: "Wo machst du aktuell deinen Führerschein?",
+            choices: [
+              { label: "Bei einer anderen Fahrschule", value: "external", detail: "Du bleibst dort angemeldet" },
+              { label: "Bereits bei FSAZ", value: "internal", detail: "Persönlichen Trainingsweg nutzen" },
+              { label: "Noch nicht angemeldet", value: "not-yet", detail: "Erst Simulator kennenlernen" },
+            ],
+          },
+          {
+            id: "goal",
+            eyebrow: "SCHRITT 2",
+            question: "Was möchtest du trainieren?",
+            choices: [
+              { label: "Ruhig einsteigen", value: "Ruhig einsteigen" },
+              { label: "Schalten & Anfahren", value: "Schalten & Anfahren" },
+              { label: "Überland", value: "Überland" },
+              { label: "Autobahn", value: "Autobahn" },
+              { label: "Automatik", value: "Automatik" },
+            ],
+          },
+          {
+            id: "experience",
+            eyebrow: "SCHRITT 3",
+            question: "Wie viel Fahrerfahrung hast du schon?",
+            choices: [
+              { label: "Noch keine", value: "keine" },
+              { label: "Ein paar Fahrstunden", value: "wenig" },
+              { label: "Schon recht sicher", value: "erfahren" },
+            ],
+          },
+          {
+            id: "time",
+            eyebrow: "SCHRITT 4",
+            question: "Wann möchtest du ungefähr trainieren?",
+            placeholder: "z. B. nächste Woche nachmittags",
+          },
+        ];
+      }
+
+      if (panel === "dashboard") {
+        return [
+          {
+            id: "interest",
+            eyebrow: "SCHRITT 1",
+            question: "Was interessiert dich am Simulator am meisten?",
+            choices: [
+              { label: "Wie funktioniert er?", value: "Technik" },
+              { label: "Welche Module gibt es?", value: "Module" },
+              { label: "Was kostet es?", value: "Preise" },
+              { label: "Kann ich extern trainieren?", value: "Extern" },
+            ],
+          },
+          {
+            id: "detail",
+            eyebrow: "SCHRITT 2",
+            question: "Was möchtest du danach machen?",
+            choices: [
+              { label: "Passendes Training finden", value: "Training finden" },
+              { label: "Training anfragen", value: "Training anfragen" },
+              { label: "Noch etwas fragen", value: "Frage" },
+            ],
+          },
+        ];
+      }
+
+      return [
+        {
+          id: "status",
+          eyebrow: "SCHRITT 1",
+          question: "Bist du bereits FSAZ-Fahrschüler oder kommst du von einer anderen Fahrschule?",
+          choices: [
+            { label: "Bereits FSAZ-Fahrschüler", value: "internal" },
+            { label: "Andere Fahrschule", value: "external" },
+          ],
+        },
+        {
+          id: "goal",
+          eyebrow: "SCHRITT 2",
+          question: "Was möchtest du trainieren?",
+          choices: [
+            { label: "Grundausbildung", value: "Grundausbildung" },
+            { label: "Überland", value: "Überland" },
+            { label: "Autobahn", value: "Autobahn" },
+            { label: "Automatik", value: "Automatik" },
+          ],
+        },
+        {
+          id: "time",
+          eyebrow: "SCHRITT 3",
+          question: "Wann passt es dir ungefähr?",
+          placeholder: "z. B. Freitag ab 15 Uhr",
+        },
+      ];
+    }
+
+    if (isRathje) {
+      if (panel === "courses") {
+        return [
+          {
+            id: "license",
+            eyebrow: "SCHRITT 1",
+            question: "Welchen Führerschein möchtest du machen?",
+            choices: [
+              { label: "Klasse B", value: "B" },
+              { label: "B197", value: "B197" },
+              { label: "Automatik", value: "Automatik" },
+              { label: "BE Anhänger", value: "BE" },
+              { label: "Noch unsicher", value: "unsicher" },
+            ],
+          },
+          {
+            id: "age",
+            eyebrow: "SCHRITT 2",
+            question: "Wie möchtest du starten?",
+            choices: [
+              { label: "So schnell wie sinnvoll", value: "schnell" },
+              { label: "Neben Schule / Arbeit", value: "flexibel" },
+              { label: "Erst beraten lassen", value: "beratung" },
+            ],
+          },
+          {
+            id: "prior",
+            eyebrow: "SCHRITT 3",
+            question: "Hast du schon einen Führerschein oder Vorbesitz?",
+            choices: [
+              { label: "Nein", value: "kein Vorbesitz" },
+              { label: "Ja", value: "Vorbesitz vorhanden" },
+              { label: "Nicht sicher, ob relevant", value: "unklar" },
+            ],
+          },
+          {
+            id: "time",
+            eyebrow: "SCHRITT 4",
+            question: "Wann möchtest du ungefähr anfangen?",
+            placeholder: "z. B. im Oktober / nachmittags",
+          },
+        ];
+      }
+
+      if (panel === "connect") {
+        return [
+          {
+            id: "status",
+            eyebrow: "SCHRITT 1",
+            question: "Bist du schon bei der Fahrschule Rathje angemeldet?",
+            choices: [
+              { label: "Ja", value: "angemeldet" },
+              { label: "Noch nicht", value: "neu" },
+            ],
+          },
+          ...(answers.status === "angemeldet"
+            ? [
+                {
+                  id: "phase",
+                  eyebrow: "SCHRITT 2",
+                  question: "Wo stehst du gerade?",
+                  choices: [
+                    { label: "Theorie", value: "Theorie" },
+                    { label: "Praxis", value: "Praxis" },
+                    { label: "Prüfung vorbereiten", value: "Prüfung" },
+                    { label: "Simulator", value: "Simulator" },
+                  ],
+                } satisfies GuidedQuestion,
+                {
+                  id: "need",
+                  eyebrow: "SCHRITT 3",
+                  question: "Was brauchst du jetzt?",
+                  choices: [
+                    { label: "Nächster Schritt", value: "Nächster Schritt" },
+                    { label: "Termin / Planung", value: "Planung" },
+                    { label: "Unterlagen prüfen", value: "Unterlagen" },
+                  ],
+                } satisfies GuidedQuestion,
+              ]
+            : [
+                {
+                  id: "license",
+                  eyebrow: "SCHRITT 2",
+                  question: "Welche Klasse interessiert dich?",
+                  choices: [
+                    { label: "B", value: "B" },
+                    { label: "B197", value: "B197" },
+                    { label: "Automatik", value: "Automatik" },
+                    { label: "BE", value: "BE" },
+                    { label: "Noch unsicher", value: "unsicher" },
+                  ],
+                } satisfies GuidedQuestion,
+                {
+                  id: "start",
+                  eyebrow: "SCHRITT 3",
+                  question: "Wann möchtest du starten?",
+                  placeholder: "z. B. nächsten Monat",
+                } satisfies GuidedQuestion,
+              ]),
+        ];
+      }
+
+      if (panel === "schedule") {
+        return [
+          {
+            id: "planType",
+            eyebrow: "SCHRITT 1",
+            question: "Was möchtest du planen?",
+            choices: [
+              { label: "Theorie", value: "Theorie" },
+              { label: "Fahrstunde", value: "Fahrstunde" },
+              { label: "Simulator", value: "Simulator" },
+              { label: "Ich weiß es noch nicht", value: "unklar" },
+            ],
+          },
+          {
+            id: "phase",
+            eyebrow: "SCHRITT 2",
+            question: "Wie dringend ist es?",
+            choices: [
+              { label: "Nächster möglicher Schritt", value: "bald" },
+              { label: "Bestimmter Zeitraum", value: "zeitraum" },
+              { label: "Nur Ablauf verstehen", value: "info" },
+            ],
+          },
+          ...(answers.phase === "zeitraum"
+            ? [
+                {
+                  id: "time",
+                  eyebrow: "SCHRITT 3",
+                  question: "Welcher Zeitraum passt dir?",
+                  placeholder: "z. B. Dienstag oder Donnerstag ab 17 Uhr",
+                } satisfies GuidedQuestion,
+              ]
+            : []),
+        ];
+      }
+
+      if (panel === "documents") {
+        return [
+          {
+            id: "license",
+            eyebrow: "SCHRITT 1",
+            question: "Für welche Klasse möchtest du die Unterlagen vorbereiten?",
+            choices: [
+              { label: "B / B197", value: "B/B197" },
+              { label: "Automatik", value: "Automatik" },
+              { label: "BE", value: "BE" },
+            ],
+          },
+          {
+            id: "missing",
+            eyebrow: "SCHRITT 2",
+            question: "Was fehlt dir wahrscheinlich noch?",
+            choices: [
+              { label: "Sehtest", value: "Sehtest" },
+              { label: "Erste Hilfe", value: "Erste Hilfe" },
+              { label: "Passbild", value: "Passbild" },
+              { label: "Weiß ich nicht", value: "unklar" },
+            ],
+          },
+          {
+            id: "help",
+            eyebrow: "SCHRITT 3",
+            question: "Was soll das Interface als Nächstes für dich tun?",
+            choices: [
+              { label: "Checkliste erstellen", value: "Checkliste" },
+              { label: "Kontakt vorbereiten", value: "Kontakt" },
+              { label: "Ablauf erklären", value: "Ablauf" },
+            ],
+          },
+        ];
+      }
+
+      return [
+        {
+          id: "topic",
+          eyebrow: "SCHRITT 1",
+          question: "Wobei soll ich dich führen?",
+          choices: [
+            { label: "Führerschein starten", value: "Start" },
+            { label: "Theorie", value: "Theorie" },
+            { label: "Praxis", value: "Praxis" },
+            { label: "Unterlagen", value: "Unterlagen" },
+          ],
+        },
+        {
+          id: "detail",
+          eyebrow: "SCHRITT 2",
+          question: "Was ist dir dabei am wichtigsten?",
+          placeholder: "z. B. schnell starten, Kosten verstehen, nächsten Schritt wissen",
+        },
+      ];
+    }
+
+    if (panel === "courses") {
+      return [
+        {
+          id: "area",
+          eyebrow: "SCHRITT 1",
+          question: "Welcher Bereich passt zu deinem Ziel?",
+          choices: [
+            { label: "Auto", value: "Auto" },
+            { label: "Motorrad", value: "Motorrad" },
+            { label: "Lkw", value: "Lkw" },
+            { label: "Bus", value: "Bus" },
+            { label: "Noch unsicher", value: "unsicher" },
+          ],
+        },
+        ...(answers.area === "Auto"
+          ? [
+              {
+                id: "license",
+                eyebrow: "SCHRITT 2",
+                question: "Welche Auto-Variante interessiert dich?",
+                choices: [
+                  { label: "B", value: "B" },
+                  { label: "BF17", value: "BF17" },
+                  { label: "B197", value: "B197" },
+                  { label: "Noch beraten lassen", value: "Beratung" },
+                ],
+              } satisfies GuidedQuestion,
+            ]
+          : answers.area === "Motorrad"
+            ? [
+                {
+                  id: "license",
+                  eyebrow: "SCHRITT 2",
+                  question: "Welche Motorradklasse kommt infrage?",
+                  choices: [
+                    { label: "AM", value: "AM" },
+                    { label: "A1", value: "A1" },
+                    { label: "A2", value: "A2" },
+                    { label: "A", value: "A" },
+                    { label: "Noch unsicher", value: "Beratung" },
+                  ],
+                } satisfies GuidedQuestion,
+              ]
+            : [
+                {
+                  id: "license",
+                  eyebrow: "SCHRITT 2",
+                  question:
+                    answers.area === "Lkw"
+                      ? "Geht es eher um C oder CE?"
+                      : answers.area === "Bus"
+                        ? "Geht es um Klasse D?"
+                        : "Was möchtest du beruflich oder privat erreichen?",
+                  ...(answers.area === "Lkw"
+                    ? { choices: [{ label: "C", value: "C" }, { label: "CE", value: "CE" }, { label: "Noch klären", value: "Beratung" }] }
+                    : answers.area === "Bus"
+                      ? { choices: [{ label: "Ja, Klasse D", value: "D" }, { label: "Erst beraten lassen", value: "Beratung" }] }
+                      : { placeholder: "z. B. Auto für Alltag oder beruflich Lkw fahren" }),
+                } satisfies GuidedQuestion,
+              ]),
+        {
+          id: "prior",
+          eyebrow: "SCHRITT 3",
+          question: "Hast du bereits einen Führerschein oder passenden Vorbesitz?",
+          choices: [
+            { label: "Nein", value: "kein Vorbesitz" },
+            { label: "Ja", value: "Vorbesitz vorhanden" },
+            { label: "Muss ich prüfen", value: "unklar" },
+          ],
+        },
+        {
+          id: "time",
+          eyebrow: "SCHRITT 4",
+          question: "Wann möchtest du ungefähr starten?",
+          placeholder: "z. B. nächsten Monat / abends",
+        },
+      ];
+    }
+
+    if (panel === "coach") {
+      return [
+        {
+          id: "course",
+          eyebrow: "SCHRITT 1",
+          question: "Welches Spezialthema betrifft dich?",
+          choices: [
+            { label: "BKF", value: "BKF" },
+            { label: "ASF", value: "ASF" },
+            { label: "MPU", value: "MPU" },
+            { label: "Etwas anderes", value: "anderes" },
+          ],
+        },
+        {
+          id: "situation",
+          eyebrow: "SCHRITT 2",
+          question:
+            answers.course === "BKF"
+              ? "Was möchtest du zur BKF klären?"
+              : answers.course === "ASF"
+                ? "Hast du bereits eine Frist oder ein Schreiben?"
+                : answers.course === "MPU"
+                  ? "Was möchtest du zuerst klären?"
+                  : "Beschreibe kurz dein Anliegen.",
+          ...(answers.course === "BKF"
+            ? { choices: [{ label: "Weiterbildung", value: "Weiterbildung" }, { label: "Termin", value: "Termin" }, { label: "Voraussetzungen", value: "Voraussetzungen" }] }
+            : answers.course === "ASF"
+              ? { choices: [{ label: "Ja, Frist vorhanden", value: "Frist vorhanden" }, { label: "Noch keine Frist", value: "keine Frist" }] }
+              : answers.course === "MPU"
+                ? { choices: [{ label: "Ablauf", value: "Ablauf" }, { label: "Beratung", value: "Beratung" }, { label: "Termin", value: "Termin" }] }
+                : { placeholder: "Kurze Beschreibung" }),
+        },
+        {
+          id: "time",
+          eyebrow: "SCHRITT 3",
+          question: "Welcher Zeitraum ist für dich relevant?",
+          placeholder: "z. B. möglichst bald / im Oktober",
+        },
+      ];
+    }
+
+    if (panel === "schedule") {
+      return [
+        {
+          id: "group",
+          eyebrow: "SCHRITT 1",
+          question: "Welche Theorie möchtest du sehen?",
+          choices: [
+            { label: "Grundstoff", value: "Grundstoff" },
+            { label: "Zusatzstoff B", value: "B" },
+            { label: "Zusatzstoff A", value: "A" },
+            { label: "Andere Klasse", value: "andere" },
+          ],
+        },
+        {
+          id: "action",
+          eyebrow: "SCHRITT 2",
+          question: "Was möchtest du damit machen?",
+          choices: [
+            { label: "Nächsten Termin sehen", value: "Termin" },
+            { label: "Start planen", value: "Start" },
+            { label: "Frage dazu stellen", value: "Frage" },
+          ],
+        },
+      ];
+    }
+
+    if (panel === "connect") {
+      return [
+        {
+          id: "status",
+          eyebrow: "SCHRITT 1",
+          question: "Bist du schon bei Campus B27 angemeldet?",
+          choices: [
+            { label: "Ja", value: "angemeldet" },
+            { label: "Noch nicht", value: "neu" },
+          ],
+        },
+        {
+          id: "goal",
+          eyebrow: "SCHRITT 2",
+          question: "Was ist dein Ausbildungsziel?",
+          choices: [
+            { label: "Auto", value: "Auto" },
+            { label: "Motorrad", value: "Motorrad" },
+            { label: "Lkw", value: "Lkw" },
+            { label: "Bus", value: "Bus" },
+            { label: "Spezialkurs", value: "Spezialkurs" },
+          ],
+        },
+        {
+          id: "need",
+          eyebrow: "SCHRITT 3",
+          question: "Was brauchst du jetzt?",
+          choices: [
+            { label: "Nächsten Schritt", value: "Nächster Schritt" },
+            { label: "Theoriezeit", value: "Theorie" },
+            { label: "Unterlagen", value: "Unterlagen" },
+            { label: "Beratung", value: "Beratung" },
+          ],
+        },
+      ];
+    }
+
+    return [
+      {
+        id: "topic",
+        eyebrow: "SCHRITT 1",
+        question: "Wobei soll Campus B27 dich führen?",
+        choices: [
+          { label: "Ausbildung finden", value: "Ausbildung" },
+          { label: "Theorie", value: "Theorie" },
+          { label: "Unterlagen", value: "Unterlagen" },
+          { label: "Spezialkurs", value: "Spezialkurs" },
+        ],
+      },
+      {
+        id: "detail",
+        eyebrow: "SCHRITT 2",
+        question: "Was möchtest du konkret erreichen?",
+        placeholder: "Kurze Antwort genügt",
+      },
+    ];
+  }
+
+  const questions = getQuestions();
+  const currentQuestion = questions[Math.min(step, Math.max(questions.length - 1, 0))];
+  const isComplete = step >= questions.length;
+  const answeredPairs = questions
+    .filter((question) => answers[question.id])
+    .map((question) => [question.id, answers[question.id]] as const);
+
+  function clearAnswersAfter(questionIndex: number) {
+    const next = { ...answers };
+    questions.slice(questionIndex + 1).forEach((question) => {
+      delete next[question.id];
+    });
+    return next;
+  }
+
+  function chooseAnswer(value: string) {
+    if (!currentQuestion) return;
+    const nextAnswers = clearAnswersAfter(step);
+    nextAnswers[currentQuestion.id] = value;
+    setAnswers(nextAnswers);
+    setFreeText("");
+    setStep((valueStep) => valueStep + 1);
+  }
+
+  function submitFreeText() {
+    const value = freeText.trim();
+    if (!value || !currentQuestion) return;
+
+    const normalized = value.toLowerCase();
+    const choice = currentQuestion.choices?.find((item) => {
+      const haystack = `${item.label} ${item.value}`.toLowerCase();
+      const tokens = haystack
+        .split(/[^a-zA-ZäöüÄÖÜß0-9]+/)
+        .filter((token) => token.length >= 2);
+      return tokens.some((token) => normalized.includes(token));
+    });
+
+    chooseAnswer(choice?.value ?? value);
+  }
+
+  function goBack() {
+    if (step <= 0) {
+      onPanelChange("home");
+      return;
+    }
+    setStep((value) => Math.max(0, value - 1));
+    setFreeText("");
+  }
+
+  function restartFlow() {
+    setStep(0);
+    setAnswers({});
+    setFreeText("");
+  }
+
+  function resultText() {
+    if (isFsaz) {
+      const status = answers.status;
+      if (panel === "dashboard") {
+        if (answers.interest === "Technik") {
+          return "Der FSAZ-Simulator nutzt ein fahrzeugnahes Cockpit mit Pedalerie, Schaltung und großem Sichtfeld. Schwierige Situationen können kontrolliert wiederholt werden.";
+        }
+        if (answers.interest === "Module") {
+          return "Du kannst unter anderem Grundausbildung, Überland, Autobahn und Automatik gezielt vorbereiten. Der konkrete Umfang wird vor dem Training abgestimmt.";
+        }
+        if (answers.interest === "Preise") {
+          return "Preisorientierung: Grundausbildung 6 × 45 Minuten für 180 €, Komplettpaket 9 × 45 Minuten für 270 €. Für externe Fahrschüler ist zusätzlich eine Anmeldung von 30 € vorgesehen.";
+        }
+        return "Ja. Du kannst bei deiner bisherigen Fahrschule bleiben und FSAZ zusätzlich als Simulatortraining nutzen. Ein Fahrschulwechsel ist dafür nicht nötig.";
+      }
+      if (status === "external") {
+        return `Du bleibst bei deiner bisherigen Fahrschule. Für dein FSAZ-Training${answers.goal || answers.externalGoal ? ` mit Ziel „${answers.goal || answers.externalGoal}“` : ""} wird jetzt nur noch die konkrete Anfrage vorbereitet. Für externe Fahrschüler ist laut veröffentlichter Preisliste eine zusätzliche Anmeldung von 30 € vorgesehen.`;
+      }
+      if (status === "internal") {
+        return "Für eigene FSAZ-Fahrschüler kann der persönliche Bereich App-Zugang, QR-Zugang und Trainingsfortschritt zusammenführen. In dieser Demo wird das nur beispielhaft gezeigt – ohne echten Schülerzugang.";
+      }
+      return "FSAZ führt dich abhängig von deinem Status zum passenden Simulatortraining. Du kannst jederzeit zurückgehen und einen anderen Weg wählen.";
+    }
+
+    if (isRathje) {
+      if (panel === "courses") {
+        return `Dein vorbereiteter Weg: ${answers.license || "Führerschein"}, Startart „${answers.age || "offen"}“, Vorbesitz „${answers.prior || "offen"}“${answers.time ? `, Wunschstart „${answers.time}“` : ""}. Daraus kann jetzt eine kurze Beratungsanfrage entstehen.`;
+      }
+      if (panel === "connect" && answers.status === "angemeldet") {
+        return `Du bist bereits angemeldet. Aktuelle Phase: ${answers.phase || "offen"}. Das Interface würde dir jetzt nur den dazu passenden nächsten Schritt zeigen – nicht alle Funktionen gleichzeitig.`;
+      }
+      if (panel === "schedule") {
+        return `Du möchtest „${answers.planType || "Planung"}“ klären. Der nächste Schritt richtet sich jetzt nur nach diesem Bereich; andere Funktionen bleiben ausgeblendet, bis du sie bewusst auswählst.`;
+      }
+      if (panel === "documents") {
+        return `Für ${answers.license || "deine Klasse"} wird nur der relevante Unterlagenweg gezeigt. Aktuell möchtest du „${answers.help || "den nächsten Schritt"}“ und hast „${answers.missing || "offene Unterlagen"}“ markiert.`;
+      }
+      return "Das Interface hat deinen Weg eingegrenzt und zeigt jetzt nur den nächsten sinnvollen Schritt.";
+    }
+
+    if (panel === "courses") {
+      return `Campus B27 hat deinen Weg eingegrenzt: Bereich „${answers.area || "offen"}“, Ziel „${answers.license || "noch zu klären"}“, Vorbesitz „${answers.prior || "offen"}“${answers.time ? `, Wunschstart „${answers.time}“` : ""}. Daraus kann jetzt die passende Beratung vorbereitet werden.`;
+    }
+    if (panel === "coach") {
+      return `Für „${answers.course || "dein Spezialthema"}“ wird nur die passende Rückfrage weitergeführt. Sensible oder nicht dokumentierte Details werden nicht abgefragt oder erfunden.`;
+    }
+    if (panel === "schedule") {
+      if (answers.group === "B") return "Für Zusatzstoff B ist als veröffentlichter nächster Termin der 09.09.2026 von 18:00–21:00 hinterlegt. Vor dem Besuch sollte der aktuelle offizielle Plan geprüft werden.";
+      if (answers.group === "A") return "Für Zusatzstoff A ist als veröffentlichter nächster Termin der 10.09.2026 von 18:00–21:00 hinterlegt. Vor dem Besuch sollte der aktuelle offizielle Plan geprüft werden.";
+      if (answers.group === "Grundstoff") return "Der nächste veröffentlichte Grundstoff-Block beginnt am 05.10.2026 von 18:00–21:00. Das Interface kann anschließend nur die für dich relevanten Folgetermine zeigen.";
+      return "Für andere Klassen wird nichts erfunden. Das Interface bereitet stattdessen eine gezielte Rückfrage an Campus B27 vor.";
+    }
+    return "Campus B27 zeigt dir nach deinen Antworten nur noch den passenden nächsten Schritt statt die komplette Funktionsübersicht.";
+  }
+
+  function actionPrompt() {
+    const compactAnswers = answeredPairs
+      .map(([key, value]) => `${key}: ${value}`)
+      .join(", ");
+
+    if (isFsaz) {
+      return `Ich habe mich durch den FSAZ-Weg geklickt. ${compactAnswers}. Bitte führe mich jetzt mit genau einer kurzen Rückfrage zum nächsten Schritt weiter.`;
+    }
+    if (isRathje) {
+      return `Ich habe meinen Weg bei der Fahrschule Rathje vorbereitet. ${compactAnswers}. Bitte führe mich jetzt mit genau einer kurzen Rückfrage zum nächsten Schritt weiter.`;
+    }
+    return `Ich habe meinen Weg bei Campus B27 vorbereitet. ${compactAnswers}. Bitte führe mich jetzt mit genau einer kurzen Rückfrage zum nächsten Schritt weiter.`;
+  }
+
+  function finishInChat() {
+    onAsk(actionPrompt());
+    onPanelChange("home");
+  }
+
+  return (
+    <section
+      style={{
+        ...glass,
+        alignSelf: "stretch",
+        padding: isMobile ? 14 : 19,
+        display: "flex",
+        flexDirection: "column",
+        gap: 14,
+        color: textPrimary,
+        position: "relative",
+        flex: "0 0 auto",
+        minHeight: "min-content",
+      }}
+    >
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          gap: 10,
+          flexWrap: "wrap",
+        }}
+      >
+        <button type="button" onClick={goBack} style={{ ...secondary, minHeight: 38, padding: "0 12px", fontSize: 12.5 }}>
+          {step > 0 ? "← Zurück" : "← Übersicht"}
+        </button>
+
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <button
+            type="button"
+            onClick={restartFlow}
+            style={{ ...secondary, minHeight: 38, padding: "0 11px", fontSize: 11.5 }}
+          >
+            Neu starten
+          </button>
+          <div
+            style={{
+              borderRadius: 999,
+              padding: "8px 11px",
+              background: `rgba(${accentRgb}, 0.09)`,
+              border: `1px solid rgba(${accentRgb}, 0.14)`,
+              fontSize: 11.5,
+              fontWeight: 900,
+              color: textSecondary,
+            }}
+          >
+            {brand}
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div style={{ ...smallLabel, color: accent }}>{flowTitle()}</div>
+        <div style={{ fontSize: isMobile ? 24 : 29, fontWeight: 950, marginTop: 4 }}>
+          {isComplete ? "Dein nächster Schritt ist vorbereitet." : currentQuestion?.question}
+        </div>
+        {!isComplete && currentQuestion?.helper && (
+          <div style={{ color: textSecondary, fontSize: 13, lineHeight: 1.5, marginTop: 7 }}>
+            {currentQuestion.helper}
+          </div>
+        )}
+      </div>
+
+      <div style={{ display: "flex", alignItems: "center", gap: 9 }}>
+        <div
+          style={{
+            flex: 1,
+            height: 7,
+            borderRadius: 999,
+            background: `rgba(${accentRgb}, 0.09)`,
+            overflow: "hidden",
+          }}
+        >
+          <div
+            style={{
+              width: `${isComplete ? 100 : Math.max(8, ((step + 1) / Math.max(questions.length, 1)) * 100)}%`,
+              height: "100%",
+              borderRadius: 999,
+              background: accent,
+              transition: "width 220ms ease",
+            }}
+          />
+        </div>
+        <span style={{ color: textSecondary, fontSize: 11.5, fontWeight: 850 }}>
+          {isComplete ? "Fertig" : `${step + 1}/${questions.length}`}
+        </span>
+      </div>
+
+      {!isComplete && currentQuestion && (
+        <>
+          {currentQuestion.choices && (
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: isMobile ? "1fr" : "repeat(2, minmax(0, 1fr))",
+                gap: 9,
+              }}
+            >
+              {currentQuestion.choices.map((choice) => (
+                <button
+                  key={`${currentQuestion.id}-${choice.value}`}
+                  type="button"
+                  onClick={() => chooseAnswer(choice.value)}
+                  style={{
+                    ...soft,
+                    minHeight: choice.detail ? 72 : 58,
+                    padding: "13px 14px",
+                    color: textPrimary,
+                    cursor: "pointer",
+                    textAlign: "left",
+                    boxShadow: "0 8px 22px rgba(30,45,60,0.05)",
+                  }}
+                >
+                  <span style={{ display: "block", fontSize: 14, fontWeight: 950 }}>{choice.label}</span>
+                  {choice.detail && (
+                    <span style={{ display: "block", marginTop: 4, color: textSecondary, fontSize: 11.5, lineHeight: 1.4 }}>
+                      {choice.detail}
+                    </span>
+                  )}
+                </button>
+              ))}
+            </div>
+          )}
+
+          <div style={{ ...soft, padding: 13 }}>
+            <div style={{ color: textSecondary, fontSize: 11.5, fontWeight: 850, marginBottom: 8 }}>
+              {currentQuestion.choices ? "Oder eigene Antwort eingeben" : "Deine Antwort"}
+            </div>
+            <div style={{ display: "flex", gap: 8, flexDirection: isMobile ? "column" : "row" }}>
+              <input
+                value={freeText}
+                onChange={(event) => setFreeText(event.target.value)}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter") submitFreeText();
+                }}
+                placeholder={currentQuestion.placeholder || "Kurz schreiben …"}
+                style={{
+                  flex: 1,
+                  height: 46,
+                  borderRadius: 13,
+                  border: `1px solid rgba(${accentRgb}, 0.17)`,
+                  background: "rgba(255,255,255,0.80)",
+                  color: textPrimary,
+                  padding: "0 12px",
+                  outline: "none",
+                  fontSize: 13.5,
+                  minWidth: 0,
+                }}
+              />
+              <button
+                type="button"
+                onClick={submitFreeText}
+                disabled={!freeText.trim()}
+                style={{ ...primary, minHeight: 46, opacity: freeText.trim() ? 1 : 0.45 }}
+              >
+                Weiter
+              </button>
+            </div>
+          </div>
+        </>
+      )}
+
+      {isComplete && (
+        <>
+          <div style={{ ...soft, padding: isMobile ? 16 : 18 }}>
+            <div style={{ ...smallLabel, color: accent }}>ERGEBNIS</div>
+            <div style={{ color: textPrimary, fontSize: 14, lineHeight: 1.58, marginTop: 8 }}>
+              {resultText()}
+            </div>
+          </div>
+
+          {answeredPairs.length > 0 && (
+            <div style={{ ...glass, padding: 14 }}>
+              <div style={{ ...smallLabel }}>DEINE AUSWAHL</div>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 7, marginTop: 9 }}>
+                {answeredPairs.map(([key, value], index) => (
+                  <button
+                    key={`${key}-${value}`}
+                    type="button"
+                    onClick={() => {
+                      const questionIndex = questions.findIndex((question) => question.id === key);
+                      if (questionIndex >= 0) {
+                        setStep(questionIndex);
+                        setFreeText("");
+                      }
+                    }}
+                    style={{
+                      border: `1px solid rgba(${accentRgb}, 0.13)`,
+                      borderRadius: 999,
+                      background: "rgba(255,255,255,0.74)",
+                      color: textPrimary,
+                      padding: "8px 10px",
+                      fontSize: 11.5,
+                      fontWeight: 850,
+                      cursor: "pointer",
+                    }}
+                  >
+                    {index + 1}. {value} · ändern
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr",
+              gap: 9,
+            }}
+          >
+            <button type="button" onClick={restartFlow} style={{ ...secondary, minHeight: 49 }}>
+              Anderen Weg wählen
+            </button>
+            <button type="button" onClick={finishInChat} style={{ ...primary, minHeight: 49 }}>
+              Im Chat weiterführen
+            </button>
+          </div>
+        </>
+      )}
+    </section>
+  );
+}
+
 function FsazFocusedDemo({
   panel,
   onPanelChange,
@@ -16103,9 +17148,9 @@ body::after {
 
                   {futureDemoVariant &&
                     hohenbadenPanel !== "home" &&
-                    (futureDemoVariant === "fsaz" ? (
-                      <FsazFocusedDemo
-                        variant={futureDemoVariant}
+                    ((["rathje", "fsaz", "campus-b27"] as FutureDemoVariant[]).includes(futureDemoVariant) ? (
+                      <GuidedTriDemo
+                        variant={futureDemoVariant as GuidedTriVariant}
                         panel={hohenbadenPanel}
                         onPanelChange={openHohenbadenPanel}
                         accent={widgetAccent}
