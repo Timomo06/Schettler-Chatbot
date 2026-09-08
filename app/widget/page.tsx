@@ -8549,10 +8549,16 @@ export default function WidgetPage() {
               ? "fahrschule7"
               : regionalDemoVariant;
   const isFutureDemoInterface = futureDemoVariant !== null;
-  const activeFutureTenantId = isNiehausInterface
-    ? "fahrschule-niehaus"
-    : isHohenbadenInterface
-      ? "fahrschule-hohenbaden"
+  const activeFutureTenantId = isRathjeInterface
+    ? "fahrschule-rathje"
+    : isFsazInterface
+      ? "fsaz"
+      : isCampusB27Interface
+        ? "campus-b27"
+        : isNiehausInterface
+          ? "fahrschule-niehaus"
+          : isHohenbadenInterface
+            ? "fahrschule-hohenbaden"
     : isPetermaennchenInterface
       ? "petermaennchen"
     : isSchelfInterface
