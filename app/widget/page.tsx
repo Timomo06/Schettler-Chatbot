@@ -679,38 +679,65 @@ const RATHJE_START_CARDS: StartCard[] = [
   {
     icon: "🚘",
     title: "Führerschein starten",
-    description: "B, B197, Automatik oder BE – zuerst nur den passenden Weg finden",
+    description: "B, BF17, B197, Automatik oder BE Schritt für Schritt einordnen",
     action: "hohenbadenPanel",
     hohenbadenPanel: "courses",
   },
   {
-    icon: "🪪",
-    title: "Mein Führerschein",
-    description: "Demo-Cockpit mit Ausbildungsstand und nächstem Schritt",
+    icon: "🎮",
+    title: "Simulator kennenlernen",
+    description: "Ruhig prüfen, welches FSAZ-Training zur Ausbildung passt",
     action: "hohenbadenPanel",
-    hohenbadenPanel: "connect",
+    hohenbadenPanel: "dashboard",
   },
   {
     icon: "📅",
-    title: "Theorie & Planung",
-    description: "Theoriezeiten und nächste Praxisetappe kompakt ansehen",
+    title: "Theorie & Fahrstunden",
+    description: "Nur die aktuell passende Planung und nächste Etappe sehen",
     action: "hohenbadenPanel",
     hohenbadenPanel: "schedule",
   },
   {
+    icon: "📋",
+    title: "Anmeldung vorbereiten",
+    description: "Unterlagen prüfen und offene Punkte vor dem Kontakt klären",
+    action: "hohenbadenPanel",
+    hohenbadenPanel: "documents",
+  },
+  {
+    icon: "🪪",
+    title: "Mein Führerschein-Cockpit",
+    description: "Für Rathje-Fahrschüler: Stand und nächsten Schritt öffnen",
+    action: "hohenbadenPanel",
+    hohenbadenPanel: "connect",
+  },
+  {
+    icon: "✨",
+    title: "Persönlicher Begleiter",
+    description: "Theorie, Praxis, Prüfung oder Fahrschulwechsel gezielt klären",
+    action: "hohenbadenPanel",
+    hohenbadenPanel: "coach",
+  },
+  {
     icon: "💬",
-    title: "Frage stellen",
-    description: "Ablauf, Unterlagen oder Preise direkt klären",
+    title: "Beratung & Preise",
+    description: "Anliegen vorab sortieren und Rückfragen für Rathje reduzieren",
     message:
-      "Ich möchte meinen Führerschein bei der Fahrschule Rathje machen. Hilf mir bitte kurz, meinen passenden Einstieg und den nächsten Schritt zu finden.",
+      "Ich möchte Beratung zu Führerscheinklasse, Ablauf oder veröffentlichten Preisen bei der Fahrschule Rathje. Stelle mir bitte immer nur eine kurze Frage gleichzeitig.",
+  },
+  {
+    icon: "🎙️",
+    title: "Frage einsprechen",
+    description: "Anliegen einfach erzählen statt tippen",
+    action: "voice",
   },
 ];
 
 const FSAZ_START_CARDS: StartCard[] = [
   {
     icon: "🪪",
-    title: "Ich bin bereits hier Fahrschüler",
-    description: "Mein FSAZ, App-Zugang und Trainingsfortschritt als Demo",
+    title: "Ich bin Fahrschüler bei Rathje",
+    description: "Persönlichen Demo-Zugang und Trainingsfortschritt öffnen",
     action: "hohenbadenPanel",
     hohenbadenPanel: "connect",
   },
@@ -731,9 +758,36 @@ const FSAZ_START_CARDS: StartCard[] = [
   {
     icon: "📅",
     title: "Training anfragen",
-    description: "Status, Trainingsziel und Wunschzeit in wenigen Schritten",
+    description: "Fahrschule, Trainingsziel und Wunschzeit in wenigen Schritten",
     action: "hohenbadenPanel",
     hohenbadenPanel: "schedule",
+  },
+  {
+    icon: "🧭",
+    title: "Trainingsmodule finden",
+    description: "Passendes Modul anhand von Ziel und Erfahrung auswählen",
+    action: "hohenbadenPanel",
+    hohenbadenPanel: "documents",
+  },
+  {
+    icon: "€",
+    title: "Preise & Pakete",
+    description: "Grundausbildung, Komplettpaket und externe Anmeldung einordnen",
+    action: "hohenbadenPanel",
+    hohenbadenPanel: "coach",
+  },
+  {
+    icon: "✨",
+    title: "Persönlicher Simulator-Coach",
+    description: "Fragen passend zu Trainingsziel und Erfahrung klären",
+    message:
+      "Ich möchte den persönlichen FSAZ-Simulator-Coach nutzen. Führe mich bitte mit immer nur einer kurzen Frage zu meinem Trainingsziel und nächsten Schritt.",
+  },
+  {
+    icon: "🎙️",
+    title: "Frage einsprechen",
+    description: "Trainingswunsch einfach erzählen statt tippen",
+    action: "voice",
   },
 ];
 
@@ -761,10 +815,37 @@ const CAMPUS_B27_START_CARDS: StartCard[] = [
   },
   {
     icon: "🎓",
-    title: "Spezialkurse & Fragen",
-    description: "BKF, ASF, MPU oder andere offene Fragen gezielt klären",
+    title: "Spezialkurs finden",
+    description: "BKF, ASF, MPU oder ein anderes Anliegen gezielt einordnen",
     action: "hohenbadenPanel",
     hohenbadenPanel: "coach",
+  },
+  {
+    icon: "📋",
+    title: "Unterlagen & Anmeldung",
+    description: "Nur die Unterlagen für den gewählten Ausbildungsweg prüfen",
+    action: "hohenbadenPanel",
+    hohenbadenPanel: "documents",
+  },
+  {
+    icon: "✨",
+    title: "Persönlicher Begleiter",
+    description: "Ausbildungsstand, offene Fragen und nächsten Schritt bündeln",
+    action: "hohenbadenPanel",
+    hohenbadenPanel: "dashboard",
+  },
+  {
+    icon: "💬",
+    title: "Beratung & Preise",
+    description: "Anliegen strukturiert vorbereiten, bevor Campus B27 übernimmt",
+    message:
+      "Ich möchte mich bei Campus B27 zu Ausbildung, Ablauf oder veröffentlichten Preisen beraten lassen. Stelle mir bitte immer nur eine kurze Frage gleichzeitig.",
+  },
+  {
+    icon: "🎙️",
+    title: "Frage einsprechen",
+    description: "Anliegen einfach erzählen statt tippen",
+    action: "voice",
   },
 ];
 
@@ -4302,6 +4383,12 @@ function GuidedTriDemo({
       ? "Fahrschule Rathje"
       : "Campus B27";
 
+  const schoolBenefit = isFsaz
+    ? "Für FSAZ: Trainingswünsche vollständig vorsortiert"
+    : isRathje
+      ? "Für Rathje: weniger wiederkehrende Rückfragen"
+      : "Für Campus B27: passende Anfrage statt Telefon-Pingpong";
+
   const glass: CSSProperties = {
     borderRadius: isMobile ? 22 : 27,
     border: "1px solid rgba(255,255,255,0.60)",
@@ -4352,10 +4439,12 @@ function GuidedTriDemo({
 
   function flowTitle() {
     if (isFsaz) {
-      if (panel === "connect") return "Mein FSAZ";
+      if (panel === "connect") return "Mein Training bei Rathje";
       if (panel === "courses") return "Extern trainieren";
       if (panel === "dashboard") return "Simulator entdecken";
       if (panel === "schedule") return "Training anfragen";
+      if (panel === "documents") return "Trainingsmodul finden";
+      if (panel === "coach") return "Preise & Pakete";
       return "FSAZ Wegweiser";
     }
 
@@ -4364,6 +4453,8 @@ function GuidedTriDemo({
       if (panel === "connect") return "Mein Führerschein";
       if (panel === "schedule") return "Theorie & Planung";
       if (panel === "documents") return "Unterlagen vorbereiten";
+      if (panel === "dashboard") return "Simulator kennenlernen";
+      if (panel === "coach") return "Persönlicher Führerscheinbegleiter";
       return "Persönlicher Führerschein-Weg";
     }
 
@@ -4372,6 +4463,7 @@ function GuidedTriDemo({
     if (panel === "schedule") return "Theoriezeiten";
     if (panel === "coach") return "Spezialkurs finden";
     if (panel === "documents") return "Start vorbereiten";
+    if (panel === "dashboard") return "Persönlicher Ausbildungsbegleiter";
     return "Campus B27 Wegweiser";
   }
 
@@ -4380,62 +4472,55 @@ function GuidedTriDemo({
       if (panel === "connect") {
         return [
           {
-            id: "status",
+            id: "rathjeAction",
             eyebrow: "SCHRITT 1",
-            question: "Bist du bereits FSAZ-Fahrschüler?",
-            helper: "Davon hängt ab, ob wir deinen persönlichen Trainingsweg oder den Einstieg als externer Fahrschüler zeigen.",
+            question: "Was möchtest du in deinem persönlichen Trainingsbereich sehen?",
+            helper: "Du hast bereits ausgewählt, dass du Fahrschüler bei Rathje bist. Deshalb starten wir direkt mit deinem Anliegen.",
             choices: [
-              { label: "Ja, ich bin bereits hier", value: "internal", detail: "Mein Training und App-Zugang" },
-              { label: "Nein, andere Fahrschule", value: "external", detail: "Zusätzlich bei FSAZ trainieren" },
+              { label: "App-Zugang", value: "App-Zugang", detail: "Persönlichen Demo-Zugang ansehen" },
+              { label: "Trainingsfortschritt", value: "Trainingsfortschritt", detail: "Stand und nächste Einheit bündeln" },
+              { label: "Nächstes Training", value: "Nächstes Training", detail: "Passendes Ziel vorbereiten" },
             ],
           },
-          ...(answers.status === "external"
-            ? [
-                {
-                  id: "externalGoal",
-                  eyebrow: "SCHRITT 2",
-                  question: "Was möchtest du im Simulator trainieren?",
-                  choices: [
-                    { label: "Ruhig einsteigen", value: "Ruhig einsteigen" },
-                    { label: "Schalten & Anfahren", value: "Schalten & Anfahren" },
-                    { label: "Überland", value: "Überland" },
-                    { label: "Autobahn", value: "Autobahn" },
-                    { label: "Automatik", value: "Automatik" },
-                  ],
-                } satisfies GuidedQuestion,
-              ]
-            : [
-                {
-                  id: "internalAction",
-                  eyebrow: "SCHRITT 2",
-                  question: "Was möchtest du gerade machen?",
-                  choices: [
-                    { label: "App-Zugang ansehen", value: "App-Zugang" },
-                    { label: "Trainingsstand ansehen", value: "Trainingsstand" },
-                    { label: "Nächstes Training planen", value: "Training planen" },
-                  ],
-                } satisfies GuidedQuestion,
-              ]),
+          {
+            id: "rathjeDetail",
+            eyebrow: "SCHRITT 2",
+            question:
+              answers.rathjeAction === "App-Zugang"
+                ? "Was soll der Demo-Zugang für dich öffnen?"
+                : answers.rathjeAction === "Trainingsfortschritt"
+                  ? "Welche Information brauchst du aus deinem Trainingsstand?"
+                  : "Was möchtest du als Nächstes trainieren?",
+            choices:
+              answers.rathjeAction === "App-Zugang"
+                ? [
+                    { label: "Persönlichen QR-Zugang", value: "QR-Demo" },
+                    { label: "Trainingsübersicht", value: "Trainingsübersicht" },
+                    { label: "Hilfe beim Zugang", value: "Zugangshilfe" },
+                  ]
+                : answers.rathjeAction === "Trainingsfortschritt"
+                  ? [
+                      { label: "Abgeschlossene Einheiten", value: "Abgeschlossene Einheiten" },
+                      { label: "Nächstes Trainingsziel", value: "Nächstes Trainingsziel" },
+                      { label: "Gesamten Überblick", value: "Gesamtüberblick" },
+                    ]
+                  : [
+                      { label: "Schalten & Anfahren", value: "Schalten & Anfahren" },
+                      { label: "Überland", value: "Überland" },
+                      { label: "Autobahn", value: "Autobahn" },
+                      { label: "Automatik", value: "Automatik" },
+                    ],
+          },
           {
             id: "next",
             eyebrow: "SCHRITT 3",
-            question:
-              answers.status === "external"
-                ? "Wann passt dir das Training ungefähr?"
-                : "Was ist dein nächster Wunsch?",
-            helper:
-              answers.status === "external"
-                ? "Ein grober Zeitraum reicht. Die echte Verfügbarkeit bestätigt später das FSAZ-Team."
-                : "Der Demo-Bereich zeigt nur den vorgesehenen Ablauf, keine echten Schülerdaten.",
-            ...(answers.status === "external"
-              ? { placeholder: "z. B. Mittwoch ab 16 Uhr" }
-              : {
-                  choices: [
-                    { label: "Weiter üben", value: "Weiter üben" },
-                    { label: "Neues Modul starten", value: "Neues Modul" },
-                    { label: "Frage an FSAZ", value: "Frage an FSAZ" },
-                  ],
-                }),
+            question: "Was soll das Interface jetzt für dich vorbereiten?",
+            helper: "Der persönliche Bereich ist eine Demo und zeigt keine echten Schülerdaten oder echten QR-Code.",
+            choices: [
+              { label: "Nächsten Schritt zeigen", value: "Nächster Schritt" },
+              { label: "Training vorbereiten", value: "Training vorbereiten" },
+              { label: "Frage weitergeben", value: "Frage weitergeben" },
+            ],
           },
         ];
       }
@@ -4443,19 +4528,10 @@ function GuidedTriDemo({
       if (panel === "courses") {
         return [
           {
-            id: "status",
-            eyebrow: "SCHRITT 1",
-            question: "Wo machst du aktuell deinen Führerschein?",
-            choices: [
-              { label: "Bei einer anderen Fahrschule", value: "external", detail: "Du bleibst dort angemeldet" },
-              { label: "Bereits bei FSAZ", value: "internal", detail: "Persönlichen Trainingsweg nutzen" },
-              { label: "Noch nicht angemeldet", value: "not-yet", detail: "Erst Simulator kennenlernen" },
-            ],
-          },
-          {
             id: "goal",
-            eyebrow: "SCHRITT 2",
-            question: "Was möchtest du trainieren?",
+            eyebrow: "SCHRITT 1",
+            question: "Was möchtest du im Simulator trainieren?",
+            helper: "Du hast bereits ausgewählt, dass du bei einer anderen Fahrschule bist. Ein Wechsel ist nicht nötig.",
             choices: [
               { label: "Ruhig einsteigen", value: "Ruhig einsteigen" },
               { label: "Schalten & Anfahren", value: "Schalten & Anfahren" },
@@ -4466,7 +4542,7 @@ function GuidedTriDemo({
           },
           {
             id: "experience",
-            eyebrow: "SCHRITT 3",
+            eyebrow: "SCHRITT 2",
             question: "Wie viel Fahrerfahrung hast du schon?",
             choices: [
               { label: "Noch keine", value: "keine" },
@@ -4476,7 +4552,7 @@ function GuidedTriDemo({
           },
           {
             id: "time",
-            eyebrow: "SCHRITT 4",
+            eyebrow: "SCHRITT 3",
             question: "Wann möchtest du ungefähr trainieren?",
             placeholder: "z. B. nächste Woche nachmittags",
           },
@@ -4497,11 +4573,23 @@ function GuidedTriDemo({
             ],
           },
           {
-            id: "detail",
+            id: "situation",
             eyebrow: "SCHRITT 2",
+            question: "Welche Situation trifft auf dich zu?",
+            choices: [
+              { label: "Fahrschüler bei Rathje", value: "Rathje" },
+              { label: "Andere Fahrschule", value: "extern" },
+              { label: "Noch nicht angemeldet", value: "neu" },
+              { label: "Nur informieren", value: "Information" },
+            ],
+          },
+          {
+            id: "detail",
+            eyebrow: "SCHRITT 3",
             question: "Was möchtest du danach machen?",
             choices: [
               { label: "Passendes Training finden", value: "Training finden" },
+              { label: "Preise einordnen", value: "Preise" },
               { label: "Training anfragen", value: "Training anfragen" },
               { label: "Noch etwas fragen", value: "Frage" },
             ],
@@ -4509,32 +4597,119 @@ function GuidedTriDemo({
         ];
       }
 
+      if (panel === "schedule") {
+        return [
+          {
+            id: "status",
+            eyebrow: "SCHRITT 1",
+            question: "Wo machst du aktuell deine Fahrausbildung?",
+            choices: [
+              { label: "Bei Fahrschule Rathje", value: "Rathje", detail: "Training mit der Rathje-Ausbildung abstimmen" },
+              { label: "Bei einer anderen Fahrschule", value: "extern", detail: "Ohne Fahrschulwechsel zusätzlich trainieren" },
+              { label: "Noch bei keiner Fahrschule", value: "neu", detail: "Simulator zunächst kennenlernen" },
+            ],
+          },
+          {
+            id: "goal",
+            eyebrow: "SCHRITT 2",
+            question: "Was möchtest du trainieren?",
+            choices: [
+              { label: "Grundausbildung", value: "Grundausbildung" },
+              { label: "Schalten & Anfahren", value: "Schalten & Anfahren" },
+              { label: "Überland", value: "Überland" },
+              { label: "Autobahn", value: "Autobahn" },
+              { label: "Automatik", value: "Automatik" },
+            ],
+          },
+          {
+            id: "experience",
+            eyebrow: "SCHRITT 3",
+            question: "Wie viel Erfahrung bringst du mit?",
+            choices: [
+              { label: "Noch keine", value: "keine Erfahrung" },
+              { label: "Ein paar Fahrstunden", value: "erste Fahrstunden" },
+              { label: "Gezielt auffrischen", value: "Auffrischung" },
+            ],
+          },
+          {
+            id: "time",
+            eyebrow: "SCHRITT 4",
+            question: "Wann passt es dir ungefähr?",
+            helper: "Ein Zeitwunsch genügt. Das FSAZ-Team bestätigt anschließend die echte Verfügbarkeit.",
+            placeholder: "z. B. Freitag ab 15 Uhr",
+          },
+        ];
+      }
+
+      if (panel === "documents") {
+        return [
+          {
+            id: "goal",
+            eyebrow: "SCHRITT 1",
+            question: "Welches Trainingsziel passt am besten?",
+            choices: [
+              { label: "Sicher einsteigen", value: "Grundausbildung" },
+              { label: "Schalten & Anfahren", value: "Schalten & Anfahren" },
+              { label: "Überland / Autobahn", value: "Überland oder Autobahn" },
+              { label: "Automatik", value: "Automatik" },
+            ],
+          },
+          {
+            id: "experience",
+            eyebrow: "SCHRITT 2",
+            question: "Wie viel Erfahrung hast du bereits?",
+            choices: [
+              { label: "Noch keine", value: "keine" },
+              { label: "Erste Fahrstunden", value: "wenig" },
+              { label: "Schon recht sicher", value: "erfahren" },
+              { label: "Länger nicht gefahren", value: "Auffrischung" },
+            ],
+          },
+          {
+            id: "moduleNeed",
+            eyebrow: "SCHRITT 3",
+            question: "Was ist dir beim Training am wichtigsten?",
+            choices: [
+              { label: "Ruhe gewinnen", value: "Ruhe" },
+              { label: "Abläufe wiederholen", value: "Wiederholung" },
+              { label: "Konkrete Situation üben", value: "gezieltes Modul" },
+              { label: "Empfehlung erhalten", value: "Empfehlung" },
+            ],
+          },
+        ];
+      }
+
       return [
         {
-          id: "status",
+          id: "package",
           eyebrow: "SCHRITT 1",
-          question: "Bist du bereits FSAZ-Fahrschüler oder kommst du von einer anderen Fahrschule?",
-          choices: [
-            { label: "Bereits FSAZ-Fahrschüler", value: "internal" },
-            { label: "Andere Fahrschule", value: "external" },
-          ],
-        },
-        {
-          id: "goal",
-          eyebrow: "SCHRITT 2",
-          question: "Was möchtest du trainieren?",
+          question: "Was möchtest du zu den Preisen einordnen?",
           choices: [
             { label: "Grundausbildung", value: "Grundausbildung" },
-            { label: "Überland", value: "Überland" },
-            { label: "Autobahn", value: "Autobahn" },
-            { label: "Automatik", value: "Automatik" },
+            { label: "Komplettpaket", value: "Komplettpaket" },
+            { label: "Einzelnes Modul", value: "Einzelmodul" },
+            { label: "Externe Anmeldung", value: "externe Anmeldung" },
           ],
         },
         {
-          id: "time",
+          id: "status",
+          eyebrow: "SCHRITT 2",
+          question: "Wo machst du deine Fahrausbildung?",
+          choices: [
+            { label: "Bei Fahrschule Rathje", value: "Rathje" },
+            { label: "Bei einer anderen Fahrschule", value: "extern" },
+            { label: "Noch nicht angemeldet", value: "neu" },
+          ],
+        },
+        {
+          id: "next",
           eyebrow: "SCHRITT 3",
-          question: "Wann passt es dir ungefähr?",
-          placeholder: "z. B. Freitag ab 15 Uhr",
+          question: "Was möchtest du als Nächstes tun?",
+          choices: [
+            { label: "Passendes Paket finden", value: "Paket finden" },
+            { label: "Training anfragen", value: "Training anfragen" },
+            { label: "Preisfrage weitergeben", value: "Preisfrage" },
+          ],
         },
       ];
     }
@@ -4548,6 +4723,7 @@ function GuidedTriDemo({
             question: "Welchen Führerschein möchtest du machen?",
             choices: [
               { label: "Klasse B", value: "B" },
+              { label: "BF17", value: "BF17" },
               { label: "B197", value: "B197" },
               { label: "Automatik", value: "Automatik" },
               { label: "BE Anhänger", value: "BE" },
@@ -4555,7 +4731,7 @@ function GuidedTriDemo({
             ],
           },
           {
-            id: "age",
+            id: "startMode",
             eyebrow: "SCHRITT 2",
             question: "Wie möchtest du starten?",
             choices: [
@@ -4565,14 +4741,34 @@ function GuidedTriDemo({
             ],
           },
           {
-            id: "prior",
+            id: "requirement",
             eyebrow: "SCHRITT 3",
-            question: "Hast du schon einen Führerschein oder Vorbesitz?",
-            choices: [
-              { label: "Nein", value: "kein Vorbesitz" },
-              { label: "Ja", value: "Vorbesitz vorhanden" },
-              { label: "Nicht sicher, ob relevant", value: "unklar" },
-            ],
+            question:
+              answers.license === "BE"
+                ? "Besitzt du bereits die Klasse B?"
+                : answers.license === "unsicher"
+                  ? "Wofür brauchst du den Führerschein hauptsächlich?"
+                  : "Was ist dir bei der Ausbildung besonders wichtig?",
+            choices:
+              answers.license === "BE"
+                ? [
+                    { label: "Ja, Klasse B vorhanden", value: "Klasse B vorhanden" },
+                    { label: "Klasse B läuft gerade", value: "Klasse B in Ausbildung" },
+                    { label: "Muss ich prüfen", value: "Vorbesitz prüfen" },
+                  ]
+                : answers.license === "unsicher"
+                  ? [
+                      { label: "Auto im Alltag", value: "Alltag" },
+                      { label: "Begleitet ab 17", value: "BF17" },
+                      { label: "Automatik und Schaltung", value: "B197" },
+                      { label: "Anhänger fahren", value: "BE" },
+                    ]
+                  : [
+                      { label: "Flexibel neben Schule / Arbeit", value: "flexibel" },
+                      { label: "Sicher und ruhig lernen", value: "ruhiger Einstieg" },
+                      { label: "Automatik und Schaltung verbinden", value: "B197-Vorteil" },
+                      { label: "Erst persönlich beraten", value: "Beratung" },
+                    ],
           },
           {
             id: "time",
@@ -4586,58 +4782,40 @@ function GuidedTriDemo({
       if (panel === "connect") {
         return [
           {
-            id: "status",
+            id: "phase",
             eyebrow: "SCHRITT 1",
-            question: "Bist du schon bei der Fahrschule Rathje angemeldet?",
+            question: "Wo stehst du bei Rathje gerade?",
+            helper: "Du hast bereits das Führerschein-Cockpit für Rathje-Fahrschüler geöffnet. Deshalb fragen wir nicht noch einmal nach deiner Anmeldung.",
             choices: [
-              { label: "Ja", value: "angemeldet" },
-              { label: "Noch nicht", value: "neu" },
+              { label: "Gerade angemeldet", value: "Anmeldung" },
+              { label: "Theorie", value: "Theorie" },
+              { label: "Praxis", value: "Praxis" },
+              { label: "Prüfung vorbereiten", value: "Prüfung" },
+              { label: "Simulatortraining", value: "Simulator" },
             ],
           },
-          ...(answers.status === "angemeldet"
-            ? [
-                {
-                  id: "phase",
-                  eyebrow: "SCHRITT 2",
-                  question: "Wo stehst du gerade?",
-                  choices: [
-                    { label: "Theorie", value: "Theorie" },
-                    { label: "Praxis", value: "Praxis" },
-                    { label: "Prüfung vorbereiten", value: "Prüfung" },
-                    { label: "Simulator", value: "Simulator" },
-                  ],
-                } satisfies GuidedQuestion,
-                {
-                  id: "need",
-                  eyebrow: "SCHRITT 3",
-                  question: "Was brauchst du jetzt?",
-                  choices: [
-                    { label: "Nächster Schritt", value: "Nächster Schritt" },
-                    { label: "Termin / Planung", value: "Planung" },
-                    { label: "Unterlagen prüfen", value: "Unterlagen" },
-                  ],
-                } satisfies GuidedQuestion,
-              ]
-            : [
-                {
-                  id: "license",
-                  eyebrow: "SCHRITT 2",
-                  question: "Welche Klasse interessiert dich?",
-                  choices: [
-                    { label: "B", value: "B" },
-                    { label: "B197", value: "B197" },
-                    { label: "Automatik", value: "Automatik" },
-                    { label: "BE", value: "BE" },
-                    { label: "Noch unsicher", value: "unsicher" },
-                  ],
-                } satisfies GuidedQuestion,
-                {
-                  id: "start",
-                  eyebrow: "SCHRITT 3",
-                  question: "Wann möchtest du starten?",
-                  placeholder: "z. B. nächsten Monat",
-                } satisfies GuidedQuestion,
-              ]),
+          {
+            id: "need",
+            eyebrow: "SCHRITT 2",
+            question: "Was brauchst du jetzt?",
+            choices: [
+              { label: "Nächsten Schritt", value: "Nächster Schritt" },
+              { label: "Termin / Planung", value: "Planung" },
+              { label: "Unterlagen prüfen", value: "Unterlagen" },
+              { label: "Lern- oder Prüfungstipp", value: "Tipp" },
+            ],
+          },
+          {
+            id: "blocker",
+            eyebrow: "SCHRITT 3",
+            question: "Gibt es gerade etwas, das dich aufhält?",
+            choices: [
+              { label: "Nein, nur weiterplanen", value: "kein Hindernis" },
+              { label: "Mir fehlen Informationen", value: "Information fehlt" },
+              { label: "Mir fehlen Unterlagen", value: "Unterlagen fehlen" },
+              { label: "Ich brauche Rückmeldung", value: "Rückmeldung nötig" },
+            ],
+          },
         ];
       }
 
@@ -4655,25 +4833,85 @@ function GuidedTriDemo({
             ],
           },
           {
-            id: "phase",
+            id: "planningNeed",
             eyebrow: "SCHRITT 2",
-            question: "Wie dringend ist es?",
+            question:
+              answers.planType === "Theorie"
+                ? "Was möchtest du zur Theorie wissen?"
+                : answers.planType === "Fahrstunde"
+                  ? "Was möchtest du für die Praxis vorbereiten?"
+                  : answers.planType === "Simulator"
+                    ? "Welches Simulatorziel interessiert dich?"
+                    : "Wo stehst du in deiner Ausbildung?",
+            choices:
+              answers.planType === "Theorie"
+                ? [
+                    { label: "Theoriezeiten", value: "Theoriezeiten" },
+                    { label: "Passenden Einstieg", value: "Theorie-Einstieg" },
+                    { label: "Prüfung vorbereiten", value: "Theorieprüfung" },
+                  ]
+                : answers.planType === "Fahrstunde"
+                  ? [
+                      { label: "Erste Fahrstunde", value: "erste Fahrstunde" },
+                      { label: "Nächste Etappe", value: "nächste Praxisetappe" },
+                      { label: "Terminwunsch", value: "Terminwunsch" },
+                    ]
+                  : answers.planType === "Simulator"
+                    ? [
+                        { label: "Ruhig einsteigen", value: "ruhiger Einstieg" },
+                        { label: "Schalten & Anfahren", value: "Schalten & Anfahren" },
+                        { label: "Überland / Autobahn", value: "Überland oder Autobahn" },
+                      ]
+                    : [
+                        { label: "Noch vor der Anmeldung", value: "vor Anmeldung" },
+                        { label: "In der Theorie", value: "Theorie" },
+                        { label: "In der Praxis", value: "Praxis" },
+                      ],
+          },
+          {
+            id: "time",
+            eyebrow: "SCHRITT 3",
+            question: "Welcher Zeitraum passt dir?",
+            helper: "Ein grober Wunsch genügt. Das Interface bündelt ihn für Rathje, statt mehrere Rückfragen auszulösen.",
+            placeholder: "z. B. Dienstag oder Donnerstag ab 17 Uhr",
+          },
+        ];
+      }
+
+      if (panel === "dashboard") {
+        return [
+          {
+            id: "simulatorInterest",
+            eyebrow: "SCHRITT 1",
+            question: "Was möchtest du über das Simulatortraining wissen?",
             choices: [
-              { label: "Nächster möglicher Schritt", value: "bald" },
-              { label: "Bestimmter Zeitraum", value: "zeitraum" },
-              { label: "Nur Ablauf verstehen", value: "info" },
+              { label: "Wie funktioniert es?", value: "Funktionsweise" },
+              { label: "Welche Module gibt es?", value: "Module" },
+              { label: "Wann ist es sinnvoll?", value: "Empfehlung" },
+              { label: "Was kostet es?", value: "Preise" },
             ],
           },
-          ...(answers.phase === "zeitraum"
-            ? [
-                {
-                  id: "time",
-                  eyebrow: "SCHRITT 3",
-                  question: "Welcher Zeitraum passt dir?",
-                  placeholder: "z. B. Dienstag oder Donnerstag ab 17 Uhr",
-                } satisfies GuidedQuestion,
-              ]
-            : []),
+          {
+            id: "simulatorSituation",
+            eyebrow: "SCHRITT 2",
+            question: "Welche Situation beschreibt dich am besten?",
+            choices: [
+              { label: "Noch keine Fahrpraxis", value: "keine Praxis" },
+              { label: "Unsicher beim Schalten", value: "Schalten" },
+              { label: "Bestimmte Situation üben", value: "gezieltes Training" },
+              { label: "Schon länger nicht gefahren", value: "Auffrischung" },
+            ],
+          },
+          {
+            id: "simulatorNext",
+            eyebrow: "SCHRITT 3",
+            question: "Was soll als Nächstes passieren?",
+            choices: [
+              { label: "Modul empfehlen", value: "Empfehlung" },
+              { label: "Training vorbereiten", value: "Training" },
+              { label: "Frage an Rathje", value: "Rückfrage" },
+            ],
+          },
         ];
       }
 
@@ -4692,12 +4930,12 @@ function GuidedTriDemo({
           {
             id: "missing",
             eyebrow: "SCHRITT 2",
-            question: "Was fehlt dir wahrscheinlich noch?",
+            question: "Welchen Unterlagenpunkt möchtest du zuerst prüfen?",
             choices: [
               { label: "Sehtest", value: "Sehtest" },
               { label: "Erste Hilfe", value: "Erste Hilfe" },
               { label: "Passbild", value: "Passbild" },
-              { label: "Weiß ich nicht", value: "unklar" },
+              { label: "Mehrere / weiß ich nicht", value: "komplette Prüfung" },
             ],
           },
           {
@@ -4709,6 +4947,39 @@ function GuidedTriDemo({
               { label: "Kontakt vorbereiten", value: "Kontakt" },
               { label: "Ablauf erklären", value: "Ablauf" },
             ],
+          },
+        ];
+      }
+
+      if (panel === "coach") {
+        return [
+          {
+            id: "topic",
+            eyebrow: "SCHRITT 1",
+            question: "Wobei soll dich dein persönlicher Begleiter unterstützen?",
+            choices: [
+              { label: "Theorie lernen", value: "Theorie" },
+              { label: "Praxis vorbereiten", value: "Praxis" },
+              { label: "Prüfung vorbereiten", value: "Prüfung" },
+              { label: "Fahrschulwechsel klären", value: "Fahrschulwechsel" },
+            ],
+          },
+          {
+            id: "coachStatus",
+            eyebrow: "SCHRITT 2",
+            question: "Was trifft gerade am ehesten zu?",
+            choices: [
+              { label: "Ich brauche Orientierung", value: "Orientierung" },
+              { label: "Ich habe eine konkrete Frage", value: "konkrete Frage" },
+              { label: "Ich komme nicht weiter", value: "Hindernis" },
+              { label: "Ich will den nächsten Schritt", value: "nächster Schritt" },
+            ],
+          },
+          {
+            id: "coachDetail",
+            eyebrow: "SCHRITT 3",
+            question: "Was soll der Begleiter jetzt konkret für dich vorbereiten?",
+            placeholder: "z. B. Lernplan, nächste Praxisetappe oder Rückfrage an Rathje",
           },
         ];
       }
@@ -4758,6 +5029,7 @@ function GuidedTriDemo({
                   { label: "B", value: "B" },
                   { label: "BF17", value: "BF17" },
                   { label: "B197", value: "B197" },
+                  { label: "BE Anhänger", value: "BE" },
                   { label: "Noch beraten lassen", value: "Beratung" },
                 ],
               } satisfies GuidedQuestion,
@@ -4795,14 +5067,67 @@ function GuidedTriDemo({
                 } satisfies GuidedQuestion,
               ]),
         {
-          id: "prior",
+          id: "startingPoint",
           eyebrow: "SCHRITT 3",
-          question: "Hast du bereits einen Führerschein oder passenden Vorbesitz?",
-          choices: [
-            { label: "Nein", value: "kein Vorbesitz" },
-            { label: "Ja", value: "Vorbesitz vorhanden" },
-            { label: "Muss ich prüfen", value: "unklar" },
-          ],
+          question:
+            answers.license === "BE"
+              ? "Besitzt du bereits die Klasse B?"
+              : answers.area === "Lkw" && answers.license === "CE"
+                ? "Besitzt du bereits die Klasse C?"
+                : answers.area === "Lkw"
+                  ? "Besitzt du bereits die Klasse B?"
+                  : answers.area === "Bus"
+                    ? "Welche Fahrerlaubnis besitzt du bereits?"
+                    : answers.area === "Motorrad"
+                      ? "Welche Ausgangslage trifft auf dich zu?"
+                      : answers.area === "unsicher"
+                        ? "Wofür möchtest du die Fahrerlaubnis nutzen?"
+                        : "Wie möchtest du die Auto-Ausbildung angehen?",
+          choices:
+            answers.license === "BE"
+              ? [
+                  { label: "Ja, Klasse B vorhanden", value: "Klasse B vorhanden" },
+                  { label: "Klasse B läuft gerade", value: "Klasse B in Ausbildung" },
+                  { label: "Muss ich prüfen", value: "Voraussetzung prüfen" },
+                ]
+              : answers.area === "Lkw" && answers.license === "CE"
+                ? [
+                    { label: "Ja, Klasse C vorhanden", value: "Klasse C vorhanden" },
+                    { label: "Klasse C läuft gerade", value: "Klasse C in Ausbildung" },
+                    { label: "Muss ich prüfen", value: "Voraussetzung prüfen" },
+                  ]
+                : answers.area === "Lkw"
+                  ? [
+                      { label: "Ja, Klasse B vorhanden", value: "Klasse B vorhanden" },
+                      { label: "Noch nicht", value: "Klasse B fehlt" },
+                      { label: "Muss ich prüfen", value: "Voraussetzung prüfen" },
+                    ]
+                  : answers.area === "Bus"
+                    ? [
+                        { label: "Klasse B", value: "Klasse B" },
+                        { label: "Klasse C / CE", value: "Klasse C oder CE" },
+                        { label: "Andere / unklar", value: "Voraussetzung prüfen" },
+                      ]
+                    : answers.area === "Motorrad"
+                      ? [
+                          { label: "Noch keine Motorradklasse", value: "Neueinstieg" },
+                          { label: "Kleinere Motorradklasse vorhanden", value: "Aufstieg" },
+                          { label: "B196 / andere Fahrerlaubnis", value: "andere Ausgangslage" },
+                          { label: "Muss ich prüfen", value: "Beratung" },
+                        ]
+                      : answers.area === "unsicher"
+                        ? [
+                            { label: "Auto im Alltag", value: "Auto Alltag" },
+                            { label: "Motorrad", value: "Motorrad" },
+                            { label: "Beruflich Lkw / Bus", value: "Beruf" },
+                            { label: "Persönlich beraten", value: "Beratung" },
+                          ]
+                        : [
+                            { label: "Begleitet ab 17", value: "BF17" },
+                            { label: "Flexibel neben Schule / Arbeit", value: "flexibel" },
+                            { label: "Automatik und Schaltung", value: "B197" },
+                            { label: "Erst beraten lassen", value: "Beratung" },
+                          ],
         },
         {
           id: "time",
@@ -4891,18 +5216,35 @@ function GuidedTriDemo({
             { label: "Noch nicht", value: "neu" },
           ],
         },
-        {
-          id: "goal",
-          eyebrow: "SCHRITT 2",
-          question: "Was ist dein Ausbildungsziel?",
-          choices: [
-            { label: "Auto", value: "Auto" },
-            { label: "Motorrad", value: "Motorrad" },
-            { label: "Lkw", value: "Lkw" },
-            { label: "Bus", value: "Bus" },
-            { label: "Spezialkurs", value: "Spezialkurs" },
-          ],
-        },
+        ...(answers.status === "angemeldet"
+          ? [
+              {
+                id: "phase",
+                eyebrow: "SCHRITT 2",
+                question: "In welcher Phase bist du gerade?",
+                choices: [
+                  { label: "Unterlagen / Antrag", value: "Unterlagen" },
+                  { label: "Theorie", value: "Theorie" },
+                  { label: "Praxis", value: "Praxis" },
+                  { label: "Prüfung", value: "Prüfung" },
+                  { label: "Spezialkurs", value: "Spezialkurs" },
+                ],
+              } satisfies GuidedQuestion,
+            ]
+          : [
+              {
+                id: "goal",
+                eyebrow: "SCHRITT 2",
+                question: "Welcher Bereich interessiert dich?",
+                choices: [
+                  { label: "Auto", value: "Auto" },
+                  { label: "Motorrad", value: "Motorrad" },
+                  { label: "Lkw", value: "Lkw" },
+                  { label: "Bus", value: "Bus" },
+                  { label: "Spezialkurs", value: "Spezialkurs" },
+                ],
+              } satisfies GuidedQuestion,
+            ]),
         {
           id: "need",
           eyebrow: "SCHRITT 3",
@@ -4912,6 +5254,88 @@ function GuidedTriDemo({
             { label: "Theoriezeit", value: "Theorie" },
             { label: "Unterlagen", value: "Unterlagen" },
             { label: "Beratung", value: "Beratung" },
+          ],
+        },
+      ];
+    }
+
+    if (panel === "documents") {
+      return [
+        {
+          id: "area",
+          eyebrow: "SCHRITT 1",
+          question: "Für welchen Bereich möchtest du den Start vorbereiten?",
+          choices: [
+            { label: "Auto", value: "Auto" },
+            { label: "Motorrad", value: "Motorrad" },
+            { label: "Lkw", value: "Lkw" },
+            { label: "Bus", value: "Bus" },
+            { label: "Spezialkurs", value: "Spezialkurs" },
+          ],
+        },
+        {
+          id: "documentStatus",
+          eyebrow: "SCHRITT 2",
+          question: "Was möchtest du bei den Unterlagen klären?",
+          choices: [
+            { label: "Komplette Checkliste", value: "Checkliste" },
+            { label: "Fehlende Unterlagen", value: "fehlende Unterlagen" },
+            { label: "Fahrerlaubnisantrag", value: "Antrag" },
+            { label: "Dokument hochladen", value: "Upload vorbereiten" },
+          ],
+        },
+        {
+          id: "documentNext",
+          eyebrow: "SCHRITT 3",
+          question: "Was soll das Interface daraus machen?",
+          choices: [
+            { label: "Persönliche Liste erstellen", value: "persönliche Liste" },
+            { label: "Offene Punkte markieren", value: "offene Punkte" },
+            { label: "Rückfrage vorbereiten", value: "Rückfrage" },
+          ],
+        },
+      ];
+    }
+
+    if (panel === "dashboard") {
+      return [
+        {
+          id: "status",
+          eyebrow: "SCHRITT 1",
+          question: "Bist du bereits bei Campus B27 angemeldet?",
+          choices: [
+            { label: "Ja", value: "angemeldet" },
+            { label: "Noch nicht", value: "neu" },
+          ],
+        },
+        {
+          id: "guideArea",
+          eyebrow: "SCHRITT 2",
+          question: answers.status === "angemeldet" ? "Wo stehst du gerade?" : "Wobei brauchst du zuerst Orientierung?",
+          choices:
+            answers.status === "angemeldet"
+              ? [
+                  { label: "Unterlagen", value: "Unterlagen" },
+                  { label: "Theorie", value: "Theorie" },
+                  { label: "Praxis", value: "Praxis" },
+                  { label: "Prüfung", value: "Prüfung" },
+                ]
+              : [
+                  { label: "Ausbildung auswählen", value: "Ausbildung" },
+                  { label: "Voraussetzungen", value: "Voraussetzungen" },
+                  { label: "Theoriezeiten", value: "Theoriezeiten" },
+                  { label: "Beratung", value: "Beratung" },
+                ],
+        },
+        {
+          id: "guideNeed",
+          eyebrow: "SCHRITT 3",
+          question: "Welches Ergebnis soll dein Begleiter vorbereiten?",
+          choices: [
+            { label: "Nächsten Schritt", value: "Nächster Schritt" },
+            { label: "Persönliche Checkliste", value: "Checkliste" },
+            { label: "Termin oder Anfrage", value: "Anfrage" },
+            { label: "Kurze Erklärung", value: "Erklärung" },
           ],
         },
       ];
@@ -4995,7 +5419,12 @@ function GuidedTriDemo({
 
   function resultText() {
     if (isFsaz) {
-      const status = answers.status;
+      if (panel === "connect") {
+        return `Als Fahrschüler bei Rathje öffnest du direkt den passenden persönlichen Bereich: „${answers.rathjeAction || "Training"}“. In der Demo werden App-/QR-Zugang, Fortschritt und nächster Schritt nur beispielhaft gezeigt – ohne echten Login oder echte Schülerdaten.`;
+      }
+      if (panel === "courses") {
+        return `Du bleibst bei deiner bisherigen Fahrschule und trainierst bei FSAZ zusätzlich „${answers.goal || "dein gewünschtes Modul"}“. Erfahrung und Zeitwunsch sind bereits gebündelt. Für externe Fahrschüler ist laut veröffentlichter Preisliste eine zusätzliche Anmeldung von 30 € vorgesehen.`;
+      }
       if (panel === "dashboard") {
         if (answers.interest === "Technik") {
           return "Der FSAZ-Simulator nutzt ein fahrzeugnahes Cockpit mit Pedalerie, Schaltung und großem Sichtfeld. Schwierige Situationen können kontrolliert wiederholt werden.";
@@ -5008,33 +5437,42 @@ function GuidedTriDemo({
         }
         return "Ja. Du kannst bei deiner bisherigen Fahrschule bleiben und FSAZ zusätzlich als Simulatortraining nutzen. Ein Fahrschulwechsel ist dafür nicht nötig.";
       }
-      if (status === "external") {
-        return `Du bleibst bei deiner bisherigen Fahrschule. Für dein FSAZ-Training${answers.goal || answers.externalGoal ? ` mit Ziel „${answers.goal || answers.externalGoal}“` : ""} wird jetzt nur noch die konkrete Anfrage vorbereitet. Für externe Fahrschüler ist laut veröffentlichter Preisliste eine zusätzliche Anmeldung von 30 € vorgesehen.`;
+      if (panel === "schedule") {
+        const externalNote = answers.status === "extern"
+          ? " Für externe Fahrschüler ist laut veröffentlichter Preisliste zusätzlich eine Anmeldung von 30 € vorgesehen."
+          : "";
+        return `Trainingsziel „${answers.goal || "offen"}“, Erfahrung „${answers.experience || "offen"}“ und Zeitwunsch „${answers.time || "offen"}“ sind als strukturierte Anfrage vorbereitet.${externalNote}`;
       }
-      if (status === "internal") {
-        return "Für eigene FSAZ-Fahrschüler kann der persönliche Bereich App-Zugang, QR-Zugang und Trainingsfortschritt zusammenführen. In dieser Demo wird das nur beispielhaft gezeigt – ohne echten Schülerzugang.";
+      if (panel === "documents") {
+        return `Für das Ziel „${answers.goal || "Simulatortraining"}“ wurde anhand deiner Erfahrung und Priorität ein passender Modulweg vorbereitet. Das FSAZ-Team erhält dadurch direkt die Angaben, die es für eine konkrete Empfehlung braucht.`;
       }
-      return "FSAZ führt dich abhängig von deinem Status zum passenden Simulatortraining. Du kannst jederzeit zurückgehen und einen anderen Weg wählen.";
+      return `„${answers.package || "Das gewünschte Angebot"}“ wurde für deine Situation eingeordnet. Die veröffentlichten Preise werden transparent erklärt; den konkreten Umfang und die Verfügbarkeit bestätigt anschließend das FSAZ-Team.`;
     }
 
     if (isRathje) {
       if (panel === "courses") {
-        return `Dein vorbereiteter Weg: ${answers.license || "Führerschein"}, Startart „${answers.age || "offen"}“, Vorbesitz „${answers.prior || "offen"}“${answers.time ? `, Wunschstart „${answers.time}“` : ""}. Daraus kann jetzt eine kurze Beratungsanfrage entstehen.`;
+        return `Dein vorbereiteter Weg: ${answers.license || "Führerschein"}, Start „${answers.startMode || "offen"}“, Ausgangslage „${answers.requirement || "offen"}“${answers.time ? `, Wunschzeit „${answers.time}“` : ""}. Rathje erhält damit eine vorsortierte Anfrage statt mehrerer einzelner Rückfragen.`;
       }
-      if (panel === "connect" && answers.status === "angemeldet") {
-        return `Du bist bereits angemeldet. Aktuelle Phase: ${answers.phase || "offen"}. Das Interface würde dir jetzt nur den dazu passenden nächsten Schritt zeigen – nicht alle Funktionen gleichzeitig.`;
+      if (panel === "connect") {
+        return `Dein Cockpit ist auf die Phase „${answers.phase || "offen"}“ eingegrenzt. Es zeigt jetzt nur „${answers.need || "den nächsten Schritt"}“ und berücksichtigt dabei „${answers.blocker || "kein Hindernis"}“ – ohne unnötige Menüs.`;
       }
       if (panel === "schedule") {
-        return `Du möchtest „${answers.planType || "Planung"}“ klären. Der nächste Schritt richtet sich jetzt nur nach diesem Bereich; andere Funktionen bleiben ausgeblendet, bis du sie bewusst auswählst.`;
+        return `Du möchtest „${answers.planType || "Planung"}“ mit dem Ziel „${answers.planningNeed || "nächster Schritt"}“ klären. Dein Zeitwunsch „${answers.time || "offen"}“ ist bereits so vorbereitet, dass Rathje gezielt antworten kann.`;
       }
       if (panel === "documents") {
         return `Für ${answers.license || "deine Klasse"} wird nur der relevante Unterlagenweg gezeigt. Aktuell möchtest du „${answers.help || "den nächsten Schritt"}“ und hast „${answers.missing || "offene Unterlagen"}“ markiert.`;
+      }
+      if (panel === "dashboard") {
+        return `Dein Simulatorinteresse „${answers.simulatorInterest || "Information"}“ und deine Situation „${answers.simulatorSituation || "offen"}“ sind eingeordnet. So erscheint nur das passende Modul beziehungsweise die passende Rückfrage.`;
+      }
+      if (panel === "coach") {
+        return `Der persönliche Begleiter konzentriert sich auf „${answers.topic || "deinen Ausbildungsweg"}“ und bereitet „${answers.coachDetail || answers.guideNeed || "den nächsten Schritt"}“ vor. Wiederkehrende Fragen werden vorab geklärt, bevor Rathje persönlich übernehmen muss.`;
       }
       return "Das Interface hat deinen Weg eingegrenzt und zeigt jetzt nur den nächsten sinnvollen Schritt.";
     }
 
     if (panel === "courses") {
-      return `Campus B27 hat deinen Weg eingegrenzt: Bereich „${answers.area || "offen"}“, Ziel „${answers.license || "noch zu klären"}“, Vorbesitz „${answers.prior || "offen"}“${answers.time ? `, Wunschstart „${answers.time}“` : ""}. Daraus kann jetzt die passende Beratung vorbereitet werden.`;
+      return `Campus B27 hat deinen Weg eingegrenzt: Bereich „${answers.area || "offen"}“, Ziel „${answers.license || "noch zu klären"}“, passende Ausgangslage „${answers.startingPoint || "offen"}“${answers.time ? `, Wunschstart „${answers.time}“` : ""}. Es wurde nur nach Voraussetzungen gefragt, die zu deiner Auswahl passen.`;
     }
     if (panel === "coach") {
       return `Für „${answers.course || "dein Spezialthema"}“ wird nur die passende Rückfrage weitergeführt. Sensible oder nicht dokumentierte Details werden nicht abgefragt oder erfunden.`;
@@ -5044,6 +5482,15 @@ function GuidedTriDemo({
       if (answers.group === "A") return "Für Zusatzstoff A ist als veröffentlichter nächster Termin der 10.09.2026 von 18:00–21:00 hinterlegt. Vor dem Besuch sollte der aktuelle offizielle Plan geprüft werden.";
       if (answers.group === "Grundstoff") return "Der nächste veröffentlichte Grundstoff-Block beginnt am 05.10.2026 von 18:00–21:00. Das Interface kann anschließend nur die für dich relevanten Folgetermine zeigen.";
       return "Für andere Klassen wird nichts erfunden. Das Interface bereitet stattdessen eine gezielte Rückfrage an Campus B27 vor.";
+    }
+    if (panel === "connect") {
+      return `Dein Ausbildungsplan ist auf „${answers.phase || answers.goal || "deinen Bereich"}“ eingegrenzt. Als Nächstes wird nur „${answers.need || "der passende Schritt"}“ geöffnet.`;
+    }
+    if (panel === "documents") {
+      return `Für „${answers.area || "deinen Ausbildungsweg"}“ wurde der Unterlagenpunkt „${answers.documentStatus || "Checkliste"}“ ausgewählt. Campus B27 erhält offene Punkte strukturiert, statt sie telefonisch einzeln abzufragen.`;
+    }
+    if (panel === "dashboard") {
+      return `Dein Begleiter bündelt „${answers.guideArea || "deine Situation"}“ und bereitet „${answers.guideNeed || "den nächsten Schritt"}“ vor. Für dich bleibt der Ablauf einfach; Campus B27 spart wiederkehrende Rückfragen.`;
     }
     return "Campus B27 zeigt dir nach deinen Antworten nur noch den passenden nächsten Schritt statt die komplette Funktionsübersicht.";
   }
@@ -5069,6 +5516,7 @@ function GuidedTriDemo({
 
   return (
     <section
+      className="bt-guided-flow"
       style={{
         ...glass,
         alignSelf: "stretch",
@@ -5119,7 +5567,10 @@ function GuidedTriDemo({
         </div>
       </div>
 
-      <div>
+      <div
+        key={`${panel}-${step}-${currentQuestion?.id || "complete"}`}
+        className="bt-guided-step-in"
+      >
         <div style={{ ...smallLabel, color: accent }}>{flowTitle()}</div>
         <div style={{ fontSize: isMobile ? 24 : 29, fontWeight: 950, marginTop: 4 }}>
           {isComplete ? "Dein nächster Schritt ist vorbereitet." : currentQuestion?.question}
@@ -5156,6 +5607,41 @@ function GuidedTriDemo({
         </span>
       </div>
 
+      <div
+        style={{
+          display: "flex",
+          gap: 7,
+          flexWrap: "wrap",
+        }}
+      >
+        <span
+          style={{
+            borderRadius: 999,
+            border: `1px solid rgba(${accentRgb}, 0.14)`,
+            background: `rgba(${accentRgb}, 0.08)`,
+            color: textSecondary,
+            padding: "7px 10px",
+            fontSize: 11.5,
+            fontWeight: 850,
+          }}
+        >
+          Für dich: immer nur ein klarer nächster Schritt
+        </span>
+        <span
+          style={{
+            borderRadius: 999,
+            border: `1px solid rgba(${accentRgb}, 0.14)`,
+            background: "rgba(255,255,255,0.70)",
+            color: textSecondary,
+            padding: "7px 10px",
+            fontSize: 11.5,
+            fontWeight: 850,
+          }}
+        >
+          {schoolBenefit}
+        </span>
+      </div>
+
       {!isComplete && currentQuestion && (
         <>
           {currentQuestion.choices && (
@@ -5170,6 +5656,7 @@ function GuidedTriDemo({
                 <button
                   key={`${currentQuestion.id}-${choice.value}`}
                   type="button"
+                  className="bt-guided-choice"
                   onClick={() => chooseAnswer(choice.value)}
                   style={{
                     ...soft,
@@ -5378,7 +5865,7 @@ function FsazFocusedDemo({
       studentPath === "external"
         ? "Ich bin bei einer anderen Fahrschule und möchte zusätzlich bei FSAZ trainieren."
         : studentPath === "internal"
-          ? "Ich bin bereits FSAZ-Fahrschüler und möchte mein Simulatortraining planen."
+          ? "Ich bin Fahrschüler bei der Fahrschule Rathje und möchte mein Simulatortraining planen."
           : "Ich interessiere mich für Simulatortraining bei FSAZ.";
 
     onAsk(
@@ -5517,7 +6004,7 @@ function FsazFocusedDemo({
               }}
               style={{ ...secondary, minHeight: 64, textAlign: "left" }}
             >
-              <span style={{ display: "block", fontSize: 14, fontWeight: 950 }}>Ich bin bereits FSAZ-Fahrschüler</span>
+              <span style={{ display: "block", fontSize: 14, fontWeight: 950 }}>Ich bin Fahrschüler bei Rathje</span>
               <span style={{ display: "block", marginTop: 3, fontSize: 11.5, color: textSecondary }}>Mein Training & App-Zugang</span>
             </button>
             <button
@@ -5543,7 +6030,7 @@ function FsazFocusedDemo({
               Dein Training. Dein Fortschritt. Ein klarer nächster Schritt.
             </div>
             <div style={{ color: textSecondary, fontSize: 14, lineHeight: 1.55, marginTop: 8 }}>
-              Für eigene Fahrschüler wird der persönliche Trainingszugang nur angedeutet:
+              Für Fahrschüler der Fahrschule Rathje wird der persönliche Trainingszugang nur angedeutet:
               App, QR-Zugang und Trainingsfortschritt laufen später an einer Stelle zusammen.
             </div>
           </div>
@@ -5781,7 +6268,7 @@ function FsazFocusedDemo({
                       : "rgba(255,255,255,0.72)",
                 }}
               >
-                Bereits FSAZ-Fahrschüler
+                Fahrschüler bei Rathje
               </button>
               <button
                 type="button"
@@ -5917,7 +6404,7 @@ function FsazFocusedDemo({
               }}
               style={{ ...secondary, minHeight: 76, textAlign: "left" }}
             >
-              <strong>Bereits FSAZ-Fahrschüler</strong>
+              <strong>Fahrschüler bei Rathje</strong>
               <span style={{ display: "block", color: textSecondary, fontSize: 11.5, marginTop: 5 }}>
                 App-Zugang und eigener Trainingsplan.
               </span>
@@ -10763,7 +11250,7 @@ export default function WidgetPage() {
       : isRathjeInterface
         ? "Moin! Ich bin der digitale Führerschein-Assistent der Fahrschule Rathje. Ich helfe dir bei B, B197, Automatik, BE, Theorie, Unterlagen und dem eigenen FSAZ-Simulatorangebot. Womit möchtest du starten?"
       : isFsazInterface
-        ? "Willkommen bei FSAZ. Ich bin dein Simulator-Coach. Bist du bereits bei FSAZ in Ausbildung oder kommst du von einer anderen Fahrschule? Danach zeige ich dir nur die Schritte, die für dich wirklich relevant sind."
+        ? "Willkommen bei FSAZ. Ich bin dein Simulator-Coach. Bist du Fahrschüler bei Rathje, bei einer anderen Fahrschule oder möchtest du den Simulator erst kennenlernen? Danach zeige ich dir nur die Schritte, die für dich wirklich relevant sind."
       : isCampusB27Interface
         ? "Hallo bei Campus B27 in Hünfeld! Ich bin dein digitaler Ausbildungs-Assistent. Suchst du Auto, Motorrad, Lkw, Bus oder einen Spezialkurs wie BKF, ASF oder MPU? Ich helfe dir, den passenden Einstieg und die nächsten Schritte vorzubereiten."
       : isNiehausInterface
@@ -13801,7 +14288,7 @@ export default function WidgetPage() {
           : isRathjeInterface
           ? "Alles klar — geht es um Führerscheinklasse, Theorie, Simulator, Unterlagen oder Praxisplanung bei Rathje?"
           : isFsazInterface
-          ? "Alles klar — bist du bereits FSAZ-Fahrschüler oder kommst du von einer anderen Fahrschule?"
+          ? "Alles klar — bist du Fahrschüler bei Rathje, bei einer anderen Fahrschule oder noch bei keiner Fahrschule?"
           : isCampusB27Interface
           ? "Alles klar — geht es um Auto, Motorrad, Lkw, Bus, Theoriezeiten oder einen Spezialkurs bei Campus B27?"
           : isNiehausInterface
@@ -15223,6 +15710,56 @@ body::after {
   background:
     radial-gradient(180px 110px at 12% 0%, rgba(${accentRgb}, 0.26), transparent 72%),
     linear-gradient(180deg, rgba(255,255,255,0.86), rgba(255,255,255,0.52));
+}
+
+@keyframes bt-guided-step-in {
+  0% {
+    opacity: 0;
+    transform: translateY(10px) scale(.988);
+    filter: blur(5px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+  }
+}
+
+.bt-guided-flow {
+  animation: bt-guided-step-in 360ms cubic-bezier(.16,1,.3,1) both;
+}
+
+.bt-guided-step-in {
+  animation: bt-guided-step-in 320ms cubic-bezier(.16,1,.3,1) both;
+}
+
+.bt-guided-choice {
+  transition:
+    transform 170ms cubic-bezier(.2,.8,.2,1),
+    box-shadow 170ms ease,
+    border-color 170ms ease,
+    background 170ms ease;
+}
+
+.bt-guided-choice:hover:not(:disabled) {
+  transform: translateY(-2px) scale(1.006);
+  border-color: rgba(${accentRgb}, .34) !important;
+  box-shadow: 0 13px 30px rgba(${accentRgb}, .12) !important;
+}
+
+.bt-guided-choice:active:not(:disabled) {
+  transform: translateY(0) scale(.985);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bt-guided-flow,
+  .bt-guided-step-in {
+    animation: none !important;
+  }
+
+  .bt-guided-choice {
+    transition: none !important;
+  }
 }
 
 .bt-start-card:disabled {
@@ -16821,11 +17358,11 @@ body::after {
                                 ? "Wähle deinen Bereich – alles Wichtige direkt auf einen Blick."
                                 : "Wähle aus, wo du gerade stehst. Das Interface zeigt dir den nächsten Schritt, prüft Unterlagen und bereitet Anfragen sauber vor."
                               : isRathjeInterface
-                                ? "Diese Demo verbindet Führerscheinklasse, Theorie, Unterlagen, FSAZ-Simulator und Praxisplanung. So sieht man sofort: Das ist mehr als ein Chat – es ist ein persönliches Führerschein-Cockpit mit konkreten nächsten Schritten."
+                                ? "Führerscheinklasse, Anmeldung, Unterlagen, Theorie, FSAZ-Simulator und Praxis werden Schritt für Schritt vorbereitet. Fahrschüler kommen einfacher weiter und Rathje erhält vollständige, vorsortierte Anliegen statt wiederkehrender Rückfragen."
                               : isFsazInterface
-                                ? "Wähle zuerst, welcher Weg zu dir passt: bereits FSAZ-Fahrschüler, Fahrschüler einer anderen Fahrschule oder einfach Simulator entdecken. Erst danach erscheinen die passenden Informationen."
+                                ? "Wähle deinen passenden Weg: Fahrschüler bei Rathje, Fahrschüler einer anderen Fahrschule oder Simulator entdecken. Jede Auswahl öffnet nur die wirklich nötigen Schritte und bereitet Anfragen vollständig für FSAZ vor."
                               : isCampusB27Interface
-                                ? "Auto, Motorrad, Lkw, Bus oder Spezialkurs: Das Interface ordnet dein Ziel, deinen Vorbesitz, Theoriezeiten und offene Unterlagen und macht daraus einen klaren nächsten Schritt statt nur eine Chat-Antwort."
+                                ? "Auto, Motorrad, Lkw, Bus oder Spezialkurs: Das Interface fragt nur passende Voraussetzungen ab, bündelt Theorie und Unterlagen und bereitet eine klare Anfrage vor. Das ist einfacher für Fahrschüler und spart Campus B27 Zeit."
                               : isLinaInterface
                               ? `Wähle einen Einstieg aus. Danach führt dich ${displayAssistantName} gezielt zur passenden Lösung.`
                               : isMmWartungInterface
@@ -16930,17 +17467,17 @@ body::after {
                                     ]
                                 : isFsazInterface
                                   ? [
-                                      "1 Erfahrung klären",
-                                      "2 Trainingsziel",
-                                      "3 Modul auswählen",
+                                      "1 Weg auswählen",
+                                      "2 Trainingsziel klären",
+                                      "3 Angaben bündeln",
                                       "4 Anfrage vorbereiten",
                                     ]
                                 : isCampusB27Interface
                                   ? [
                                       "1 Ziel auswählen",
-                                      "2 Vorbesitz klären",
+                                      "2 Passende Voraussetzung",
                                       "3 Theorie & Unterlagen",
-                                      "4 Beratung vorbereiten",
+                                      "4 Anfrage vorbereiten",
                                     ]
                                 : [
                                   "1 Orientierung",
