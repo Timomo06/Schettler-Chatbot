@@ -39,7 +39,9 @@ export type TenantId =
   | "cans-fahrschule"
   | "tek-fahrschule"
   | "fahrschule-fix"
-  | "fahrschule-yoendem";
+  | "fahrschule-yoendem"
+  | "r-drive"
+  | "fahrschule-happy-driving";
 
 export type ThemeConfig = {
   accent: string;
@@ -1346,6 +1348,56 @@ export const TENANTS: Record<TenantId, TenantConfig> = {
     assets: { launcherIcon: "/favicon.ico" },
   },
 
+  "r-drive": {
+    id: "r-drive",
+    brandName: "R-DRIVE",
+    assistantName: "R-DRIVE Führerschein-Cockpit",
+    language: "de",
+    knowledge: { files: ["eKnowledge.md"] },
+    websiteUrl: "https://www.r-drive.info/",
+    primaryCta: { label: "Website öffnen", url: "https://www.r-drive.info/" },
+    fallbackContact: { label: "Kontakt", value: "0941 566 303 · 0151 70553030" },
+    companyInfo: {
+      address: "Bismarckplatz 9, 93047 Regensburg",
+      phone: "0941 566 303 · 0151 70553030",
+      email: "fahrschule@r-drive.info",
+      openingHours: "Di 15:30–17:30 · Do 15:30–17:30 · sowie nach Vereinbarung",
+    },
+    rules: { noMedicalClaims: true, noInventingPrices: true, noGuarantees: true },
+    theme: {
+      accent: "#f26a2e",
+      bg: "#fff7f2",
+      glass: "rgba(242,106,46,0.15)",
+      text: "#241a15",
+    },
+    assets: { launcherIcon: "/favicon.ico" },
+  },
+
+  "fahrschule-happy-driving": {
+    id: "fahrschule-happy-driving",
+    brandName: "Fahrschule Happy Driving",
+    assistantName: "Happy Driving Führerschein-Cockpit",
+    language: "de",
+    knowledge: { files: ["eKnowledge.md"] },
+    websiteUrl: "https://fahrschule-happy-driving.de/",
+    primaryCta: { label: "Website öffnen", url: "https://fahrschule-happy-driving.de/" },
+    fallbackContact: { label: "Kontakt", value: "01522 635 23 59 · info@fahrschule-happy-driving.de" },
+    companyInfo: {
+      address: "Stötteritzer Straße 85, 04317 Leipzig",
+      phone: "01522 635 23 59",
+      email: "info@fahrschule-happy-driving.de",
+      openingHours: "Di 17:00–18:00 · Do 17:00–18:00 · sowie nach Vereinbarung",
+    },
+    rules: { noMedicalClaims: true, noInventingPrices: true, noGuarantees: true },
+    theme: {
+      accent: "#7ab51d",
+      bg: "#f7fbea",
+      glass: "rgba(122,181,29,0.16)",
+      text: "#17200f",
+    },
+    assets: { launcherIcon: "/favicon.ico" },
+  },
+
     txbikesV2: {
     id: "txbikesV2",
     brandName: "TXBIKESV2",
@@ -1517,6 +1569,15 @@ const TENANT_ALIASES: Record<string, TenantId> = {
   "fahrschule-yöndem": "fahrschule-yoendem",
   "fahrschule-yoendem.de": "fahrschule-yoendem",
   "xn--fahrschule-yndem-xwb.de": "fahrschule-yoendem",
+  rdrive: "r-drive",
+  "r-drive": "r-drive",
+  "r-drive.info": "r-drive",
+  "www.r-drive.info": "r-drive",
+  "happy-driving": "fahrschule-happy-driving",
+  "happy-driving-leipzig": "fahrschule-happy-driving",
+  "fahrschule-happy-driving": "fahrschule-happy-driving",
+  "fahrschule-happy-driving.de": "fahrschule-happy-driving",
+  "www.fahrschule-happy-driving.de": "fahrschule-happy-driving",
 };
 
 export function getTenant(tenant: string | null): TenantConfig {
