@@ -679,57 +679,37 @@ const RATHJE_START_CARDS: StartCard[] = [
   {
     icon: "🚘",
     title: "Führerschein starten",
-    description: "B, BF17, B197, Automatik oder BE Schritt für Schritt einordnen",
+    description: "Klasse finden & Start klären",
     action: "hohenbadenPanel",
     hohenbadenPanel: "courses",
   },
   {
-    icon: "🎮",
-    title: "Simulator kennenlernen",
-    description: "Ruhig prüfen, welches FSAZ-Training zur Ausbildung passt",
-    action: "hohenbadenPanel",
-    hohenbadenPanel: "dashboard",
-  },
-  {
-    icon: "📅",
-    title: "Theorie & Fahrstunden",
-    description: "Nur die aktuell passende Planung und nächste Etappe sehen",
-    action: "hohenbadenPanel",
-    hohenbadenPanel: "schedule",
-  },
-  {
-    icon: "📋",
-    title: "Anmeldung vorbereiten",
-    description: "Unterlagen prüfen und offene Punkte vor dem Kontakt klären",
-    action: "hohenbadenPanel",
-    hohenbadenPanel: "documents",
-  },
-  {
-    icon: "🪪",
-    title: "Mein Führerschein-Cockpit",
-    description: "Für Rathje-Fahrschüler: Stand und nächsten Schritt öffnen",
-    action: "hohenbadenPanel",
-    hohenbadenPanel: "connect",
-  },
-  {
-    icon: "✨",
-    title: "Persönlicher Begleiter",
-    description: "Theorie, Praxis, Prüfung oder Fahrschulwechsel gezielt klären",
+    icon: "€",
+    title: "Preise",
+    description: "Kosten direkt überblicken",
     action: "hohenbadenPanel",
     hohenbadenPanel: "coach",
   },
   {
-    icon: "💬",
-    title: "Beratung & Preise",
-    description: "Anliegen vorab sortieren und Rückfragen für Rathje reduzieren",
-    message:
-      "Ich möchte Beratung zu Führerscheinklasse, Ablauf oder veröffentlichten Preisen bei der Fahrschule Rathje. Stelle mir bitte immer nur eine kurze Frage gleichzeitig.",
+    icon: "📅",
+    title: "Theorie & Fahrstunden",
+    description: "Zeiten & Planung öffnen",
+    action: "hohenbadenPanel",
+    hohenbadenPanel: "schedule",
   },
   {
-    icon: "🎙️",
-    title: "Frage einsprechen",
-    description: "Anliegen einfach erzählen statt tippen",
-    action: "voice",
+    icon: "🪪",
+    title: "Führerschein-Cockpit",
+    description: "Ausbildungsstand auf einen Blick",
+    action: "hohenbadenPanel",
+    hohenbadenPanel: "connect",
+  },
+  {
+    icon: "↗️",
+    title: "Fahrschulwechsel",
+    description: "Unterlagen gesammelt übermitteln",
+    action: "hohenbadenPanel",
+    hohenbadenPanel: "documents",
   },
 ];
 
@@ -4350,6 +4330,521 @@ type GuidedTriDemoProps = Omit<HohenbadenFutureDemoProps, "variant"> & {
   variant: GuidedTriVariant;
 };
 
+type RathjeTabBarProps = {
+  activePanel: HohenbadenPanel;
+  onPanelChange: (panel: HohenbadenPanel) => void;
+  accent: string;
+  accentRgb: string;
+  textPrimary: string;
+  textSecondary: string;
+};
+
+const RATHJE_TAB_ITEMS: ReadonlyArray<{
+  id: HohenbadenPanel;
+  label: string;
+}> = [
+  { id: "home", label: "Start" },
+  { id: "courses", label: "Führerschein" },
+  { id: "coach", label: "Preise" },
+  { id: "schedule", label: "Theorie & Fahrstunden" },
+  { id: "connect", label: "Cockpit" },
+  { id: "documents", label: "Fahrschulwechsel" },
+];
+
+function RathjeTabBar({
+  activePanel,
+  onPanelChange,
+  accent,
+  accentRgb,
+  textPrimary,
+  textSecondary,
+}: RathjeTabBarProps) {
+  return (
+    <nav
+      className="bt-rathje-tabs"
+      aria-label="Bereiche im Führerschein-Assistenten"
+      style={{
+        width: "100%",
+        display: "flex",
+        gap: 7,
+        overflowX: "auto",
+        padding: "4px",
+        boxSizing: "border-box",
+        borderRadius: 18,
+        border: "1px solid rgba(255,255,255,0.58)",
+        background: "rgba(255,255,255,0.48)",
+        boxShadow:
+          "0 10px 30px rgba(30,45,60,0.07), inset 0 1px 0 rgba(255,255,255,0.78)",
+        backdropFilter: "blur(22px) saturate(165%)",
+        WebkitBackdropFilter: "blur(22px) saturate(165%)",
+      }}
+    >
+      {RATHJE_TAB_ITEMS.map((item) => {
+        const active = activePanel === item.id;
+        return (
+          <button
+            key={item.id}
+            type="button"
+            aria-current={active ? "page" : undefined}
+            onClick={() => onPanelChange(item.id)}
+            style={{
+              flex: "1 0 auto",
+              minHeight: 38,
+              borderRadius: 14,
+              border: active
+                ? `1px solid rgba(${accentRgb}, 0.34)`
+                : "1px solid transparent",
+              background: active
+                ? `linear-gradient(180deg, rgba(${accentRgb}, 0.20), rgba(${accentRgb}, 0.11))`
+                : "transparent",
+              color: active ? textPrimary : textSecondary,
+              padding: "0 12px",
+              fontSize: 12,
+              fontWeight: active ? 950 : 820,
+              cursor: "pointer",
+              boxShadow: active
+                ? `0 8px 20px rgba(${accentRgb}, 0.12), inset 0 1px 0 rgba(255,255,255,0.64)`
+                : "none",
+              whiteSpace: "nowrap",
+              transition:
+                "background 180ms ease, border-color 180ms ease, color 180ms ease, transform 180ms ease",
+            }}
+          >
+            {active && (
+              <span
+                aria-hidden="true"
+                style={{
+                  display: "inline-block",
+                  width: 6,
+                  height: 6,
+                  borderRadius: 999,
+                  marginRight: 7,
+                  verticalAlign: 1,
+                  background: accent,
+                  boxShadow: `0 0 0 4px rgba(${accentRgb}, 0.10)`,
+                }}
+              />
+            )}
+            {item.label}
+          </button>
+        );
+      })}
+    </nav>
+  );
+}
+
+function RathjeSecretaryPanel({
+  panel,
+  onPanelChange,
+  accent,
+  accentRgb,
+  textPrimary,
+  textSecondary,
+  isMobile,
+  onAsk,
+}: Omit<HohenbadenFutureDemoProps, "variant">) {
+  const [transferFiles, setTransferFiles] = useState<File[]>([]);
+  const [transferName, setTransferName] = useState("");
+  const [transferContact, setTransferContact] = useState("");
+  const [transferNote, setTransferNote] = useState("");
+  const [transferConsent, setTransferConsent] = useState(false);
+  const [transferError, setTransferError] = useState("");
+  const [transferPrepared, setTransferPrepared] = useState(false);
+
+  if (!["coach", "schedule", "documents"].includes(panel)) return null;
+
+  const glass: CSSProperties = {
+    borderRadius: isMobile ? 21 : 25,
+    border: "1px solid rgba(255,255,255,0.60)",
+    background:
+      "linear-gradient(180deg, rgba(255,255,255,0.94), rgba(255,255,255,0.72))",
+    boxShadow:
+      "0 18px 50px rgba(30,45,60,0.09), inset 0 1px 0 rgba(255,255,255,0.82)",
+    backdropFilter: "blur(24px) saturate(165%)",
+    WebkitBackdropFilter: "blur(24px) saturate(165%)",
+  };
+
+  const soft: CSSProperties = {
+    borderRadius: 17,
+    border: `1px solid rgba(${accentRgb}, 0.14)`,
+    background: `linear-gradient(145deg, rgba(${accentRgb}, 0.08), rgba(255,255,255,0.72))`,
+  };
+
+  const primary: CSSProperties = {
+    minHeight: 45,
+    border: "1px solid rgba(255,255,255,0.30)",
+    borderRadius: 14,
+    background: `linear-gradient(180deg, ${accent}, ${accent}D2)`,
+    color: "#fff",
+    padding: "0 16px",
+    fontWeight: 900,
+    cursor: "pointer",
+    boxShadow: `0 12px 28px rgba(${accentRgb}, 0.20)`,
+    textDecoration: "none",
+    display: "inline-grid",
+    placeItems: "center",
+  };
+
+  const secondary: CSSProperties = {
+    minHeight: 43,
+    border: `1px solid rgba(${accentRgb}, 0.17)`,
+    borderRadius: 14,
+    background: "rgba(255,255,255,0.74)",
+    color: textPrimary,
+    padding: "0 14px",
+    fontWeight: 850,
+    cursor: "pointer",
+    textDecoration: "none",
+    display: "inline-grid",
+    placeItems: "center",
+  };
+
+  const field: CSSProperties = {
+    width: "100%",
+    minHeight: 44,
+    borderRadius: 13,
+    border: `1px solid rgba(${accentRgb}, 0.17)`,
+    background: "rgba(255,255,255,0.82)",
+    color: textPrimary,
+    padding: "0 12px",
+    outline: "none",
+    font: "inherit",
+    fontSize: 13.5,
+    boxSizing: "border-box",
+  };
+
+  const priceGroups = [
+    {
+      title: "Starterpaket",
+      price: "849,90 €",
+      lines: ["Grundbetrag 450 €", "Lehrmaterial 99,90 €", "Büroservice 50 €", "Simulator 250 €"],
+    },
+    {
+      title: "B · B197 · B78",
+      price: "ab 584,90 €",
+      lines: ["Grundbetrag 450 €", "Lehrmaterial 99,90 €", "Büroservice 35 €", "Fahr-/Sonderfahrt je 45 Min. 70 €"],
+    },
+    {
+      title: "BE · Anhänger",
+      price: "ab 285 €",
+      lines: ["Grundbetrag 250 €", "Büroservice 35 €", "Fahr-/Sonderfahrt je 45 Min. 75 €", "Praxisvorstellung 129,83 €*"],
+    },
+  ] as const;
+
+  function prepareTransfer(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setTransferError("");
+
+    if (!transferFiles.length) {
+      setTransferError("Bitte füge mindestens eine Datei hinzu.");
+      return;
+    }
+    if (!transferName.trim() || !transferContact.trim()) {
+      setTransferError("Bitte ergänze deinen Namen und eine Kontaktmöglichkeit.");
+      return;
+    }
+    if (!transferConsent) {
+      setTransferError("Bitte bestätige die sichere Verarbeitung deiner Unterlagen.");
+      return;
+    }
+
+    setTransferPrepared(true);
+  }
+
+  return (
+    <section
+      className="bt-rathje-secretary bt-guided-flow"
+      style={{
+        ...glass,
+        alignSelf: "stretch",
+        padding: isMobile ? 14 : 19,
+        display: "flex",
+        flexDirection: "column",
+        gap: 14,
+        color: textPrimary,
+        flex: "0 0 auto",
+      }}
+    >
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          gap: 12,
+          alignItems: "flex-start",
+          flexWrap: "wrap",
+        }}
+      >
+        <div>
+          <div
+            style={{
+              color: accent,
+              fontSize: 11.5,
+              fontWeight: 950,
+              letterSpacing: 0.5,
+              textTransform: "uppercase",
+            }}
+          >
+            Digitales Fahrschulbüro
+          </div>
+          <div style={{ fontSize: isMobile ? 24 : 30, fontWeight: 950, marginTop: 4 }}>
+            {panel === "coach"
+              ? "Preise ohne Suchen"
+              : panel === "schedule"
+                ? "Theorie & Fahrstunden"
+                : "Fahrschulwechsel vorbereiten"}
+          </div>
+          <div style={{ color: textSecondary, fontSize: 13.5, marginTop: 5, lineHeight: 1.45 }}>
+            {panel === "coach"
+              ? "Die veröffentlichten Rathje-Preise direkt im Überblick."
+              : panel === "schedule"
+                ? "Öffentliche Theoriezeiten und der Fahrstundenplaner an einem Ort."
+                : "Kontaktdaten und vorhandene Unterlagen einmal gesammelt übergeben."}
+          </div>
+        </div>
+        <button
+          type="button"
+          onClick={() => onPanelChange("home")}
+          style={{ ...secondary, minHeight: 38, fontSize: 12 }}
+        >
+          ← Übersicht
+        </button>
+      </div>
+
+      {panel === "coach" && (
+        <>
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: isMobile ? "1fr" : "repeat(3, minmax(0, 1fr))",
+              gap: 10,
+            }}
+          >
+            {priceGroups.map((group) => (
+              <div key={group.title} style={{ ...soft, padding: 15 }}>
+                <div style={{ color: textSecondary, fontSize: 11.5, fontWeight: 900 }}>
+                  {group.title}
+                </div>
+                <div style={{ fontSize: 24, fontWeight: 950, marginTop: 3 }}>{group.price}</div>
+                <div style={{ display: "grid", gap: 5, marginTop: 11 }}>
+                  {group.lines.map((line) => (
+                    <div key={line} style={{ color: textSecondary, fontSize: 11.5, lineHeight: 1.35 }}>
+                      ✓ {line}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+          <div style={{ ...soft, padding: 13, color: textSecondary, fontSize: 11.5, lineHeight: 1.45 }}>
+            Der Gesamtpreis hängt von der Anzahl der benötigten Fahrstunden ab. Prüf- und Behördengebühren können zusätzlich anfallen. *Vom TÜV vorgegeben.
+          </div>
+          <div style={{ display: "flex", gap: 9, flexWrap: "wrap" }}>
+            <a
+              href="https://www.fahrschule-rathje.de/preise/"
+              target="_blank"
+              rel="noreferrer"
+              style={primary}
+            >
+              Vollständige Preisliste ↗
+            </a>
+            <button
+              type="button"
+              onClick={() => {
+                onAsk("Ich möchte meine voraussichtlichen Führerscheinkosten bei der Fahrschule Rathje einordnen. Frage mich bitte zuerst nach der Klasse und danach nur nach den wirklich nötigen Angaben.");
+                onPanelChange("home");
+              }}
+              style={secondary}
+            >
+              Persönliche Kosten klären
+            </button>
+          </div>
+        </>
+      )}
+
+      {panel === "schedule" && (
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr",
+            gap: 11,
+          }}
+        >
+          <div style={{ ...soft, padding: isMobile ? 16 : 19 }}>
+            <div style={{ fontSize: 22 }}>📚</div>
+            <div style={{ fontSize: 18, fontWeight: 950, marginTop: 8 }}>Theorieunterricht</div>
+            <div style={{ color: textSecondary, fontSize: 13, lineHeight: 1.5, marginTop: 6 }}>
+              Dienstag, Mittwoch und Donnerstag<br />18:00–19:30 Uhr<br />Alter Zollweg 201 · Hamburg
+            </div>
+            <a
+              href="https://www.fahrschule-rathje.de/theoriekalender/"
+              target="_blank"
+              rel="noreferrer"
+              style={{ ...secondary, marginTop: 15, width: "100%", boxSizing: "border-box" }}
+            >
+              Theoriekalender öffnen ↗
+            </a>
+          </div>
+
+          <div style={{ ...soft, padding: isMobile ? 16 : 19 }}>
+            <div style={{ fontSize: 22 }}>🚘</div>
+            <div style={{ fontSize: 18, fontWeight: 950, marginTop: 8 }}>Fahrstundenplaner</div>
+            <div style={{ color: textSecondary, fontSize: 13, lineHeight: 1.5, marginTop: 6 }}>
+              Fahrstunden als 90-Minuten-Termine, maximal ein Termin pro Tag und drei pro Woche. Planung bis zu vier Wochen im Voraus.
+            </div>
+            <a
+              href="https://www.fahrschule-rathje.de/fahrstundenplaner/"
+              target="_blank"
+              rel="noreferrer"
+              style={{ ...primary, marginTop: 15, width: "100%", boxSizing: "border-box" }}
+            >
+              Fahrstundenplaner öffnen ↗
+            </a>
+          </div>
+        </div>
+      )}
+
+      {panel === "documents" && (
+        transferPrepared ? (
+          <div style={{ ...soft, padding: isMobile ? 18 : 22 }}>
+            <div
+              style={{
+                width: 48,
+                height: 48,
+                borderRadius: 16,
+                display: "grid",
+                placeItems: "center",
+                background: `rgba(${accentRgb}, 0.15)`,
+                color: accent,
+                fontSize: 23,
+                fontWeight: 950,
+              }}
+            >
+              ✓
+            </div>
+            <div style={{ fontSize: 21, fontWeight: 950, marginTop: 13 }}>
+              Wechselanfrage ist vollständig vorbereitet
+            </div>
+            <div style={{ color: textSecondary, fontSize: 13, lineHeight: 1.5, marginTop: 6 }}>
+              {transferFiles.length} Datei{transferFiles.length === 1 ? "" : "en"}, Kontaktdaten und Hinweis sind gebündelt. In dieser Demo werden keine echten Dokumente übertragen; in der Produktivversion gehen sie nach diesem Klick sicher direkt an Rathje.
+            </div>
+            <div style={{ display: "flex", gap: 9, flexWrap: "wrap", marginTop: 16 }}>
+              <button
+                type="button"
+                onClick={() => {
+                  setTransferPrepared(false);
+                  setTransferFiles([]);
+                  setTransferNote("");
+                }}
+                style={secondary}
+              >
+                Neue Anfrage
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  onAsk("Ich möchte zur Fahrschule Rathje wechseln. Meine Kontaktdaten und vorhandenen Unterlagen sind für die Wechselanfrage vorbereitet. Welche Information wird als Nächstes benötigt?");
+                  onPanelChange("home");
+                }}
+                style={primary}
+              >
+                Nächsten Schritt klären
+              </button>
+            </div>
+          </div>
+        ) : (
+          <form onSubmit={prepareTransfer} style={{ display: "flex", flexDirection: "column", gap: 11 }}>
+            <label style={{ ...soft, padding: 16, cursor: "pointer" }}>
+              <span style={{ display: "block", fontWeight: 950 }}>📎 Unterlagen auswählen</span>
+              <span style={{ display: "block", color: textSecondary, fontSize: 11.5, marginTop: 4 }}>
+                PDF, JPG oder PNG · mehrere Dateien möglich
+              </span>
+              <input
+                type="file"
+                multiple
+                accept="application/pdf,image/jpeg,image/png"
+                onChange={(event) => {
+                  setTransferFiles(Array.from(event.target.files || []));
+                  setTransferError("");
+                }}
+                style={{ width: "100%", marginTop: 12, fontSize: 12.5 }}
+              />
+            </label>
+
+            {transferFiles.length > 0 && (
+              <div style={{ display: "flex", gap: 7, flexWrap: "wrap" }}>
+                {transferFiles.map((file) => (
+                  <span
+                    key={`${file.name}-${file.size}`}
+                    style={{ ...soft, padding: "7px 9px", color: textSecondary, fontSize: 11 }}
+                  >
+                    ✓ {file.name}
+                  </span>
+                ))}
+              </div>
+            )}
+
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr",
+                gap: 9,
+              }}
+            >
+              <input
+                value={transferName}
+                onChange={(event) => setTransferName(event.target.value)}
+                placeholder="Vor- und Nachname"
+                style={field}
+              />
+              <input
+                value={transferContact}
+                onChange={(event) => setTransferContact(event.target.value)}
+                placeholder="E-Mail oder Telefonnummer"
+                style={field}
+              />
+            </div>
+            <textarea
+              value={transferNote}
+              onChange={(event) => setTransferNote(event.target.value)}
+              placeholder="Optional: bisherige Fahrschule, Klasse oder kurze Nachricht"
+              rows={2}
+              style={{ ...field, minHeight: 68, padding: 12, resize: "vertical" }}
+            />
+            <label
+              style={{
+                ...soft,
+                padding: 12,
+                display: "flex",
+                gap: 9,
+                alignItems: "flex-start",
+                color: textSecondary,
+                fontSize: 11.5,
+                lineHeight: 1.4,
+              }}
+            >
+              <input
+                type="checkbox"
+                checked={transferConsent}
+                onChange={(event) => setTransferConsent(event.target.checked)}
+              />
+              Meine Angaben und Unterlagen dürfen zur Bearbeitung der Wechselanfrage an die Fahrschule Rathje übermittelt werden.
+            </label>
+            {transferError && (
+              <div style={{ color: "#a23b3b", fontSize: 12.5, fontWeight: 800 }}>{transferError}</div>
+            )}
+            <button type="submit" style={{ ...primary, width: "100%" }}>
+              Alle Unterlagen gesammelt senden
+            </button>
+            <div style={{ color: textSecondary, fontSize: 10.5, textAlign: "center" }}>
+              Demo-Ansicht · echter Versand wird beim Anschluss des Rathje-Postfachs aktiviert
+            </div>
+          </form>
+        )
+      )}
+    </section>
+  );
+}
+
 function GuidedTriDemo({
   variant,
   panel,
@@ -5767,11 +6262,28 @@ function GuidedTriDemo({
             }}
           >
             <button type="button" onClick={restartFlow} style={{ ...secondary, minHeight: 49 }}>
-              Anderen Weg wählen
+              Auswahl ändern
             </button>
-            <button type="button" onClick={finishInChat} style={{ ...primary, minHeight: 49 }}>
-              Im Chat weiterführen
-            </button>
+            {isRathje && panel === "courses" ? (
+              <a
+                href="https://www.fahrschule-rathje.de/anmeldeformular/"
+                target="_blank"
+                rel="noreferrer"
+                style={{
+                  ...primary,
+                  minHeight: 49,
+                  display: "grid",
+                  placeItems: "center",
+                  textDecoration: "none",
+                }}
+              >
+                Über MAXI anmelden ↗
+              </a>
+            ) : (
+              <button type="button" onClick={finishInChat} style={{ ...primary, minHeight: 49 }}>
+                Im Chat weiterführen
+              </button>
+            )}
           </div>
         </>
       )}
@@ -14562,6 +15074,8 @@ export default function WidgetPage() {
       } ${
         isFahrwerkBInterface ? "bt-fahrwerk-interface" : ""
       } ${
+        isRathjeInterface ? "bt-rathje-interface" : ""
+      } ${
         isProfCarInterface ? "bt-profcar-interface" : ""
       } ${
         voiceVisualVisible ? "bt-voice-mode-open" : ""
@@ -15765,6 +16279,142 @@ body::after {
 .bt-start-card:disabled {
   cursor: not-allowed;
   opacity: 0.62;
+}
+
+/* RATHJE – kompakte Sekretär-Startseite mit dauerhaft sichtbarer Orientierung. */
+.bt-rathje-tabs {
+  flex: 0 0 auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.bt-rathje-tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.bt-rathje-interface .bt-chat-message--welcome {
+  display: none !important;
+}
+
+.bt-rathje-interface .bt-start-view {
+  gap: 10px !important;
+}
+
+.bt-rathje-interface .bt-start-intro {
+  padding: 8px 10px 4px !important;
+}
+
+.bt-rathje-interface .bt-start-title {
+  font-size: 25px !important;
+  margin-bottom: 4px !important;
+}
+
+.bt-rathje-interface .bt-start-description {
+  max-width: 680px;
+  font-size: 13.5px !important;
+  line-height: 1.38 !important;
+}
+
+.bt-rathje-interface .bt-start-grid {
+  grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+  gap: 10px !important;
+}
+
+.bt-rathje-interface .bt-start-card--rathje {
+  min-height: 122px !important;
+  padding: 14px !important;
+  border-radius: 20px !important;
+}
+
+.bt-rathje-interface .bt-start-card--rathje > div:first-child {
+  gap: 8px !important;
+  margin-bottom: 8px !important;
+}
+
+.bt-rathje-interface .bt-start-card--rathje > div:first-child > span:first-child {
+  width: 36px !important;
+  height: 36px !important;
+  border-radius: 13px !important;
+  font-size: 19px !important;
+}
+
+.bt-rathje-interface .bt-start-card--rathje > div:first-child > span:last-child {
+  font-size: 14px !important;
+}
+
+.bt-rathje-interface .bt-start-card--rathje > div:last-child {
+  font-size: 11.5px !important;
+  line-height: 1.28 !important;
+}
+
+.bt-mobile-viewport.bt-rathje-interface .bt-panel-scroll {
+  padding: 9px !important;
+  gap: 8px !important;
+}
+
+.bt-mobile-viewport.bt-rathje-interface .bt-rathje-tabs {
+  border-radius: 15px !important;
+  gap: 3px !important;
+}
+
+.bt-mobile-viewport.bt-rathje-interface .bt-rathje-tabs button {
+  min-height: 34px !important;
+  padding: 0 9px !important;
+  font-size: 10.5px !important;
+}
+
+.bt-mobile-viewport.bt-rathje-interface .bt-start-intro {
+  padding: 4px 5px 2px !important;
+}
+
+.bt-mobile-viewport.bt-rathje-interface .bt-start-title {
+  font-size: 20px !important;
+  line-height: 1.15 !important;
+}
+
+.bt-mobile-viewport.bt-rathje-interface .bt-start-description {
+  font-size: 11.5px !important;
+  line-height: 1.3 !important;
+}
+
+.bt-mobile-viewport.bt-rathje-interface .bt-start-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: 7px !important;
+}
+
+.bt-mobile-viewport.bt-rathje-interface .bt-start-card--rathje {
+  height: 82px !important;
+  min-height: 82px !important;
+  padding: 9px !important;
+  border-radius: 16px !important;
+  overflow: hidden !important;
+}
+
+.bt-mobile-viewport.bt-rathje-interface .bt-start-card--rathje > div:first-child {
+  gap: 6px !important;
+  margin-bottom: 4px !important;
+}
+
+.bt-mobile-viewport.bt-rathje-interface .bt-start-card--rathje > div:first-child > span:first-child {
+  width: 28px !important;
+  height: 28px !important;
+  border-radius: 10px !important;
+  font-size: 15px !important;
+}
+
+.bt-mobile-viewport.bt-rathje-interface .bt-start-card--rathje > div:first-child > span:last-child {
+  min-width: 0 !important;
+  font-size: 11.5px !important;
+  line-height: 1.08 !important;
+}
+
+.bt-mobile-viewport.bt-rathje-interface .bt-start-card--rathje > div:last-child {
+  display: -webkit-box !important;
+  overflow: hidden !important;
+  -webkit-box-orient: vertical !important;
+  -webkit-line-clamp: 2 !important;
+  font-size: 9.75px !important;
+  line-height: 1.18 !important;
 }
 
 @media (max-width: 900px) {
@@ -17254,6 +17904,17 @@ body::after {
                       "inset 0 1px 0 rgba(255,255,255,0.10), inset 0 -1px 0 rgba(22,49,38,0.04)",
                   }}
                 >
+                  {isRathjeInterface && (
+                    <RathjeTabBar
+                      activePanel={hohenbadenPanel}
+                      onPanelChange={openHohenbadenPanel}
+                      accent={widgetAccent}
+                      accentRgb={accentRgb}
+                      textPrimary={textPrimary}
+                      textSecondary={textSecondary}
+                    />
+                  )}
+
                   {showStartCards && (
                     <div
                       className="bt-start-view"
@@ -17309,10 +17970,10 @@ body::after {
                                 ? "Dein Führerschein. Persönlich begleitet."
                               : isPetermaennchenInterface
                                 ? "Dein Führerschein. Persönlich begleitet."
-                              : isFahrwerkBInterface
+                            : isFahrwerkBInterface
                               ? "Dein Führerschein-Cockpit"
                               : isRathjeInterface
-                                ? "Dein Führerschein. Theorie, Simulator und Praxis an einem Ort."
+                                ? "Wie kann ich dir heute weiterhelfen?"
                               : isFsazInterface
                                 ? "Fahrsimulator. Klarer Einstieg. Dein Training."
                               : isCampusB27Interface
@@ -17358,7 +18019,7 @@ body::after {
                                 ? "Wähle deinen Bereich – alles Wichtige direkt auf einen Blick."
                                 : "Wähle aus, wo du gerade stehst. Das Interface zeigt dir den nächsten Schritt, prüft Unterlagen und bereitet Anfragen sauber vor."
                               : isRathjeInterface
-                                ? "Führerscheinklasse, Anmeldung, Unterlagen, Theorie, FSAZ-Simulator und Praxis werden Schritt für Schritt vorbereitet. Fahrschüler kommen einfacher weiter und Rathje erhält vollständige, vorsortierte Anliegen statt wiederkehrender Rückfragen."
+                                ? "Ich übernehme die Vorarbeit wie ein digitales Fahrschulbüro. Wähle einfach dein Anliegen."
                               : isFsazInterface
                                 ? "Wähle deinen passenden Weg: Fahrschüler bei Rathje, Fahrschüler einer anderen Fahrschule oder Simulator entdecken. Jede Auswahl öffnet nur die wirklich nötigen Schritte und bereitet Anfragen vollständig für FSAZ vor."
                               : isCampusB27Interface
@@ -17376,7 +18037,7 @@ body::after {
                                       : `Wähle einen Einstieg aus. Danach führt dich ${displayAssistantName} gezielt weiter.`}
                         </div>
 
-                        {(isProfCarInterface || isFahrwerkBInterface || isPetermaennchenInterface || isAbgefahrenInterface || isFutureDemoInterface) && (
+                        {(isProfCarInterface || isFahrwerkBInterface || isPetermaennchenInterface || isAbgefahrenInterface || isFutureDemoInterface) && !isRathjeInterface && (
                           <div
                             className="bt-fahrwerk-steps"
                             style={{
@@ -17528,6 +18189,8 @@ body::after {
                             type="button"
                             className={`bt-start-card ${
                               isLinaInterface ? "bt-start-card--lina" : ""
+                            } ${
+                              isRathjeInterface ? "bt-start-card--rathje" : ""
                             }`}
                             disabled={loading}
                             onClick={(event) => {
@@ -17685,7 +18348,30 @@ body::after {
 
                   {futureDemoVariant &&
                     hohenbadenPanel !== "home" &&
-                    ((["rathje", "fsaz", "campus-b27"] as FutureDemoVariant[]).includes(futureDemoVariant) ? (
+                    (futureDemoVariant === "rathje" && hohenbadenPanel === "connect" ? (
+                      <HohenbadenFutureDemo
+                        variant="rathje"
+                        panel="dashboard"
+                        onPanelChange={openHohenbadenPanel}
+                        accent={widgetAccent}
+                        accentRgb={accentRgb}
+                        textPrimary={textPrimary}
+                        textSecondary={textSecondary}
+                        isMobile={isMobileViewport}
+                        onAsk={(message) => void sendText(message)}
+                      />
+                    ) : futureDemoVariant === "rathje" && (["coach", "schedule", "documents"] as HohenbadenPanel[]).includes(hohenbadenPanel) ? (
+                      <RathjeSecretaryPanel
+                        panel={hohenbadenPanel}
+                        onPanelChange={openHohenbadenPanel}
+                        accent={widgetAccent}
+                        accentRgb={accentRgb}
+                        textPrimary={textPrimary}
+                        textSecondary={textSecondary}
+                        isMobile={isMobileViewport}
+                        onAsk={(message) => void sendText(message)}
+                      />
+                    ) : ((["rathje", "fsaz", "campus-b27"] as FutureDemoVariant[]).includes(futureDemoVariant) ? (
                       <GuidedTriDemo
                         variant={futureDemoVariant as GuidedTriVariant}
                         panel={hohenbadenPanel}
@@ -17709,7 +18395,7 @@ body::after {
                         isMobile={isMobileViewport}
                         onAsk={(message) => void sendText(message)}
                       />
-                    ))}
+                    )))}
 
                   {isFahrwerkBInterface &&
                     (fahrwerkPanel !== "dashboard" ||
