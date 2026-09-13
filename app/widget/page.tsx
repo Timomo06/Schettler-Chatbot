@@ -589,9 +589,9 @@ const R_DRIVE_START_CARDS: StartCard[] = [
     hohenbadenPanel: "schedule",
   },
   {
-    icon: "✅",
-    title: "Unterlagen & Start",
-    description: "Geführt prüfen und als Demo vollständig an R-DRIVE übergeben",
+    icon: "↗️",
+    title: "Fahrschulwechsel",
+    description: "Bisherigen Stand erfassen und als Demo vollständig an R-DRIVE übergeben",
     action: "hohenbadenPanel",
     hohenbadenPanel: "documents",
   },
@@ -4586,7 +4586,7 @@ function DrivingDemoTabBar({
     { id: "courses", label: "Auswahl" },
     { id: "coach", label: "Infos", variantLabel: variant === "happy-driving" ? "Preise" : "Lernsystem" },
     { id: "schedule", label: "Plan" },
-    { id: "documents", label: "Service", variantLabel: variant === "happy-driving" ? "Wechsel" : "Unterlagen" },
+    { id: "documents", label: "Service", variantLabel: "Wechsel" },
   ];
 
   return (
@@ -4989,38 +4989,7 @@ function GuidedDrivingCompactDemo(props: GuidedDrivingCompactDemoProps) {
 
   const scheduleQuestion = scheduleQuestions[scheduleStep];
 
-  const documentQuestions = isRDrive
-    ? [
-        {
-          id: "application",
-          question: "Wie weit ist dein Fahrerlaubnisantrag?",
-          helper: "Damit sehen wir sofort, ob der Antrag dein nächster Schritt ist.",
-          options: [
-            ["none", "Noch nicht gestartet", "Antrag zuerst vorbereiten"],
-            ["running", "Bereits eingereicht", "Bearbeitung läuft"],
-            ["ready", "Erledigt", "nächsten offenen Punkt prüfen"],
-          ] as Array<[string, string, string]>,
-        },
-        {
-          id: "vision",
-          question: "Ist dein Sehtest schon erledigt?",
-          helper: "Nur Ja oder Nein – mehr brauchst du hier nicht.",
-          options: [
-            ["yes", "Ja", "liegt vor"],
-            ["no", "Nein", "noch erledigen"],
-          ] as Array<[string, string, string]>,
-        },
-        {
-          id: "aid",
-          question: "Hast du den Erste-Hilfe-Nachweis?",
-          helper: "Danach bekommst du eine kurze Start-Zusammenfassung.",
-          options: [
-            ["yes", "Ja", "liegt vor"],
-            ["no", "Nein", "noch erledigen"],
-          ] as Array<[string, string, string]>,
-        },
-      ]
-    : [
+  const documentQuestions = [
         {
           id: "class",
           question: "Welche Ausbildung möchtest du übernehmen?",
@@ -5082,15 +5051,7 @@ function GuidedDrivingCompactDemo(props: GuidedDrivingCompactDemoProps) {
         ? "Persönliche Fahrstunde passend zu deiner Verfügbarkeit abstimmen"
         : "Theorie Di./Do. und Praxis in einem Wochenplan verbinden";
 
-  const serviceResult = isRDrive
-    ? documentAnswers.application === "none"
-      ? "Fahrerlaubnisantrag vorbereiten"
-      : documentAnswers.vision === "no"
-        ? "Sehtest erledigen"
-        : documentAnswers.aid === "no"
-          ? "Erste-Hilfe-Nachweis erledigen"
-          : "Start-Unterlagen sind vorbereitet"
-    : "Wechselprofil ist vollständig vorbereitet";
+  const serviceResult = "Wechselprofil ist vollständig vorbereitet";
 
   const infoProgressTotal = 1;
   const progress: Partial<Record<HohenbadenPanel, DrivingDemoProgress>> = {
@@ -5240,7 +5201,7 @@ function GuidedDrivingCompactDemo(props: GuidedDrivingCompactDemoProps) {
           >
             {[
               ["📱", config.theoryTitle, config.theoryDetail, "Im Plan", "schedule" as HohenbadenPanel],
-              ["✅", "Unterlagen", coursePhase === "complete" ? "Anmeldung vorbereitet" : "3 von 5 vollständig", documentPhase === "complete" ? "Erledigt" : "60 %", "documents" as HohenbadenPanel],
+              ["↗️", "Fahrschulwechsel", documentPhase === "complete" ? "Wechselanfrage übergeben" : "Stand & Nachweise erfassen", documentPhase === "complete" ? "Erledigt" : "Starten", "documents" as HohenbadenPanel],
               ["🚘", "Praxis", config.practiceDetail, schedulePhase === "complete" ? "Vorgemerkt" : config.practiceValue, "schedule" as HohenbadenPanel],
             ].map(([icon, title, detail, value, target]) => (
               <button
@@ -5605,7 +5566,7 @@ function GuidedDrivingCompactDemo(props: GuidedDrivingCompactDemoProps) {
           {documentPhase === "questions" && documentQuestion && (
             <>
               {header(
-                `${isRDrive ? "UNTERLAGEN & START" : "FAHRSCHULWECHSEL"} · ${documentStep + 1} / ${documentQuestions.length}`,
+                `FAHRSCHULWECHSEL · ${documentStep + 1} / ${documentQuestions.length}`,
                 documentQuestion.question,
                 documentQuestion.helper,
               )}
@@ -5637,11 +5598,9 @@ function GuidedDrivingCompactDemo(props: GuidedDrivingCompactDemoProps) {
           {documentPhase === "result" && (
             <>
               {header(
-                isRDrive ? "START-CHECK FERTIG" : "WECHSELPROFIL FERTIG",
+                "WECHSELPROFIL FERTIG",
                 serviceResult,
-                isRDrive
-                  ? "Jetzt wird sichtbar, was R-DRIVE als strukturierte Startinfo erhalten würde."
-                  : "Jetzt wird sichtbar, was Happy Driving als strukturierte Wechselanfrage erhalten würde.",
+                `Jetzt wird sichtbar, was ${isRDrive ? "R-DRIVE" : "Happy Driving"} als strukturierte Wechselanfrage erhalten würde.`,
               )}
 
               <div
@@ -5654,21 +5613,14 @@ function GuidedDrivingCompactDemo(props: GuidedDrivingCompactDemoProps) {
               >
                 <div style={{ ...soft, padding: 13 }}>
                   <div style={{ color: textSecondary, fontSize: 10.5, fontWeight: 900 }}>
-                    {isRDrive ? "STARTPROFIL" : "WECHSELPROFIL"}
+                    WECHSELPROFIL
                   </div>
                   <div style={{ display: "grid", gap: 7, marginTop: 9 }}>
-                    {(isRDrive
-                      ? [
-                          ["Antrag", documentAnswers.application === "ready" ? "erledigt" : documentAnswers.application === "running" ? "läuft" : "noch offen"],
-                          ["Sehtest", documentAnswers.vision === "yes" ? "vorhanden" : "noch offen"],
-                          ["Erste Hilfe", documentAnswers.aid === "yes" ? "vorhanden" : "noch offen"],
-                        ]
-                      : [
-                          ["Ausbildung", documentAnswers.class === "auto" ? "B / B197 / B78" : documentAnswers.class === "bf17" ? "BF17" : "B96 / BE"],
-                          ["Stand", documentAnswers.status === "theory" ? "Theorie läuft" : documentAnswers.status === "theorydone" ? "Theorie bestanden" : "Praxis läuft"],
-                          ["Nachweise", documentAnswers.proof === "yes" ? "vorhanden" : documentAnswers.proof === "some" ? "teilweise" : "noch prüfen"],
-                        ]
-                    ).map(([label, value]) => (
+                    {[
+                      ["Ausbildung", documentAnswers.class === "auto" ? "B / B197 / B78" : documentAnswers.class === "bf17" ? "BF17" : "B96 / BE"],
+                      ["Stand", documentAnswers.status === "theory" ? "Theorie läuft" : documentAnswers.status === "theorydone" ? "Theorie bestanden" : "Praxis läuft"],
+                      ["Nachweise", documentAnswers.proof === "yes" ? "vorhanden" : documentAnswers.proof === "some" ? "teilweise" : "noch prüfen"],
+                    ].map(([label, value]) => (
                       <div key={label} style={{ display: "flex", justifyContent: "space-between", gap: 10, fontSize: 11.5 }}>
                         <span style={{ color: textSecondary }}>{label}</span>
                         <strong>{value}</strong>
@@ -5681,9 +5633,7 @@ function GuidedDrivingCompactDemo(props: GuidedDrivingCompactDemoProps) {
                   <div>
                     <div style={{ color: textSecondary, fontSize: 10.5, fontWeight: 900 }}>OPTIONALE DATEIEN</div>
                     <div style={{ color: textSecondary, fontSize: 11, lineHeight: 1.4, marginTop: 4 }}>
-                      {isRDrive
-                        ? "Zum Beispiel vorhandene Antrags- oder Ausbildungsunterlagen."
-                        : "Zum Beispiel Ausbildungsnachweis oder Unterlagen der bisherigen Fahrschule."}
+                      Zum Beispiel Ausbildungsnachweis, Schreiben der bisherigen Fahrschule oder vorhandene Unterlagen.
                     </div>
                   </div>
                   <label style={{ ...secondary, display: "inline-flex", alignItems: "center", justifyContent: "center" }}>
@@ -5705,7 +5655,7 @@ function GuidedDrivingCompactDemo(props: GuidedDrivingCompactDemoProps) {
 
               <div style={{ display: "flex", gap: 8, marginTop: 11, flexWrap: "wrap" }}>
                 <button type="button" onClick={() => setDocumentPhase("complete")} style={primary}>
-                  {isRDrive ? "Demo-Startprofil an R-DRIVE senden" : "Demo-Wechselanfrage an Happy Driving senden"}
+                  {`Demo-Wechselanfrage an ${isRDrive ? "R-DRIVE" : "Happy Driving"} senden`}
                 </button>
                 <button type="button" onClick={resetDocuments} style={secondary}>Neu erfassen</button>
               </div>
@@ -5717,28 +5667,18 @@ function GuidedDrivingCompactDemo(props: GuidedDrivingCompactDemoProps) {
               {successIcon}
               {header(
                 `DEMO · BEI ${isRDrive ? "R-DRIVE" : "HAPPY DRIVING"} EINGEGANGEN`,
-                isRDrive ? "Startprofil wurde vollständig übergeben" : "Wechselanfrage wurde vollständig übergeben",
-                isRDrive
-                  ? "Die Fahrschule sieht sofort, welche Start-Unterlagen vorhanden sind und was noch offen ist."
-                  : "Die Fahrschule sieht sofort Klasse, bisherigen Ausbildungsstand, Nachweise und angehängte Dateien.",
+                "Wechselanfrage wurde vollständig übergeben",
+                "Die Fahrschule sieht sofort Klasse, bisherigen Ausbildungsstand, Nachweise und angehängte Dateien.",
               )}
 
               <div style={{ ...soft, padding: 13 }}>
                 <div style={{ fontSize: 11, color: textSecondary, fontWeight: 900 }}>ZUSAMMENFASSUNG FÜR DIE FAHRSCHULE</div>
                 <div style={{ fontSize: 12, lineHeight: 1.55, marginTop: 7 }}>
-                  {isRDrive ? (
-                    <>
-                      Fahrerlaubnisantrag: <strong>{documentAnswers.application === "ready" ? "erledigt" : documentAnswers.application === "running" ? "läuft" : "noch offen"}</strong>.{" "}
-                      Sehtest: <strong>{documentAnswers.vision === "yes" ? "vorhanden" : "noch offen"}</strong>.{" "}
-                      Erste-Hilfe-Nachweis: <strong>{documentAnswers.aid === "yes" ? "vorhanden" : "noch offen"}</strong>.
-                    </>
-                  ) : (
-                    <>
-                      Ausbildung: <strong>{documentAnswers.class === "auto" ? "B / B197 / B78" : documentAnswers.class === "bf17" ? "BF17" : "B96 / BE"}</strong>.{" "}
-                      Aktueller Stand: <strong>{documentAnswers.status === "theory" ? "Theorie läuft" : documentAnswers.status === "theorydone" ? "Theorie bestanden" : "Praxis läuft"}</strong>.{" "}
-                      Nachweise: <strong>{documentAnswers.proof === "yes" ? "vorhanden" : documentAnswers.proof === "some" ? "teilweise" : "noch prüfen"}</strong>.
-                    </>
-                  )}
+                  <>
+                    Ausbildung: <strong>{documentAnswers.class === "auto" ? "B / B197 / B78" : documentAnswers.class === "bf17" ? "BF17" : "B96 / BE"}</strong>.{" "}
+                    Aktueller Stand: <strong>{documentAnswers.status === "theory" ? "Theorie läuft" : documentAnswers.status === "theorydone" ? "Theorie bestanden" : "Praxis läuft"}</strong>.{" "}
+                    Nachweise: <strong>{documentAnswers.proof === "yes" ? "vorhanden" : documentAnswers.proof === "some" ? "teilweise" : "noch prüfen"}</strong>.
+                  </>
                   {" "}
                   {selectedFiles.length > 0
                     ? `${selectedFiles.length} Datei${selectedFiles.length === 1 ? "" : "en"} wurden in der Demo angehängt.`
