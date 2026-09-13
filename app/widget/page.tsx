@@ -559,6 +559,107 @@ const ABGEFAHREN_START_CARDS: StartCard[] = [
   },
 ];
 
+const R_DRIVE_START_CARDS: StartCard[] = [
+  {
+    icon: "🪪",
+    title: "Führerschein-Cockpit",
+    description: "Ausbildungsstand, nächste Schritte und Fortschritt auf einen Blick",
+    action: "hohenbadenPanel",
+    hohenbadenPanel: "dashboard",
+  },
+  {
+    icon: "⚡",
+    title: "Kursmodell finden",
+    description: "Basis, Plus oder Intensiv passend zu deiner verfügbaren Zeit",
+    action: "hohenbadenPanel",
+    hohenbadenPanel: "courses",
+  },
+  {
+    icon: "📅",
+    title: "Mein Ausbildungsplan",
+    description: "Theorie, Praxis und nächsten sinnvollen Schritt zusammen planen",
+    action: "hohenbadenPanel",
+    hohenbadenPanel: "schedule",
+  },
+  {
+    icon: "✅",
+    title: "Unterlagen & Antrag",
+    description: "Sehtest, Erste Hilfe, Passbild und Fahrerlaubnisantrag prüfen",
+    action: "hohenbadenPanel",
+    hohenbadenPanel: "documents",
+  },
+  {
+    icon: "✨",
+    title: "Persönlicher Begleiter",
+    description: "Antworten passend zu Kursmodell, Lernstand und Ausbildungsphase",
+    action: "hohenbadenPanel",
+    hohenbadenPanel: "coach",
+  },
+  {
+    icon: "🔗",
+    title: "Als Fahrschüler verbinden",
+    description: "Persönliches Demo-Cockpit mit individuellem Ausbildungsstand öffnen",
+    action: "hohenbadenPanel",
+    hohenbadenPanel: "connect",
+  },
+  {
+    icon: "🎙️",
+    title: "Frage einsprechen",
+    description: "Anliegen einfach direkt erzählen statt lange zu suchen",
+    action: "voice",
+  },
+];
+
+const HAPPY_DRIVING_START_CARDS: StartCard[] = [
+  {
+    icon: "🪪",
+    title: "Führerschein-Cockpit",
+    description: "Persönlichen Ausbildungsstand und nächsten Schritt öffnen",
+    action: "hohenbadenPanel",
+    hohenbadenPanel: "dashboard",
+  },
+  {
+    icon: "🧭",
+    title: "Führerschein finden",
+    description: "B, B197, B78, BF17, B96 oder BE passend einordnen",
+    action: "hohenbadenPanel",
+    hohenbadenPanel: "courses",
+  },
+  {
+    icon: "€",
+    title: "Preise",
+    description: "Veröffentlichte Einzelpreise verständlich einordnen",
+    message: "Zeig mir bitte die veröffentlichten Preise von Happy Driving passend zu meiner Führerscheinklasse und weise auf den Preisstand hin.",
+  },
+  {
+    icon: "📅",
+    title: "Theorie & Fahrstunden",
+    description: "Theoriezeiten sehen und den Ausbildungsweg strukturieren",
+    action: "hohenbadenPanel",
+    hohenbadenPanel: "schedule",
+  },
+  {
+    icon: "↗️",
+    title: "Fahrschulwechsel",
+    description: "Bisherigen Stand und benötigte Unterlagen vorbereitet erfassen",
+    action: "hohenbadenPanel",
+    hohenbadenPanel: "documents",
+  },
+  {
+    icon: "✨",
+    title: "Persönlicher Begleiter",
+    description: "Fragen passend zu Klasse, Theorie, Praxis und Unterlagen klären",
+    action: "hohenbadenPanel",
+    hohenbadenPanel: "coach",
+  },
+  {
+    icon: "🎙️",
+    title: "Frage einsprechen",
+    description: "Frage einfach direkt einsprechen",
+    action: "voice",
+  },
+];
+
 const HOHENBADEN_START_CARDS: StartCard[] = [
   {
     icon: "🔗",
@@ -3209,7 +3310,9 @@ type FutureDemoVariant =
   | "yoendem"
   | "rathje"
   | "fsaz"
-  | "campus-b27";
+  | "campus-b27"
+  | "r-drive"
+  | "happy-driving";
 
 type FutureDemoDocument = {
   readonly id: string;
@@ -3262,6 +3365,88 @@ type HohenbadenFutureDemoProps = {
   isMobile: boolean;
   onAsk: (message: string) => void;
 };
+
+const R_DRIVE_DEMO_COURSES: HohenbadenCourse[] = [
+  {
+    id: "rdrive-basis",
+    title: "PKW BASIS · B197",
+    location: "Regensburg · Bismarckplatz",
+    start: "Start grundsätzlich jederzeit möglich",
+    time: "Zielmodell ca. 12 Wochen",
+    seats: 4,
+    tag: "Flexibler Einstieg",
+    match: "Passt zu: regelmäßig lernen und fahren",
+  },
+  {
+    id: "rdrive-plus",
+    title: "PKW PLUS · B197",
+    location: "Regensburg · Bismarckplatz",
+    start: "Start zum festgelegten Kursbeginn",
+    time: "Zielmodell ca. 4 Wochen",
+    seats: 3,
+    tag: "Kompakter Kurs",
+    match: "Passt zu: hohe zeitliche Verfügbarkeit",
+  },
+  {
+    id: "rdrive-intensiv",
+    title: "PKW INTENSIV · B197",
+    location: "Regensburg · Bismarckplatz",
+    start: "Start zum festgelegten Kursbeginn",
+    time: "Zielmodell ca. 12 Tage",
+    seats: 2,
+    tag: "Schnellster Ausbildungsweg",
+    match: "Passt zu: sehr hoher täglicher Verfügbarkeit",
+  },
+];
+
+const R_DRIVE_DEMO_DOCUMENTS = [
+  { id: "ausweis", label: "Personalausweis / Reisepass", detail: "Demo: geprüft", initial: true },
+  { id: "sehtest", label: "Sehtest", detail: "Demo: liegt vor", initial: true },
+  { id: "erstehilfe", label: "Erste-Hilfe-Nachweis", detail: "Demo: liegt vor", initial: true },
+  { id: "passbild", label: "Biometrisches Passbild", detail: "Noch hochladen", initial: false },
+  { id: "antrag", label: "Fahrerlaubnisantrag", detail: "Bearbeitungsstand mit Fahrschule klären", initial: false },
+] as const;
+
+const HAPPY_DRIVING_DEMO_COURSES: HohenbadenCourse[] = [
+  {
+    id: "happy-b-b197",
+    title: "Klasse B / B197 / B78 / BF17",
+    location: "Leipzig · Stötteritzer Straße 85",
+    start: "Theorie-Einstieg laut Website jederzeit möglich",
+    time: "Di. & Do. · 18:00–19:30 Uhr",
+    seats: 4,
+    tag: "PKW-Ausbildung",
+    match: "Passt zu: Auto, Automatik, Schaltung oder BF17",
+  },
+  {
+    id: "happy-be",
+    title: "Klasse BE",
+    location: "Leipzig",
+    start: "Start nach persönlicher Abstimmung",
+    time: "Praxis passend zu Vorbesitz und Ausbildungsstand",
+    seats: 3,
+    tag: "Anhänger",
+    match: "Passt zu: größerem Anhänger mit Klasse B",
+  },
+  {
+    id: "happy-b96",
+    title: "Klasse B96",
+    location: "Leipzig",
+    start: "Termin direkt mit Happy Driving abstimmen",
+    time: "Details über die Fahrschule bestätigen",
+    seats: 3,
+    tag: "Anhänger-Erweiterung",
+    match: "Passt zu: B96 als Erweiterung",
+  },
+];
+
+const HAPPY_DRIVING_DEMO_DOCUMENTS = [
+  { id: "ausweis", label: "Personalausweis / Reisepass", detail: "Demo: geprüft", initial: true },
+  { id: "sehtest", label: "Sehtest", detail: "Demo: liegt vor", initial: true },
+  { id: "erstehilfe", label: "Erste-Hilfe-Nachweis", detail: "Noch ergänzen", initial: false },
+  { id: "passbild", label: "Biometrisches Passbild", detail: "Demo: liegt vor", initial: true },
+  { id: "wechsel", label: "Nachweise bisherige Fahrschule", detail: "Nur bei Fahrschulwechsel", initial: false },
+] as const;
 
 const HOHENBADEN_DEMO_COURSES: HohenbadenCourse[] = [
   {
@@ -4035,6 +4220,70 @@ const REGIONAL_DEMO_CONFIGS: Record<RegionalDemoVariant, FutureDemoConfig> = {
 
 const FUTURE_DEMO_CONFIGS: Record<FutureDemoVariant, FutureDemoConfig> = {
   ...REGIONAL_DEMO_CONFIGS,
+  "r-drive": {
+    courses: R_DRIVE_DEMO_COURSES,
+    documents: R_DRIVE_DEMO_DOCUMENTS,
+    coursePreference: "PKW PLUS · B197",
+    coursePreferences: ["PKW BASIS · B197", "PKW PLUS · B197", "PKW INTENSIV · B197", "Motorrad", "Anhänger"],
+    studentCode: "RDRIVE-2048",
+    connectSource: "In der Demo per Fahrschülernummer. Produktiv könnten Lernstand, App, Termine, Unterlagen und Ausbildungsphase angebunden werden.",
+    connectPotential: "Die echte Version könnte Kursmodell, App-Lernstand, VR-/Video-Coaching, Unterlagen, Fahrstunden und den nächsten Ausbildungsschritt in einem Cockpit bündeln.",
+    dashboardEyebrow: "R-DRIVE Führerschein-Cockpit",
+    dashboardTitle: "Hallo Max, dein nächster Schritt ist schon vorbereitet.",
+    dashboardNextStep: "Passbild und Fahrerlaubnisantrag vervollständigen. Danach Theorie-Lernstand prüfen und die nächste Praxisetappe passend zu deinem Kursmodell planen.",
+    theoryTitle: "Theorie & App-Lernstand",
+    theoryDetail: "74 % Beispiel-Lernstand",
+    practiceDetail: "B197 · Praxisphase vorbereitet",
+    practiceValue: "Individuell",
+    nextAppointmentTitle: "🚘 Praxis · Stadtverkehr",
+    nextAppointmentDetail: "Mittwoch · 16:30–18:00 Uhr · Demo-Termin",
+    coachRecommendation: "Heute 20 Minuten Theorie in der App, Passbild ergänzen und anschließend die nächste Praxisetappe mit R-DRIVE abstimmen.",
+    coursesTitle: "Basis, Plus oder Intensiv passend zu deinem Alltag finden",
+    coursesDescription: "Das Interface gleicht verfügbare Zeit, gewünschten Ausbildungsrhythmus und Antragsstatus ab und zeigt daraus das passende R-DRIVE-Kursmodell.",
+    classesSummary: "B197 · Motorrad · Anhänger",
+    reserveButton: "Kursberatung anfragen",
+    seatsLabel: "Demo-Verfügbarkeit",
+    scheduleTitle: "Theorie, Praxis und digitalen Lernstand zusammen planen",
+    scheduleDescription: "Die Demo verbindet Blocktheorie, App-Lernstand und persönliche Verfügbarkeit. Konkrete Fahrstunden und freie Plätze bleiben Beispieldaten.",
+    scheduleSlots: [["Heute", "17:00", "App-Lernblock · Vorfahrt"], ["Mittwoch", "16:30", "Praxis · Stadtverkehr"], ["Freitag", "17:15", "VR / Video-Coaching · Demo"]],
+    coachDescription: "Der persönliche Begleiter verbindet Kursmodell, B197, Lernstand, Antrag, VR-/Video-Coaching und Praxis und zeigt immer den nächsten sinnvollen Schritt.",
+    coachFacts: [["🪪", "B197 · Demo"], ["📱", "Theorie: 74 % Demo"], ["✅", "Unterlagen: 3 von 5"], ["⚡", "Kursmodell: Plus"]],
+    coachQuestions: ["Welches R-DRIVE-Kursmodell passt zu mir?", "Was brauche ich noch für meinen Antrag?", "Wie funktioniert B197 bei R-DRIVE?", "Was bringen VR-Simulation und Video-Coaching?"],
+    todayPlan: "20 Minuten Theorie · Passbild ergänzen · nächsten Praxisblock abstimmen",
+    todayPlanPrompt: "Erstelle mir meinen persönlichen R-DRIVE-Lern- und Ausbildungsplan für heute.",
+  },
+  "happy-driving": {
+    courses: HAPPY_DRIVING_DEMO_COURSES,
+    documents: HAPPY_DRIVING_DEMO_DOCUMENTS,
+    coursePreference: "Klasse B197",
+    coursePreferences: ["Klasse B", "Klasse B197", "Klasse B78", "BF17", "B96", "BE"],
+    studentCode: "HAPPY-2048",
+    connectSource: "In der Demo per Fahrschülernummer. Produktiv könnten Ausbildungsstand, Theorie, Praxis, Unterlagen und Terminabstimmung angebunden werden.",
+    connectPotential: "Die echte Version könnte Führerscheinklasse, Theorieplan, Fahrschulwechsel, Preise, Unterlagen und persönliche nächste Schritte in einem Cockpit bündeln.",
+    dashboardEyebrow: "Happy Driving Führerschein-Cockpit",
+    dashboardTitle: "Hallo Max, dein Führerscheinplan ist vorbereitet.",
+    dashboardNextStep: "Erste-Hilfe-Nachweis ergänzen und anschließend den nächsten Theorieblock sowie die nächste Praxisetappe abstimmen.",
+    theoryTitle: "Theorieplan",
+    theoryDetail: "Di. & Do. · 18:00–19:30 Uhr",
+    practiceDetail: "B197 · Demo-Ausbildungsstand",
+    practiceValue: "Persönlich",
+    nextAppointmentTitle: "📚 Theorie · nächster Themenblock",
+    nextAppointmentDetail: "Donnerstag · 18:00–19:30 Uhr · laut regulärem Theorie-Rhythmus",
+    coachRecommendation: "Heute Theorie-Thema wiederholen, Erste-Hilfe-Nachweis ergänzen und den persönlichen Praxisstand für die nächste Fahrstunde klären.",
+    coursesTitle: "Passende Führerscheinklasse in wenigen Schritten finden",
+    coursesDescription: "Das Interface ordnet B, B197, B78, BF17, B96 und BE anhand von Ziel, Alter, Getriebe-Wunsch und Anhängerbedarf ein.",
+    classesSummary: "B · B197 · B78 · BF17 · B96 · BE",
+    reserveButton: "Beratung vorbereiten",
+    seatsLabel: "Demo-Verfügbarkeit",
+    scheduleTitle: "Theorie und Praxis passend zum Alltag strukturieren",
+    scheduleDescription: "Reguläre Theoriezeiten werden direkt berücksichtigt. Persönliche Fahrstunden und Prüfungsplätze sind in der Demo nur Beispieldaten.",
+    scheduleSlots: [["Dienstag", "18:00", "Theorie · Happy Driving"], ["Donnerstag", "18:00", "Theorie · Happy Driving"], ["Samstag", "10:30", "Praxis · Demo-Zeit"]],
+    coachDescription: "Der Begleiter verbindet Klasse, Preise, Theorie, Praxis, Unterlagen und bei Bedarf den Fahrschulwechsel und zeigt den nächsten sinnvollen Schritt.",
+    coachFacts: [["🪪", "Klasse B197"], ["📚", "Theorie: Demo-Stand"], ["✅", "Unterlagen: 3 von 5"], ["💳", "Zahlung: bargeldlos"]],
+    coachQuestions: ["Welche Führerscheinklasse passt zu mir?", "Was kostet B197 laut veröffentlichter Preisliste?", "Wann ist Theorie?", "Wie funktioniert ein Fahrschulwechsel zu Happy Driving?"],
+    todayPlan: "Theorie-Thema wiederholen · Erste-Hilfe-Nachweis ergänzen · nächsten Schritt abstimmen",
+    todayPlanPrompt: "Erstelle mir meinen persönlichen Happy-Driving-Führerscheinplan für heute.",
+  },
   niehaus: {
     courses: NIEHAUS_DEMO_COURSES,
     documents: NIEHAUS_DEMO_DOCUMENTS,
@@ -11300,7 +11549,24 @@ export default function WidgetPage() {
     "profcar.com",
     "www.profcar.com",
   ].includes(normalizedTenantId);
-  const futureDemoVariant: FutureDemoVariant | null = isNiehausInterface
+  const isRDriveInterface = [
+    "r-drive",
+    "rdrive",
+    "r-drive.info",
+    "www.r-drive.info",
+  ].includes(normalizedTenantId);
+  const isHappyDrivingInterface = [
+    "happy-driving",
+    "fahrschule-happy-driving",
+    "happy-driving-leipzig",
+    "fahrschule-happy-driving.de",
+    "www.fahrschule-happy-driving.de",
+  ].includes(normalizedTenantId);
+  const futureDemoVariant: FutureDemoVariant | null = isRDriveInterface
+    ? "r-drive"
+    : isHappyDrivingInterface
+      ? "happy-driving"
+      : isNiehausInterface
     ? "niehaus"
     : isHohenbadenInterface
       ? "hohenbaden"
@@ -11318,7 +11584,11 @@ export default function WidgetPage() {
               ? "fahrschule7"
               : regionalDemoVariant;
   const isFutureDemoInterface = futureDemoVariant !== null;
-  const activeFutureTenantId = isRathjeInterface
+  const activeFutureTenantId = isRDriveInterface
+    ? "r-drive"
+    : isHappyDrivingInterface
+      ? "fahrschule-happy-driving"
+      : isRathjeInterface
     ? "fahrschule-rathje"
     : isFsazInterface
       ? "fsaz"
@@ -11343,7 +11613,11 @@ export default function WidgetPage() {
               : regionalDemoVariant
                 ? cfg.id
                 : null;
-  const activeFutureWebsiteUrl = isRathjeInterface
+  const activeFutureWebsiteUrl = isRDriveInterface
+    ? "https://www.r-drive.info"
+    : isHappyDrivingInterface
+      ? "https://fahrschule-happy-driving.de"
+      : isRathjeInterface
     ? "https://www.fahrschule-rathje.de"
     : isFsazInterface
       ? "https://www.fsaz.de"
@@ -11413,7 +11687,11 @@ export default function WidgetPage() {
       : isWilliInterface
         ? WILLI_BOOKING_SERVICES
         : BTDESIGNS_BOOKING_SERVICES;
-  const displayBrandName = isProfCarInterface
+  const displayBrandName = isRDriveInterface
+    ? "R-DRIVE"
+    : isHappyDrivingInterface
+      ? "Fahrschule Happy Driving"
+      : isProfCarInterface
     ? "ProfCar Köln"
     : isRathjeInterface
       ? "Fahrschule Rathje"
@@ -11446,7 +11724,11 @@ export default function WidgetPage() {
       : isWilliInterface
         ? "Willi"
         : cfg.brandName;
-  const displayAssistantName = isProfCarInterface
+  const displayAssistantName = isRDriveInterface
+    ? "Führerschein-Cockpit"
+    : isHappyDrivingInterface
+      ? "Führerschein-Cockpit"
+      : isProfCarInterface
     ? "digitaler Fahrzeugberater"
     : isRathjeInterface
       ? "Führerschein-Assistent"
@@ -14905,7 +15187,11 @@ export default function WidgetPage() {
     (!isFutureDemoInterface || hohenbadenPanel === "home") &&
     (!isProfCarInterface || profcarPanel === "home");
 
-  const startCards = isProfCarInterface
+  const startCards = isRDriveInterface
+    ? R_DRIVE_START_CARDS
+    : isHappyDrivingInterface
+      ? HAPPY_DRIVING_START_CARDS
+      : isProfCarInterface
     ? PROFCAR_START_CARDS
     : isRathjeInterface
       ? RATHJE_START_CARDS
@@ -17994,7 +18280,11 @@ body::after {
                             color: textSecondary,
                           }}
                         >
-                          {isProfCarInterface
+                          {isRDriveInterface
+                            ? "Finde dein passendes Kursmodell, öffne dein Führerschein-Cockpit und verbinde Theorie, Antrag, Praxis sowie digitale Lernbausteine in einem geführten Ablauf."
+                            : isHappyDrivingInterface
+                              ? "Finde die passende Klasse, behalte Theorie, Preise, Unterlagen und Praxis im Blick und öffne dein persönliches Führerschein-Cockpit."
+                              : isProfCarInterface
                             ? "Wähle einen Bereich. Jede Karte öffnet eine eigene übersichtliche Maske – der Chat bleibt für persönliche Rückfragen jederzeit verfügbar."
                             : isNiehausInterface
                             ? "Finde die passende Klasse, vergleiche Baden-Baden und Bühl, behalte Unterlagen sowie Preise im Blick und öffne deinen persönlichen Führerscheinbegleiter. Diese Demo zeigt, wie die Ausbildung bei Niehaus digital an einem Ort zusammenlaufen könnte."
