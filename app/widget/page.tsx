@@ -562,8 +562,8 @@ const ABGEFAHREN_START_CARDS: StartCard[] = [
 const R_DRIVE_START_CARDS: StartCard[] = [
   {
     icon: "🪪",
-    title: "Führerschein-Cockpit",
-    description: "Ausbildungsstand, nächste Schritte und Fortschritt auf einen Blick",
+    title: "Cockpit & Begleiter",
+    description: "Ausbildungsstand, nächste Schritte, Fortschritt und persönliche Empfehlungen an einem Ort",
     action: "hohenbadenPanel",
     hohenbadenPanel: "dashboard",
   },
@@ -589,13 +589,6 @@ const R_DRIVE_START_CARDS: StartCard[] = [
     hohenbadenPanel: "documents",
   },
   {
-    icon: "✨",
-    title: "Persönlicher Begleiter",
-    description: "Antworten passend zu Kursmodell, Lernstand und Ausbildungsphase",
-    action: "hohenbadenPanel",
-    hohenbadenPanel: "coach",
-  },
-  {
     icon: "🔗",
     title: "Als Fahrschüler verbinden",
     description: "Persönliches Demo-Cockpit mit individuellem Ausbildungsstand öffnen",
@@ -613,8 +606,8 @@ const R_DRIVE_START_CARDS: StartCard[] = [
 const HAPPY_DRIVING_START_CARDS: StartCard[] = [
   {
     icon: "🪪",
-    title: "Führerschein-Cockpit",
-    description: "Persönlichen Ausbildungsstand und nächsten Schritt öffnen",
+    title: "Cockpit & Begleiter",
+    description: "Ausbildungsstand, nächste Schritte und persönliche Hilfe gemeinsam öffnen",
     action: "hohenbadenPanel",
     hohenbadenPanel: "dashboard",
   },
@@ -644,13 +637,6 @@ const HAPPY_DRIVING_START_CARDS: StartCard[] = [
     description: "Bisherigen Stand und benötigte Unterlagen vorbereitet erfassen",
     action: "hohenbadenPanel",
     hohenbadenPanel: "documents",
-  },
-  {
-    icon: "✨",
-    title: "Persönlicher Begleiter",
-    description: "Fragen passend zu Klasse, Theorie, Praxis und Unterlagen klären",
-    action: "hohenbadenPanel",
-    hohenbadenPanel: "coach",
   },
   {
     icon: "🎙️",
@@ -7204,6 +7190,9 @@ function HohenbadenFutureDemo({
   const demoConfig = FUTURE_DEMO_CONFIGS[variant];
   const isFsazDemo = variant === "fsaz";
   const isRathjeDemo = variant === "rathje";
+  const isRDriveDemo = variant === "r-drive";
+  const isHappyDrivingDemo = variant === "happy-driving";
+  const isGuidedDrivingDemo = isRDriveDemo || isHappyDrivingDemo;
   const isCompactSalesDemo = isRathjeDemo || variant === "campus-b27";
   const demoCourses = demoConfig.courses;
   const demoDocuments = demoConfig.documents;
@@ -7220,6 +7209,11 @@ function HohenbadenFutureDemo({
     null,
   );
   const [drivingSlotReserved, setDrivingSlotReserved] = useState(false);
+  const [guidedStep, setGuidedStep] = useState(0);
+  const [guidedAnswers, setGuidedAnswers] = useState<Record<string, string>>({});
+  const [transferStep, setTransferStep] = useState(0);
+  const [transferAnswers, setTransferAnswers] = useState<Record<string, string>>({});
+  const [transferFiles, setTransferFiles] = useState<File[]>([]);
   const [documents, setDocuments] = useState<Record<string, boolean>>(() =>
     demoDocuments.reduce<Record<string, boolean>>((acc, item) => {
       acc[item.id] = item.initial;
@@ -7299,13 +7293,143 @@ function HohenbadenFutureDemo({
           { id: "schedule", label: "Planung", icon: "📅" },
           { id: "documents", label: "Unterlagen", icon: "✅" },
         ]
-      : [
-          { id: "dashboard", label: isFsazDemo ? "Trainingsplan" : "Cockpit", icon: "🪪" },
-          { id: "courses", label: isFsazDemo ? "Training" : "Klassen & Kurse", icon: isFsazDemo ? "🎮" : "⚡" },
-          { id: "schedule", label: isFsazDemo ? "Zeiten" : "Planung", icon: "📅" },
-          { id: "documents", label: isFsazDemo ? "Teilnahme" : "Unterlagen", icon: "✅" },
-          { id: "coach", label: isFsazDemo ? "Simulator-Coach" : "Begleiter", icon: "✨" },
-        ];
+      : isGuidedDrivingDemo
+        ? [
+            { id: "dashboard", label: "Cockpit & Begleiter", icon: "🪪" },
+            { id: "courses", label: isRDriveDemo ? "Kurs finden" : "Klasse finden", icon: "🧭" },
+            { id: "schedule", label: "Planung", icon: "📅" },
+            { id: "documents", label: isHappyDrivingDemo ? "Fahrschulwechsel" : "Unterlagen", icon: isHappyDrivingDemo ? "↗️" : "✅" },
+          ]
+        : [
+            { id: "dashboard", label: isFsazDemo ? "Trainingsplan" : "Cockpit", icon: "🪪" },
+            { id: "courses", label: isFsazDemo ? "Training" : "Klassen & Kurse", icon: isFsazDemo ? "🎮" : "⚡" },
+            { id: "schedule", label: isFsazDemo ? "Zeiten" : "Planung", icon: "📅" },
+            { id: "documents", label: isFsazDemo ? "Teilnahme" : "Unterlagen", icon: "✅" },
+            { id: "coach", label: isFsazDemo ? "Simulator-Coach" : "Begleiter", icon: "✨" },
+          ];
+
+  const guidedQuestions = isRDriveDemo
+    ? [
+        {
+          id: "speed",
+          question: "Wie schnell möchtest du die Ausbildung durchziehen?",
+          helper: "Damit grenzen wir Basis, Plus und Intensiv sinnvoll ein.",
+          options: [
+            ["basis", "Flexibel über mehrere Wochen", "Passt meist zum BASIS-Modell"],
+            ["plus", "Konzentriert in etwa vier Wochen", "Passt meist zum PLUS-Modell"],
+            ["intensiv", "So kompakt wie realistisch möglich", "Passt zum INTENSIV-Modell"],
+          ],
+        },
+        {
+          id: "time",
+          question: "Wie viel Zeit kannst du werktags wirklich freihalten?",
+          helper: "Nicht nur Wunschtempo, sondern dein Alltag entscheidet über das passende Modell.",
+          options: [
+            ["low", "1–2 feste Termine pro Woche", "eher flexibel"],
+            ["mid", "mehrere Termine pro Woche", "kompakter möglich"],
+            ["high", "täglich / fast täglich", "Intensiv-Ausbildung realistisch prüfbar"],
+          ],
+        },
+        {
+          id: "application",
+          question: "Wie weit ist dein Fahrerlaubnisantrag?",
+          helper: "Gerade bei Plus und Intensiv ist der rechtzeitige Antrag entscheidend.",
+          options: [
+            ["none", "Noch nicht gestellt", "Antrag zuerst einplanen"],
+            ["running", "Ist bereits eingereicht", "Bearbeitungsstand berücksichtigen"],
+            ["ready", "Ist erledigt / freigegeben", "Kursstart kann konkreter geplant werden"],
+          ],
+        },
+      ]
+    : isHappyDrivingDemo
+      ? [
+          {
+            id: "goal",
+            question: "Was ist dir beim Autoführerschein wichtig?",
+            helper: "Wir führen dich direkt zur passenden Klasse statt dir einfach eine Liste zu zeigen.",
+            options: [
+              ["manual", "Klassisch mit Schaltung lernen", "Klasse B"],
+              ["flex", "Viel Automatik, später trotzdem Schalter fahren", "B197"],
+              ["auto", "Ich möchte ausschließlich Automatik fahren", "B78"],
+              ["bf17", "Begleitetes Fahren ab 17", "BF17"],
+              ["trailer", "Ich brauche einen Anhänger-Führerschein", "B96 / BE"],
+            ],
+          },
+          {
+            id: "age",
+            question: "Welche Situation trifft auf dich zu?",
+            helper: "Damit können wir BF17 und den normalen Start besser einordnen.",
+            options: [
+              ["u17", "Ich bin noch unter 17", "BF17 prüfen"],
+              ["17", "Ich bin 17", "BF17 oder regulären Weg prüfen"],
+              ["18", "Ich bin 18 oder älter", "B / B197 / B78 möglich"],
+            ],
+          },
+          {
+            id: "priority",
+            question: "Was ist dir für den Start am wichtigsten?",
+            helper: "Danach bekommst du eine klare Empfehlung und den nächsten Schritt.",
+            options: [
+              ["easy", "Möglichst entspannt lernen", "Ausbildungsweg passend planen"],
+              ["flexible", "Maximal flexibel beim Getriebe bleiben", "B197 genauer ansehen"],
+              ["cost", "Kosten vorher möglichst gut einschätzen", "veröffentlichte Einzelpreise einordnen"],
+            ],
+          },
+        ]
+      : [];
+
+  const transferQuestions = [
+    {
+      id: "class",
+      question: "Welche Führerscheinklasse machst du aktuell?",
+      helper: "Damit Happy Driving direkt weiß, welche Ausbildung übernommen werden soll.",
+      options: ["B", "B197", "B78", "BF17", "B96", "BE"],
+    },
+    {
+      id: "status",
+      question: "Wo stehst du gerade in der Ausbildung?",
+      helper: "Wir vermeiden, dass du Dinge doppelt erklären musst.",
+      options: ["Nur angemeldet", "Theorie läuft", "Theorieprüfung bestanden", "Praxis läuft", "Prüfung steht bald an"],
+    },
+    {
+      id: "completed",
+      question: "Was hast du bereits erledigt?",
+      helper: "Wähle den Punkt, der deinen aktuellen Stand am besten beschreibt.",
+      options: ["Theoriestunden teilweise", "Theorie vollständig", "Sonderfahrten begonnen", "Sonderfahrten vollständig", "Ich bin mir nicht sicher"],
+    },
+    {
+      id: "documents",
+      question: "Welche Unterlagen kannst du bereits mitbringen?",
+      helper: "Die Demo bereitet daraus eine saubere Wechselanfrage vor.",
+      options: ["Ausbildungsnachweis", "Prüfauftrag / Behördenunterlagen", "Lernstand / App-Nachweis", "Mehrere Unterlagen", "Noch nichts vorhanden"],
+    },
+  ];
+
+  function chooseGuidedAnswer(id: string, value: string) {
+    setGuidedAnswers((current) => ({ ...current, [id]: value }));
+    setGuidedStep((current) => Math.min(current + 1, guidedQuestions.length));
+
+    if (id === "speed") {
+      if (value === "basis") setCoursePreference("PKW BASIS · B197");
+      if (value === "plus") setCoursePreference("PKW PLUS · B197");
+      if (value === "intensiv") setCoursePreference("PKW INTENSIV · B197");
+    }
+    if (id === "goal") {
+      const map: Record<string, string> = {
+        manual: "Klasse B",
+        flex: "Klasse B197",
+        auto: "Klasse B78",
+        bf17: "BF17",
+        trailer: "BE",
+      };
+      if (map[value]) setCoursePreference(map[value]);
+    }
+  }
+
+  function chooseTransferAnswer(id: string, value: string) {
+    setTransferAnswers((current) => ({ ...current, [id]: value }));
+    setTransferStep((current) => Math.min(current + 1, transferQuestions.length));
+  }
 
   function connectDemoStudent(useDemoData = false) {
     if (connecting) return;
@@ -7757,7 +7881,9 @@ function HohenbadenFutureDemo({
                       ? "documents"
                       : isFsazDemo && title === "Trainingsplan"
                         ? "schedule"
-                        : "coach",
+                        : isGuidedDrivingDemo
+                          ? "schedule"
+                          : "coach",
                   )
                 }
                 style={{
@@ -7895,13 +8021,35 @@ function HohenbadenFutureDemo({
               >
                 {demoConfig.coachRecommendation}
               </div>
-              <button
-                type="button"
-                onClick={() => onPanelChange("coach")}
-                style={{ ...primaryButton, width: "100%", marginTop: 14 }}
-              >
-                Persönlichen Plan öffnen
-              </button>
+              {isGuidedDrivingDemo ? (
+                <div style={{ display: "grid", gap: 7, marginTop: 14 }}>
+                  {demoConfig.coachQuestions.slice(0, 3).map((question) => (
+                    <button
+                      key={question}
+                      type="button"
+                      onClick={() => onAsk(question)}
+                      style={{ ...secondaryButton, width: "100%", minHeight: 40, textAlign: "left", fontSize: 12 }}
+                    >
+                      {question} →
+                    </button>
+                  ))}
+                  <button
+                    type="button"
+                    onClick={() => onAsk(demoConfig.todayPlanPrompt)}
+                    style={{ ...primaryButton, width: "100%", marginTop: 2 }}
+                  >
+                    Meinen nächsten Schritt planen
+                  </button>
+                </div>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => onPanelChange("coach")}
+                  style={{ ...primaryButton, width: "100%", marginTop: 14 }}
+                >
+                  Persönlichen Plan öffnen
+                </button>
+              )}
             </div>
           </div>
 
@@ -7956,6 +8104,79 @@ function HohenbadenFutureDemo({
               {demoConfig.coursesDescription}
             </div>
           </div>
+
+          {isGuidedDrivingDemo && guidedQuestions.length > 0 && (
+            <div style={{ ...glassCard, padding: isMobile ? 15 : 18 }}>
+              {guidedStep < guidedQuestions.length ? (
+                <>
+                  <div style={{ display: "flex", justifyContent: "space-between", gap: 12, alignItems: "center", flexWrap: "wrap" }}>
+                    <div>
+                      <div style={{ color: accent, fontSize: 11.5, fontWeight: 950, letterSpacing: 0.4 }}>
+                        GEFÜHRTE AUSWAHL · FRAGE {guidedStep + 1} VON {guidedQuestions.length}
+                      </div>
+                      <div style={{ fontSize: isMobile ? 21 : 25, fontWeight: 950, marginTop: 5 }}>
+                        {guidedQuestions[guidedStep].question}
+                      </div>
+                      <div style={{ color: textSecondary, fontSize: 12.5, marginTop: 5, lineHeight: 1.45 }}>
+                        {guidedQuestions[guidedStep].helper}
+                      </div>
+                    </div>
+                    {guidedStep > 0 && (
+                      <button
+                        type="button"
+                        onClick={() => setGuidedStep((current) => Math.max(0, current - 1))}
+                        style={{ ...secondaryButton, minHeight: 38, fontSize: 12 }}
+                      >
+                        ← Zurück
+                      </button>
+                    )}
+                  </div>
+                  <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(2, minmax(0, 1fr))", gap: 9, marginTop: 14 }}>
+                    {guidedQuestions[guidedStep].options.map(([value, label, detail]) => (
+                      <button
+                        key={value}
+                        type="button"
+                        onClick={() => chooseGuidedAnswer(guidedQuestions[guidedStep].id, value)}
+                        style={{ ...softCard, padding: 14, color: textPrimary, textAlign: "left", cursor: "pointer" }}
+                      >
+                        <div style={{ fontWeight: 950 }}>{label}</div>
+                        <div style={{ color: textSecondary, fontSize: 11.5, marginTop: 4 }}>{detail}</div>
+                      </button>
+                    ))}
+                  </div>
+                </>
+              ) : (
+                <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1.2fr 0.8fr", gap: 12, alignItems: "stretch" }}>
+                  <div style={{ ...softCard, padding: 17 }}>
+                    <div style={{ color: accent, fontSize: 11.5, fontWeight: 950 }}>DEINE EMPFEHLUNG</div>
+                    <div style={{ fontSize: 24, fontWeight: 950, marginTop: 5 }}>{coursePreference}</div>
+                    <div style={{ color: textSecondary, fontSize: 13, lineHeight: 1.5, marginTop: 7 }}>
+                      {isRDriveDemo
+                        ? guidedAnswers.application === "none"
+                          ? "Das Modell passt zu deinen Angaben. Wichtig: Für einen schnellen Start sollte der Fahrerlaubnisantrag jetzt zuerst sauber vorbereitet werden."
+                          : "Das Modell passt zu deinem gewünschten Tempo und deiner verfügbaren Zeit. Im nächsten Schritt kannst du die passende R-DRIVE-Variante ansehen."
+                        : "Die Klasse passt am besten zu deinen Antworten. Du kannst jetzt direkt die Details ansehen oder deine Auswahl noch einmal ändern."}
+                    </div>
+                  </div>
+                  <div style={{ ...softCard, padding: 17, display: "flex", flexDirection: "column", justifyContent: "space-between", gap: 10 }}>
+                    <div>
+                      <div style={{ fontWeight: 950 }}>Warum dieser Vorschlag?</div>
+                      <div style={{ color: textSecondary, fontSize: 12, lineHeight: 1.5, marginTop: 6 }}>
+                        {Object.values(guidedAnswers).filter(Boolean).length} Antworten wurden berücksichtigt. Die Auswahl bleibt eine Demo-Empfehlung und keine verbindliche Zusage.
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => { setGuidedStep(0); setGuidedAnswers({}); }}
+                      style={secondaryButton}
+                    >
+                      Auswahl neu starten
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
 
           {!isCompactSalesDemo && (
           <div
@@ -8496,7 +8717,109 @@ function HohenbadenFutureDemo({
         </div>
       )}
 
-      {panel === "documents" && (
+            {panel === "documents" && isHappyDrivingDemo && (
+        <div
+          style={{
+            position: "relative",
+            display: "flex",
+            flexDirection: "column",
+            gap: 14,
+          }}
+        >
+          <div>
+            <div style={{ color: accent, fontSize: 11.5, fontWeight: 950, letterSpacing: 0.45 }}>FAHRSCHULWECHSEL-ASSISTENT</div>
+            <div style={{ fontSize: isMobile ? 25 : 31, fontWeight: 950, marginTop: 4 }}>Wechsel vorbereiten, ohne alles neu zu erklären</div>
+            <div style={{ color: textSecondary, fontSize: 14, lineHeight: 1.5, marginTop: 6 }}>
+              Wir erfassen deinen bisherigen Stand Schritt für Schritt. Danach siehst du genau, welche Informationen und Unterlagen Happy Driving für die Übernahme sinnvoll prüfen kann.
+            </div>
+          </div>
+
+          {transferStep < transferQuestions.length ? (
+            <div style={{ ...glassCard, padding: isMobile ? 16 : 20 }}>
+              <div style={{ display: "flex", justifyContent: "space-between", gap: 12, alignItems: "center", flexWrap: "wrap" }}>
+                <div>
+                  <div style={{ color: accent, fontSize: 11.5, fontWeight: 950 }}>FRAGE {transferStep + 1} VON {transferQuestions.length}</div>
+                  <div style={{ fontSize: isMobile ? 21 : 25, fontWeight: 950, marginTop: 5 }}>{transferQuestions[transferStep].question}</div>
+                  <div style={{ color: textSecondary, fontSize: 12.5, marginTop: 5 }}>{transferQuestions[transferStep].helper}</div>
+                </div>
+                {transferStep > 0 && (
+                  <button type="button" onClick={() => setTransferStep((current) => Math.max(0, current - 1))} style={{ ...secondaryButton, minHeight: 38, fontSize: 12 }}>← Zurück</button>
+                )}
+              </div>
+              <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(2, minmax(0, 1fr))", gap: 9, marginTop: 15 }}>
+                {transferQuestions[transferStep].options.map((option) => (
+                  <button
+                    key={option}
+                    type="button"
+                    onClick={() => chooseTransferAnswer(transferQuestions[transferStep].id, option)}
+                    style={{ ...softCard, padding: 14, textAlign: "left", color: textPrimary, cursor: "pointer", fontWeight: 900 }}
+                  >
+                    {option} →
+                  </button>
+                ))}
+              </div>
+            </div>
+          ) : (
+            <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1.15fr 0.85fr", gap: 12 }}>
+              <div style={{ ...glassCard, padding: 18 }}>
+                <div style={{ fontSize: 20, fontWeight: 950 }}>Dein Wechselprofil ist vorbereitet</div>
+                <div style={{ color: textSecondary, fontSize: 12.5, lineHeight: 1.5, marginTop: 5 }}>
+                  So könnte Happy Driving deinen Fall direkt einordnen, ohne dass du am Telefon wieder bei null anfangen musst.
+                </div>
+                <div style={{ display: "grid", gap: 8, marginTop: 14 }}>
+                  {[
+                    ["Klasse", transferAnswers.class],
+                    ["Ausbildungsstand", transferAnswers.status],
+                    ["Bereits erledigt", transferAnswers.completed],
+                    ["Vorhandene Unterlagen", transferAnswers.documents],
+                  ].map(([label, value]) => (
+                    <div key={label} style={{ ...softCard, padding: "11px 13px", display: "flex", justifyContent: "space-between", gap: 12 }}>
+                      <span style={{ color: textSecondary, fontSize: 12 }}>{label}</span>
+                      <strong style={{ fontSize: 12.5, textAlign: "right" }}>{value || "–"}</strong>
+                    </div>
+                  ))}
+                </div>
+                <button type="button" onClick={() => { setTransferStep(0); setTransferAnswers({}); setTransferFiles([]); }} style={{ ...secondaryButton, marginTop: 13 }}>Angaben ändern</button>
+              </div>
+
+              <div style={{ ...glassCard, padding: 18, display: "flex", flexDirection: "column", gap: 12 }}>
+                <div>
+                  <div style={{ fontSize: 18, fontWeight: 950 }}>Unterlagen direkt dazu</div>
+                  <div style={{ color: textSecondary, fontSize: 12.5, lineHeight: 1.5, marginTop: 5 }}>
+                    Zum Beispiel Ausbildungsnachweis, Schreiben der bisherigen Fahrschule oder vorhandene Unterlagen. In der Demo werden die Dateien nicht versendet.
+                  </div>
+                </div>
+                <label style={{ ...softCard, padding: 14, cursor: "pointer", textAlign: "center", fontWeight: 900 }}>
+                  Dateien auswählen
+                  <input
+                    type="file"
+                    multiple
+                    onChange={(event) => setTransferFiles(Array.from(event.target.files ?? []))}
+                    style={{ display: "none" }}
+                  />
+                </label>
+                {transferFiles.length > 0 && (
+                  <div style={{ color: textSecondary, fontSize: 12 }}>
+                    {transferFiles.length} Datei{transferFiles.length === 1 ? "" : "en"} ausgewählt
+                  </div>
+                )}
+                <button
+                  type="button"
+                  onClick={() => onAsk(`Ich möchte von einer anderen Fahrschule zu Happy Driving wechseln. Klasse: ${transferAnswers.class}. Stand: ${transferAnswers.status}. Bereits erledigt: ${transferAnswers.completed}. Vorhandene Unterlagen: ${transferAnswers.documents}. Welche nächsten Schritte sind sinnvoll?`)}
+                  style={primaryButton}
+                >
+                  Wechselanfrage vorbereiten
+                </button>
+                <div style={{ color: textSecondary, fontSize: 11.5, lineHeight: 1.45 }}>
+                  Keine Behördensimulation: Das Interface bereitet den Wechsel zur Fahrschule vor. Individuelle Übernahme und Unterlagen prüft anschließend Happy Driving.
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+{panel === "documents" && !isHappyDrivingDemo && (
         <div
           style={{
             position: "relative",
@@ -8705,7 +9028,7 @@ function HohenbadenFutureDemo({
         </div>
       )}
 
-      {panel === "coach" && (
+      {panel === "coach" && !isGuidedDrivingDemo && (
         <div
           style={{
             position: "relative",
