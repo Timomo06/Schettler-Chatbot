@@ -563,43 +563,30 @@ const R_DRIVE_START_CARDS: StartCard[] = [
   {
     icon: "🪪",
     title: "Cockpit & Begleiter",
-    description: "Ausbildungsstand, nächste Schritte, Fortschritt und persönliche Empfehlungen an einem Ort",
+    description: "Ausbildungsstand, nächsten Schritt und persönliche Empfehlung auf einen Blick",
     action: "hohenbadenPanel",
     hohenbadenPanel: "dashboard",
   },
   {
     icon: "⚡",
     title: "Kursmodell finden",
-    description: "Basis, Plus oder Intensiv passend zu deiner verfügbaren Zeit",
+    description: "Geführt zu Basis, Plus oder Intensiv – passend zu deinem Alltag",
     action: "hohenbadenPanel",
     hohenbadenPanel: "courses",
   },
   {
     icon: "📅",
-    title: "Mein Ausbildungsplan",
-    description: "Theorie, Praxis und nächsten sinnvollen Schritt zusammen planen",
+    title: "Ausbildung planen",
+    description: "Theorie, Praxis und digitalen Lernweg kompakt zusammen planen",
     action: "hohenbadenPanel",
     hohenbadenPanel: "schedule",
   },
   {
     icon: "✅",
     title: "Unterlagen & Antrag",
-    description: "Sehtest, Erste Hilfe, Passbild und Fahrerlaubnisantrag prüfen",
+    description: "In wenigen Fragen sehen, was für deinen Start noch fehlt",
     action: "hohenbadenPanel",
     hohenbadenPanel: "documents",
-  },
-  {
-    icon: "🔗",
-    title: "Als Fahrschüler verbinden",
-    description: "Persönliches Demo-Cockpit mit individuellem Ausbildungsstand öffnen",
-    action: "hohenbadenPanel",
-    hohenbadenPanel: "connect",
-  },
-  {
-    icon: "🎙️",
-    title: "Frage einsprechen",
-    description: "Anliegen einfach direkt erzählen statt lange zu suchen",
-    action: "voice",
   },
 ];
 
@@ -607,42 +594,37 @@ const HAPPY_DRIVING_START_CARDS: StartCard[] = [
   {
     icon: "🪪",
     title: "Cockpit & Begleiter",
-    description: "Ausbildungsstand, nächste Schritte und persönliche Hilfe gemeinsam öffnen",
+    description: "Ausbildungsstand, nächsten Schritt und persönliche Hilfe auf einen Blick",
     action: "hohenbadenPanel",
     hohenbadenPanel: "dashboard",
   },
   {
     icon: "🧭",
     title: "Führerschein finden",
-    description: "B, B197, B78, BF17, B96 oder BE passend einordnen",
+    description: "Geführt zu B, B197, B78, BF17, B96 oder BE",
     action: "hohenbadenPanel",
     hohenbadenPanel: "courses",
   },
   {
     icon: "€",
     title: "Preise",
-    description: "Veröffentlichte Einzelpreise verständlich einordnen",
-    message: "Zeig mir bitte die veröffentlichten Preise von Happy Driving passend zu meiner Führerscheinklasse und weise auf den Preisstand hin.",
+    description: "Veröffentlichte Einzelpreise kompakt und ohne Chat-Umweg ansehen",
+    action: "hohenbadenPanel",
+    hohenbadenPanel: "coach",
   },
   {
     icon: "📅",
     title: "Theorie & Fahrstunden",
-    description: "Theoriezeiten sehen und den Ausbildungsweg strukturieren",
+    description: "Geführt zum passenden nächsten Termin und Ausbildungsrhythmus",
     action: "hohenbadenPanel",
     hohenbadenPanel: "schedule",
   },
   {
     icon: "↗️",
     title: "Fahrschulwechsel",
-    description: "Bisherigen Stand und benötigte Unterlagen vorbereitet erfassen",
+    description: "Bisherigen Stand Schritt für Schritt für Happy Driving vorbereiten",
     action: "hohenbadenPanel",
     hohenbadenPanel: "documents",
-  },
-  {
-    icon: "🎙️",
-    title: "Frage einsprechen",
-    description: "Frage einfach direkt einsprechen",
-    action: "voice",
   },
 ];
 
@@ -4560,6 +4542,667 @@ type GuidedQuestion = {
   choices?: GuidedChoice[];
   placeholder?: string;
 };
+
+
+type GuidedDrivingVariant = "r-drive" | "happy-driving";
+
+type DrivingDemoTabBarProps = {
+  variant: GuidedDrivingVariant;
+  panel: HohenbadenPanel;
+  onPanelChange: (panel: HohenbadenPanel) => void;
+  accent: string;
+  accentRgb: string;
+  textPrimary: string;
+  isMobile: boolean;
+};
+
+function DrivingDemoTabBar({
+  variant,
+  panel,
+  onPanelChange,
+  accent,
+  accentRgb,
+  textPrimary,
+  isMobile,
+}: DrivingDemoTabBarProps) {
+  const items: Array<{ id: HohenbadenPanel; label: string }> =
+    variant === "happy-driving"
+      ? [
+          { id: "home", label: "Start" },
+          { id: "dashboard", label: "Cockpit" },
+          { id: "courses", label: "Klasse" },
+          { id: "coach", label: "Preise" },
+          { id: "schedule", label: "Plan" },
+          { id: "documents", label: "Wechsel" },
+        ]
+      : [
+          { id: "home", label: "Start" },
+          { id: "dashboard", label: "Cockpit" },
+          { id: "courses", label: "Kurs" },
+          { id: "schedule", label: "Plan" },
+          { id: "documents", label: "Unterlagen" },
+        ];
+
+  return (
+    <div
+      style={{
+        position: "sticky",
+        top: 0,
+        zIndex: 30,
+        display: "grid",
+        gridTemplateColumns: `repeat(${items.length}, minmax(0, 1fr))`,
+        gap: 4,
+        padding: 4,
+        borderRadius: 18,
+        border: `1px solid rgba(${accentRgb}, 0.14)`,
+        background: "rgba(255,255,255,0.82)",
+        backdropFilter: "blur(22px) saturate(170%)",
+        WebkitBackdropFilter: "blur(22px) saturate(170%)",
+        boxShadow: "0 8px 28px rgba(20,30,22,0.08)",
+      }}
+    >
+      {items.map((item) => {
+        const active = panel === item.id;
+        return (
+          <button
+            key={item.id}
+            type="button"
+            onClick={() => onPanelChange(item.id)}
+            style={{
+              minWidth: 0,
+              height: isMobile ? 36 : 39,
+              border: "none",
+              borderRadius: 14,
+              background: active ? `rgba(${accentRgb}, 0.16)` : "transparent",
+              color: active ? accent : textPrimary,
+              fontSize: isMobile ? 10.5 : 12,
+              fontWeight: active ? 950 : 800,
+              cursor: "pointer",
+              whiteSpace: "nowrap",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              boxShadow: active ? `inset 0 0 0 1px rgba(${accentRgb}, 0.20)` : "none",
+            }}
+          >
+            {item.label}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+type GuidedDrivingCompactDemoProps = Omit<HohenbadenFutureDemoProps, "variant"> & {
+  variant: GuidedDrivingVariant;
+};
+
+function GuidedDrivingCompactDemo(props: GuidedDrivingCompactDemoProps) {
+  const {
+    variant,
+    panel,
+    onPanelChange,
+    accent,
+    accentRgb,
+    textPrimary,
+    textSecondary,
+    isMobile,
+  } = props;
+  const isRDrive = variant === "r-drive";
+  const config = FUTURE_DEMO_CONFIGS[variant];
+  const activePanel: HohenbadenPanel = panel === "connect" ? "dashboard" : panel;
+
+  const [courseStep, setCourseStep] = useState(0);
+  const [courseAnswers, setCourseAnswers] = useState<Record<string, string>>({});
+  const [scheduleStep, setScheduleStep] = useState(0);
+  const [scheduleAnswers, setScheduleAnswers] = useState<Record<string, string>>({});
+  const [documentStep, setDocumentStep] = useState(0);
+  const [documentAnswers, setDocumentAnswers] = useState<Record<string, string>>({});
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const [priceGroup, setPriceGroup] = useState<"b" | "be" | "umschreibung">("b");
+
+  useEffect(() => {
+    setCourseStep(0);
+    setCourseAnswers({});
+    setScheduleStep(0);
+    setScheduleAnswers({});
+    setDocumentStep(0);
+    setDocumentAnswers({});
+    setSelectedFiles([]);
+    setPriceGroup("b");
+  }, [variant]);
+
+  if (panel === "home") return null;
+
+  const glass: CSSProperties = {
+    borderRadius: isMobile ? 20 : 24,
+    border: "1px solid rgba(255,255,255,0.56)",
+    background: "linear-gradient(180deg, rgba(255,255,255,0.92), rgba(255,255,255,0.72))",
+    boxShadow: "0 14px 40px rgba(26,38,28,0.08), inset 0 1px 0 rgba(255,255,255,0.75)",
+    backdropFilter: "blur(22px) saturate(165%)",
+    WebkitBackdropFilter: "blur(22px) saturate(165%)",
+  };
+
+  const soft: CSSProperties = {
+    borderRadius: 17,
+    border: `1px solid rgba(${accentRgb}, 0.16)`,
+    background: `linear-gradient(145deg, rgba(${accentRgb}, 0.09), rgba(255,255,255,0.72))`,
+  };
+
+  const primary: CSSProperties = {
+    height: 42,
+    border: "none",
+    borderRadius: 14,
+    background: accent,
+    color: "#fff",
+    padding: "0 15px",
+    fontWeight: 900,
+    cursor: "pointer",
+    boxShadow: `0 9px 22px rgba(${accentRgb}, 0.20)`,
+  };
+
+  const secondary: CSSProperties = {
+    height: 40,
+    borderRadius: 14,
+    border: `1px solid rgba(${accentRgb}, 0.17)`,
+    background: "rgba(255,255,255,0.72)",
+    color: textPrimary,
+    padding: "0 14px",
+    fontWeight: 850,
+    cursor: "pointer",
+  };
+
+  const choiceStyle: CSSProperties = {
+    ...soft,
+    minHeight: isMobile ? 58 : 64,
+    padding: isMobile ? "11px 12px" : "12px 14px",
+    color: textPrimary,
+    textAlign: "left",
+    cursor: "pointer",
+  };
+
+  const header = (eyebrow: string, title: string, description: string) => (
+    <div>
+      <div style={{ color: accent, fontSize: 10.5, fontWeight: 950, letterSpacing: 0.45 }}>{eyebrow}</div>
+      <div style={{ fontSize: isMobile ? 22 : 27, fontWeight: 950, marginTop: 3, lineHeight: 1.12 }}>{title}</div>
+      <div style={{ color: textSecondary, fontSize: 12.5, lineHeight: 1.45, marginTop: 5 }}>{description}</div>
+    </div>
+  );
+
+  const choiceGrid = (
+    options: Array<[string, string, string]>,
+    onChoose: (value: string) => void,
+  ) => (
+    <div
+      style={{
+        display: "grid",
+        gridTemplateColumns: isMobile ? "1fr" : `repeat(${Math.min(options.length, 3)}, minmax(0, 1fr))`,
+        gap: 8,
+        marginTop: 12,
+      }}
+    >
+      {options.map(([value, label, detail]) => (
+        <button key={value} type="button" onClick={() => onChoose(value)} style={choiceStyle}>
+          <div style={{ fontWeight: 930, fontSize: 13.5, lineHeight: 1.25 }}>{label}</div>
+          <div style={{ color: textSecondary, fontSize: 10.8, marginTop: 4, lineHeight: 1.3 }}>{detail}</div>
+        </button>
+      ))}
+    </div>
+  );
+
+  const rDriveCourseQuestions = [
+    {
+      id: "speed",
+      question: "Wie kompakt möchtest du deinen Führerschein machen?",
+      helper: "Wir grenzen damit Basis, Plus und Intensiv ein.",
+      options: [
+        ["basis", "Flexibel", "über mehrere Wochen"],
+        ["plus", "Kompakt", "etwa vier Wochen anpeilen"],
+        ["intensiv", "Sehr kompakt", "Intensivmodell prüfen"],
+      ] as Array<[string, string, string]>,
+    },
+    {
+      id: "time",
+      question: "Wie viel Zeit kannst du werktags wirklich freihalten?",
+      helper: "Dein Alltag ist wichtiger als nur das Wunschtempo.",
+      options: [
+        ["low", "1–2 Termine", "pro Woche"],
+        ["mid", "Mehrere Termine", "pro Woche"],
+        ["high", "Fast täglich", "hohe zeitliche Verfügbarkeit"],
+      ] as Array<[string, string, string]>,
+    },
+    {
+      id: "application",
+      question: "Wie weit ist dein Fahrerlaubnisantrag?",
+      helper: "Bei kompakten Modellen muss der Antrag rechtzeitig laufen.",
+      options: [
+        ["none", "Noch nicht gestellt", "erst Antrag vorbereiten"],
+        ["running", "Läuft bereits", "Bearbeitungsstand beachten"],
+        ["ready", "Erledigt", "Start kann konkreter geplant werden"],
+      ] as Array<[string, string, string]>,
+    },
+  ];
+
+  const happyCourseQuestions = (() => {
+    const questions = [
+      {
+        id: "goal",
+        question: "Was möchtest du machen?",
+        helper: "Erst das Ziel, dann nur noch die wirklich passende Detailfrage.",
+        options: [
+          ["auto", "Autoführerschein", "B / B197 / B78"],
+          ["bf17", "Begleitet ab 17", "BF17"],
+          ["trailer", "Anhänger", "B96 / BE"],
+        ] as Array<[string, string, string]>,
+      },
+    ];
+    if (courseAnswers.goal === "auto") {
+      questions.push({
+        id: "gearbox",
+        question: "Wie möchtest du mit dem Getriebe umgehen?",
+        helper: "Damit unterscheiden wir B, B197 und B78.",
+        options: [
+          ["manual", "Schaltung", "klassische Klasse B"],
+          ["flex", "Viel Automatik + Schalter", "B197"],
+          ["auto", "Nur Automatik", "B78"],
+        ] as Array<[string, string, string]>,
+      });
+    } else if (courseAnswers.goal === "trailer") {
+      questions.push({
+        id: "trailer",
+        question: "Wie groß ist dein Anhänger-Bedarf?",
+        helper: "Wenn du unsicher bist, kann Happy Driving das mit dir einordnen.",
+        options: [
+          ["b96", "B96 reicht wahrscheinlich", "Erweiterung ohne BE-Prüfung prüfen"],
+          ["be", "Ich brauche BE", "größere Anhänger-Kombination"],
+          ["unsure", "Noch unsicher", "Beratung vorbereiten"],
+        ] as Array<[string, string, string]>,
+      });
+    }
+    return questions;
+  })();
+
+  const courseQuestions = isRDrive ? rDriveCourseQuestions : happyCourseQuestions;
+  const courseQuestion = courseQuestions[courseStep];
+  const courseDone = courseStep >= courseQuestions.length;
+
+  const courseResult = isRDrive
+    ? courseAnswers.speed === "intensiv" && courseAnswers.time === "high"
+      ? "PKW INTENSIV · B197"
+      : courseAnswers.speed === "plus" && courseAnswers.time !== "low"
+        ? "PKW PLUS · B197"
+        : "PKW BASIS · B197"
+    : courseAnswers.goal === "bf17"
+      ? "BF17"
+      : courseAnswers.goal === "trailer"
+        ? courseAnswers.trailer === "be"
+          ? "BE"
+          : courseAnswers.trailer === "b96"
+            ? "B96"
+            : "B96 / BE gemeinsam prüfen"
+        : courseAnswers.gearbox === "manual"
+          ? "Klasse B"
+          : courseAnswers.gearbox === "auto"
+            ? "B78"
+            : "B197";
+
+  const scheduleQuestions = [
+    {
+      id: "focus",
+      question: "Was möchtest du als Nächstes planen?",
+      helper: "Nur ein Bereich – danach wird es konkret.",
+      options: isRDrive
+        ? ([
+            ["theory", "Theorie", "Blockunterricht & App-Lernstand"],
+            ["practice", "Praxis", "Fahrstunden passend zum Kursmodell"],
+            ["digital", "Digitales Training", "App, VR oder Video-Coaching"],
+          ] as Array<[string, string, string]>)
+        : ([
+            ["theory", "Theorie", "Di. / Do. 18:00–19:30"],
+            ["practice", "Fahrstunden", "Praxis passend zum Alltag"],
+            ["both", "Beides", "Theorie und Praxis zusammen strukturieren"],
+          ] as Array<[string, string, string]>),
+    },
+    {
+      id: "time",
+      question: "Wann passt es dir am besten?",
+      helper: "Die echte Version könnte daraus direkt passende Zeiten filtern.",
+      options: [
+        ["morning", "Vormittags", "früh am Tag"],
+        ["afternoon", "Nachmittags", "nach Schule / Arbeit"],
+        ["flex", "Flexibel", "Hauptsache passend"],
+      ] as Array<[string, string, string]>,
+    },
+  ];
+  const scheduleQuestion = scheduleQuestions[scheduleStep];
+  const scheduleDone = scheduleStep >= scheduleQuestions.length;
+
+  const documentQuestions = isRDrive
+    ? [
+        {
+          id: "application",
+          question: "Wie weit ist dein Fahrerlaubnisantrag?",
+          helper: "Damit sehen wir sofort, ob der Antrag dein nächster Schritt ist.",
+          options: [
+            ["none", "Noch nicht gestartet", "Antrag zuerst vorbereiten"],
+            ["running", "Bereits eingereicht", "Bearbeitung läuft"],
+            ["ready", "Erledigt", "nächsten offenen Punkt prüfen"],
+          ] as Array<[string, string, string]>,
+        },
+        {
+          id: "vision",
+          question: "Ist dein Sehtest schon erledigt?",
+          helper: "Nur Ja oder Nein – mehr brauchst du hier nicht.",
+          options: [
+            ["yes", "Ja", "liegt vor"],
+            ["no", "Nein", "noch erledigen"],
+          ] as Array<[string, string, string]>,
+        },
+        {
+          id: "aid",
+          question: "Hast du den Erste-Hilfe-Nachweis?",
+          helper: "Danach bekommst du eine kurze Start-Zusammenfassung.",
+          options: [
+            ["yes", "Ja", "liegt vor"],
+            ["no", "Nein", "noch erledigen"],
+          ] as Array<[string, string, string]>,
+        },
+      ]
+    : [
+        {
+          id: "class",
+          question: "Welche Ausbildung möchtest du übernehmen?",
+          helper: "Wir halten die Auswahl bewusst grob und klären Details später.",
+          options: [
+            ["auto", "B / B197 / B78", "Autoführerschein"],
+            ["bf17", "BF17", "begleitetes Fahren"],
+            ["trailer", "B96 / BE", "Anhänger"],
+          ] as Array<[string, string, string]>,
+        },
+        {
+          id: "status",
+          question: "Wo stehst du aktuell?",
+          helper: "Damit Happy Driving nicht wieder bei null anfangen muss.",
+          options: [
+            ["theory", "Theorie läuft", "noch in der Theoriephase"],
+            ["theorydone", "Theorie bestanden", "Praxis steht im Vordergrund"],
+            ["practice", "Praxis läuft", "Fahrstunden bereits begonnen"],
+          ] as Array<[string, string, string]>,
+        },
+        {
+          id: "proof",
+          question: "Hast du Unterlagen zum bisherigen Stand?",
+          helper: "Zum Beispiel Ausbildungsnachweis oder Unterlagen der bisherigen Fahrschule.",
+          options: [
+            ["yes", "Ja, vollständig", "kann direkt geprüft werden"],
+            ["some", "Teilweise", "fehlende Dinge gemeinsam klären"],
+            ["unsure", "Unsicher", "erst Bestand aufnehmen"],
+          ] as Array<[string, string, string]>,
+        },
+      ];
+  const documentQuestion = documentQuestions[documentStep];
+  const documentDone = documentStep >= documentQuestions.length;
+
+  const priceData = {
+    b: {
+      label: "B / B197 / B78 / BF17",
+      rows: [["Grundbetrag", "699 €"], ["Übungsstunde · 45 Min.", "85 €"], ["Sonderfahrt · 45 Min.", "85 €"], ["Praktische Prüfung · Vorstellung", "189 €"]],
+    },
+    be: {
+      label: "Klasse BE",
+      rows: [["Grundbetrag", "420 €"], ["Übungsstunde · 45 Min.", "95 €"], ["Sonderfahrt · 45 Min.", "95 €"], ["Praktische Prüfung · Vorstellung", "350 €"]],
+    },
+    umschreibung: {
+      label: "Umschreibung",
+      rows: [["Grundbetrag", "499 €"], ["Fahrstunde · 45 Min.", "85 €"], ["Theorieprüfung · Vorstellung", "79 €"], ["Praktische Prüfung · Vorstellung", "189 €"]],
+    },
+  } as const;
+
+  return (
+    <section
+      style={{
+        width: "100%",
+        alignSelf: "stretch",
+        display: "flex",
+        flexDirection: "column",
+        gap: 10,
+        color: textPrimary,
+        minHeight: 0,
+      }}
+    >
+      <DrivingDemoTabBar
+        variant={variant}
+        panel={activePanel}
+        onPanelChange={onPanelChange}
+        accent={accent}
+        accentRgb={accentRgb}
+        textPrimary={textPrimary}
+        isMobile={isMobile}
+      />
+
+      {activePanel === "dashboard" && (
+        <div style={{ ...glass, padding: isMobile ? 15 : 18, display: "grid", gap: 12 }}>
+          {header(
+            "COCKPIT & BEGLEITER",
+            "Dein Stand. Dein nächster Schritt.",
+            "Keine extra Begleiter-Seite mehr: Empfehlung, Fortschritt und Planung sitzen direkt im Cockpit.",
+          )}
+          <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1.25fr 0.75fr", gap: 10 }}>
+            <div style={{ ...soft, padding: 15 }}>
+              <div style={{ display: "flex", justifyContent: "space-between", gap: 10, alignItems: "center" }}>
+                <div>
+                  <div style={{ color: textSecondary, fontSize: 10.5, fontWeight: 900 }}>DEMO-AUSBILDUNGSSTAND</div>
+                  <div style={{ fontSize: 20, fontWeight: 950, marginTop: 3 }}>{isRDrive ? "B197 · Plus" : "B197 · Theorie & Praxis"}</div>
+                </div>
+                <div style={{ fontSize: 22, fontWeight: 950, color: accent }}>62 %</div>
+              </div>
+              <div style={{ height: 7, borderRadius: 999, background: `rgba(${accentRgb}, 0.10)`, marginTop: 12, overflow: "hidden" }}>
+                <div style={{ width: "62%", height: "100%", borderRadius: 999, background: accent }} />
+              </div>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(3, minmax(0, 1fr))", gap: 6, marginTop: 12 }}>
+                {(
+                  isRDrive
+                    ? [["Theorie", "74 %"], ["Unterlagen", "3 / 5"], ["Praxis", "bereit"]]
+                    : [["Theorie", "Di / Do"], ["Unterlagen", "3 / 5"], ["Praxis", "aktiv"]]
+                ).map(([label, value]) => (
+                  <div key={label} style={{ ...soft, padding: "9px 8px", textAlign: "center" }}>
+                    <div style={{ fontSize: 10, color: textSecondary }}>{label}</div>
+                    <div style={{ fontSize: 12.5, fontWeight: 950, marginTop: 2 }}>{value}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div style={{ ...soft, padding: 15, display: "flex", flexDirection: "column", justifyContent: "space-between", gap: 10 }}>
+              <div>
+                <div style={{ color: accent, fontSize: 10.5, fontWeight: 950 }}>DEIN NÄCHSTER SCHRITT</div>
+                <div style={{ fontSize: 15.5, fontWeight: 950, marginTop: 5, lineHeight: 1.3 }}>
+                  {isRDrive ? "Antrag prüfen und nächsten Praxisblock planen" : "Nächsten Theorie-/Praxis-Schritt passend zu deinem Stand planen"}
+                </div>
+                <div style={{ color: textSecondary, fontSize: 11.5, lineHeight: 1.4, marginTop: 5 }}>{config.coachRecommendation}</div>
+              </div>
+              <button type="button" onClick={() => onPanelChange("schedule")} style={primary}>Plan öffnen</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {activePanel === "courses" && (
+        <div style={{ ...glass, padding: isMobile ? 15 : 18 }}>
+          {!courseDone && courseQuestion ? (
+            <>
+              {header(
+                `GEFÜHRTE AUSWAHL · ${courseStep + 1} / ${courseQuestions.length}`,
+                courseQuestion.question,
+                courseQuestion.helper,
+              )}
+              {choiceGrid(courseQuestion.options, (value) => {
+                setCourseAnswers((current) => ({ ...current, [courseQuestion.id]: value }));
+                setCourseStep((current) => current + 1);
+              })}
+              {courseStep > 0 && (
+                <button type="button" onClick={() => setCourseStep((current) => Math.max(0, current - 1))} style={{ ...secondary, marginTop: 10 }}>← Zurück</button>
+              )}
+            </>
+          ) : (
+            <>
+              {header("DEINE EMPFEHLUNG", courseResult, isRDrive ? "Aus Wunschtempo, verfügbarer Zeit und Antragsstand abgeleitet." : "Aus deinem Ziel und der passenden Ausbildungsart abgeleitet.")}
+              <div style={{ ...soft, padding: 14, marginTop: 12, color: textSecondary, fontSize: 12, lineHeight: 1.5 }}>
+                {isRDrive && courseAnswers.application === "none"
+                  ? "Wichtig: Für einen kompakten Start sollte zuerst der Fahrerlaubnisantrag vorbereitet werden. Die angezeigte Auswahl ist eine Demo-Empfehlung, keine Terminzusage."
+                  : "Die Auswahl ist bewusst kompakt. Konkrete Verfügbarkeit, persönliche Voraussetzungen und verbindliche Details prüft anschließend die Fahrschule."}
+              </div>
+              <div style={{ display: "flex", gap: 8, marginTop: 12, flexWrap: "wrap" }}>
+                <button type="button" onClick={() => onPanelChange("schedule")} style={primary}>Weiter zur Planung</button>
+                <button type="button" onClick={() => { setCourseStep(0); setCourseAnswers({}); }} style={secondary}>Neu starten</button>
+              </div>
+            </>
+          )}
+        </div>
+      )}
+
+      {activePanel === "schedule" && (
+        <div style={{ ...glass, padding: isMobile ? 15 : 18 }}>
+          {!scheduleDone && scheduleQuestion ? (
+            <>
+              {header(`PLANUNG · ${scheduleStep + 1} / ${scheduleQuestions.length}`, scheduleQuestion.question, scheduleQuestion.helper)}
+              {choiceGrid(scheduleQuestion.options, (value) => {
+                setScheduleAnswers((current) => ({ ...current, [scheduleQuestion.id]: value }));
+                setScheduleStep((current) => current + 1);
+              })}
+              {scheduleStep > 0 && (
+                <button type="button" onClick={() => setScheduleStep((current) => Math.max(0, current - 1))} style={{ ...secondary, marginTop: 10 }}>← Zurück</button>
+              )}
+            </>
+          ) : (
+            <>
+              {header("DEIN PLAN", "Ein klarer nächster Termin statt einer Liste voller Slots", "Die echte Version könnte jetzt den Fahrschulkalender gegen deine Verfügbarkeit prüfen.")}
+              <div style={{ ...soft, padding: 15, marginTop: 12 }}>
+                <div style={{ color: textSecondary, fontSize: 10.5, fontWeight: 900 }}>VORSCHLAG</div>
+                <div style={{ fontSize: 17, fontWeight: 950, marginTop: 4 }}>
+                  {isRDrive
+                    ? scheduleAnswers.focus === "theory"
+                      ? "Nächsten Theorieblock + App-Lernstand abstimmen"
+                      : scheduleAnswers.focus === "digital"
+                        ? "App-/VR-/Video-Training als nächsten Lernblock planen"
+                        : "Nächsten Praxisblock passend zum Kursmodell abstimmen"
+                    : scheduleAnswers.focus === "theory"
+                      ? "Dienstag oder Donnerstag · 18:00–19:30 Uhr"
+                      : scheduleAnswers.focus === "practice"
+                        ? "Persönliche Fahrstunde passend zu deiner Verfügbarkeit abstimmen"
+                        : "Theorie Di./Do. und Praxis in einem Wochenplan verbinden"}
+                </div>
+                <div style={{ color: textSecondary, fontSize: 11.5, marginTop: 5 }}>Zeitwunsch: {scheduleAnswers.time === "morning" ? "vormittags" : scheduleAnswers.time === "afternoon" ? "nachmittags" : "flexibel"} · Demo, keine Live-Verfügbarkeit</div>
+              </div>
+              <button type="button" onClick={() => { setScheduleStep(0); setScheduleAnswers({}); }} style={{ ...secondary, marginTop: 12 }}>Neu planen</button>
+            </>
+          )}
+        </div>
+      )}
+
+      {activePanel === "documents" && (
+        <div style={{ ...glass, padding: isMobile ? 15 : 18 }}>
+          {!documentDone && documentQuestion ? (
+            <>
+              {header(
+                `${isRDrive ? "UNTERLAGEN-CHECK" : "FAHRSCHULWECHSEL"} · ${documentStep + 1} / ${documentQuestions.length}`,
+                documentQuestion.question,
+                documentQuestion.helper,
+              )}
+              {choiceGrid(documentQuestion.options, (value) => {
+                setDocumentAnswers((current) => ({ ...current, [documentQuestion.id]: value }));
+                setDocumentStep((current) => current + 1);
+              })}
+              {documentStep > 0 && (
+                <button type="button" onClick={() => setDocumentStep((current) => Math.max(0, current - 1))} style={{ ...secondary, marginTop: 10 }}>← Zurück</button>
+              )}
+            </>
+          ) : isRDrive ? (
+            <>
+              {header("START-CHECK FERTIG", "Du siehst nur noch den nächsten offenen Punkt", "Keine Behördensimulation und keine lange Checkliste.")}
+              <div style={{ ...soft, padding: 15, marginTop: 12 }}>
+                <div style={{ fontSize: 16, fontWeight: 950 }}>
+                  {documentAnswers.application === "none"
+                    ? "Fahrerlaubnisantrag vorbereiten"
+                    : documentAnswers.vision === "no"
+                      ? "Sehtest erledigen"
+                      : documentAnswers.aid === "no"
+                        ? "Erste-Hilfe-Nachweis erledigen"
+                        : "Grundlagen sind vorbereitet – nächsten Kurs-/Praxis-Schritt abstimmen"}
+                </div>
+                <div style={{ color: textSecondary, fontSize: 11.5, lineHeight: 1.45, marginTop: 5 }}>Das ist ein Demo-Check. Individuelle Anforderungen bestätigt R-DRIVE.</div>
+              </div>
+              <button type="button" onClick={() => { setDocumentStep(0); setDocumentAnswers({}); }} style={{ ...secondary, marginTop: 12 }}>Check neu starten</button>
+            </>
+          ) : (
+            <>
+              {header("WECHSELPROFIL FERTIG", "Happy Driving bekommt deinen bisherigen Stand strukturiert", "Damit musst du beim Wechsel nicht alles wieder von vorne erklären.")}
+              <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(3, minmax(0, 1fr))", gap: 7, marginTop: 12 }}>
+                {[
+                  ["Ausbildung", documentAnswers.class === "auto" ? "B / B197 / B78" : documentAnswers.class === "bf17" ? "BF17" : "B96 / BE"],
+                  ["Stand", documentAnswers.status === "theory" ? "Theorie läuft" : documentAnswers.status === "theorydone" ? "Theorie bestanden" : "Praxis läuft"],
+                  ["Nachweise", documentAnswers.proof === "yes" ? "vorhanden" : documentAnswers.proof === "some" ? "teilweise" : "noch prüfen"],
+                ].map(([label, value]) => (
+                  <div key={label} style={{ ...soft, padding: 11 }}>
+                    <div style={{ color: textSecondary, fontSize: 10 }}>{label}</div>
+                    <div style={{ fontWeight: 950, fontSize: 12.5, marginTop: 2 }}>{value}</div>
+                  </div>
+                ))}
+              </div>
+              <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap", marginTop: 12 }}>
+                <label style={{ ...secondary, display: "inline-flex", alignItems: "center" }}>
+                  Unterlagen auswählen
+                  <input type="file" multiple onChange={(event) => setSelectedFiles(Array.from(event.target.files ?? []))} style={{ display: "none" }} />
+                </label>
+                {selectedFiles.length > 0 && <span style={{ color: textSecondary, fontSize: 11.5 }}>{selectedFiles.length} Datei{selectedFiles.length === 1 ? "" : "en"} ausgewählt</span>}
+                <button type="button" onClick={() => { setDocumentStep(0); setDocumentAnswers({}); setSelectedFiles([]); }} style={secondary}>Neu erfassen</button>
+              </div>
+            </>
+          )}
+        </div>
+      )}
+
+      {activePanel === "coach" && !isRDrive && (
+        <div style={{ ...glass, padding: isMobile ? 15 : 18 }}>
+          {header("PREISE · STAND JUNI 2025", "Nur das auswählen, was dich interessiert", "Keine Chat-Nachricht nötig. Die veröffentlichten Einzelpreise werden direkt im Interface gezeigt.")}
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, minmax(0, 1fr))", gap: 6, marginTop: 12 }}>
+            {([
+              ["b", "B / B197 / B78 / BF17"],
+              ["be", "BE"],
+              ["umschreibung", "Umschreibung"],
+            ] as const).map(([id, label]) => (
+              <button
+                key={id}
+                type="button"
+                onClick={() => setPriceGroup(id)}
+                style={{
+                  ...secondary,
+                  height: isMobile ? 44 : 40,
+                  padding: "0 8px",
+                  fontSize: isMobile ? 10 : 11.5,
+                  background: priceGroup === id ? `rgba(${accentRgb}, 0.15)` : secondary.background,
+                  color: priceGroup === id ? accent : textPrimary,
+                }}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+          <div style={{ ...soft, padding: 14, marginTop: 10 }}>
+            <div style={{ fontSize: 16, fontWeight: 950 }}>{priceData[priceGroup].label}</div>
+            <div style={{ display: "grid", gap: 5, marginTop: 9 }}>
+              {priceData[priceGroup].rows.map(([label, value]) => (
+                <div key={label} style={{ display: "flex", justifyContent: "space-between", gap: 12, fontSize: 12.5 }}>
+                  <span style={{ color: textSecondary }}>{label}</span>
+                  <strong>{value}</strong>
+                </div>
+              ))}
+            </div>
+          </div>
+          <div style={{ color: textSecondary, fontSize: 10.8, lineHeight: 1.4, marginTop: 9 }}>Der Gesamtpreis hängt insbesondere von den tatsächlich benötigten Übungsfahrten ab. Für verbindliche aktuelle Preise Happy Driving direkt prüfen lassen.</div>
+        </div>
+      )}
+    </section>
+  );
+}
 
 type GuidedTriDemoProps = Omit<HohenbadenFutureDemoProps, "variant"> & {
   variant: GuidedTriVariant;
@@ -18493,7 +19136,7 @@ body::after {
                     height: "100%",
                     minHeight: 0,
                     maxHeight: "100%",
-                    overflowY: "scroll",
+                    overflowY: "auto",
                     overflowX: "hidden",
                     WebkitOverflowScrolling: "touch",
                     overscrollBehaviorY: "contain",
@@ -18524,6 +19167,18 @@ body::after {
                     />
                   )}
 
+                  {showStartCards && (isRDriveInterface || isHappyDrivingInterface) && (
+                    <DrivingDemoTabBar
+                      variant={isRDriveInterface ? "r-drive" : "happy-driving"}
+                      panel="home"
+                      onPanelChange={openHohenbadenPanel}
+                      accent={widgetAccent}
+                      accentRgb={accentRgb}
+                      textPrimary={textPrimary}
+                      isMobile={isMobileViewport}
+                    />
+                  )}
+
                   {showStartCards && (
                     <div
                       className="bt-start-view"
@@ -18531,7 +19186,7 @@ body::after {
                         width: "100%",
                         display: "flex",
                         flexDirection: "column",
-                        gap: isEnhancedInterface ? 16 : 10,
+                        gap: (isRDriveInterface || isHappyDrivingInterface) ? 11 : isEnhancedInterface ? 16 : 10,
                         marginBottom: 2,
                       }}
                     >
@@ -18650,7 +19305,7 @@ body::after {
                                       : `Wähle einen Einstieg aus. Danach führt dich ${displayAssistantName} gezielt weiter.`}
                         </div>
 
-                        {(isProfCarInterface || isFahrwerkBInterface || isPetermaennchenInterface || isAbgefahrenInterface || isFutureDemoInterface) && !isRathjeInterface && (
+                        {(isProfCarInterface || isFahrwerkBInterface || isPetermaennchenInterface || isAbgefahrenInterface || isFutureDemoInterface) && !isRathjeInterface && !isRDriveInterface && !isHappyDrivingInterface && (
                           <div
                             className="bt-fahrwerk-steps"
                             style={{
@@ -18984,7 +19639,19 @@ body::after {
                         isMobile={isMobileViewport}
                         onAsk={(message) => void sendText(message)}
                       />
-                    ) : ((["rathje", "fsaz", "campus-b27"] as FutureDemoVariant[]).includes(futureDemoVariant) ? (
+                    ) : ((["r-drive", "happy-driving"] as FutureDemoVariant[]).includes(futureDemoVariant) ? (
+                      <GuidedDrivingCompactDemo
+                        variant={futureDemoVariant as GuidedDrivingVariant}
+                        panel={hohenbadenPanel}
+                        onPanelChange={openHohenbadenPanel}
+                        accent={widgetAccent}
+                        accentRgb={accentRgb}
+                        textPrimary={textPrimary}
+                        textSecondary={textSecondary}
+                        isMobile={isMobileViewport}
+                        onAsk={(message) => void sendText(message)}
+                      />
+                    ) : (["rathje", "fsaz", "campus-b27"] as FutureDemoVariant[]).includes(futureDemoVariant) ? (
                       <GuidedTriDemo
                         variant={futureDemoVariant as GuidedTriVariant}
                         panel={hohenbadenPanel}
