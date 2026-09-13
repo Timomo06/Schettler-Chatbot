@@ -7857,6 +7857,7 @@ function HohenbadenFutureDemo({
   const [transferStep, setTransferStep] = useState(0);
   const [transferAnswers, setTransferAnswers] = useState<Record<string, string>>({});
   const [transferFiles, setTransferFiles] = useState<File[]>([]);
+  const [transferDemoSent, setTransferDemoSent] = useState(false);
   const [documents, setDocuments] = useState<Record<string, boolean>>(() =>
     demoDocuments.reduce<Record<string, boolean>>((acc, item) => {
       acc[item.id] = item.initial;
@@ -8070,6 +8071,7 @@ function HohenbadenFutureDemo({
   }
 
   function chooseTransferAnswer(id: string, value: string) {
+    setTransferDemoSent(false);
     setTransferAnswers((current) => ({ ...current, [id]: value }));
     setTransferStep((current) => Math.min(current + 1, transferQuestions.length));
   }
@@ -9402,6 +9404,136 @@ function HohenbadenFutureDemo({
                 ))}
               </div>
             </div>
+          ) : transferDemoSent ? (
+            <div style={{ ...glassCard, padding: isMobile ? 16 : 20, display: "flex", flexDirection: "column", gap: 14 }}>
+              <div style={{ display: "flex", justifyContent: "space-between", gap: 12, alignItems: "flex-start", flexWrap: "wrap" }}>
+                <div>
+                  <div style={{ color: accent, fontSize: 11.5, fontWeight: 950, letterSpacing: 0.45 }}>
+                    DEMO · ÜBERGABE AN HAPPY DRIVING
+                  </div>
+                  <div style={{ fontSize: isMobile ? 22 : 27, fontWeight: 950, marginTop: 5 }}>
+                    So würde die Fahrschule deine Wechselanfrage erhalten
+                  </div>
+                  <div style={{ color: textSecondary, fontSize: 12.5, lineHeight: 1.5, marginTop: 5, maxWidth: 720 }}>
+                    In der echten Version landet diese strukturierte Zusammenfassung direkt bei Happy Driving. Hier wird nichts wirklich versendet.
+                  </div>
+                </div>
+                <div
+                  style={{
+                    ...softCard,
+                    padding: "9px 12px",
+                    display: "flex",
+                    gap: 8,
+                    alignItems: "center",
+                    fontSize: 12,
+                    fontWeight: 900,
+                    whiteSpace: "nowrap",
+                  }}
+                >
+                  <span
+                    style={{
+                      width: 9,
+                      height: 9,
+                      borderRadius: 999,
+                      background: accent,
+                      boxShadow: `0 0 0 5px rgba(${accentRgb}, 0.10)`,
+                    }}
+                  />
+                  Bei der Fahrschule eingegangen
+                </div>
+              </div>
+
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: isMobile ? "1fr" : "0.82fr 1.18fr",
+                  gap: 12,
+                }}
+              >
+                <div style={{ ...softCard, padding: 15 }}>
+                  <div style={{ fontSize: 12, color: textSecondary, fontWeight: 850 }}>WECHSELPROFIL</div>
+                  <div style={{ display: "grid", gap: 9, marginTop: 11 }}>
+                    {[
+                      ["Führerscheinklasse", transferAnswers.class],
+                      ["Aktueller Stand", transferAnswers.status],
+                      ["Bereits erledigt", transferAnswers.completed],
+                      ["Nachweise", transferAnswers.documents],
+                    ].map(([label, value]) => (
+                      <div key={label} style={{ display: "flex", justifyContent: "space-between", gap: 12 }}>
+                        <span style={{ color: textSecondary, fontSize: 12 }}>{label}</span>
+                        <strong style={{ fontSize: 12.5, textAlign: "right" }}>{value || "–"}</strong>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div style={{ ...softCard, padding: 15 }}>
+                  <div style={{ fontSize: 12, color: textSecondary, fontWeight: 850 }}>ZUSAMMENFASSUNG FÜR HAPPY DRIVING</div>
+                  <div style={{ fontSize: 13, lineHeight: 1.6, marginTop: 10 }}>
+                    Neue Wechselanfrage für <strong>{transferAnswers.class || "eine Führerscheinklasse"}</strong>. 
+                    Der aktuelle Ausbildungsstand ist <strong>{transferAnswers.status || "noch offen"}</strong>. 
+                    Bereits erledigt: <strong>{transferAnswers.completed || "noch nicht angegeben"}</strong>. 
+                    Vorhandene Unterlagen/Nachweise: <strong>{transferAnswers.documents || "noch nicht angegeben"}</strong>.
+                    {transferFiles.length > 0
+                      ? ` Zusätzlich wurden ${transferFiles.length} Datei${transferFiles.length === 1 ? "" : "en"} zur Prüfung angehängt.`
+                      : " Es wurden noch keine Dateien angehängt."}
+                  </div>
+
+                  {transferFiles.length > 0 && (
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: 7, marginTop: 11 }}>
+                      {transferFiles.map((file) => (
+                        <span
+                          key={`${file.name}-${file.size}`}
+                          style={{
+                            borderRadius: 999,
+                            border: `1px solid rgba(${accentRgb}, 0.16)`,
+                            background: "rgba(255,255,255,0.70)",
+                            padding: "6px 9px",
+                            fontSize: 11.5,
+                            fontWeight: 800,
+                          }}
+                        >
+                          {file.name}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div
+                style={{
+                  borderRadius: 16,
+                  border: `1px solid rgba(${accentRgb}, 0.15)`,
+                  background: "rgba(255,255,255,0.60)",
+                  padding: "11px 13px",
+                  display: "flex",
+                  justifyContent: "space-between",
+                  gap: 12,
+                  alignItems: "center",
+                  flexWrap: "wrap",
+                }}
+              >
+                <div>
+                  <div style={{ fontSize: 12.5, fontWeight: 900 }}>Nächster Schritt</div>
+                  <div style={{ color: textSecondary, fontSize: 11.5, marginTop: 3 }}>
+                    Happy Driving prüft die Angaben und meldet sich für die individuelle Übernahme.
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setTransferDemoSent(false);
+                    setTransferStep(0);
+                    setTransferAnswers({});
+                    setTransferFiles([]);
+                  }}
+                  style={{ ...secondaryButton, minHeight: 38, fontSize: 12 }}
+                >
+                  Neue Demo starten
+                </button>
+              </div>
+            </div>
           ) : (
             <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1.15fr 0.85fr", gap: 12 }}>
               <div style={{ ...glassCard, padding: 18 }}>
@@ -9422,7 +9554,18 @@ function HohenbadenFutureDemo({
                     </div>
                   ))}
                 </div>
-                <button type="button" onClick={() => { setTransferStep(0); setTransferAnswers({}); setTransferFiles([]); }} style={{ ...secondaryButton, marginTop: 13 }}>Angaben ändern</button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setTransferDemoSent(false);
+                    setTransferStep(0);
+                    setTransferAnswers({});
+                    setTransferFiles([]);
+                  }}
+                  style={{ ...secondaryButton, marginTop: 13 }}
+                >
+                  Angaben ändern
+                </button>
               </div>
 
               <div style={{ ...glassCard, padding: 18, display: "flex", flexDirection: "column", gap: 12 }}>
@@ -9437,7 +9580,10 @@ function HohenbadenFutureDemo({
                   <input
                     type="file"
                     multiple
-                    onChange={(event) => setTransferFiles(Array.from(event.target.files ?? []))}
+                    onChange={(event) => {
+                      setTransferDemoSent(false);
+                      setTransferFiles(Array.from(event.target.files ?? []));
+                    }}
                     style={{ display: "none" }}
                   />
                 </label>
@@ -9448,13 +9594,13 @@ function HohenbadenFutureDemo({
                 )}
                 <button
                   type="button"
-                  onClick={() => onAsk(`Ich möchte von einer anderen Fahrschule zu Happy Driving wechseln. Klasse: ${transferAnswers.class}. Stand: ${transferAnswers.status}. Bereits erledigt: ${transferAnswers.completed}. Vorhandene Unterlagen: ${transferAnswers.documents}. Welche nächsten Schritte sind sinnvoll?`)}
+                  onClick={() => setTransferDemoSent(true)}
                   style={primaryButton}
                 >
-                  Wechselanfrage vorbereiten
+                  Demo: an Happy Driving senden
                 </button>
                 <div style={{ color: textSecondary, fontSize: 11.5, lineHeight: 1.45 }}>
-                  Keine Behördensimulation: Das Interface bereitet den Wechsel zur Fahrschule vor. Individuelle Übernahme und Unterlagen prüft anschließend Happy Driving.
+                  Der Klick zeigt nur die Übergabe-Ansicht. In dieser Demo werden keine Daten oder Dokumente wirklich an die Fahrschule gesendet.
                 </div>
               </div>
             </div>
