@@ -13570,6 +13570,29 @@ export default function WidgetPage() {
     useState<AbgefahrenPanel>("home");
   const [hohenbadenPanel, setHohenbadenPanel] =
     useState<HohenbadenPanel>("home");
+      const FSAZ_EMBED_PANELS: HohenbadenPanel[] = [
+    "home",
+    "connect",
+    "dashboard",
+    "courses",
+    "schedule",
+    "documents",
+    "coach",
+  ];
+
+  useEffect(() => {
+    if (!mounted || !isFsazInterface) return;
+
+    const params = new URLSearchParams(window.location.search);
+    const requestedPanel = params.get("panel") as HohenbadenPanel | null;
+
+    if (
+      requestedPanel &&
+      FSAZ_EMBED_PANELS.includes(requestedPanel)
+    ) {
+      setHohenbadenPanel(requestedPanel);
+    }
+  }, [mounted, isFsazInterface]);
   const [profcarPanel, setProfCarPanel] = useState<ProfCarPanel>("home");
   const [profCarVoiceVehicle, setProfCarVoiceVehicle] =
     useState<ProfCarVoiceVehicleSelection | null>(null);
@@ -13897,6 +13920,30 @@ export default function WidgetPage() {
     );
 
     const handleBtAiMessage = (event: MessageEvent) => {
+      if (
+  event.data?.type === "bt-chat-panel" &&
+  isFsazInterface
+) {
+  const requestedPanel = String(
+    event.data?.panel || "",
+  ) as HohenbadenPanel;
+
+  const validFsazPanels: HohenbadenPanel[] = [
+    "home",
+    "connect",
+    "dashboard",
+    "courses",
+    "schedule",
+    "documents",
+    "coach",
+  ];
+
+  if (validFsazPanels.includes(requestedPanel)) {
+    setHohenbadenPanel(requestedPanel);
+    setShowBadge(false);
+  }
+}
+
       if (
         event.data?.type === "bt-chat-open" ||
         event.data?.type === "btai-open"
