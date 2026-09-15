@@ -24,3 +24,23 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+.bt-fsaz-tabs {
+  flex: 0 0 auto;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  scrollbar-width: thin;
+}
+
+.bt-mobile-viewport.bt-fsaz-interface .bt-fsaz-tabs {
+  border-radius: 15px !important;
+  gap: 3px !important;
+  flex-wrap: wrap !important;
+}
+
+.bt-mobile-viewport.bt-fsaz-interface .bt-fsaz-tabs button {
+  flex: 1 1 46% !important;
+  min-height: 38px !important;
+  padding: 0 10px !important;
+  font-size: 11px !important;
+}
