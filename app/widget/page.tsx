@@ -5921,7 +5921,6 @@ function RathjeInteractivePanel({
               { label: "B78 Automatik", value: "B78" },
               { label: "BF17", value: "BF17" },
               { label: "BE Anhänger", value: "BE" },
-              { label: "Noch unsicher", value: "Beratung nötig" },
             ],
           },
           {
@@ -5932,16 +5931,6 @@ function RathjeInteractivePanel({
               { label: "Startkosten", value: "Startkosten", detail: "Grundbetrag, Lernmittel und Büroservice" },
               { label: "Fahrstunden", value: "Fahrstundenpreise", detail: "Übungs- und Sonderfahrten einordnen" },
               { label: "Gesamtüberblick", value: "Gesamtüberblick", detail: "Alle veröffentlichten Positionen" },
-            ],
-          },
-          {
-            id: "situation",
-            eyebrow: "SCHRITT 3",
-            question: "Wofür möchtest du die Übersicht nutzen?",
-            choices: [
-              { label: "Neu anfangen", value: "Neustart" },
-              { label: "Angebote vergleichen", value: "Vergleich" },
-              { label: "Budget planen", value: "Budgetplanung" },
             ],
           },
         ]
@@ -6072,7 +6061,7 @@ function RathjeInteractivePanel({
   const currentQuestion = questions[step];
   const progress = phase === "questions" ? ((step + 1) / questions.length) * 100 : 100;
   const title = panel === "coach" ? "Persönliche Preisübersicht" : panel === "schedule" ? "Theorie & Fahrstunden planen" : "Fahrschulwechsel vorbereiten";
-  const successTitle = panel === "coach" ? "Preisanfrage wurde erfolgreich vorbereitet" : panel === "schedule" ? "Planungswunsch wurde erfolgreich übermittelt" : "Wechselanfrage wurde erfolgreich übermittelt";
+  const successTitle = panel === "documents" ? "Wechselanfrage wurde erfolgreich übermittelt" : "Dein persönliches Ergebnis ist fertig";
 
   const labels: Record<string, string> = {
     license: "Führerscheinklasse",
@@ -6090,11 +6079,45 @@ function RathjeInteractivePanel({
     handover: "Übergabe",
   };
 
-  const priceResult = answers.license === "BE"
-    ? "BE: Grundbetrag 250 €, Büroservice 35 €, Fahr-/Sonderfahrt je 45 Min. 75 €."
-    : answers.license === "Beratung nötig"
-      ? "Die passende Klasse wird persönlich eingeordnet; anschließend zeigt Rathje nur die dafür relevanten Preise."
-      : "B/B197/B78/BF17: Grundbetrag 450 €, Lernmittel 99,90 €, Büroservice 35 € und Fahr-/Sonderfahrt je 45 Min. 70 €.";
+  function getRathjePriceResult() {
+    const license = answers.license || "Klasse B";
+    const isBe = license === "BE";
+    const startTotal = isBe ? "285 €" : "584,90 €";
+    const lessonPrice = isBe ? "75 €" : "70 €";
+    const lines = isBe
+      ? [["Grundbetrag", "250 €"], ["Büroservice", "35 €"]]
+      : [["Grundbetrag", "450 €"], ["Lernmittel", "99,90 €"], ["Büroservice", "35 €"]];
+    const headline = answers.priceNeed === "Fahrstundenpreise"
+      ? `Eine Fahrstunde der Klasse ${license.replace("Klasse ", "")} kostet ${lessonPrice} je 45 Minuten.`
+      : `Deine festen Startkosten für ${license === "Klasse B" ? "Klasse B" : `Klasse ${license}`}: ${startTotal}`;
+    return { license, isBe, startTotal, lessonPrice, lines, headline };
+  }
+
+  function getRathjeScheduleResult() {
+    const area = answers.area || "Theorie";
+    const phaseName = answers.phase || "Noch nicht gestartet";
+    const next = area === "Theorie"
+      ? phaseName === "Prüfungsvorbereitung" ? "Besuche die noch offenen Themen und gleiche danach deinen Lernstand mit Rathje ab." : "Steige in den nächsten passenden Theorieunterricht ein und arbeite die Themen parallel nach."
+      : area === "Fahrstunden"
+        ? phaseName === "Noch nicht gestartet" ? "Klasse und Unterlagen zuerst bestätigen, danach die erste Praxisetappe mit Rathje abstimmen." : "Den bisherigen Lernstand mit dem Fahrlehrer abgleichen und darauf die nächste Praxisetappe aufbauen."
+        : "Simulatorziel festlegen, die Einheit als Vorbereitung nutzen und die Inhalte anschließend in der Straßenpraxis übertragen.";
+    const goalAddition = answers.planningGoal === "Persönlichen Ausbildungsplan erstellen"
+      ? " Ordne danach Theorie, Praxis und gegebenenfalls Simulator als aufeinanderfolgende Etappen."
+      : answers.planningGoal === "Nächsten möglichen Schritt prüfen"
+        ? " Lass als Nächstes genau diesen Schritt persönlich auf Verfügbarkeit prüfen."
+        : " Beginne mit diesem Einstieg und prüfe danach den Lernstand erneut.";
+    return { area, next: `${next}${goalAddition}`, preferred: answers.availability || "Flexibel", showTheoryTimes: area === "Theorie" };
+  }
+
+  function getRathjeTransferResult() {
+    const documentState = answers.documents || "Unterlagenprüfung nötig";
+    const completed = answers.completed || "bisherige Ausbildungsschritte";
+    const exam = answers.theoryExam || "ungeklärter Theorieprüfungsstatus";
+    const available = documentState === "vollständiger Ausbildungsnachweis" ? `Ausbildungsnachweis und bisheriger Ausbildungsstand sind als vorhanden markiert. Erfasst sind ${completed}; Theorieprüfung: ${exam}.` : documentState === "einige Nachweise vorhanden" ? `Ein Teil deiner Ausbildungsnachweise ist vorhanden. Angegeben sind ${completed}; Theorieprüfung: ${exam}.` : `Es sind noch keine belastbaren Ausbildungsnachweise markiert. Angegeben wurden ${completed}; Theorieprüfung: ${exam}.`;
+    const missing = documentState === "vollständiger Ausbildungsnachweis" ? "Rathje prüft noch Fahrerlaubnisantrag beziehungsweise Prüfauftrag und die Gültigkeit der Nachweise." : "Vermutlich fehlen Teile des Ausbildungsnachweises, Angaben zu Theorie- und Praxisstunden oder der Prüfstatus.";
+    const request = documentState === "vollständiger Ausbildungsnachweis" ? "Bitte die bisherige Fahrschule nur um noch fehlende Einzelbelege und eine Bestätigung des Ausbildungsstands." : "Fordere bei der bisherigen Fahrschule den vollständigen Ausbildungsnachweis mit Theorieunterricht, Übungsfahrten, Sonderfahrten und Prüfungsstatus an.";
+    return { available, missing, request, next: "Rathje kann die Nachweise anschließend prüfen, anrechenbare Leistungen einordnen und den verbleibenden Ausbildungsweg persönlich festlegen." };
+  }
 
   function choose(value: string) {
     if (!currentQuestion) return;
@@ -6151,6 +6174,11 @@ function RathjeInteractivePanel({
     setPhase("success");
   }
 
+  const priceResult = getRathjePriceResult();
+  const scheduleResult = getRathjeScheduleResult();
+  const transferResult = getRathjeTransferResult();
+  const needsSubmission = panel === "documents";
+
   return (
     <section className="bt-rathje-interactive bt-guided-flow" style={{ ...glass, padding: isMobile ? 14 : 19, display: "flex", flexDirection: "column", gap: 14, color: textPrimary, flex: "0 0 auto" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
@@ -6162,7 +6190,7 @@ function RathjeInteractivePanel({
         <div style={{ color: accent, fontSize: 11, fontWeight: 950, letterSpacing: 0.48, textTransform: "uppercase" }}>Digitales Fahrschulbüro · Rathje</div>
         <div style={{ fontSize: isMobile ? 24 : 30, fontWeight: 950, marginTop: 4 }}>{phase === "success" ? successTitle : title}</div>
         <div style={{ color: textSecondary, fontSize: 13, lineHeight: 1.48, marginTop: 6 }}>
-          {phase === "questions" ? "Immer nur eine Frage. Deine Antworten füllen im Hintergrund automatisch die geordnete Anfrage aus." : phase === "review" ? "Prüfe die automatisch ausgefüllten Angaben und ergänze nur noch deine Kontaktdaten." : "Die Demo zeigt jetzt den vollständigen Abschluss. Es wurden keine echten Daten versendet."}
+          {phase === "questions" ? "Immer nur eine Frage. Danach erhältst du direkt ein konkretes, auf deine Auswahl abgestimmtes Ergebnis." : phase === "review" ? (needsSubmission ? "Dein Wechselergebnis steht fest. Danach kannst du die geordnete Demo-Wechselanfrage ergänzen." : "Deine Antworten wurden ausgewertet. Es ist keine Anfrage und keine Eingabe von Kontaktdaten nötig.") : "Die Demo zeigt jetzt den vollständigen Abschluss. Es wurden keine echten Daten versendet."}
         </div>
       </div>
 
@@ -6170,7 +6198,7 @@ function RathjeInteractivePanel({
         <div style={{ flex: 1, height: 7, borderRadius: 999, background: `rgba(${accentRgb}, 0.10)`, overflow: "hidden" }}>
           <div style={{ width: `${progress}%`, height: "100%", borderRadius: 999, background: accent, transition: "width 220ms ease" }} />
         </div>
-        <span style={{ color: textSecondary, fontSize: 11.5, fontWeight: 900 }}>{phase === "questions" ? `${step + 1}/${questions.length}` : phase === "review" ? "Prüfen" : "Fertig"}</span>
+        <span style={{ color: textSecondary, fontSize: 11.5, fontWeight: 900 }}>{phase === "questions" ? `${step + 1}/${questions.length}` : phase === "review" ? "Ergebnis" : "Fertig"}</span>
       </div>
 
       {phase === "questions" && currentQuestion && (
@@ -6190,44 +6218,70 @@ function RathjeInteractivePanel({
       )}
 
       {phase === "review" && (
-        <form onSubmit={submitDemo} style={{ display: "flex", flexDirection: "column", gap: 11 }}>
-          <div style={{ ...soft, padding: isMobile ? 14 : 17 }}>
-            <div style={{ color: accent, fontSize: 11, fontWeight: 950, letterSpacing: 0.45 }}>AUTOMATISCH AUSGEFÜLLTE ZUSAMMENFASSUNG</div>
-            <div style={{ display: "grid", gap: 8, marginTop: 12 }}>
-              {Object.entries(answers).map(([key, value]) => (
-                <div key={key} style={{ display: "flex", justifyContent: "space-between", gap: 14, paddingBottom: 8, borderBottom: "1px solid rgba(17,24,39,0.07)", fontSize: 12.5 }}>
-                  <span style={{ color: textSecondary }}>{labels[key] || key}</span><strong style={{ textAlign: "right" }}>{value}</strong>
+        <div className="bt-guided-step-in" style={{ display: "flex", flexDirection: "column", gap: 11 }}>
+          {panel === "coach" && (
+            <div style={{ ...soft, padding: isMobile ? 16 : 21 }}>
+              <div style={{ color: accent, fontSize: 11, fontWeight: 950, letterSpacing: 0.5 }}>DEINE PERSÖNLICHE PREISÜBERSICHT</div>
+              <div style={{ fontSize: isMobile ? 23 : 29, fontWeight: 950, lineHeight: 1.18, marginTop: 7 }}>{priceResult.headline}</div>
+              {answers.priceNeed !== "Fahrstundenpreise" && (
+                <div style={{ display: "grid", gap: 7, marginTop: 16 }}>
+                  {priceResult.lines.map(([label, value]) => <div key={label} style={{ display: "flex", justifyContent: "space-between", gap: 14, paddingBottom: 7, borderBottom: "1px solid rgba(17,24,39,0.08)", fontSize: 13 }}><span style={{ color: textSecondary }}>{label}</span><strong>{value}</strong></div>)}
+                  <div style={{ display: "flex", justifyContent: "space-between", gap: 14, fontSize: 14.5 }}><strong>Feste Startkosten</strong><strong style={{ color: accent }}>{priceResult.startTotal}</strong></div>
                 </div>
-              ))}
+              )}
+              {answers.priceNeed !== "Startkosten" && (
+                <div style={{ display: "grid", gap: 8, marginTop: 16 }}>
+                  <div style={{ padding: 12, borderRadius: 13, background: "rgba(255,255,255,0.66)", display: "flex", justifyContent: "space-between", gap: 12 }}><span>Fahrstunde · 45 Minuten</span><strong>{priceResult.lessonPrice}</strong></div>
+                  <div style={{ padding: 12, borderRadius: 13, background: "rgba(255,255,255,0.66)", display: "flex", justifyContent: "space-between", gap: 12 }}><span>Sonderfahrt · 45 Minuten</span><strong>{priceResult.lessonPrice}</strong></div>
+                </div>
+              )}
+              <div style={{ color: textSecondary, fontSize: 12.5, lineHeight: 1.5, marginTop: 14 }}>Fahrstunden und Sonderfahrten sind variable Kosten. Der endgültige Gesamtpreis hängt von der tatsächlich benötigten Anzahl der Fahrstunden ab. Weitere Positionen werden hier nicht ausgewiesen, weil dafür keine widerspruchsfreie verifizierte Rathje-Angabe im aktiven Ablauf vorliegt.</div>
             </div>
-            {panel === "coach" && <div style={{ marginTop: 12, padding: 11, borderRadius: 13, background: "rgba(255,255,255,0.66)", color: textSecondary, fontSize: 12, lineHeight: 1.5 }}><strong style={{ color: textPrimary }}>Preisorientierung:</strong> {priceResult} Der Gesamtpreis hängt von den tatsächlich benötigten Fahrstunden ab.</div>}
-            {panel === "schedule" && answers.area === "Theorie" && <div style={{ marginTop: 12, color: textSecondary, fontSize: 12, lineHeight: 1.45 }}>Veröffentlichte Theoriezeit: Dienstag, Mittwoch und Donnerstag, 18:00–19:30 Uhr. Die persönliche Planung wird von Rathje bestätigt.</div>}
-          </div>
+          )}
 
-          {panel === "documents" && (
+          {panel === "schedule" && (
+            <div style={{ ...soft, padding: isMobile ? 16 : 21 }}>
+              <div style={{ color: accent, fontSize: 11, fontWeight: 950, letterSpacing: 0.5 }}>DEIN KONKRETER AUSBILDUNGSPLAN</div>
+              <div style={{ fontSize: isMobile ? 22 : 27, fontWeight: 950, marginTop: 7 }}>Nächster Schritt: {scheduleResult.area}</div>
+              <div style={{ color: textPrimary, fontSize: 13.5, lineHeight: 1.55, marginTop: 10 }}>{scheduleResult.next}</div>
+              {scheduleResult.showTheoryTimes && <div style={{ marginTop: 14, padding: 13, borderRadius: 14, background: "rgba(255,255,255,0.68)" }}><strong>Veröffentlichte Theoriezeiten</strong><div style={{ color: textSecondary, fontSize: 13, lineHeight: 1.5, marginTop: 5 }}>Dienstag, Mittwoch und Donnerstag · 18:00–19:30 Uhr<br />Alter Zollweg 201 · Hamburg</div></div>}
+              <div style={{ color: textSecondary, fontSize: 12.5, lineHeight: 1.5, marginTop: 13 }}>Deine grundsätzliche Verfügbarkeit: {scheduleResult.preferred}. Konkrete Fahrstunden, Simulatorzeiten und freie Plätze müssen persönlich von Rathje bestätigt werden.</div>
+            </div>
+          )}
+
+          {panel === "documents" && <>
+            <div style={{ ...soft, padding: isMobile ? 16 : 21 }}>
+              <div style={{ color: accent, fontSize: 11, fontWeight: 950, letterSpacing: 0.5 }}>DEIN WECHSELERGEBNIS</div>
+              <div style={{ fontSize: isMobile ? 22 : 27, fontWeight: 950, marginTop: 7 }}>Diese Schritte bereiten den Wechsel vor</div>
+              {[['Vorhanden', transferResult.available], ['Vermutlich noch offen', transferResult.missing], ['Bei der bisherigen Fahrschule anfordern', transferResult.request], ['Danach kann Rathje übernehmen', transferResult.next]].map(([label, value]) => <div key={label} style={{ marginTop: 12, padding: 12, borderRadius: 13, background: "rgba(255,255,255,0.66)" }}><strong style={{ fontSize: 12.5 }}>{label}</strong><div style={{ color: textSecondary, fontSize: 12.5, lineHeight: 1.5, marginTop: 4 }}>{value}</div></div>)}
+            </div>
+            <div style={{ ...soft, padding: isMobile ? 14 : 17 }}>
+              <div style={{ color: accent, fontSize: 11, fontWeight: 950, letterSpacing: 0.45 }}>ANGABEN FÜR DIE DEMO-WECHSELANFRAGE</div>
+              <div style={{ display: "grid", gap: 8, marginTop: 12 }}>{Object.entries(answers).map(([key, value]) => <div key={key} style={{ display: "flex", justifyContent: "space-between", gap: 14, paddingBottom: 8, borderBottom: "1px solid rgba(17,24,39,0.07)", fontSize: 12.5 }}><span style={{ color: textSecondary }}>{labels[key] || key}</span><strong style={{ textAlign: "right" }}>{value}</strong></div>)}</div>
+            </div>
             <label style={{ ...soft, padding: 14, cursor: "pointer" }}>
               <span style={{ display: "block", fontWeight: 950 }}>Unterlagen ergänzen</span>
               <span style={{ display: "block", color: textSecondary, fontSize: 11.5, marginTop: 3 }}>PDF, JPG oder PNG · in der Demo kein echter Upload</span>
               <input type="file" multiple accept="application/pdf,image/jpeg,image/png" onChange={(event) => setFiles(Array.from(event.target.files || []))} style={{ width: "100%", marginTop: 10, fontSize: 12 }} />
               {files.length > 0 && <span style={{ display: "block", color: accent, fontSize: 11.5, fontWeight: 900, marginTop: 7 }}>{files.length} Datei{files.length === 1 ? "" : "en"} zur Demo-Zusammenfassung hinzugefügt</span>}
             </label>
-          )}
+            <form onSubmit={submitDemo} style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+              <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 9 }}><input value={contactName} onChange={(event) => setContactName(event.target.value)} placeholder="Vor- und Nachname" style={field} /><input value={contactValue} onChange={(event) => setContactValue(event.target.value)} placeholder="E-Mail oder Telefonnummer" style={field} /></div>
+              <textarea value={note} onChange={(event) => setNote(event.target.value)} placeholder="Optional: kurze Ergänzung für Rathje" rows={2} style={{ ...field, minHeight: 68, padding: 12, resize: "vertical" }} />
+              <label style={{ ...soft, padding: 12, display: "flex", gap: 9, alignItems: "flex-start", color: textSecondary, fontSize: 11.5, lineHeight: 1.4 }}><input type="checkbox" checked={consent} onChange={(event) => setConsent(event.target.checked)} />Ich bestätige den Demo-Hinweis. Es werden keine Daten oder Dateien wirklich versendet.</label>
+              {error && <div style={{ color: "#a23b3b", fontSize: 12.5, fontWeight: 850 }}>{error}</div>}
+              <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "0.8fr 1.2fr", gap: 9 }}><button type="button" onClick={goBack} style={secondary}>Angaben ändern</button><button type="submit" style={primary}>Demo-Wechselanfrage absenden</button></div>
+            </form>
+          </>}
 
-          <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 9 }}>
-            <input value={contactName} onChange={(event) => setContactName(event.target.value)} placeholder="Vor- und Nachname" style={field} />
-            <input value={contactValue} onChange={(event) => setContactValue(event.target.value)} placeholder="E-Mail oder Telefonnummer" style={field} />
+          {panel !== "documents" && (
+          <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(3, minmax(0, 1fr))", gap: 9 }}>
+            <button type="button" onClick={goBack} style={secondary}>Auswahl ändern</button>
+            <button type="button" onClick={restart} style={secondary}>{panel === "coach" ? "Andere Führerscheinklasse prüfen" : "Neuen Plan erstellen"}</button>
+            <button type="button" onClick={() => onPanelChange("home")} style={primary}>Zur Übersicht</button>
           </div>
-          <textarea value={note} onChange={(event) => setNote(event.target.value)} placeholder="Optional: kurze Ergänzung für Rathje" rows={2} style={{ ...field, minHeight: 68, padding: 12, resize: "vertical" }} />
-          <label style={{ ...soft, padding: 12, display: "flex", gap: 9, alignItems: "flex-start", color: textSecondary, fontSize: 11.5, lineHeight: 1.4 }}>
-            <input type="checkbox" checked={consent} onChange={(event) => setConsent(event.target.checked)} />
-            Ich bestätige die Verarbeitung dieser Angaben. Demo: Es werden keine Daten oder Dateien wirklich versendet.
-          </label>
-          {error && <div style={{ color: "#a23b3b", fontSize: 12.5, fontWeight: 850 }}>{error}</div>}
-          <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "0.8fr 1.2fr", gap: 9 }}>
-            <button type="button" onClick={goBack} style={secondary}>Angaben ändern</button>
-            <button type="submit" style={primary}>{panel === "coach" ? "Demo-Preisanfrage absenden" : panel === "schedule" ? "Demo-Planungswunsch absenden" : "Demo-Wechselanfrage absenden"}</button>
-          </div>
-        </form>
+          )}
+        </div>
       )}
 
       {phase === "success" && (
@@ -6673,12 +6727,18 @@ function GuidedTriDemo({
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [freeText, setFreeText] = useState("");
   const [demoSubmitted, setDemoSubmitted] = useState(false);
+  const [demoName, setDemoName] = useState("");
+  const [demoContact, setDemoContact] = useState("");
+  const [demoError, setDemoError] = useState("");
 
   useEffect(() => {
     setStep(0);
     setAnswers({});
     setFreeText("");
     setDemoSubmitted(false);
+    setDemoName("");
+    setDemoContact("");
+    setDemoError("");
   }, [panel, variant]);
 
   if (panel === "home") return null;
@@ -7060,6 +7120,17 @@ function GuidedTriDemo({
             ],
           } satisfies GuidedQuestion] : []),
           {
+            id: "documents",
+            eyebrow: "STARTUNTERLAGEN",
+            question: "Wie weit bist du mit deinen Startunterlagen?",
+            choices: [
+              { label: "Noch nichts vorbereitet", value: "nichts vorbereitet" },
+              { label: "Teilweise vorhanden", value: "teilweise vorhanden" },
+              { label: "Alles vorbereitet", value: "vollständig" },
+              { label: "Ich brauche eine Checkliste", value: "Checkliste benötigt" },
+            ],
+          },
+          {
             id: "time",
             eyebrow: "AUSBILDUNGSSTART",
             question: "Wann möchtest du ungefähr starten?",
@@ -7069,19 +7140,6 @@ function GuidedTriDemo({
               { label: "Später im Jahr", value: "später im Jahr" },
               { label: "Noch offen", value: "Startzeit noch offen" },
             ],
-          },
-          {
-            id: "name",
-            eyebrow: "DEIN NAME",
-            question: "Wie heißt du?",
-            placeholder: "Vor- und Nachname",
-          },
-          {
-            id: "contact",
-            eyebrow: "KONTAKT",
-            question: "Wie kann Rathje dich in einer echten Anfrage erreichen?",
-            helper: "Für diese Demo wird nichts wirklich versendet oder gespeichert.",
-            placeholder: "E-Mail oder Telefonnummer",
           },
         ];
       }
@@ -7672,7 +7730,7 @@ function GuidedTriDemo({
   const questions = getQuestions();
   const currentQuestion = questions[Math.min(step, Math.max(questions.length - 1, 0))];
   const isComplete = step >= questions.length;
-  const requiresDemoSubmission = isRathje;
+  const requiresDemoSubmission = isRathje && panel === "courses";
   const answeredPairs = questions
     .filter((question) => answers[question.id])
     .map((question) => [question.id, answers[question.id]] as const);
@@ -7724,6 +7782,9 @@ function GuidedTriDemo({
     setAnswers({});
     setFreeText("");
     setDemoSubmitted(false);
+    setDemoName("");
+    setDemoContact("");
+    setDemoError("");
   }
 
   function resultText() {
@@ -7763,8 +7824,12 @@ function GuidedTriDemo({
         const inferredClass = answers.license === "unsicher"
           ? answers.startingPoint === "Begleitet ab 17" ? "BF17" : answers.startingPoint === "Anhänger fahren" ? "BE" : answers.startingPoint === "Automatik und Schaltung" ? "B197" : "Klasse B"
           : answers.license || "Führerschein";
-        const prerequisite = answers.startingPoint ? ` Die passende Voraussetzung „${answers.startingPoint}“ wurde berücksichtigt.` : "";
-        return `Für ${answers.name || "dich"} ist eine Demo-Anfrage für ${inferredClass} mit Wunschstart „${answers.time || "offen"}“ vorbereitet.${prerequisite} Die Kontaktmöglichkeit wurde in die automatisch ausgefüllte Zusammenfassung übernommen.`;
+        const prerequisite = inferredClass === "BF17"
+          ? answers.startingPoint === "unter 16½ Jahre" ? "Du kannst die Vorbereitung bereits planen; der reguläre BF17-Start ist erst ab 16½ Jahren möglich." : "Für BF17 werden Alter, Zustimmung der Erziehungsberechtigten und geeignete Begleitpersonen persönlich geprüft."
+          : inferredClass === "BE" ? (answers.startingPoint === "Klasse B vorhanden" ? "Die Voraussetzung Klasse B ist nach deiner Angabe erfüllt." : "Vor dem BE-Start muss Rathje den Stand deiner Klasse B prüfen.")
+          : "Rathje prüft zum Start die gewählte Ausbildungsvariante und den Fahrerlaubnisantrag.";
+        const missing = answers.documents === "vollständig" ? "Deine Startunterlagen sind als vollständig markiert; Rathje prüft sie vor Ort auf Gültigkeit." : "Voraussichtlich zu prüfen oder nachzureichen sind Ausweis, biometrisches Passbild, Sehtest, Erste-Hilfe-Nachweis und Fahrerlaubnisantrag.";
+        return `Empfohlener Start: ${inferredClass}. ${prerequisite} ${missing} Dein Ablauf: 1. Unterlagen prüfen, 2. Anmeldung und Theorieeinstieg persönlich abstimmen, 3. Praxis beziehungsweise Simulator passend zum Lernstand planen. Als Wunschstart ist „${answers.time || "offen"}“ hinterlegt.`;
       }
       if (panel === "connect") {
         return `Dein Cockpit ist auf die Phase „${answers.phase || "offen"}“ eingegrenzt. Es zeigt jetzt nur „${answers.need || "den nächsten Schritt"}“ und berücksichtigt dabei „${answers.blocker || "kein Hindernis"}“ – ohne unnötige Menüs.`;
@@ -7888,7 +7953,7 @@ function GuidedTriDemo({
         <div style={{ fontSize: isMobile ? 24 : 29, fontWeight: 950, marginTop: 4 }}>
           {isComplete
             ? requiresDemoSubmission && !demoSubmitted
-              ? "Prüfe deine Angaben vor dem Absenden."
+              ? "Dein persönlicher Rathje-Startplan"
               : "Demo erfolgreich abgeschlossen."
             : currentQuestion?.question}
         </div>
@@ -8069,7 +8134,7 @@ function GuidedTriDemo({
             <div>
               <div style={{ ...smallLabel, color: accent }}>
                 {requiresDemoSubmission && !demoSubmitted
-                  ? "DEMO · ZUSAMMENFASSUNG"
+                  ? "DEIN KONKRETES ERGEBNIS"
                   : "DEMO · ERFOLGREICH"}
               </div>
               <div style={{ color: textPrimary, fontSize: 14, lineHeight: 1.58, marginTop: 7 }}>
@@ -8117,6 +8182,18 @@ function GuidedTriDemo({
             </div>
           )}
 
+          {requiresDemoSubmission && !demoSubmitted && (
+            <div style={{ ...glass, padding: 14 }}>
+              <div style={{ ...smallLabel }}>OPTIONALE DEMO-STARTANFRAGE</div>
+              <div style={{ color: textSecondary, fontSize: 12.5, lineHeight: 1.5, marginTop: 6 }}>Erst nach dem fertigen Startplan kannst du Kontaktdaten für die Demo ergänzen. Es wird nichts wirklich versendet oder gespeichert.</div>
+              <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 9, marginTop: 11 }}>
+                <input value={demoName} onChange={(event) => { setDemoName(event.target.value); setDemoError(""); }} placeholder="Vor- und Nachname" style={{ minHeight: 45, borderRadius: 13, border: `1px solid rgba(${accentRgb}, 0.17)`, background: "rgba(255,255,255,0.82)", color: textPrimary, padding: "0 12px", outline: "none", fontSize: 13.5, minWidth: 0 }} />
+                <input value={demoContact} onChange={(event) => { setDemoContact(event.target.value); setDemoError(""); }} placeholder="E-Mail oder Telefonnummer" style={{ minHeight: 45, borderRadius: 13, border: `1px solid rgba(${accentRgb}, 0.17)`, background: "rgba(255,255,255,0.82)", color: textPrimary, padding: "0 12px", outline: "none", fontSize: 13.5, minWidth: 0 }} />
+              </div>
+              {demoError && <div style={{ color: "#a23b3b", fontSize: 12.5, fontWeight: 850, marginTop: 8 }}>{demoError}</div>}
+            </div>
+          )}
+
           <div
             style={{
               display: "grid",
@@ -8139,14 +8216,16 @@ function GuidedTriDemo({
                   Neue Demo-Anfrage
                 </button>
               ) : (
-                <button type="button" onClick={() => setDemoSubmitted(true)} style={{ ...primary, minHeight: 49 }}>
+                <button type="button" onClick={() => { if (!demoName.trim() || !demoContact.trim()) { setDemoError("Bitte ergänze deinen Namen und eine Kontaktmöglichkeit."); return; } setDemoError(""); setDemoSubmitted(true); }} style={{ ...primary, minHeight: 49 }}>
                   Demo-Anfrage absenden
                 </button>
               )
             ) : (
-              <button type="button" onClick={finishInChat} style={{ ...primary, minHeight: 49 }}>
-                Im Chat weiterführen
-              </button>
+              isRathje ? (
+                <button type="button" onClick={() => onPanelChange("home")} style={{ ...primary, minHeight: 49 }}>Zur Übersicht</button>
+              ) : (
+                <button type="button" onClick={finishInChat} style={{ ...primary, minHeight: 49 }}>Im Chat weiterführen</button>
+              )
             )}
           </div>
         </>
@@ -8330,7 +8409,7 @@ function FsazInteractiveDemo({
         {
           id: "school",
           eyebrow: "SCHRITT 1",
-          question: "Welche Preisübersicht brauchst du?",
+          question: "Wo machst du deine Fahrausbildung?",
           choices: [
             { label: "Rathje-Fahrschüler", value: "Fahrschule Rathje" },
             { label: "Andere Fahrschule", value: "externe Fahrschule" },
@@ -8339,24 +8418,35 @@ function FsazInteractiveDemo({
           ],
         },
         {
-          id: "package",
+          id: "goal",
           eyebrow: "SCHRITT 2",
-          question: "Welchen Umfang möchtest du einordnen?",
+          question: "Was möchtest du hauptsächlich trainieren?",
           choices: [
-            { label: "6 × 45 Minuten", value: "Grundausbildung" },
-            { label: "9 × 45 Minuten", value: "Komplettpaket" },
-            { label: "Noch unsicher", value: "Paketempfehlung" },
+            { label: "Grundlagen", value: "Grundlagen" },
+            { label: "Schalten & Anfahren", value: "Schalten und Anfahren" },
+            { label: "Mehrere Bereiche", value: "mehrere Bereiche" },
+            { label: "Auffrischung", value: "Auffrischung" },
           ],
         },
         {
-          id: "priceNeed",
+          id: "experience",
           eyebrow: "SCHRITT 3",
-          question: "Was soll die Übersicht besonders erklären?",
+          question: "Wie viel Fahrerfahrung hast du?",
           choices: [
-            { label: "Gesamtkosten", value: "Gesamtkosten" },
-            { label: "Leistungsumfang", value: "Leistungsumfang" },
-            { label: "Zusatzkosten extern", value: "Zusatzkosten für Externe" },
-            { label: "Pakete vergleichen", value: "Paketvergleich" },
+            { label: "Noch keine", value: "keine" },
+            { label: "Erste Fahrstunden", value: "erste Fahrstunden" },
+            { label: "Schon recht sicher", value: "erfahren" },
+            { label: "Länger nicht gefahren", value: "Auffrischung" },
+          ],
+        },
+        {
+          id: "package",
+          eyebrow: "SCHRITT 4",
+          question: "Welchen Umfang möchtest du prüfen?",
+          choices: [
+            { label: "6 × 45 Minuten", value: "Grundausbildung" },
+            { label: "9 × 45 Minuten", value: "Komplettpaket" },
+            { label: "Bitte empfehlen", value: "Paketempfehlung" },
           ],
         },
       ];
@@ -8406,7 +8496,7 @@ function FsazInteractiveDemo({
     questions.slice(step + 1).forEach((question) => delete next[question.id]);
     setAnswers(next);
     setFreeText("");
-    if (step + 1 >= questions.length) setPhase("review");
+    if (step + 1 >= questions.length) setPhase("success");
     else setStep((current) => current + 1);
   }
 
@@ -8446,16 +8536,20 @@ function FsazInteractiveDemo({
       const external = answers.school === "externe Fahrschule"
         ? " Für externe Fahrschüler kommt laut veröffentlichter Preisliste eine einmalige Anmeldung von 30 € hinzu."
         : "";
-      return `Empfehlung: Starte mit dem Bereich „${answers.goal || "Grundlagen"}“. Dein Erfahrungsstand „${answers.experience || "offen"}“ wird vor Ort genutzt, um Schwierigkeit und Umfang passend einzuordnen.${external}`;
+      const goal = answers.goal || "Grundlagen und Bedienung";
+      const content = goal.includes("Schalten") ? "Kupplungspunkt, Gasdosierung, Gangwechsel und kontrolliertes Anfahren" : goal === "Überland" ? "Blickführung, Tempoanpassung, Kurven und vorausschauende Entscheidungen" : goal === "Autobahn" ? "Auffahren, Abstand, Spurwechsel und Geschwindigkeit" : goal === "Automatik" ? "Fahrzeugbedienung, Bremsdosierung und sichere Routinen ohne Schaltvorgang" : "Sitzposition, Pedale, Lenken, Blickführung und sichere Grundabläufe";
+      const packageName = answers.experience === "keine Erfahrung" || goal.includes("Grundlagen") ? "Grundausbildung mit 6 × 45 Minuten" : "gezieltes Einzelmodul; bei mehreren Trainingszielen das Komplettpaket mit 9 × 45 Minuten";
+      return `Empfohlenes Modul: ${goal}. Dieses Modul passt zu deinem Erfahrungsstand „${answers.experience || "offen"}“, weil die Schwierigkeit kontrolliert aufgebaut und einzelne Abläufe wiederholt werden können. Trainiert werden ${content}. Passende Preisoption: ${packageName}. Die genaue Moduleinteilung und Teilnahme werden persönlich vor Ort geklärt.${external}`;
     }
     if (activePanel === "coach") {
-      const basePrice = answers.package === "Grundausbildung"
-        ? "180 € für 6 × 45 Minuten"
-        : answers.package === "Komplettpaket"
-          ? "270 € für 9 × 45 Minuten"
-          : "180 € für 6 × 45 Minuten oder 270 € für 9 × 45 Minuten";
-      const external = answers.school === "externe Fahrschule" ? " Hinzu kommen 30 € Anmeldung für externe Fahrschüler." : "";
-      return `Preisorientierung: ${basePrice}.${external} Der genaue Umfang und die aktuell gültigen Konditionen werden ausschließlich persönlich vor Ort bestätigt.`;
+      const recommendedPackage = answers.package === "Paketempfehlung"
+        ? answers.goal === "mehrere Bereiche" || answers.experience === "Auffrischung" ? "Komplettpaket" : "Grundausbildung"
+        : answers.package || "Grundausbildung";
+      const base = recommendedPackage === "Komplettpaket" ? 270 : 180;
+      const externalFee = answers.school === "externe Fahrschule" ? 30 : 0;
+      const units = recommendedPackage === "Komplettpaket" ? "9 × 45 Minuten" : "6 × 45 Minuten";
+      const reason = recommendedPackage === "Komplettpaket" ? "Mehrere Trainingsbereiche beziehungsweise eine breitere Auffrischung brauchen mehr Raum für Aufbau und Wiederholung." : "Für einen klar begrenzten Einstieg oder Grundlagenziel ist der kompakte Umfang passend.";
+      return `Empfehlung: ${recommendedPackage} mit ${units}. Preis: ${base} €. ${answers.package === "Paketempfehlung" ? reason : "Du hast diesen Umfang selbst ausgewählt."}${externalFee ? ` Einmalige Anmeldung für externe Fahrschüler: 30 €. Gesamt: ${base + externalFee} €.` : ` Gesamt: ${base} €.`} Den genauen Umfang und die aktuell gültigen Konditionen bestätigt FSAZ persönlich vor Ort.`;
     }
     if (answers.topic === "Ersatz von Fahrstunden") return "Der Simulator ergänzt die Fahrausbildung, ersetzt aber keine vorgeschriebenen oder praktisch notwendigen Fahrstunden auf der Straße.";
     if (answers.topic === "Training für Externe") return "Zusätzliches Simulatortraining kann auch bei einer anderen Fahrschule infrage kommen. Ein Fahrschulwechsel ist dafür nicht automatisch nötig; Details werden vor Ort geklärt.";
