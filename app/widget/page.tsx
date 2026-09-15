@@ -5818,6 +5818,49 @@ function FsazTabBar(props: RathjeTabBarProps) {
   );
 }
 
+type GuidedResultDetail = {
+  label: string;
+  text: string;
+  emphasis?: boolean;
+};
+
+type GuidedResultViewProps = {
+  eyebrow: string;
+  title: string;
+  lead: string;
+  metric?: string;
+  metricLabel?: string;
+  details: GuidedResultDetail[];
+  accent: string;
+  accentRgb: string;
+  textPrimary: string;
+  textSecondary: string;
+  isMobile: boolean;
+};
+
+function GuidedResultView({ eyebrow, title, lead, metric, metricLabel, details, accent, accentRgb, textPrimary, textSecondary, isMobile }: GuidedResultViewProps) {
+  return (
+    <section className="bt-guided-result bt-guided-step-in" style={{ borderRadius: isMobile ? 18 : 21, border: `1px solid rgba(${accentRgb}, 0.20)`, background: `radial-gradient(420px 180px at 8% 0%, rgba(${accentRgb}, 0.16), transparent 70%), linear-gradient(180deg, rgba(255,255,255,0.96), rgba(255,255,255,0.76))`, boxShadow: `0 18px 44px rgba(${accentRgb}, 0.10), inset 0 1px 0 rgba(255,255,255,0.88)`, padding: isMobile ? 16 : 20 }}>
+      <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
+        <span aria-hidden="true" style={{ width: 28, height: 28, borderRadius: 10, display: "grid", placeItems: "center", background: `rgba(${accentRgb}, 0.15)`, color: accent, fontSize: 15, fontWeight: 950 }}>✓</span>
+        <span style={{ color: accent, fontSize: 10.5, fontWeight: 950, letterSpacing: 0.55, textTransform: "uppercase" }}>{eyebrow}</span>
+      </div>
+      {metric && <div style={{ color: textPrimary, fontSize: isMobile ? 38 : 46, fontWeight: 950, lineHeight: 1, letterSpacing: -1.2, marginTop: 12 }}>{metric}</div>}
+      {metricLabel && <div style={{ color: accent, fontSize: 13, fontWeight: 950, marginTop: 5 }}>{metricLabel}</div>}
+      <div style={{ color: textPrimary, fontSize: metric ? (isMobile ? 20 : 23) : (isMobile ? 23 : 28), fontWeight: 950, lineHeight: 1.16, marginTop: metric ? 8 : 12 }}>{title}</div>
+      <div style={{ color: textSecondary, fontSize: 12.8, lineHeight: 1.48, marginTop: 7, maxWidth: 720 }}>{lead}</div>
+      <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : `repeat(${Math.min(3, Math.max(1, details.length))}, minmax(0, 1fr))`, gap: 8, marginTop: 14 }}>
+        {details.slice(0, 3).map((detail) => (
+          <div key={detail.label} style={{ minWidth: 0, borderRadius: 14, border: detail.emphasis ? `1px solid rgba(${accentRgb}, 0.28)` : "1px solid rgba(20,45,65,0.08)", background: detail.emphasis ? `rgba(${accentRgb}, 0.11)` : "rgba(255,255,255,0.68)", padding: 12 }}>
+            <div style={{ color: detail.emphasis ? accent : textSecondary, fontSize: 10.5, fontWeight: 950, letterSpacing: 0.35, textTransform: "uppercase" }}>{detail.label}</div>
+            <div style={{ color: textPrimary, fontSize: 12.5, lineHeight: 1.42, fontWeight: detail.emphasis ? 850 : 700, marginTop: 4 }}>{detail.text}</div>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
 type RathjeInteractivePhase = "questions" | "review" | "success";
 
 function RathjeInteractivePanel({
@@ -6046,16 +6089,6 @@ function RathjeInteractivePanel({
                 { label: "Unklar, was benötigt wird", value: "Unterlagenprüfung nötig" },
               ],
             },
-            {
-              id: "handover",
-              eyebrow: "SCHRITT 7",
-              question: "Wie soll Rathje mit den Unterlagen weiter vorgehen?",
-              choices: [
-                { label: "Kompletter Ausbildungsstand", value: "Ausbildungsstand und Nachweise" },
-                { label: "Erst Rückruf", value: "Rückruf vor Dokumentenübertragung" },
-                { label: "Unterlagen prüfen", value: "Vorhandene Unterlagen prüfen" },
-              ],
-            },
           ];
 
   const currentQuestion = questions[step];
@@ -6076,7 +6109,6 @@ function RathjeInteractivePanel({
     theoryExam: "Theorieprüfung",
     completed: "Absolvierte Schritte",
     documents: "Unterlagen",
-    handover: "Übergabe",
   };
 
   function getRathjePriceResult() {
@@ -6087,10 +6119,7 @@ function RathjeInteractivePanel({
     const lines = isBe
       ? [["Grundbetrag", "250 €"], ["Büroservice", "35 €"]]
       : [["Grundbetrag", "450 €"], ["Lernmittel", "99,90 €"], ["Büroservice", "35 €"]];
-    const headline = answers.priceNeed === "Fahrstundenpreise"
-      ? `Eine Fahrstunde der Klasse ${license.replace("Klasse ", "")} kostet ${lessonPrice} je 45 Minuten.`
-      : `Deine festen Startkosten für ${license === "Klasse B" ? "Klasse B" : `Klasse ${license}`}: ${startTotal}`;
-    return { license, isBe, startTotal, lessonPrice, lines, headline };
+    return { license, startTotal, lessonPrice, lines };
   }
 
   function getRathjeScheduleResult() {
@@ -6177,7 +6206,6 @@ function RathjeInteractivePanel({
   const priceResult = getRathjePriceResult();
   const scheduleResult = getRathjeScheduleResult();
   const transferResult = getRathjeTransferResult();
-  const needsSubmission = panel === "documents";
 
   return (
     <section className="bt-rathje-interactive bt-guided-flow" style={{ ...glass, padding: isMobile ? 14 : 19, display: "flex", flexDirection: "column", gap: 14, color: textPrimary, flex: "0 0 auto" }}>
@@ -6186,13 +6214,13 @@ function RathjeInteractivePanel({
         <button type="button" onClick={restart} style={{ ...secondary, minHeight: 38 }}>Neu starten</button>
       </div>
 
-      <div>
+      {phase !== "review" && <div>
         <div style={{ color: accent, fontSize: 11, fontWeight: 950, letterSpacing: 0.48, textTransform: "uppercase" }}>Digitales Fahrschulbüro · Rathje</div>
         <div style={{ fontSize: isMobile ? 24 : 30, fontWeight: 950, marginTop: 4 }}>{phase === "success" ? successTitle : title}</div>
         <div style={{ color: textSecondary, fontSize: 13, lineHeight: 1.48, marginTop: 6 }}>
-          {phase === "questions" ? "Immer nur eine Frage. Danach erhältst du direkt ein konkretes, auf deine Auswahl abgestimmtes Ergebnis." : phase === "review" ? (needsSubmission ? "Dein Wechselergebnis steht fest. Danach kannst du die geordnete Demo-Wechselanfrage ergänzen." : "Deine Antworten wurden ausgewertet. Es ist keine Anfrage und keine Eingabe von Kontaktdaten nötig.") : "Die Demo zeigt jetzt den vollständigen Abschluss. Es wurden keine echten Daten versendet."}
+          {phase === "questions" ? "Immer nur eine Frage. Danach erhältst du direkt ein konkretes, auf deine Auswahl abgestimmtes Ergebnis." : "Die Demo zeigt jetzt den vollständigen Abschluss. Es wurden keine echten Daten versendet."}
         </div>
-      </div>
+      </div>}
 
       <div style={{ display: "flex", alignItems: "center", gap: 9 }}>
         <div style={{ flex: 1, height: 7, borderRadius: 999, background: `rgba(${accentRgb}, 0.10)`, overflow: "hidden" }}>
@@ -6220,45 +6248,36 @@ function RathjeInteractivePanel({
       {phase === "review" && (
         <div className="bt-guided-step-in" style={{ display: "flex", flexDirection: "column", gap: 11 }}>
           {panel === "coach" && (
-            <div style={{ ...soft, padding: isMobile ? 16 : 21 }}>
-              <div style={{ color: accent, fontSize: 11, fontWeight: 950, letterSpacing: 0.5 }}>DEINE PERSÖNLICHE PREISÜBERSICHT</div>
-              <div style={{ fontSize: isMobile ? 23 : 29, fontWeight: 950, lineHeight: 1.18, marginTop: 7 }}>{priceResult.headline}</div>
-              {answers.priceNeed !== "Fahrstundenpreise" && (
-                <div style={{ display: "grid", gap: 7, marginTop: 16 }}>
-                  {priceResult.lines.map(([label, value]) => <div key={label} style={{ display: "flex", justifyContent: "space-between", gap: 14, paddingBottom: 7, borderBottom: "1px solid rgba(17,24,39,0.08)", fontSize: 13 }}><span style={{ color: textSecondary }}>{label}</span><strong>{value}</strong></div>)}
-                  <div style={{ display: "flex", justifyContent: "space-between", gap: 14, fontSize: 14.5 }}><strong>Feste Startkosten</strong><strong style={{ color: accent }}>{priceResult.startTotal}</strong></div>
-                </div>
-              )}
-              {answers.priceNeed !== "Startkosten" && (
-                <div style={{ display: "grid", gap: 8, marginTop: 16 }}>
-                  <div style={{ padding: 12, borderRadius: 13, background: "rgba(255,255,255,0.66)", display: "flex", justifyContent: "space-between", gap: 12 }}><span>Fahrstunde · 45 Minuten</span><strong>{priceResult.lessonPrice}</strong></div>
-                  <div style={{ padding: 12, borderRadius: 13, background: "rgba(255,255,255,0.66)", display: "flex", justifyContent: "space-between", gap: 12 }}><span>Sonderfahrt · 45 Minuten</span><strong>{priceResult.lessonPrice}</strong></div>
-                </div>
-              )}
-              <div style={{ color: textSecondary, fontSize: 12.5, lineHeight: 1.5, marginTop: 14 }}>Fahrstunden und Sonderfahrten sind variable Kosten. Der endgültige Gesamtpreis hängt von der tatsächlich benötigten Anzahl der Fahrstunden ab. Weitere Positionen werden hier nicht ausgewiesen, weil dafür keine widerspruchsfreie verifizierte Rathje-Angabe im aktiven Ablauf vorliegt.</div>
-            </div>
+            <GuidedResultView
+              eyebrow="Deine Preisübersicht"
+              metric={answers.priceNeed === "Fahrstundenpreise" ? priceResult.lessonPrice : priceResult.startTotal}
+              metricLabel={`${priceResult.license}${answers.priceNeed === "Fahrstundenpreise" ? " · je 45 Minuten" : " · feste Startkosten"}`}
+              title={answers.priceNeed === "Fahrstundenpreise" ? "Fahrstunden und Sonderfahrten" : answers.priceNeed === "Gesamtüberblick" ? "Feste und variable Kosten" : "Deine festen Startkosten"}
+              lead={answers.priceNeed === "Fahrstundenpreise" ? "Normale Fahrstunden und Sonderfahrten kosten in dieser Klasse gleich viel je 45 Minuten." : "Die festen Positionen fallen zum Start an. Der endgültige Gesamtpreis hängt zusätzlich von der benötigten Anzahl der Fahrstunden ab."}
+              details={[
+                { label: "Zusammensetzung", text: priceResult.lines.map(([label, value]) => `${label}: ${value}`).join(" · ") },
+                { label: "Fahrstunde", text: `${priceResult.lessonPrice} je 45 Minuten` },
+                { label: "Sonderfahrt", text: `${priceResult.lessonPrice} je 45 Minuten`, emphasis: answers.priceNeed === "Fahrstundenpreise" },
+              ]}
+              accent={accent} accentRgb={accentRgb} textPrimary={textPrimary} textSecondary={textSecondary} isMobile={isMobile}
+            />
           )}
 
           {panel === "schedule" && (
-            <div style={{ ...soft, padding: isMobile ? 16 : 21 }}>
-              <div style={{ color: accent, fontSize: 11, fontWeight: 950, letterSpacing: 0.5 }}>DEIN KONKRETER AUSBILDUNGSPLAN</div>
-              <div style={{ fontSize: isMobile ? 22 : 27, fontWeight: 950, marginTop: 7 }}>Nächster Schritt: {scheduleResult.area}</div>
-              <div style={{ color: textPrimary, fontSize: 13.5, lineHeight: 1.55, marginTop: 10 }}>{scheduleResult.next}</div>
-              {scheduleResult.showTheoryTimes && <div style={{ marginTop: 14, padding: 13, borderRadius: 14, background: "rgba(255,255,255,0.68)" }}><strong>Veröffentlichte Theoriezeiten</strong><div style={{ color: textSecondary, fontSize: 13, lineHeight: 1.5, marginTop: 5 }}>Dienstag, Mittwoch und Donnerstag · 18:00–19:30 Uhr<br />Alter Zollweg 201 · Hamburg</div></div>}
-              <div style={{ color: textSecondary, fontSize: 12.5, lineHeight: 1.5, marginTop: 13 }}>Deine grundsätzliche Verfügbarkeit: {scheduleResult.preferred}. Konkrete Fahrstunden, Simulatorzeiten und freie Plätze müssen persönlich von Rathje bestätigt werden.</div>
-            </div>
+            <GuidedResultView eyebrow="Dein Ausbildungsplan" title={`Nächster Schritt: ${scheduleResult.area}`} lead={scheduleResult.next} details={[
+              ...(scheduleResult.showTheoryTimes ? [{ label: "Veröffentlichte Zeiten", text: "Di, Mi und Do · 18:00–19:30 Uhr · Alter Zollweg 201" }] : []),
+              { label: "Deine Verfügbarkeit", text: scheduleResult.preferred },
+              { label: "Persönlich bestätigen", text: "Fahrstunden, Simulatorzeiten und freie Plätze werden von Rathje bestätigt.", emphasis: true },
+            ]} accent={accent} accentRgb={accentRgb} textPrimary={textPrimary} textSecondary={textSecondary} isMobile={isMobile} />
           )}
 
           {panel === "documents" && <>
-            <div style={{ ...soft, padding: isMobile ? 16 : 21 }}>
-              <div style={{ color: accent, fontSize: 11, fontWeight: 950, letterSpacing: 0.5 }}>DEIN WECHSELERGEBNIS</div>
-              <div style={{ fontSize: isMobile ? 22 : 27, fontWeight: 950, marginTop: 7 }}>Diese Schritte bereiten den Wechsel vor</div>
-              {[['Vorhanden', transferResult.available], ['Vermutlich noch offen', transferResult.missing], ['Bei der bisherigen Fahrschule anfordern', transferResult.request], ['Danach kann Rathje übernehmen', transferResult.next]].map(([label, value]) => <div key={label} style={{ marginTop: 12, padding: 12, borderRadius: 13, background: "rgba(255,255,255,0.66)" }}><strong style={{ fontSize: 12.5 }}>{label}</strong><div style={{ color: textSecondary, fontSize: 12.5, lineHeight: 1.5, marginTop: 4 }}>{value}</div></div>)}
-            </div>
-            <div style={{ ...soft, padding: isMobile ? 14 : 17 }}>
-              <div style={{ color: accent, fontSize: 11, fontWeight: 950, letterSpacing: 0.45 }}>ANGABEN FÜR DIE DEMO-WECHSELANFRAGE</div>
-              <div style={{ display: "grid", gap: 8, marginTop: 12 }}>{Object.entries(answers).map(([key, value]) => <div key={key} style={{ display: "flex", justifyContent: "space-between", gap: 14, paddingBottom: 8, borderBottom: "1px solid rgba(17,24,39,0.07)", fontSize: 12.5 }}><span style={{ color: textSecondary }}>{labels[key] || key}</span><strong style={{ textAlign: "right" }}>{value}</strong></div>)}</div>
-            </div>
+            <GuidedResultView eyebrow="Persönliches Wechselergebnis" title="Dein Fahrschulwechsel ist vorbereitet" lead="Die wichtigsten Nachweise sind eingeordnet. Ergänze darunter nur noch Dokumente und Kontaktdaten für die Demo-Anfrage." details={[
+              { label: "Bereits vorhanden", text: transferResult.available },
+              { label: "Noch erforderlich", text: transferResult.missing, emphasis: true },
+              { label: "Nächster Schritt", text: `${transferResult.request} ${transferResult.next}` },
+            ]} accent={accent} accentRgb={accentRgb} textPrimary={textPrimary} textSecondary={textSecondary} isMobile={isMobile} />
+            <details style={{ ...soft, padding: "11px 13px" }}><summary style={{ cursor: "pointer", color: textSecondary, fontSize: 11.5, fontWeight: 900 }}>Erfasste Angaben anzeigen</summary><div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginTop: 9 }}>{Object.entries(answers).map(([key, value]) => <span key={key} style={{ borderRadius: 999, background: "rgba(255,255,255,0.68)", padding: "6px 8px", color: textSecondary, fontSize: 10.5 }}>{labels[key] || key}: <strong style={{ color: textPrimary }}>{value}</strong></span>)}</div></details>
             <label style={{ ...soft, padding: 14, cursor: "pointer" }}>
               <span style={{ display: "block", fontWeight: 950 }}>Unterlagen ergänzen</span>
               <span style={{ display: "block", color: textSecondary, fontSize: 11.5, marginTop: 3 }}>PDF, JPG oder PNG · in der Demo kein echter Upload</span>
@@ -7787,6 +7806,33 @@ function GuidedTriDemo({
     setDemoError("");
   }
 
+  function getRathjeStartResult() {
+    const license = answers.license === "unsicher"
+      ? answers.startingPoint === "Begleitet ab 17" ? "BF17" : answers.startingPoint === "Anhänger fahren" ? "BE" : answers.startingPoint === "Automatik und Schaltung" ? "B197" : "Klasse B"
+      : answers.license || "Klasse B";
+    const prerequisite = license === "BF17"
+      ? answers.startingPoint === "unter 16½ Jahre" ? "Start ab 16½ Jahren; Zustimmung und Begleitpersonen anschließend prüfen." : "Alter, Zustimmung und geeignete Begleitpersonen mit Rathje prüfen."
+      : license === "BE" ? (answers.startingPoint === "Klasse B vorhanden" ? "Klasse B ist nach deiner Angabe vorhanden." : "Stand beziehungsweise Abschluss der Klasse B zuerst prüfen.")
+      : "Ausbildungsvariante und Fahrerlaubnisantrag vor Ort bestätigen.";
+    const documents = answers.documents === "vollständig" ? "Unterlagen als vollständig markiert; Rathje prüft die Gültigkeit." : "Ausweis, Passbild, Sehtest, Erste Hilfe und Fahrerlaubnisantrag prüfen beziehungsweise ergänzen.";
+    return { license, prerequisite, documents, next: `Unterlagen prüfen, Anmeldung und Theorieeinstieg abstimmen, danach Praxis oder Simulator planen. Wunschstart: ${answers.time || "offen"}.` };
+  }
+
+  function getRathjeSimulatorResult() {
+    const interest = answers.simulatorInterest || "Funktionsweise";
+    const situation = answers.simulatorSituation || "keine Praxis";
+    const recommendation = situation === "Schalten" ? "Schalten und Anfahren" : situation === "gezieltes Training" ? "ein gezieltes Situationsmodul" : situation === "Auffrischung" ? "eine kontrollierte Auffrischung" : "Grundlagen und Fahrzeugbedienung";
+    return {
+      title: `Sinnvoller Einstieg: ${recommendation}`,
+      lead: `Dein Schwerpunkt „${interest}“ wird passend zu deiner Situation erklärt und praktisch vorbereitet.`,
+      details: [
+        { label: "Trainingsziel", text: recommendation },
+        { label: "Vorteil", text: "Abläufe lassen sich ohne Verkehrsdruck wiederholen und anschließend besprechen." },
+        { label: "Übertragung", text: "Die Inhalte werden danach in der realen Fahrstunde gefestigt.", emphasis: true },
+      ] as GuidedResultDetail[],
+    };
+  }
+
   function resultText() {
     if (isFsaz) {
       if (panel === "connect") {
@@ -7872,6 +7918,9 @@ function GuidedTriDemo({
     }
     return "Campus B27 zeigt dir nach deinen Antworten nur noch den passenden nächsten Schritt statt die komplette Funktionsübersicht.";
   }
+
+  const rathjeStartResult = getRathjeStartResult();
+  const rathjeSimulatorResult = getRathjeSimulatorResult();
 
   function actionPrompt() {
     const compactAnswers = answeredPairs
@@ -8105,7 +8154,15 @@ function GuidedTriDemo({
 
       {isComplete && (
         <>
-          <div
+          {isRathje && panel === "courses" && !demoSubmitted ? (
+            <GuidedResultView eyebrow="Dein persönlicher Startplan" title={`Dein Start mit ${rathjeStartResult.license}`} lead="Klasse, Voraussetzungen und Unterlagen wurden zu einem konkreten Ablauf verbunden." details={[
+              { label: "Voraussetzungen", text: rathjeStartResult.prerequisite },
+              { label: "Unterlagen", text: rathjeStartResult.documents, emphasis: answers.documents !== "vollständig" },
+              { label: "Nächster Schritt", text: rathjeStartResult.next },
+            ]} accent={accent} accentRgb={accentRgb} textPrimary={textPrimary} textSecondary={textSecondary} isMobile={isMobile} />
+          ) : isRathje && panel === "dashboard" ? (
+            <GuidedResultView eyebrow="Deine Simulatorübersicht" title={rathjeSimulatorResult.title} lead={rathjeSimulatorResult.lead} details={rathjeSimulatorResult.details} accent={accent} accentRgb={accentRgb} textPrimary={textPrimary} textSecondary={textSecondary} isMobile={isMobile} />
+          ) : <div
             style={{
               ...soft,
               padding: isMobile ? 16 : 18,
@@ -8146,7 +8203,7 @@ function GuidedTriDemo({
                 </div>
               )}
             </div>
-          </div>
+          </div>}
 
           {answeredPairs.length > 0 && (
             <div style={{ ...glass, padding: 14 }}>
@@ -8558,6 +8615,64 @@ function FsazInteractiveDemo({
     return "Für die Paketwahl sind Trainingsziel und Erfahrung entscheidend. Als Orientierung gibt es 6 × 45 Minuten für 180 € und 9 × 45 Minuten für 270 €; die persönliche Einordnung erfolgt vor Ort.";
   }
 
+  function getFsazResult(): Omit<GuidedResultViewProps, "accent" | "accentRgb" | "textPrimary" | "textSecondary" | "isMobile"> {
+    if (activePanel === "coach") {
+      const packageName = answers.package === "Paketempfehlung"
+        ? answers.goal === "mehrere Bereiche" || answers.experience === "Auffrischung" ? "Komplettpaket" : "Grundausbildung"
+        : answers.package || "Grundausbildung";
+      const isCompletePackage = packageName === "Komplettpaket";
+      const price = isCompletePackage ? 270 : 180;
+      const units = isCompletePackage ? "9 × 45 Minuten" : "6 × 45 Minuten";
+      const external = answers.school === "externe Fahrschule";
+      return {
+        eyebrow: "Deine Empfehlung",
+        metric: `${price} €`,
+        metricLabel: `${packageName} · ${units}`,
+        title: external ? `Gesamt mit externer Anmeldung: ${price + 30} €` : packageName,
+        lead: isCompletePackage ? "Der größere Umfang passt zu mehreren Trainingsbereichen oder einer breiteren Auffrischung." : "Der kompakte Umfang passt zu Grundlagen oder einem klar begrenzten Einstieg.",
+        details: [
+          { label: "Warum dieses Paket?", text: `Trainingsziel: ${answers.goal || "Grundlagen"} · Erfahrung: ${answers.experience || "offen"}` },
+          { label: "Enthalten", text: units },
+          external ? { label: "Externe Fahrschule", text: `+ 30 € einmalig · Gesamt ${price + 30} €`, emphasis: true } : { label: "Gesamt", text: `${price} €`, emphasis: true },
+        ],
+      };
+    }
+    if (activePanel === "courses") {
+      const goal = answers.goal || "Grundlagen und Bedienung";
+      const content = goal.includes("Schalten") ? "Kupplungspunkt, Gasdosierung, Gangwechsel und Anfahren" : goal === "Überland" ? "Blickführung, Tempo, Kurven und vorausschauende Entscheidungen" : goal === "Autobahn" ? "Auffahren, Abstand, Spurwechsel und Geschwindigkeit" : goal === "Automatik" ? "Bedienung, Bremsdosierung und sichere Routinen" : "Sitzposition, Pedale, Lenken, Blickführung und Grundabläufe";
+      const basic = answers.experience === "keine Erfahrung" || goal.includes("Grundlagen");
+      return {
+        eyebrow: "Deine Modulempfehlung",
+        title: `Empfohlenes Modul: ${goal}`,
+        lead: "Die Schwierigkeit kann kontrolliert aufgebaut und jeder Ablauf gezielt wiederholt werden.",
+        details: [
+          { label: "Trainingsinhalte", text: content },
+          { label: "Geeignet für", text: answers.experience || "individuelle Einordnung" },
+          { label: "Passende Preisoption", text: basic ? "Grundausbildung · 6 × 45 Minuten · 180 €" : "Einzelmodul oder Komplettpaket · 9 × 45 Minuten · 270 €", emphasis: true },
+        ],
+      };
+    }
+    if (activePanel === "dashboard") {
+      const goal = answers.goal || "Grundlagen";
+      const beginner = answers.experience === "keine" || answers.situation === "Ausbildungsstart";
+      const entry = beginner && (goal === "Überland" || goal === "Autobahn") ? `Grundlagen, danach ${goal}` : goal === "Schalten" ? "Schalten und Anfahren" : goal;
+      return {
+        eyebrow: "Deine persönliche Simulatorübersicht",
+        title: `Sinnvoller Einstieg: ${entry}`,
+        lead: beginner ? "Du lernst die Abläufe zunächst ohne Verkehrsdruck und überträgst sie danach in die echte Fahrstunde." : "Du kannst einzelne Situationen gezielt wiederholen und anschließend in der Straßenpraxis festigen.",
+        details: [
+          { label: "Ablauf", text: "Einweisung, passende Übung, Wiederholung und kurze Besprechung." },
+          { label: "Trainiert wird", text: goal === "Schalten" ? "Pedale, Kupplung, Anfahren und Gangwechsel." : goal === "Autobahn" ? "Auffahren, Abstand und Spurwechsel." : goal === "Überland" ? "Blickführung, Tempo und Entscheidungen." : "Bedienung, Blickführung und Grundabläufe." },
+          { label: "Grenzen", text: "Der Simulator ergänzt die Straßenpraxis und ersetzt sie nicht.", emphasis: true },
+        ],
+      };
+    }
+    const answer = recommendation();
+    return { eyebrow: "Direkte Antwort", title: answers.topic || "Häufige Frage", lead: answer, details: [{ label: "Nächster Schritt", text: answers.topic === "Anmeldung" || answers.topic === "Termin" ? "Anmeldung und Terminabstimmung erfolgen persönlich vor Ort." : "Bei Bedarf Trainingsziel und Paket persönlich vor Ort einordnen." }] };
+  }
+
+  const fsazResult = getFsazResult();
+
   const flowNames: Record<string, string> = {
     dashboard: "Simulator verstehen",
     courses: "Passendes Modul finden",
@@ -8579,7 +8694,7 @@ function FsazInteractiveDemo({
         </div>
       </div>
 
-      <div>
+      {phase !== "success" && <div>
         <div style={labelStyle}>{flowNames[activePanel] || "FSAZ Wegweiser"}</div>
         <div style={{ fontSize: isMobile ? 24 : 30, fontWeight: 950, lineHeight: 1.14, marginTop: 5 }}>
           {phase === "questions"
@@ -8595,7 +8710,7 @@ function FsazInteractiveDemo({
               ? "Prüfe deine Auswahl. Mit einem Klick wird daraus eine kompakte Empfehlung – ohne Anmeldung oder Terminbuchung."
               : "Die Empfehlung wurde nur in dieser Demo erstellt. Es wurde nichts versendet oder gespeichert."}
         </div>
-      </div>
+      </div>}
 
       <div style={{ display: "flex", alignItems: "center", gap: 9 }}>
         <div style={{ flex: 1, height: 7, borderRadius: 999, background: `rgba(${accentRgb}, 0.10)`, overflow: "hidden" }}>
@@ -8641,8 +8756,8 @@ function FsazInteractiveDemo({
 
       {phase !== "questions" && (
         <>
-          <div style={{ ...soft, padding: isMobile ? 15 : 18 }}>
-            <div style={labelStyle}>{phase === "review" ? "DEINE AUSWAHL" : "DEINE EMPFEHLUNG"}</div>
+          <div style={phase === "review" ? { ...soft, padding: isMobile ? 15 : 18 } : undefined}>
+            {phase === "review" && <div style={labelStyle}>DEINE AUSWAHL</div>}
             {phase === "review" ? (
               <div style={{ display: "grid", gap: 8, marginTop: 10 }}>
                 {answeredQuestions.map((question) => (
@@ -8653,15 +8768,12 @@ function FsazInteractiveDemo({
                 ))}
               </div>
             ) : (
-              <div style={{ display: "flex", gap: 12, alignItems: "flex-start", marginTop: 9 }}>
-                <div aria-hidden="true" style={{ width: 40, height: 40, flex: "0 0 40px", borderRadius: 14, display: "grid", placeItems: "center", background: `rgba(${accentRgb}, 0.16)`, color: accent, fontWeight: 950, fontSize: 20 }}>✓</div>
-                <div style={{ color: textPrimary, fontSize: 13.5, lineHeight: 1.58 }}>{recommendation()}</div>
-              </div>
+              <GuidedResultView {...fsazResult} accent={accent} accentRgb={accentRgb} textPrimary={textPrimary} textSecondary={textSecondary} isMobile={isMobile} />
             )}
           </div>
 
-          <div style={{ ...soft, padding: 13, color: textSecondary, fontSize: 12.5, lineHeight: 1.5 }}>
-            <strong style={{ color: textPrimary }}>Wichtig:</strong> Anmeldung und Terminabstimmung erfolgen ausschließlich persönlich vor Ort beim FSAZ-Team. Dieses Interface zeigt keine freien Zeiten und nimmt keine Buchung entgegen.
+          <div style={{ ...soft, padding: "10px 12px", color: textSecondary, fontSize: 11.5, lineHeight: 1.4 }}>
+            <strong style={{ color: textPrimary }}>Vor-Ort-Hinweis:</strong> Anmeldung und Terminabstimmung erfolgen ausschließlich persönlich bei FSAZ; hier ist keine Buchung möglich.
           </div>
 
           <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 9 }}>
