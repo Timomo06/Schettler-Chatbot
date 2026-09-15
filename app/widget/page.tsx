@@ -5795,6 +5795,398 @@ function RathjeTabBar({
   );
 }
 
+type RathjeInteractivePhase = "questions" | "review" | "success";
+
+function RathjeInteractivePanel({
+  panel,
+  onPanelChange,
+  accent,
+  accentRgb,
+  textPrimary,
+  textSecondary,
+  isMobile,
+}: Omit<HohenbadenFutureDemoProps, "variant">) {
+  const [step, setStep] = useState(0);
+  const [phase, setPhase] = useState<RathjeInteractivePhase>("questions");
+  const [answers, setAnswers] = useState<Record<string, string>>({});
+  const [contactName, setContactName] = useState("");
+  const [contactValue, setContactValue] = useState("");
+  const [note, setNote] = useState("");
+  const [files, setFiles] = useState<File[]>([]);
+  const [consent, setConsent] = useState(false);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    setStep(0);
+    setPhase("questions");
+    setAnswers({});
+    setContactName("");
+    setContactValue("");
+    setNote("");
+    setFiles([]);
+    setConsent(false);
+    setError("");
+  }, [panel]);
+
+  if (!["coach", "schedule", "documents"].includes(panel)) return null;
+
+  const glass: CSSProperties = {
+    borderRadius: isMobile ? 21 : 25,
+    border: "1px solid rgba(255,255,255,0.60)",
+    background:
+      "linear-gradient(180deg, rgba(255,255,255,0.95), rgba(255,255,255,0.75))",
+    boxShadow:
+      "0 18px 50px rgba(30,45,60,0.09), inset 0 1px 0 rgba(255,255,255,0.82)",
+    backdropFilter: "blur(24px) saturate(165%)",
+    WebkitBackdropFilter: "blur(24px) saturate(165%)",
+  };
+
+  const soft: CSSProperties = {
+    borderRadius: 17,
+    border: `1px solid rgba(${accentRgb}, 0.14)`,
+    background: `linear-gradient(145deg, rgba(${accentRgb}, 0.08), rgba(255,255,255,0.74))`,
+  };
+
+  const primary: CSSProperties = {
+    minHeight: 46,
+    border: "1px solid rgba(255,255,255,0.30)",
+    borderRadius: 14,
+    background: `linear-gradient(180deg, ${accent}, ${accent}D2)`,
+    color: "#fff",
+    padding: "0 17px",
+    fontWeight: 900,
+    cursor: "pointer",
+    boxShadow: `0 12px 28px rgba(${accentRgb}, 0.20)`,
+  };
+
+  const secondary: CSSProperties = {
+    minHeight: 42,
+    border: `1px solid rgba(${accentRgb}, 0.17)`,
+    borderRadius: 14,
+    background: "rgba(255,255,255,0.74)",
+    color: textPrimary,
+    padding: "0 14px",
+    fontWeight: 850,
+    cursor: "pointer",
+  };
+
+  const field: CSSProperties = {
+    width: "100%",
+    minHeight: 45,
+    borderRadius: 13,
+    border: `1px solid rgba(${accentRgb}, 0.17)`,
+    background: "rgba(255,255,255,0.84)",
+    color: textPrimary,
+    padding: "0 12px",
+    outline: "none",
+    font: "inherit",
+    fontSize: 13.5,
+    boxSizing: "border-box",
+  };
+
+  const questions: GuidedQuestion[] =
+    panel === "coach"
+      ? [
+          {
+            id: "license",
+            eyebrow: "SCHRITT 1",
+            question: "Für welche Führerscheinklasse möchtest du die Kosten sehen?",
+            helper: "Danach zeigen wir nur noch die dafür relevanten Positionen.",
+            choices: [
+              { label: "Klasse B", value: "Klasse B" },
+              { label: "B197", value: "B197" },
+              { label: "B78 Automatik", value: "B78" },
+              { label: "BF17", value: "BF17" },
+              { label: "BE Anhänger", value: "BE" },
+              { label: "Noch unsicher", value: "Beratung nötig" },
+            ],
+          },
+          {
+            id: "priceNeed",
+            eyebrow: "SCHRITT 2",
+            question: "Welche Kosteninformation brauchst du?",
+            choices: [
+              { label: "Startkosten", value: "Startkosten", detail: "Grundbetrag, Lernmittel und Büroservice" },
+              { label: "Fahrstunden", value: "Fahrstundenpreise", detail: "Übungs- und Sonderfahrten einordnen" },
+              { label: "Gesamtüberblick", value: "Gesamtüberblick", detail: "Alle veröffentlichten Positionen" },
+            ],
+          },
+          {
+            id: "situation",
+            eyebrow: "SCHRITT 3",
+            question: "Wofür möchtest du die Übersicht nutzen?",
+            choices: [
+              { label: "Neu anfangen", value: "Neustart" },
+              { label: "Angebote vergleichen", value: "Vergleich" },
+              { label: "Budget planen", value: "Budgetplanung" },
+            ],
+          },
+        ]
+      : panel === "schedule"
+        ? [
+            {
+              id: "area",
+              eyebrow: "SCHRITT 1",
+              question: "Was möchtest du planen?",
+              choices: [
+                { label: "Theorie", value: "Theorie", detail: "Unterricht und Einstieg" },
+                { label: "Fahrstunden", value: "Fahrstunden", detail: "Praxis passend zum Alltag" },
+                { label: "Simulator", value: "Simulator", detail: "Gezielte Vorbereitung" },
+              ],
+            },
+            {
+              id: "phase",
+              eyebrow: "SCHRITT 2",
+              question: "Wo stehst du gerade in deiner Ausbildung?",
+              choices: [
+                { label: "Noch nicht gestartet", value: "Noch nicht gestartet" },
+                { label: "Theorie läuft", value: "Theorie läuft" },
+                { label: "Praxis läuft", value: "Praxis läuft" },
+                { label: "Prüfung vorbereiten", value: "Prüfungsvorbereitung" },
+              ],
+            },
+            {
+              id: "availability",
+              eyebrow: "SCHRITT 3",
+              question: "Wann passt es dir grundsätzlich am besten?",
+              choices: [
+                { label: "Vormittags", value: "Vormittags" },
+                { label: "Nachmittags", value: "Nachmittags" },
+                { label: "Abends", value: "Abends" },
+                { label: "Flexibel", value: "Flexibel" },
+              ],
+            },
+            {
+              id: "planningGoal",
+              eyebrow: "SCHRITT 4",
+              question: "Was soll Rathje für dich als Nächstes klären?",
+              choices: [
+                { label: "Passenden Einstieg", value: "Passenden Einstieg vorschlagen" },
+                { label: "Nächsten freien Schritt", value: "Nächsten möglichen Schritt prüfen" },
+                { label: "Persönlichen Plan", value: "Persönlichen Ausbildungsplan erstellen" },
+              ],
+            },
+          ]
+        : [
+            {
+              id: "license",
+              eyebrow: "SCHRITT 1",
+              question: "Welche Ausbildung möchtest du zu Rathje übernehmen?",
+              choices: [
+                { label: "B / B197 / B78", value: "B / B197 / B78" },
+                { label: "BF17", value: "BF17" },
+                { label: "BE / Anhänger", value: "BE / Anhänger" },
+                { label: "Andere Klasse", value: "Andere Klasse" },
+              ],
+            },
+            {
+              id: "status",
+              eyebrow: "SCHRITT 2",
+              question: "Wie weit bist du bei deiner bisherigen Fahrschule?",
+              choices: [
+                { label: "Gerade angemeldet", value: "Anmeldung erfolgt" },
+                { label: "Theorie läuft", value: "Theorie läuft" },
+                { label: "Theorie bestanden", value: "Theorie bestanden" },
+                { label: "Praxis läuft", value: "Praxis läuft" },
+              ],
+            },
+            {
+              id: "documents",
+              eyebrow: "SCHRITT 3",
+              question: "Welche Unterlagen liegen dir bereits vor?",
+              choices: [
+                { label: "Vollständig", value: "Unterlagen vollständig" },
+                { label: "Teilweise", value: "Unterlagen teilweise vorhanden" },
+                { label: "Noch nichts", value: "Unterlagen müssen angefordert werden" },
+                { label: "Unsicher", value: "Unterlagen gemeinsam prüfen" },
+              ],
+            },
+            {
+              id: "handover",
+              eyebrow: "SCHRITT 4",
+              question: "Was soll Rathje mit deiner Anfrage direkt erhalten?",
+              choices: [
+                { label: "Kompletter Ausbildungsstand", value: "Ausbildungsstand und Nachweise" },
+                { label: "Erst Rückruf", value: "Rückruf vor Dokumentenübertragung" },
+                { label: "Unterlagen prüfen", value: "Vorhandene Unterlagen prüfen" },
+              ],
+            },
+          ];
+
+  const currentQuestion = questions[step];
+  const progress = phase === "questions" ? ((step + 1) / questions.length) * 100 : 100;
+  const title = panel === "coach" ? "Persönliche Preisübersicht" : panel === "schedule" ? "Theorie & Fahrstunden planen" : "Fahrschulwechsel vorbereiten";
+  const successTitle = panel === "coach" ? "Preisanfrage wurde erfolgreich vorbereitet" : panel === "schedule" ? "Planungswunsch wurde erfolgreich übermittelt" : "Wechselanfrage wurde erfolgreich übermittelt";
+
+  const labels: Record<string, string> = {
+    license: "Führerscheinklasse",
+    priceNeed: "Gewünschte Übersicht",
+    situation: "Verwendung",
+    area: "Bereich",
+    phase: "Ausbildungsstand",
+    availability: "Verfügbarkeit",
+    planningGoal: "Planungsziel",
+    status: "Bisheriger Stand",
+    documents: "Unterlagen",
+    handover: "Übergabe",
+  };
+
+  const priceResult = answers.license === "BE"
+    ? "BE: Grundbetrag 250 €, Büroservice 35 €, Fahr-/Sonderfahrt je 45 Min. 75 €."
+    : answers.license === "Beratung nötig"
+      ? "Die passende Klasse wird persönlich eingeordnet; anschließend zeigt Rathje nur die dafür relevanten Preise."
+      : "B/B197/B78/BF17: Grundbetrag 450 €, Lernmittel 99,90 €, Büroservice 35 € und Fahr-/Sonderfahrt je 45 Min. 70 €.";
+
+  function choose(value: string) {
+    if (!currentQuestion) return;
+    setAnswers((current) => ({ ...current, [currentQuestion.id]: value }));
+    setError("");
+    if (step + 1 >= questions.length) {
+      setPhase("review");
+    } else {
+      setStep((current) => current + 1);
+    }
+  }
+
+  function goBack() {
+    setError("");
+    if (phase === "success") {
+      setPhase("review");
+      return;
+    }
+    if (phase === "review") {
+      setPhase("questions");
+      setStep(Math.max(0, questions.length - 1));
+      return;
+    }
+    if (step > 0) {
+      setStep((current) => current - 1);
+      return;
+    }
+    onPanelChange("home");
+  }
+
+  function restart() {
+    setStep(0);
+    setPhase("questions");
+    setAnswers({});
+    setContactName("");
+    setContactValue("");
+    setNote("");
+    setFiles([]);
+    setConsent(false);
+    setError("");
+  }
+
+  function submitDemo(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!contactName.trim() || !contactValue.trim()) {
+      setError("Bitte ergänze deinen Namen und eine Kontaktmöglichkeit.");
+      return;
+    }
+    if (!consent) {
+      setError("Bitte bestätige den Demo-Datenschutzhinweis.");
+      return;
+    }
+    setError("");
+    setPhase("success");
+  }
+
+  return (
+    <section className="bt-rathje-interactive bt-guided-flow" style={{ ...glass, padding: isMobile ? 14 : 19, display: "flex", flexDirection: "column", gap: 14, color: textPrimary, flex: "0 0 auto" }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
+        <button type="button" onClick={goBack} style={{ ...secondary, minHeight: 38 }}>← Zurück</button>
+        <button type="button" onClick={restart} style={{ ...secondary, minHeight: 38 }}>Neu starten</button>
+      </div>
+
+      <div>
+        <div style={{ color: accent, fontSize: 11, fontWeight: 950, letterSpacing: 0.48, textTransform: "uppercase" }}>Digitales Fahrschulbüro · Rathje</div>
+        <div style={{ fontSize: isMobile ? 24 : 30, fontWeight: 950, marginTop: 4 }}>{phase === "success" ? successTitle : title}</div>
+        <div style={{ color: textSecondary, fontSize: 13, lineHeight: 1.48, marginTop: 6 }}>
+          {phase === "questions" ? "Immer nur eine Frage. Deine Antworten füllen im Hintergrund automatisch die geordnete Anfrage aus." : phase === "review" ? "Prüfe die automatisch ausgefüllten Angaben und ergänze nur noch deine Kontaktdaten." : "Die Demo zeigt jetzt den vollständigen Abschluss. Es wurden keine echten Daten versendet."}
+        </div>
+      </div>
+
+      <div style={{ display: "flex", alignItems: "center", gap: 9 }}>
+        <div style={{ flex: 1, height: 7, borderRadius: 999, background: `rgba(${accentRgb}, 0.10)`, overflow: "hidden" }}>
+          <div style={{ width: `${progress}%`, height: "100%", borderRadius: 999, background: accent, transition: "width 220ms ease" }} />
+        </div>
+        <span style={{ color: textSecondary, fontSize: 11.5, fontWeight: 900 }}>{phase === "questions" ? `${step + 1}/${questions.length}` : phase === "review" ? "Prüfen" : "Fertig"}</span>
+      </div>
+
+      {phase === "questions" && currentQuestion && (
+        <div key={`${panel}-${currentQuestion.id}`} className="bt-guided-step-in">
+          <div style={{ color: accent, fontSize: 11, fontWeight: 950 }}>{currentQuestion.eyebrow}</div>
+          <div style={{ fontSize: isMobile ? 21 : 25, fontWeight: 950, marginTop: 5 }}>{currentQuestion.question}</div>
+          {currentQuestion.helper && <div style={{ color: textSecondary, fontSize: 12.5, marginTop: 6, lineHeight: 1.45 }}>{currentQuestion.helper}</div>}
+          <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(2, minmax(0, 1fr))", gap: 9, marginTop: 14 }}>
+            {currentQuestion.choices?.map((choice) => (
+              <button key={choice.value} type="button" className="bt-guided-choice" onClick={() => choose(choice.value)} style={{ ...soft, minHeight: choice.detail ? 70 : 58, padding: "12px 14px", color: textPrimary, textAlign: "left", cursor: "pointer" }}>
+                <span style={{ display: "block", fontSize: 14, fontWeight: 950 }}>{choice.label}</span>
+                {choice.detail && <span style={{ display: "block", color: textSecondary, fontSize: 11.5, lineHeight: 1.35, marginTop: 4 }}>{choice.detail}</span>}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {phase === "review" && (
+        <form onSubmit={submitDemo} style={{ display: "flex", flexDirection: "column", gap: 11 }}>
+          <div style={{ ...soft, padding: isMobile ? 14 : 17 }}>
+            <div style={{ color: accent, fontSize: 11, fontWeight: 950, letterSpacing: 0.45 }}>AUTOMATISCH AUSGEFÜLLTE ZUSAMMENFASSUNG</div>
+            <div style={{ display: "grid", gap: 8, marginTop: 12 }}>
+              {Object.entries(answers).map(([key, value]) => (
+                <div key={key} style={{ display: "flex", justifyContent: "space-between", gap: 14, paddingBottom: 8, borderBottom: "1px solid rgba(17,24,39,0.07)", fontSize: 12.5 }}>
+                  <span style={{ color: textSecondary }}>{labels[key] || key}</span><strong style={{ textAlign: "right" }}>{value}</strong>
+                </div>
+              ))}
+            </div>
+            {panel === "coach" && <div style={{ marginTop: 12, padding: 11, borderRadius: 13, background: "rgba(255,255,255,0.66)", color: textSecondary, fontSize: 12, lineHeight: 1.5 }}><strong style={{ color: textPrimary }}>Preisorientierung:</strong> {priceResult} Der Gesamtpreis hängt von den tatsächlich benötigten Fahrstunden ab.</div>}
+            {panel === "schedule" && answers.area === "Theorie" && <div style={{ marginTop: 12, color: textSecondary, fontSize: 12, lineHeight: 1.45 }}>Veröffentlichte Theoriezeit: Dienstag, Mittwoch und Donnerstag, 18:00–19:30 Uhr. Die persönliche Planung wird von Rathje bestätigt.</div>}
+          </div>
+
+          {panel === "documents" && (
+            <label style={{ ...soft, padding: 14, cursor: "pointer" }}>
+              <span style={{ display: "block", fontWeight: 950 }}>Unterlagen ergänzen</span>
+              <span style={{ display: "block", color: textSecondary, fontSize: 11.5, marginTop: 3 }}>PDF, JPG oder PNG · in der Demo kein echter Upload</span>
+              <input type="file" multiple accept="application/pdf,image/jpeg,image/png" onChange={(event) => setFiles(Array.from(event.target.files || []))} style={{ width: "100%", marginTop: 10, fontSize: 12 }} />
+              {files.length > 0 && <span style={{ display: "block", color: accent, fontSize: 11.5, fontWeight: 900, marginTop: 7 }}>{files.length} Datei{files.length === 1 ? "" : "en"} zur Demo-Zusammenfassung hinzugefügt</span>}
+            </label>
+          )}
+
+          <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 9 }}>
+            <input value={contactName} onChange={(event) => setContactName(event.target.value)} placeholder="Vor- und Nachname" style={field} />
+            <input value={contactValue} onChange={(event) => setContactValue(event.target.value)} placeholder="E-Mail oder Telefonnummer" style={field} />
+          </div>
+          <textarea value={note} onChange={(event) => setNote(event.target.value)} placeholder="Optional: kurze Ergänzung für Rathje" rows={2} style={{ ...field, minHeight: 68, padding: 12, resize: "vertical" }} />
+          <label style={{ ...soft, padding: 12, display: "flex", gap: 9, alignItems: "flex-start", color: textSecondary, fontSize: 11.5, lineHeight: 1.4 }}>
+            <input type="checkbox" checked={consent} onChange={(event) => setConsent(event.target.checked)} />
+            Ich bestätige die Verarbeitung dieser Angaben. Demo: Es werden keine Daten oder Dateien wirklich versendet.
+          </label>
+          {error && <div style={{ color: "#a23b3b", fontSize: 12.5, fontWeight: 850 }}>{error}</div>}
+          <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "0.8fr 1.2fr", gap: 9 }}>
+            <button type="button" onClick={goBack} style={secondary}>Angaben ändern</button>
+            <button type="submit" style={primary}>{panel === "coach" ? "Demo-Preisanfrage absenden" : panel === "schedule" ? "Demo-Planungswunsch absenden" : "Demo-Wechselanfrage absenden"}</button>
+          </div>
+        </form>
+      )}
+
+      {phase === "success" && (
+        <div className="bt-guided-step-in" style={{ ...soft, padding: isMobile ? 17 : 21 }}>
+          <div style={{ width: 50, height: 50, borderRadius: 17, display: "grid", placeItems: "center", background: `rgba(${accentRgb}, 0.16)`, color: accent, fontSize: 25, fontWeight: 950 }}>✓</div>
+          <div style={{ color: accent, fontSize: 11, fontWeight: 950, letterSpacing: 0.46, marginTop: 14 }}>DEMO · ERFOLGREICH BEI RATHJE EINGEGANGEN</div>
+          <div style={{ fontSize: isMobile ? 21 : 25, fontWeight: 950, marginTop: 5 }}>{successTitle}</div>
+          <div style={{ color: textSecondary, fontSize: 12.5, lineHeight: 1.52, marginTop: 7 }}>Rathje würde jetzt die geordneten Angaben von {contactName} inklusive Kontakt, Auswahl{files.length ? ` und ${files.length} Datei${files.length === 1 ? "" : "en"}` : ""} erhalten. In dieser Demo wurde nichts wirklich versendet.</div>
+          <div style={{ display: "flex", gap: 9, flexWrap: "wrap", marginTop: 16 }}>
+            <button type="button" onClick={() => onPanelChange("home")} style={primary}>Zur Übersicht</button>
+            <button type="button" onClick={restart} style={secondary}>Neue Demo starten</button>
+          </div>
+        </div>
+      )}
+    </section>
+  );
+}
+
 function RathjeSecretaryPanel({
   panel,
   onPanelChange,
@@ -6221,11 +6613,13 @@ function GuidedTriDemo({
   const [step, setStep] = useState(0);
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [freeText, setFreeText] = useState("");
+  const [demoSubmitted, setDemoSubmitted] = useState(false);
 
   useEffect(() => {
     setStep(0);
     setAnswers({});
     setFreeText("");
+    setDemoSubmitted(false);
   }, [panel, variant]);
 
   if (panel === "home") return null;
@@ -6582,56 +6976,78 @@ function GuidedTriDemo({
               { label: "Klasse B", value: "B" },
               { label: "BF17", value: "BF17" },
               { label: "B197", value: "B197" },
-              { label: "Automatik", value: "Automatik" },
+              { label: "B78 Automatik", value: "B78" },
               { label: "BE Anhänger", value: "BE" },
               { label: "Noch unsicher", value: "unsicher" },
             ],
           },
           {
-            id: "startMode",
+            id: "startingPoint",
             eyebrow: "SCHRITT 2",
-            question: "Wie möchtest du starten?",
-            choices: [
-              { label: "So schnell wie sinnvoll", value: "schnell" },
-              { label: "Neben Schule / Arbeit", value: "flexibel" },
-              { label: "Erst beraten lassen", value: "beratung" },
-            ],
-          },
-          {
-            id: "requirement",
-            eyebrow: "SCHRITT 3",
             question:
               answers.license === "BE"
-                ? "Besitzt du bereits die Klasse B?"
-                : answers.license === "unsicher"
-                  ? "Wofür brauchst du den Führerschein hauptsächlich?"
-                  : "Was ist dir bei der Ausbildung besonders wichtig?",
+                ? "Hast du die Klasse B bereits?"
+                : answers.license === "BF17"
+                  ? "Wie alt bist du beim gewünschten Start?"
+                  : answers.license === "unsicher"
+                    ? "Wofür brauchst du den Führerschein hauptsächlich?"
+                    : "Welche Lernform passt am besten zu dir?",
             choices:
               answers.license === "BE"
                 ? [
-                    { label: "Ja, Klasse B vorhanden", value: "Klasse B vorhanden" },
-                    { label: "Klasse B läuft gerade", value: "Klasse B in Ausbildung" },
-                    { label: "Muss ich prüfen", value: "Vorbesitz prüfen" },
+                    { label: "B bereits vorhanden", value: "Klasse B vorhanden" },
+                    { label: "B-Ausbildung läuft", value: "Klasse B in Ausbildung" },
+                    { label: "Noch nicht", value: "Klasse B noch nicht vorhanden" },
                   ]
-                : answers.license === "unsicher"
+                : answers.license === "BF17"
                   ? [
-                      { label: "Auto im Alltag", value: "Alltag" },
-                      { label: "Begleitet ab 17", value: "BF17" },
-                      { label: "Automatik und Schaltung", value: "B197" },
-                      { label: "Anhänger fahren", value: "BE" },
+                      { label: "Noch 16", value: "16 Jahre" },
+                      { label: "Schon 17", value: "17 Jahre" },
+                      { label: "Erst später", value: "Start später geplant" },
                     ]
-                  : [
-                      { label: "Flexibel neben Schule / Arbeit", value: "flexibel" },
-                      { label: "Sicher und ruhig lernen", value: "ruhiger Einstieg" },
-                      { label: "Automatik und Schaltung verbinden", value: "B197-Vorteil" },
-                      { label: "Erst persönlich beraten", value: "Beratung" },
-                    ],
+                  : answers.license === "unsicher"
+                    ? [
+                        { label: "Auto im Alltag", value: "Auto im Alltag" },
+                        { label: "Begleitet ab 17", value: "Begleitet ab 17" },
+                        { label: "Automatik + Schaltung", value: "Automatik und Schaltung" },
+                        { label: "Anhänger fahren", value: "Anhänger fahren" },
+                      ]
+                    : [
+                        { label: "Ruhig und Schritt für Schritt", value: "ruhig und strukturiert" },
+                        { label: "Flexibel neben Schule / Arbeit", value: "zeitlich flexibel" },
+                        { label: "Möglichst kompakt", value: "kompakter Ablauf" },
+                        { label: "Erst persönlich beraten", value: "persönliche Beratung" },
+                      ],
+          },
+          {
+            id: "documents",
+            eyebrow: "SCHRITT 3",
+            question: "Wie weit bist du mit den Startunterlagen?",
+            helper: "Eine grobe Einschätzung reicht. Fehlende Unterlagen werden danach übersichtlich markiert.",
+            choices: [
+              { label: "Noch nichts vorbereitet", value: "noch nichts vorbereitet" },
+              { label: "Teilweise vorhanden", value: "teilweise vorhanden" },
+              { label: "Alles vorbereitet", value: "vollständig vorbereitet" },
+              { label: "Ich weiß nicht, was nötig ist", value: "Checkliste benötigt" },
+            ],
           },
           {
             id: "time",
             eyebrow: "SCHRITT 4",
-            question: "Wann möchtest du ungefähr anfangen?",
-            placeholder: "z. B. im Oktober / nachmittags",
+            question: "Wann möchtest du ungefähr starten?",
+            choices: [
+              { label: "So bald wie möglich", value: "so bald wie möglich" },
+              { label: "In 1–2 Monaten", value: "in 1–2 Monaten" },
+              { label: "Später im Jahr", value: "später im Jahr" },
+              { label: "Noch offen", value: "Startzeit noch offen" },
+            ],
+          },
+          {
+            id: "contact",
+            eyebrow: "SCHRITT 5",
+            question: "Unter welcher E-Mail oder Telefonnummer darf Rathje auf deine Demo-Anfrage antworten?",
+            helper: "Für diese Demo wird nichts wirklich versendet oder gespeichert.",
+            placeholder: "E-Mail oder Telefonnummer",
           },
         ];
       }
@@ -7222,6 +7638,7 @@ function GuidedTriDemo({
   const questions = getQuestions();
   const currentQuestion = questions[Math.min(step, Math.max(questions.length - 1, 0))];
   const isComplete = step >= questions.length;
+  const requiresDemoSubmission = isRathje && panel === "courses";
   const answeredPairs = questions
     .filter((question) => answers[question.id])
     .map((question) => [question.id, answers[question.id]] as const);
@@ -7272,6 +7689,7 @@ function GuidedTriDemo({
     setStep(0);
     setAnswers({});
     setFreeText("");
+    setDemoSubmitted(false);
   }
 
   function resultText() {
@@ -7308,7 +7726,7 @@ function GuidedTriDemo({
 
     if (isRathje) {
       if (panel === "courses") {
-        return `Dein vorbereiteter Weg: ${answers.license || "Führerschein"}, Start „${answers.startMode || "offen"}“, Ausgangslage „${answers.requirement || "offen"}“${answers.time ? `, Wunschzeit „${answers.time}“` : ""}. Rathje erhält damit eine vorsortierte Anfrage statt mehrerer einzelner Rückfragen.`;
+        return `Dein vorbereiteter Weg: ${answers.license || "Führerschein"}, Ausgangslage „${answers.startingPoint || "offen"}“, Unterlagen „${answers.documents || "offen"}", Wunschstart „${answers.time || "offen"}". Die Kontaktdaten und alle Angaben sind geordnet zusammengefasst.`;
       }
       if (panel === "connect") {
         return `Dein Cockpit ist auf die Phase „${answers.phase || "offen"}“ eingegrenzt. Es zeigt jetzt nur „${answers.need || "den nächsten Schritt"}“ und berücksichtigt dabei „${answers.blocker || "kein Hindernis"}“ – ohne unnötige Menüs.`;
@@ -7430,7 +7848,11 @@ function GuidedTriDemo({
       >
         <div style={{ ...smallLabel, color: accent }}>{flowTitle()}</div>
         <div style={{ fontSize: isMobile ? 24 : 29, fontWeight: 950, marginTop: 4 }}>
-          {isComplete ? "Demo erfolgreich abgeschlossen." : currentQuestion?.question}
+          {isComplete
+            ? requiresDemoSubmission && !demoSubmitted
+              ? "Prüfe deine Angaben vor dem Absenden."
+              : "Demo erfolgreich abgeschlossen."
+            : currentQuestion?.question}
         </div>
         {!isComplete && currentQuestion?.helper && (
           <div style={{ color: textSecondary, fontSize: 13, lineHeight: 1.5, marginTop: 7 }}>
@@ -7460,7 +7882,11 @@ function GuidedTriDemo({
           />
         </div>
         <span style={{ color: textSecondary, fontSize: 11.5, fontWeight: 850 }}>
-          {isComplete ? "Fertig" : `${step + 1}/${questions.length}`}
+          {isComplete
+            ? requiresDemoSubmission && !demoSubmitted
+              ? "Prüfen"
+              : "Fertig"
+            : `${step + 1}/${questions.length}`}
         </span>
       </div>
 
@@ -7600,13 +8026,22 @@ function GuidedTriDemo({
                 fontWeight: 950,
               }}
             >
-              ✓
+              {requiresDemoSubmission && !demoSubmitted ? "≡" : "✓"}
             </div>
             <div>
-              <div style={{ ...smallLabel, color: accent }}>DEMO · ERFOLGREICH</div>
+              <div style={{ ...smallLabel, color: accent }}>
+                {requiresDemoSubmission && !demoSubmitted
+                  ? "DEMO · ZUSAMMENFASSUNG"
+                  : "DEMO · ERFOLGREICH"}
+              </div>
               <div style={{ color: textPrimary, fontSize: 14, lineHeight: 1.58, marginTop: 7 }}>
                 {resultText()}
               </div>
+              {requiresDemoSubmission && demoSubmitted && (
+                <div style={{ color: textSecondary, fontSize: 12.5, lineHeight: 1.5, marginTop: 7 }}>
+                  Die Demo-Anfrage wurde erfolgreich verarbeitet. Es wurden keine echten Daten übertragen.
+                </div>
+              )}
             </div>
           </div>
 
@@ -7623,6 +8058,7 @@ function GuidedTriDemo({
                       if (questionIndex >= 0) {
                         setStep(questionIndex);
                         setFreeText("");
+                        setDemoSubmitted(false);
                       }
                     }}
                     style={{
@@ -7650,28 +8086,436 @@ function GuidedTriDemo({
               gap: 9,
             }}
           >
-            <button type="button" onClick={restartFlow} style={{ ...secondary, minHeight: 49 }}>
-              Auswahl ändern
-            </button>
-            {isRathje && panel === "courses" ? (
-              <a
-                href="https://www.fahrschule-rathje.de/anmeldeformular/"
-                target="_blank"
-                rel="noreferrer"
-                style={{
-                  ...primary,
-                  minHeight: 49,
-                  display: "grid",
-                  placeItems: "center",
-                  textDecoration: "none",
-                }}
-              >
-                Über MAXI anmelden ↗
-              </a>
+            {requiresDemoSubmission && demoSubmitted ? (
+              <button type="button" onClick={() => onPanelChange("home")} style={{ ...secondary, minHeight: 49 }}>
+                Zur Übersicht
+              </button>
+            ) : (
+              <button type="button" onClick={restartFlow} style={{ ...secondary, minHeight: 49 }}>
+                Auswahl ändern
+              </button>
+            )}
+            {requiresDemoSubmission ? (
+              demoSubmitted ? (
+                <button type="button" onClick={restartFlow} style={{ ...primary, minHeight: 49 }}>
+                  Neue Demo-Anfrage
+                </button>
+              ) : (
+                <button type="button" onClick={() => setDemoSubmitted(true)} style={{ ...primary, minHeight: 49 }}>
+                  Demo-Anfrage absenden
+                </button>
+              )
             ) : (
               <button type="button" onClick={finishInChat} style={{ ...primary, minHeight: 49 }}>
                 Im Chat weiterführen
               </button>
+            )}
+          </div>
+        </>
+      )}
+    </section>
+  );
+}
+
+type FsazAdvicePhase = "questions" | "review" | "success";
+
+function FsazInteractiveDemo({
+  panel,
+  onPanelChange,
+  accent,
+  accentRgb,
+  textPrimary,
+  textSecondary,
+  isMobile,
+}: HohenbadenFutureDemoProps) {
+  const activePanel: HohenbadenPanel =
+    panel === "connect" || panel === "schedule" ? "documents" : panel;
+  const [step, setStep] = useState(0);
+  const [phase, setPhase] = useState<FsazAdvicePhase>("questions");
+  const [answers, setAnswers] = useState<Record<string, string>>({});
+  const [freeText, setFreeText] = useState("");
+
+  useEffect(() => {
+    setStep(0);
+    setPhase("questions");
+    setAnswers({});
+    setFreeText("");
+  }, [activePanel]);
+
+  if (panel === "home") return null;
+
+  const glass: CSSProperties = {
+    borderRadius: isMobile ? 21 : 26,
+    border: "1px solid rgba(255,255,255,0.62)",
+    background: "linear-gradient(180deg, rgba(255,255,255,0.96), rgba(255,255,255,0.76))",
+    boxShadow: "0 18px 54px rgba(25,55,76,0.10), inset 0 1px 0 rgba(255,255,255,0.84)",
+    backdropFilter: "blur(24px) saturate(160%)",
+    WebkitBackdropFilter: "blur(24px) saturate(160%)",
+  };
+  const soft: CSSProperties = {
+    borderRadius: 18,
+    border: `1px solid rgba(${accentRgb}, 0.15)`,
+    background: `linear-gradient(145deg, rgba(${accentRgb}, 0.09), rgba(255,255,255,0.76))`,
+  };
+  const primary: CSSProperties = {
+    minHeight: 48,
+    border: "1px solid rgba(255,255,255,0.32)",
+    borderRadius: 14,
+    background: `linear-gradient(180deg, ${accent}, ${accent}D5)`,
+    color: "#fff",
+    padding: "0 16px",
+    fontWeight: 900,
+    cursor: "pointer",
+    boxShadow: `0 11px 27px rgba(${accentRgb}, 0.20)`,
+  };
+  const secondary: CSSProperties = {
+    minHeight: 43,
+    border: `1px solid rgba(${accentRgb}, 0.17)`,
+    borderRadius: 14,
+    background: "rgba(255,255,255,0.76)",
+    color: textPrimary,
+    padding: "0 14px",
+    fontWeight: 900,
+    cursor: "pointer",
+  };
+  const labelStyle: CSSProperties = {
+    color: accent,
+    fontSize: 11,
+    fontWeight: 950,
+    letterSpacing: 0.5,
+    textTransform: "uppercase",
+  };
+
+  function getQuestions(): GuidedQuestion[] {
+    if (activePanel === "dashboard") {
+      return [
+        {
+          id: "situation",
+          eyebrow: "SCHRITT 1",
+          question: "Welche Situation passt zu dir?",
+          choices: [
+            { label: "Noch nie gefahren", value: "noch keine Fahrerfahrung" },
+            { label: "Erste Fahrstunden", value: "erste Fahrstunden" },
+            { label: "Länger nicht gefahren", value: "Auffrischung" },
+            { label: "Nur informieren", value: "allgemeine Information" },
+          ],
+        },
+        {
+          id: "interest",
+          eyebrow: "SCHRITT 2",
+          question: "Was möchtest du am Simulator verstehen?",
+          choices: [
+            { label: "Ablauf vor Ort", value: "Ablauf" },
+            { label: "Technik & Bedienung", value: "Technik" },
+            { label: "Nutzen fürs Fahren", value: "Nutzen" },
+            { label: "Grenzen des Simulators", value: "Grenzen" },
+          ],
+        },
+        {
+          id: "detail",
+          eyebrow: "SCHRITT 3",
+          question: "Wie ausführlich soll die Erklärung sein?",
+          choices: [
+            { label: "Kurz erklärt", value: "Kurzüberblick" },
+            { label: "Mit Beispielablauf", value: "Beispielablauf" },
+            { label: "Mit Vorteilen & Grenzen", value: "Vorteile und Grenzen" },
+          ],
+        },
+      ];
+    }
+
+    if (activePanel === "courses") {
+      return [
+        {
+          id: "goal",
+          eyebrow: "SCHRITT 1",
+          question: "Was möchtest du gezielt üben?",
+          choices: [
+            { label: "Ruhig einsteigen", value: "Grundlagen und Bedienung" },
+            { label: "Schalten & Anfahren", value: "Schalten und Anfahren" },
+            { label: "Überland", value: "Überland" },
+            { label: "Autobahn", value: "Autobahn" },
+            { label: "Automatik", value: "Automatik" },
+            { label: "Noch unsicher", value: "Empfehlung benötigt" },
+          ],
+        },
+        {
+          id: "experience",
+          eyebrow: "SCHRITT 2",
+          question: "Wie viel Erfahrung bringst du mit?",
+          choices: [
+            { label: "Noch keine", value: "keine Erfahrung" },
+            { label: "Ein paar Fahrstunden", value: "erste Erfahrung" },
+            { label: "Schon recht sicher", value: "fortgeschritten" },
+            { label: "Ich möchte auffrischen", value: "Auffrischung" },
+          ],
+        },
+        {
+          id: "school",
+          eyebrow: "SCHRITT 3",
+          question: "Wo machst du deine Fahrausbildung?",
+          helper: "Das ändert nur die Preis- und Ablaufhinweise dieser Übersicht.",
+          choices: [
+            { label: "Bei Rathje", value: "Fahrschule Rathje" },
+            { label: "Andere Fahrschule", value: "externe Fahrschule" },
+            { label: "Noch nicht angemeldet", value: "noch keine Fahrschule" },
+            { label: "Nur Information", value: "unverbindliche Information" },
+          ],
+        },
+      ];
+    }
+
+    if (activePanel === "coach") {
+      return [
+        {
+          id: "school",
+          eyebrow: "SCHRITT 1",
+          question: "Welche Preisübersicht brauchst du?",
+          choices: [
+            { label: "Rathje-Fahrschüler", value: "Fahrschule Rathje" },
+            { label: "Andere Fahrschule", value: "externe Fahrschule" },
+            { label: "Noch nicht angemeldet", value: "noch keine Fahrschule" },
+            { label: "Nur vergleichen", value: "unverbindlicher Vergleich" },
+          ],
+        },
+        {
+          id: "package",
+          eyebrow: "SCHRITT 2",
+          question: "Welchen Umfang möchtest du einordnen?",
+          choices: [
+            { label: "6 × 45 Minuten", value: "Grundausbildung" },
+            { label: "9 × 45 Minuten", value: "Komplettpaket" },
+            { label: "Noch unsicher", value: "Paketempfehlung" },
+          ],
+        },
+        {
+          id: "priceNeed",
+          eyebrow: "SCHRITT 3",
+          question: "Was soll die Übersicht besonders erklären?",
+          choices: [
+            { label: "Gesamtkosten", value: "Gesamtkosten" },
+            { label: "Leistungsumfang", value: "Leistungsumfang" },
+            { label: "Zusatzkosten extern", value: "Zusatzkosten für Externe" },
+            { label: "Pakete vergleichen", value: "Paketvergleich" },
+          ],
+        },
+      ];
+    }
+
+    return [
+      {
+        id: "topic",
+        eyebrow: "SCHRITT 1",
+        question: "Welche Frage möchtest du klären?",
+        choices: [
+          { label: "Ersetzt das Fahrstunden?", value: "Ersatz von Fahrstunden" },
+          { label: "Training als externer Schüler", value: "Training für Externe" },
+          { label: "Wie läuft die Anmeldung?", value: "Anmeldung" },
+          { label: "Wie komme ich an einen Termin?", value: "Termin" },
+          { label: "Welches Paket passt?", value: "Paketwahl" },
+        ],
+      },
+      {
+        id: "situation",
+        eyebrow: "SCHRITT 2",
+        question: "Welche Situation soll die Antwort berücksichtigen?",
+        choices: [
+          { label: "Noch nicht angemeldet", value: "noch nicht angemeldet" },
+          { label: "Bei Rathje", value: "bei Rathje" },
+          { label: "Andere Fahrschule", value: "bei einer anderen Fahrschule" },
+          { label: "Nur informieren", value: "allgemeine Information" },
+        ],
+      },
+    ];
+  }
+
+  const questions = getQuestions();
+  const currentQuestion = questions[Math.min(step, questions.length - 1)];
+  const answeredQuestions = questions.filter((question) => answers[question.id]);
+
+  function resetFlow() {
+    setStep(0);
+    setPhase("questions");
+    setAnswers({});
+    setFreeText("");
+  }
+
+  function choose(value: string) {
+    if (!currentQuestion) return;
+    const next = { ...answers, [currentQuestion.id]: value };
+    questions.slice(step + 1).forEach((question) => delete next[question.id]);
+    setAnswers(next);
+    setFreeText("");
+    if (step + 1 >= questions.length) setPhase("review");
+    else setStep((current) => current + 1);
+  }
+
+  function submitText() {
+    if (freeText.trim()) choose(freeText.trim());
+  }
+
+  function goBack() {
+    if (phase !== "questions") {
+      setPhase("questions");
+      setStep(Math.max(0, questions.length - 1));
+      return;
+    }
+    if (step === 0) onPanelChange("home");
+    else setStep((current) => current - 1);
+  }
+
+  function editAnswer(id: string) {
+    const index = questions.findIndex((question) => question.id === id);
+    if (index < 0) return;
+    setPhase("questions");
+    setStep(index);
+    setFreeText("");
+  }
+
+  function recommendation() {
+    if (activePanel === "dashboard") {
+      const focus = answers.interest || "Ablauf";
+      return `Für deine Situation „${answers.situation || "Information"}“ passt eine ${answers.detail || "kurze"} Erklärung mit Fokus auf „${focus}“. Das Simulatortraining findet in kontrollierter Umgebung statt und bereitet reale Fahrsituationen vor; es ersetzt die praktische Ausbildung auf der Straße nicht.`;
+    }
+    if (activePanel === "courses") {
+      const external = answers.school === "externe Fahrschule"
+        ? " Für externe Fahrschüler kommt laut veröffentlichter Preisliste eine einmalige Anmeldung von 30 € hinzu."
+        : "";
+      return `Empfehlung: Starte mit dem Bereich „${answers.goal || "Grundlagen"}“. Dein Erfahrungsstand „${answers.experience || "offen"}“ wird vor Ort genutzt, um Schwierigkeit und Umfang passend einzuordnen.${external}`;
+    }
+    if (activePanel === "coach") {
+      const basePrice = answers.package === "Grundausbildung"
+        ? "180 € für 6 × 45 Minuten"
+        : answers.package === "Komplettpaket"
+          ? "270 € für 9 × 45 Minuten"
+          : "180 € für 6 × 45 Minuten oder 270 € für 9 × 45 Minuten";
+      const external = answers.school === "externe Fahrschule" ? " Hinzu kommen 30 € Anmeldung für externe Fahrschüler." : "";
+      return `Preisorientierung: ${basePrice}.${external} Der genaue Umfang und die aktuell gültigen Konditionen werden ausschließlich persönlich vor Ort bestätigt.`;
+    }
+    if (answers.topic === "Ersatz von Fahrstunden") return "Der Simulator ergänzt die Fahrausbildung, ersetzt aber keine vorgeschriebenen oder praktisch notwendigen Fahrstunden auf der Straße.";
+    if (answers.topic === "Training für Externe") return "Zusätzliches Simulatortraining kann auch bei einer anderen Fahrschule infrage kommen. Ein Fahrschulwechsel ist dafür nicht automatisch nötig; Details werden vor Ort geklärt.";
+    if (answers.topic === "Anmeldung") return "Die Anmeldung ist ausschließlich persönlich beim FSAZ-Team vor Ort möglich. Dieses Interface nimmt keine Anmeldung entgegen.";
+    if (answers.topic === "Termin") return "Termine und Verfügbarkeiten werden ausschließlich vor Ort geklärt. Dieses Interface bietet weder Buchung noch Reservierung an.";
+    return "Für die Paketwahl sind Trainingsziel und Erfahrung entscheidend. Als Orientierung gibt es 6 × 45 Minuten für 180 € und 9 × 45 Minuten für 270 €; die persönliche Einordnung erfolgt vor Ort.";
+  }
+
+  const flowNames: Record<string, string> = {
+    dashboard: "Simulator verstehen",
+    courses: "Passendes Modul finden",
+    coach: "Preise einordnen",
+    documents: "Frage klären",
+  };
+
+  return (
+    <section
+      className="bt-fsaz-info bt-guided-flow"
+      style={{ ...glass, alignSelf: "stretch", padding: isMobile ? 14 : 19, display: "flex", flexDirection: "column", gap: 14, color: textPrimary, flex: "0 0 auto" }}
+    >
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
+        <button type="button" onClick={goBack} style={secondary}>
+          {phase !== "questions" || step > 0 ? "← Zurück" : "← Übersicht"}
+        </button>
+        <div style={{ borderRadius: 999, padding: "8px 11px", background: `rgba(${accentRgb}, 0.09)`, border: `1px solid rgba(${accentRgb}, 0.15)`, color: textSecondary, fontSize: 11.5, fontWeight: 900 }}>
+          FSAZ · interaktive Information
+        </div>
+      </div>
+
+      <div>
+        <div style={labelStyle}>{flowNames[activePanel] || "FSAZ Wegweiser"}</div>
+        <div style={{ fontSize: isMobile ? 24 : 30, fontWeight: 950, lineHeight: 1.14, marginTop: 5 }}>
+          {phase === "questions"
+            ? currentQuestion?.question
+            : phase === "review"
+              ? "Deine persönliche Übersicht ist vorbereitet."
+              : "Deine FSAZ-Übersicht ist fertig."}
+        </div>
+        <div style={{ color: textSecondary, fontSize: 13, lineHeight: 1.5, marginTop: 7 }}>
+          {phase === "questions"
+            ? currentQuestion?.helper || "Wähle eine Antwort. Danach erscheint automatisch nur der nächste passende Schritt."
+            : phase === "review"
+              ? "Prüfe deine Auswahl. Mit einem Klick wird daraus eine kompakte Empfehlung – ohne Anmeldung oder Terminbuchung."
+              : "Die Empfehlung wurde nur in dieser Demo erstellt. Es wurde nichts versendet oder gespeichert."}
+        </div>
+      </div>
+
+      <div style={{ display: "flex", alignItems: "center", gap: 9 }}>
+        <div style={{ flex: 1, height: 7, borderRadius: 999, background: `rgba(${accentRgb}, 0.10)`, overflow: "hidden" }}>
+          <div style={{ width: `${phase === "questions" ? Math.max(10, ((step + 1) / questions.length) * 100) : 100}%`, height: "100%", borderRadius: 999, background: accent, transition: "width 220ms ease" }} />
+        </div>
+        <span style={{ color: textSecondary, fontSize: 11.5, fontWeight: 850 }}>
+          {phase === "questions" ? `${step + 1}/${questions.length}` : phase === "review" ? "Prüfen" : "Fertig"}
+        </span>
+      </div>
+
+      {phase === "questions" && currentQuestion && (
+        <>
+          <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(2, minmax(0, 1fr))", gap: 9 }}>
+            {currentQuestion.choices?.map((choice) => (
+              <button
+                key={`${currentQuestion.id}-${choice.value}`}
+                type="button"
+                className="bt-guided-choice"
+                onClick={() => choose(choice.value)}
+                style={{ ...soft, minHeight: 60, padding: "13px 14px", color: textPrimary, cursor: "pointer", textAlign: "left", fontSize: 13.5, fontWeight: 950, boxShadow: "0 8px 22px rgba(30,45,60,0.05)" }}
+              >
+                {choice.label}
+              </button>
+            ))}
+          </div>
+          <div style={{ ...soft, padding: 13 }}>
+            <div style={{ color: textSecondary, fontSize: 11.5, fontWeight: 850, marginBottom: 8 }}>Oder eigene Antwort eingeben</div>
+            <div style={{ display: "flex", gap: 8, flexDirection: isMobile ? "column" : "row" }}>
+              <input
+                value={freeText}
+                onChange={(event) => setFreeText(event.target.value)}
+                onKeyDown={(event) => { if (event.key === "Enter") submitText(); }}
+                placeholder="Kurze Antwort …"
+                style={{ flex: 1, height: 46, borderRadius: 13, border: `1px solid rgba(${accentRgb}, 0.17)`, background: "rgba(255,255,255,0.82)", color: textPrimary, padding: "0 12px", outline: "none", fontSize: 13.5, minWidth: 0 }}
+              />
+              <button type="button" onClick={submitText} disabled={!freeText.trim()} style={{ ...primary, minHeight: 46, opacity: freeText.trim() ? 1 : 0.45 }}>
+                Weiter
+              </button>
+            </div>
+          </div>
+        </>
+      )}
+
+      {phase !== "questions" && (
+        <>
+          <div style={{ ...soft, padding: isMobile ? 15 : 18 }}>
+            <div style={labelStyle}>{phase === "review" ? "DEINE AUSWAHL" : "DEINE EMPFEHLUNG"}</div>
+            {phase === "review" ? (
+              <div style={{ display: "grid", gap: 8, marginTop: 10 }}>
+                {answeredQuestions.map((question) => (
+                  <button key={question.id} type="button" onClick={() => editAnswer(question.id)} style={{ border: "1px solid rgba(20,45,65,0.08)", borderRadius: 13, background: "rgba(255,255,255,0.70)", color: textPrimary, padding: "11px 12px", cursor: "pointer", textAlign: "left" }}>
+                    <span style={{ display: "block", color: textSecondary, fontSize: 10.5, fontWeight: 850 }}>{question.question}</span>
+                    <span style={{ display: "block", marginTop: 3, fontSize: 13, fontWeight: 950 }}>{answers[question.id]} · ändern</span>
+                  </button>
+                ))}
+              </div>
+            ) : (
+              <div style={{ display: "flex", gap: 12, alignItems: "flex-start", marginTop: 9 }}>
+                <div aria-hidden="true" style={{ width: 40, height: 40, flex: "0 0 40px", borderRadius: 14, display: "grid", placeItems: "center", background: `rgba(${accentRgb}, 0.16)`, color: accent, fontWeight: 950, fontSize: 20 }}>✓</div>
+                <div style={{ color: textPrimary, fontSize: 13.5, lineHeight: 1.58 }}>{recommendation()}</div>
+              </div>
+            )}
+          </div>
+
+          <div style={{ ...soft, padding: 13, color: textSecondary, fontSize: 12.5, lineHeight: 1.5 }}>
+            <strong style={{ color: textPrimary }}>Wichtig:</strong> Anmeldung und Terminabstimmung erfolgen ausschließlich persönlich vor Ort beim FSAZ-Team. Dieses Interface zeigt keine freien Zeiten und nimmt keine Buchung entgegen.
+          </div>
+
+          <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 9 }}>
+            {phase === "review" ? (
+              <>
+                <button type="button" onClick={resetFlow} style={{ ...secondary, minHeight: 49 }}>Neu beginnen</button>
+                <button type="button" onClick={() => setPhase("success")} style={{ ...primary, minHeight: 49 }}>Empfehlung erstellen</button>
+              </>
+            ) : (
+              <>
+                <button type="button" onClick={() => onPanelChange("home")} style={{ ...secondary, minHeight: 49 }}>Zur Übersicht</button>
+                <button type="button" onClick={resetFlow} style={{ ...primary, minHeight: 49 }}>Neue Beratung</button>
+              </>
             )}
           </div>
         </>
@@ -20761,7 +21605,7 @@ body::after {
                         onAsk={(message) => void sendText(message)}
                       />
                     ) : futureDemoVariant === "rathje" && (["coach", "schedule", "documents"] as HohenbadenPanel[]).includes(hohenbadenPanel) ? (
-                      <RathjeSecretaryPanel
+                      <RathjeInteractivePanel
                         panel={hohenbadenPanel}
                         onPanelChange={openHohenbadenPanel}
                         accent={widgetAccent}
@@ -20784,7 +21628,7 @@ body::after {
                         onAsk={(message) => void sendText(message)}
                       />
                     ) : futureDemoVariant === "fsaz" ? (
-                      <FsazInformationDemo
+                      <FsazInteractiveDemo
                         variant="fsaz"
                         panel={hohenbadenPanel}
                         onPanelChange={openHohenbadenPanel}
