@@ -9859,8 +9859,22 @@ function HohenbadenFutureDemo({
   const isRathjeDemo = variant === "rathje";
   const isRDriveDemo = variant === "r-drive";
   const isHappyDrivingDemo = variant === "happy-driving";
+  const isRathjeStyleRegionalDemo =
+    variant === "hopla" || variant === "gerlach" || variant === "royal";
+  const regionalSchoolName =
+    variant === "hopla"
+      ? "Fahrschule Hopla"
+      : variant === "gerlach"
+        ? "Fahrschule Gerlach"
+        : variant === "royal"
+          ? "Fahrschule Royal"
+          : "die Fahrschule";
+  const transferSchoolName = isRathjeStyleRegionalDemo
+    ? regionalSchoolName
+    : "Happy Driving";
   const isGuidedDrivingDemo = isRDriveDemo || isHappyDrivingDemo;
-  const isCompactSalesDemo = isRathjeDemo || variant === "campus-b27";
+  const isCompactSalesDemo =
+    isRathjeDemo || isRathjeStyleRegionalDemo || variant === "campus-b27";
   const demoCourses = demoConfig.courses;
   const demoDocuments = demoConfig.documents;
   const [studentCode, setStudentCode] = useState("");
@@ -10050,7 +10064,7 @@ function HohenbadenFutureDemo({
     {
       id: "class",
       question: "Welche Führerscheinklasse machst du aktuell?",
-      helper: "Damit Happy Driving direkt weiß, welche Ausbildung übernommen werden soll.",
+      helper: `Damit ${isRathjeStyleRegionalDemo ? regionalSchoolName : "Happy Driving"} direkt weiß, welche Ausbildung übernommen werden soll.`,
       options: ["B", "B197", "B78", "BF17", "B96", "BE"],
     },
     {
@@ -10072,6 +10086,46 @@ function HohenbadenFutureDemo({
       options: ["Ausbildungsnachweis", "Prüfauftrag / Behördenunterlagen", "Lernstand / App-Nachweis", "Mehrere Unterlagen", "Noch nichts vorhanden"],
     },
   ];
+
+  const regionalPriceCards = variant === "royal"
+    ? [
+        {
+          title: "Klasse B · Start",
+          value: "150,00 €",
+          detail: "Veröffentlichter Grund- beziehungsweise Anmeldebetrag.",
+        },
+        {
+          title: "Fahr- & Sonderfahrt",
+          value: "59,50 €",
+          detail: "Je 45 Minuten; B197-Fahrstunden bitte aktuell bestätigen lassen.",
+        },
+        {
+          title: "Prüfungsvorstellung",
+          value: "120 / 160 €",
+          detail: "Theorie / Praxis; zusätzliche TÜV-Gebühren können anfallen.",
+        },
+      ]
+    : [
+        {
+          title: "Grundbetrag & Lernmittel",
+          value: "Individuell",
+          detail: "Die Fahrschule veröffentlicht derzeit keine vollständige verbindliche Preisliste.",
+        },
+        {
+          title: "Fahr- & Sonderfahrten",
+          value: "Nach Bedarf",
+          detail: "Die Gesamtkosten hängen von Klasse und persönlichem Ausbildungsumfang ab.",
+        },
+        {
+          title: "Persönliches Angebot",
+          value: "Direkt anfragen",
+          detail: "Das Interface bereitet Klasse, Vorbesitz und Wunschweg für die Anfrage vor.",
+        },
+      ];
+
+  const regionalPriceNotice = variant === "royal"
+    ? "Veröffentlichte Preise mit Stand 2026. Vor einer verbindlichen Entscheidung bitte Gültigkeit und vollständige Preisliste direkt bei Fahrschule Royal prüfen."
+    : `Für ${regionalSchoolName} werden keine Preise erfunden. Das Interface zeigt transparent, welche Angaben für ein aktuelles persönliches Angebot benötigt werden.`;
 
   function chooseGuidedAnswer(id: string, value: string) {
     setGuidedAnswers((current) => ({ ...current, [id]: value }));
@@ -11386,7 +11440,7 @@ function HohenbadenFutureDemo({
         </div>
       )}
 
-            {panel === "documents" && isHappyDrivingDemo && (
+            {panel === "documents" && (isHappyDrivingDemo || isRathjeStyleRegionalDemo) && (
         <div
           style={{
             position: "relative",
@@ -11399,7 +11453,7 @@ function HohenbadenFutureDemo({
             <div style={{ color: accent, fontSize: 11.5, fontWeight: 950, letterSpacing: 0.45 }}>FAHRSCHULWECHSEL-ASSISTENT</div>
             <div style={{ fontSize: isMobile ? 25 : 31, fontWeight: 950, marginTop: 4 }}>Wechsel vorbereiten, ohne alles neu zu erklären</div>
             <div style={{ color: textSecondary, fontSize: 14, lineHeight: 1.5, marginTop: 6 }}>
-              Wir erfassen deinen bisherigen Stand Schritt für Schritt. Danach siehst du genau, welche Informationen und Unterlagen Happy Driving für die Übernahme sinnvoll prüfen kann.
+              Wir erfassen deinen bisherigen Stand Schritt für Schritt. Danach siehst du genau, welche Informationen und Unterlagen {transferSchoolName} für die Übernahme sinnvoll prüfen kann.
             </div>
           </div>
 
@@ -11433,13 +11487,13 @@ function HohenbadenFutureDemo({
               <div style={{ display: "flex", justifyContent: "space-between", gap: 12, alignItems: "flex-start", flexWrap: "wrap" }}>
                 <div>
                   <div style={{ color: accent, fontSize: 11.5, fontWeight: 950, letterSpacing: 0.45 }}>
-                    DEMO · ÜBERGABE AN HAPPY DRIVING
+                    DEMO · ÜBERGABE AN {transferSchoolName.toUpperCase()}
                   </div>
                   <div style={{ fontSize: isMobile ? 22 : 27, fontWeight: 950, marginTop: 5 }}>
                     So würde die Fahrschule deine Wechselanfrage erhalten
                   </div>
                   <div style={{ color: textSecondary, fontSize: 12.5, lineHeight: 1.5, marginTop: 5, maxWidth: 720 }}>
-                    In der echten Version landet diese strukturierte Zusammenfassung direkt bei Happy Driving. Hier wird nichts wirklich versendet.
+                    In der echten Version landet diese strukturierte Zusammenfassung direkt bei {transferSchoolName}. Hier wird nichts wirklich versendet.
                   </div>
                 </div>
                 <div
@@ -11492,7 +11546,7 @@ function HohenbadenFutureDemo({
                 </div>
 
                 <div style={{ ...softCard, padding: 15 }}>
-                  <div style={{ fontSize: 12, color: textSecondary, fontWeight: 850 }}>ZUSAMMENFASSUNG FÜR HAPPY DRIVING</div>
+                  <div style={{ fontSize: 12, color: textSecondary, fontWeight: 850 }}>ZUSAMMENFASSUNG FÜR {transferSchoolName.toUpperCase()}</div>
                   <div style={{ fontSize: 13, lineHeight: 1.6, marginTop: 10 }}>
                     Neue Wechselanfrage für <strong>{transferAnswers.class || "eine Führerscheinklasse"}</strong>. 
                     Der aktuelle Ausbildungsstand ist <strong>{transferAnswers.status || "noch offen"}</strong>. 
@@ -11541,7 +11595,7 @@ function HohenbadenFutureDemo({
                 <div>
                   <div style={{ fontSize: 12.5, fontWeight: 900 }}>Nächster Schritt</div>
                   <div style={{ color: textSecondary, fontSize: 11.5, marginTop: 3 }}>
-                    Happy Driving prüft die Angaben und meldet sich für die individuelle Übernahme.
+                    {transferSchoolName} prüft die Angaben und meldet sich für die individuelle Übernahme.
                   </div>
                 </div>
                 <button
@@ -11563,7 +11617,7 @@ function HohenbadenFutureDemo({
               <div style={{ ...glassCard, padding: 18 }}>
                 <div style={{ fontSize: 20, fontWeight: 950 }}>Dein Wechselprofil ist vorbereitet</div>
                 <div style={{ color: textSecondary, fontSize: 12.5, lineHeight: 1.5, marginTop: 5 }}>
-                  So könnte Happy Driving deinen Fall direkt einordnen, ohne dass du am Telefon wieder bei null anfangen musst.
+                  So könnte {transferSchoolName} deinen Fall direkt einordnen, ohne dass du am Telefon wieder bei null anfangen musst.
                 </div>
                 <div style={{ display: "grid", gap: 8, marginTop: 14 }}>
                   {[
@@ -11621,7 +11675,7 @@ function HohenbadenFutureDemo({
                   onClick={() => setTransferDemoSent(true)}
                   style={primaryButton}
                 >
-                  Demo: an Happy Driving senden
+                  Demo: an {transferSchoolName} senden
                 </button>
                 <div style={{ color: textSecondary, fontSize: 11.5, lineHeight: 1.45 }}>
                   Der Klick zeigt nur die Übergabe-Ansicht. In dieser Demo werden keine Daten oder Dokumente wirklich an die Fahrschule gesendet.
@@ -11632,7 +11686,7 @@ function HohenbadenFutureDemo({
         </div>
       )}
 
-{panel === "documents" && !isHappyDrivingDemo && (
+{panel === "documents" && !isHappyDrivingDemo && !isRathjeStyleRegionalDemo && (
         <div
           style={{
             position: "relative",
@@ -11841,7 +11895,88 @@ function HohenbadenFutureDemo({
         </div>
       )}
 
-      {panel === "coach" && !isGuidedDrivingDemo && (
+      {panel === "coach" && isRathjeStyleRegionalDemo && (
+        <div
+          style={{
+            position: "relative",
+            display: "flex",
+            flexDirection: "column",
+            gap: 14,
+          }}
+        >
+          <div>
+            <div
+              style={{
+                color: accent,
+                fontSize: 11.5,
+                fontWeight: 950,
+                letterSpacing: 0.48,
+              }}
+            >
+              PREISE & KOSTEN
+            </div>
+            <div style={{ fontSize: isMobile ? 25 : 31, fontWeight: 950, marginTop: 4 }}>
+              Kosten klar einordnen – ohne falsche Versprechen
+            </div>
+            <div style={{ color: textSecondary, fontSize: 14, lineHeight: 1.5, marginTop: 6 }}>
+              Wähle deine Führerscheinklasse im Chat. Das Interface zeigt nur veröffentlichte Angaben und bereitet bei fehlenden Preisen eine konkrete Anfrage an {regionalSchoolName} vor.
+            </div>
+          </div>
+
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: isMobile ? "1fr" : "repeat(3, minmax(0, 1fr))",
+              gap: 10,
+            }}
+          >
+            {regionalPriceCards.map((price) => (
+              <div key={price.title} style={{ ...glassCard, padding: 17 }}>
+                <div style={{ color: textSecondary, fontSize: 11.5, fontWeight: 900 }}>
+                  {price.title}
+                </div>
+                <div style={{ fontSize: 23, fontWeight: 950, marginTop: 4 }}>
+                  {price.value}
+                </div>
+                <div style={{ color: textSecondary, fontSize: 12, lineHeight: 1.45, marginTop: 8 }}>
+                  {price.detail}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div
+            style={{
+              ...softCard,
+              padding: 14,
+              color: textSecondary,
+              fontSize: 12,
+              lineHeight: 1.5,
+            }}
+          >
+            {regionalPriceNotice}
+          </div>
+
+          <div style={{ display: "flex", gap: 9, flexWrap: "wrap" }}>
+            <button
+              type="button"
+              onClick={() => onAsk(`Was kostet mein Führerschein bei ${regionalSchoolName}? Frage mich bitte zuerst nach der gewünschten Klasse und nenne nur veröffentlichte beziehungsweise bestätigte Preise.`)}
+              style={primaryButton}
+            >
+              Persönliche Kosten klären
+            </button>
+            <button
+              type="button"
+              onClick={() => onPanelChange("courses")}
+              style={secondaryButton}
+            >
+              Führerscheinklasse wählen
+            </button>
+          </div>
+        </div>
+      )}
+
+      {panel === "coach" && !isGuidedDrivingDemo && !isRathjeStyleRegionalDemo && (
         <div
           style={{
             position: "relative",
@@ -14570,6 +14705,12 @@ export default function WidgetPage() {
   const isCampusB27Interface = ["campus-b27", "campus", "campus-b27.de", "www.campus-b27.de"].includes(normalizedTenantId);
   const regionalDemoVariant =
     REGIONAL_TENANT_VARIANTS[normalizedTenantId] ?? null;
+  const isRathjeStyleRegionalInterface =
+    regionalDemoVariant === "hopla" ||
+    regionalDemoVariant === "gerlach" ||
+    regionalDemoVariant === "royal";
+  const usesRathjeInterfaceLayout =
+    isRathjeInterface || isRathjeStyleRegionalInterface;
   const isTxbikesInterface = [
     "txbikesv2",
     "txbikes",
@@ -14866,7 +15007,7 @@ export default function WidgetPage() {
       ? "Führerschein-Cockpit"
       : isProfCarInterface
     ? "digitaler Fahrzeugberater"
-    : isRathjeInterface
+    : usesRathjeInterfaceLayout
       ? "Führerschein-Assistent"
       : isFsazInterface
         ? "Simulator-Coach"
@@ -18423,7 +18564,7 @@ export default function WidgetPage() {
       ? HAPPY_DRIVING_START_CARDS
       : isProfCarInterface
     ? PROFCAR_START_CARDS
-    : isRathjeInterface
+    : usesRathjeInterfaceLayout
       ? RATHJE_START_CARDS
       : isFsazInterface
         ? FSAZ_START_CARDS
@@ -21469,7 +21610,7 @@ body::after {
                       "inset 0 1px 0 rgba(255,255,255,0.10), inset 0 -1px 0 rgba(22,49,38,0.04)",
                   }}
                 >
-                  {isRathjeInterface && (
+                  {usesRathjeInterfaceLayout && (
                     <RathjeTabBar
                       activePanel={hohenbadenPanel}
                       onPanelChange={openHohenbadenPanel}
@@ -21559,7 +21700,7 @@ body::after {
                                 ? "Dein Führerschein. Persönlich begleitet."
                             : isFahrwerkBInterface
                               ? "Dein Führerschein-Cockpit"
-                              : isRathjeInterface
+                              : usesRathjeInterfaceLayout
                                 ? "Wie kann ich dir heute weiterhelfen?"
                               : isFsazInterface
                                 ? "Fahrsimulator einfach erklärt."
@@ -21609,7 +21750,7 @@ body::after {
                               ? isMobileViewport
                                 ? "Wähle deinen Bereich – alles Wichtige direkt auf einen Blick."
                                 : "Wähle aus, wo du gerade stehst. Das Interface zeigt dir den nächsten Schritt, prüft Unterlagen und bereitet Anfragen sauber vor."
-                              : isRathjeInterface
+                              : usesRathjeInterfaceLayout
                                 ? "Ich übernehme die Vorarbeit wie ein digitales Fahrschulbüro. Wähle einfach dein Anliegen."
                               : isFsazInterface
                                 ? "Informiere dich kompakt über Ablauf, Trainingsinhalte und Preise. Anmeldung und Terminvereinbarung bleiben vollständig beim FSAZ-Team vor Ort."
@@ -21628,7 +21769,7 @@ body::after {
                                       : `Wähle einen Einstieg aus. Danach führt dich ${displayAssistantName} gezielt weiter.`}
                         </div>
 
-                        {(isProfCarInterface || isFahrwerkBInterface || isPetermaennchenInterface || isAbgefahrenInterface || isFutureDemoInterface) && !isRathjeInterface && !isRDriveInterface && !isHappyDrivingInterface && (
+                        {(isProfCarInterface || isFahrwerkBInterface || isPetermaennchenInterface || isAbgefahrenInterface || isFutureDemoInterface) && !usesRathjeInterfaceLayout && !isRDriveInterface && !isHappyDrivingInterface && (
                           <div
                             className="bt-fahrwerk-steps"
                             style={{
@@ -21783,7 +21924,7 @@ body::after {
                             className={`bt-start-card ${
                               isLinaInterface ? "bt-start-card--lina" : ""
                             } ${
-                              isRathjeInterface ? "bt-start-card--rathje" : ""
+                              usesRathjeInterfaceLayout ? "bt-start-card--rathje" : ""
                             }`}
                             disabled={loading}
                             onClick={(event) => {
@@ -21941,9 +22082,9 @@ body::after {
 
                   {futureDemoVariant &&
                     hohenbadenPanel !== "home" &&
-                    (futureDemoVariant === "rathje" && hohenbadenPanel === "connect" ? (
+                    (usesRathjeInterfaceLayout && hohenbadenPanel === "connect" ? (
                       <HohenbadenFutureDemo
-                        variant="rathje"
+                        variant={futureDemoVariant}
                         panel="dashboard"
                         onPanelChange={openHohenbadenPanel}
                         accent={widgetAccent}
