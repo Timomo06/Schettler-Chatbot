@@ -6386,6 +6386,719 @@ function RathjeInteractivePanel({
   );
 }
 
+type RegionalOutcomeVariant = "hopla" | "gerlach" | "royal";
+
+type RegionalGuidedOutcomePanelProps = Omit<HohenbadenFutureDemoProps, "variant"> & {
+  variant: RegionalOutcomeVariant;
+};
+
+function RegionalGuidedOutcomePanel({
+  variant,
+  panel,
+  onPanelChange,
+  accent,
+  accentRgb,
+  textPrimary,
+  textSecondary,
+  isMobile,
+  onAsk,
+}: RegionalGuidedOutcomePanelProps) {
+  const schoolName = variant === "hopla"
+    ? "Fahrschule Hopla"
+    : variant === "gerlach"
+      ? "Fahrschule Gerlach"
+      : "Fahrschule Royal";
+  const demoConfig = FUTURE_DEMO_CONFIGS[variant];
+
+  const [step, setStep] = useState(0);
+  const [phase, setPhase] = useState<RathjeInteractivePhase>("questions");
+  const [answers, setAnswers] = useState<Record<string, string>>({});
+  const [contactName, setContactName] = useState("");
+  const [contactValue, setContactValue] = useState("");
+  const [files, setFiles] = useState<File[]>([]);
+  const [consent, setConsent] = useState(false);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    setStep(0);
+    setPhase("questions");
+    setAnswers({});
+    setContactName("");
+    setContactValue("");
+    setFiles([]);
+    setConsent(false);
+    setError("");
+  }, [panel, variant]);
+
+  if (panel === "home") return null;
+
+  const glass: CSSProperties = {
+    borderRadius: isMobile ? 21 : 25,
+    border: "1px solid rgba(255,255,255,0.60)",
+    background: "linear-gradient(180deg, rgba(255,255,255,0.95), rgba(255,255,255,0.75))",
+    boxShadow: "0 18px 50px rgba(30,45,60,0.09), inset 0 1px 0 rgba(255,255,255,0.82)",
+    backdropFilter: "blur(24px) saturate(165%)",
+    WebkitBackdropFilter: "blur(24px) saturate(165%)",
+  };
+
+  const soft: CSSProperties = {
+    borderRadius: 17,
+    border: `1px solid rgba(${accentRgb}, 0.14)`,
+    background: `linear-gradient(145deg, rgba(${accentRgb}, 0.08), rgba(255,255,255,0.74))`,
+  };
+
+  const primary: CSSProperties = {
+    minHeight: 46,
+    border: "1px solid rgba(255,255,255,0.30)",
+    borderRadius: 14,
+    background: `linear-gradient(180deg, ${accent}, ${accent}D2)`,
+    color: "#fff",
+    padding: "0 17px",
+    fontWeight: 900,
+    cursor: "pointer",
+    boxShadow: `0 12px 28px rgba(${accentRgb}, 0.20)`,
+  };
+
+  const secondary: CSSProperties = {
+    minHeight: 42,
+    border: `1px solid rgba(${accentRgb}, 0.17)`,
+    borderRadius: 14,
+    background: "rgba(255,255,255,0.74)",
+    color: textPrimary,
+    padding: "0 14px",
+    fontWeight: 850,
+    cursor: "pointer",
+  };
+
+  const field: CSSProperties = {
+    width: "100%",
+    minHeight: 45,
+    borderRadius: 13,
+    border: `1px solid rgba(${accentRgb}, 0.17)`,
+    background: "rgba(255,255,255,0.84)",
+    color: textPrimary,
+    padding: "0 12px",
+    outline: "none",
+    font: "inherit",
+    fontSize: 13.5,
+    boxSizing: "border-box",
+  };
+
+  const licenseChoices: GuidedChoice[] = variant === "hopla"
+    ? [
+        { label: "B / BF17", value: "B / BF17", detail: "Klassischer Pkw-Weg oder begleitetes Fahren" },
+        { label: "B197", value: "B197", detail: "Automatikprüfung plus Schaltkompetenz" },
+        { label: "BE", value: "BE", detail: "Anhänger-Ausbildung bei Klasse-B-Vorbesitz" },
+      ]
+    : [
+        { label: "B / BF17", value: "B / BF17", detail: "Klassischer Pkw-Weg oder begleitetes Fahren" },
+        { label: "B197", value: "B197", detail: "Automatikprüfung plus Schaltkompetenz" },
+        { label: "B78", value: "B78", detail: "Ausbildung und Prüfung ausschließlich Automatik" },
+        { label: "B96", value: "B96", detail: "Anhänger-Schulung ohne eigene Prüfung" },
+        { label: "BE", value: "BE", detail: "Anhänger-Ausbildung mit praktischer Prüfung" },
+        { label: "Motorrad", value: "Motorrad", detail: "AM, A1, A2, A oder B196 einordnen" },
+        ...(variant === "royal"
+          ? [{ label: "Lkw / Bus", value: "Lkw / Bus", detail: "Aktuell ausschließlich Early-Bird-Interesse" }]
+          : []),
+      ];
+
+  const locationChoices: GuidedChoice[] = variant === "hopla"
+    ? [{ label: "Kassel", value: "Kassel · Holländische Straße 27" }]
+    : variant === "royal"
+      ? [
+          { label: "Rahmer Straße", value: "Rahmer Straße 146" },
+          { label: "Evinger Straße", value: "Evinger Straße 176" },
+        ]
+      : [
+          { label: "Dortmund-Mitte", value: "Dortmund-Mitte" },
+          { label: "Benninghofen", value: "Dortmund-Benninghofen" },
+          { label: "Hörde", value: "Dortmund-Hörde" },
+          { label: "Hombruch", value: "Dortmund-Hombruch" },
+          { label: "Schüren", value: "Dortmund-Schüren" },
+          { label: "Neuasseln", value: "Dortmund-Neuasseln" },
+          { label: "Oespel", value: "Dortmund-Oespel" },
+          { label: "Lütgendortmund", value: "Dortmund-Lütgendortmund", detail: "Aktuellen Stand vorher telefonisch bestätigen" },
+        ];
+
+  const questions: GuidedQuestion[] = panel === "courses"
+    ? [
+        {
+          id: "license",
+          eyebrow: "SCHRITT 1",
+          question: "Welchen Führerschein-Weg möchtest du prüfen?",
+          helper: "Danach wird nicht nur eine Liste gezeigt, sondern eine klare Empfehlung abgeleitet.",
+          choices: licenseChoices,
+        },
+        {
+          id: "age",
+          eyebrow: "SCHRITT 2",
+          question: "Welche Altersgruppe trifft auf dich zu?",
+          choices: [
+            { label: "15 Jahre", value: "15" },
+            { label: "16–17 Jahre", value: "16–17" },
+            { label: "18–23 Jahre", value: "18–23" },
+            { label: "24 Jahre oder älter", value: "24+" },
+          ],
+        },
+        {
+          id: "prior",
+          eyebrow: "SCHRITT 3",
+          question: "Welchen Vorbesitz hast du bereits?",
+          choices: [
+            { label: "Noch keinen Führerschein", value: "kein Vorbesitz" },
+            { label: "Klasse B unter 5 Jahren", value: "B unter 5 Jahren" },
+            { label: "Klasse B seit mindestens 5 Jahren", value: "B seit 5 Jahren" },
+            { label: "A1 oder A2", value: "A1 / A2" },
+          ],
+        },
+      ]
+    : panel === "coach"
+      ? [
+          {
+            id: "license",
+            eyebrow: "SCHRITT 1",
+            question: "Für welchen Führerschein brauchst du eine Preisentscheidung?",
+            choices: licenseChoices,
+          },
+          {
+            id: "priceNeed",
+            eyebrow: "SCHRITT 2",
+            question: "Welcher Preis ist für dich entscheidend?",
+            choices: [
+              { label: "Feste Startkosten", value: "Startkosten", detail: "Grundbetrag und veröffentlichte Lernmittel" },
+              { label: "Fahrstunden", value: "Fahrstunden", detail: "Übungs- und Sonderfahrten" },
+              { label: "Gesamter Preisweg", value: "Gesamtüberblick", detail: "Feste und variable Positionen" },
+            ],
+          },
+        ]
+      : panel === "schedule"
+        ? [
+            {
+              id: "area",
+              eyebrow: "SCHRITT 1",
+              question: "Was möchtest du konkret planen?",
+              choices: [
+                { label: "Theorie", value: "Theorie", detail: "Passenden veröffentlichten Unterricht finden" },
+                { label: "Fahrstunden", value: "Fahrstunden", detail: "Persönliches Zeitfenster vorbereiten" },
+                { label: "Ausbildungsstart", value: "Ausbildungsstart", detail: "Büro, Unterlagen und ersten Schritt bündeln" },
+              ],
+            },
+            {
+              id: "location",
+              eyebrow: "SCHRITT 2",
+              question: "Welcher Standort soll berücksichtigt werden?",
+              choices: locationChoices,
+            },
+            {
+              id: "phase",
+              eyebrow: "SCHRITT 3",
+              question: "Wo stehst du aktuell?",
+              choices: [
+                { label: "Noch nicht angemeldet", value: "noch nicht angemeldet" },
+                { label: "Theorie läuft", value: "Theorie läuft" },
+                { label: "Theorie bestanden", value: "Theorie bestanden" },
+                { label: "Praxis läuft", value: "Praxis läuft" },
+              ],
+            },
+            {
+              id: "availability",
+              eyebrow: "SCHRITT 4",
+              question: "Welches Zeitfenster passt dir am besten?",
+              choices: [
+                { label: "Vormittags", value: "vormittags" },
+                { label: "Nachmittags", value: "nachmittags" },
+                { label: "Abends", value: "abends" },
+                { label: "Flexibel", value: "flexibel" },
+              ],
+            },
+          ]
+        : [
+            {
+              id: "origin",
+              eyebrow: "SCHRITT 1",
+              question: "Warum möchtest du die Fahrschule wechseln?",
+              choices: [
+                { label: "Unzufrieden mit dem Ablauf", value: "Ablauf / Betreuung" },
+                { label: "Umzug oder Standortwechsel", value: "Umzug / Standort" },
+                { label: "Lange Unterbrechung", value: "unterbrochene Ausbildung" },
+                { label: "Erst prüfen, ob es passt", value: "unverbindliche Wechselprüfung" },
+              ],
+            },
+            {
+              id: "license",
+              eyebrow: "SCHRITT 2",
+              question: `Welche Ausbildung soll ${schoolName} übernehmen?`,
+              choices: licenseChoices.filter((choice) => choice.value !== "Lkw / Bus"),
+            },
+            {
+              id: "status",
+              eyebrow: "SCHRITT 3",
+              question: "Wie weit bist du in der bisherigen Ausbildung?",
+              choices: [
+                { label: "Nur angemeldet", value: "Anmeldung erfolgt" },
+                { label: "Theorie läuft", value: "Theorie läuft" },
+                { label: "Theorie bestanden", value: "Theorie bestanden" },
+                { label: "Praxis läuft", value: "Praxis läuft" },
+              ],
+            },
+            {
+              id: "completed",
+              eyebrow: "SCHRITT 4",
+              question: "Welche Leistungen wurden bereits absolviert?",
+              choices: [
+                { label: "Nur Anmeldung", value: "nur Anmeldung" },
+                { label: "Theorieunterricht", value: "Theorieunterricht" },
+                { label: "Übungsfahrten", value: "Übungsfahrten" },
+                { label: "Übungs- und Sonderfahrten", value: "Übungs- und Sonderfahrten" },
+              ],
+            },
+            {
+              id: "exam",
+              eyebrow: "SCHRITT 5",
+              question: "Wie ist der Prüfungsstatus?",
+              choices: [
+                { label: "Noch keine Prüfung", value: "noch keine Prüfung" },
+                { label: "Theorie angemeldet", value: "Theorie angemeldet" },
+                { label: "Theorie bestanden", value: "Theorie bestanden" },
+                { label: "Neuer Versuch nötig", value: "neuer Versuch nötig" },
+              ],
+            },
+            {
+              id: "documents",
+              eyebrow: "SCHRITT 6",
+              question: "Welche Nachweise liegen bereits vor?",
+              choices: [
+                { label: "Ausbildungsnachweis vollständig", value: "vollständig" },
+                { label: "Einige Unterlagen vorhanden", value: "teilweise" },
+                { label: "Noch keine Nachweise", value: "fehlen" },
+                { label: "Ich weiß es nicht", value: "Prüfung nötig" },
+              ],
+            },
+          ];
+
+  function getLicenseResult() {
+    const selected = answers.license || "B / BF17";
+    const age = answers.age || "18–23";
+    const prior = answers.prior || "kein Vorbesitz";
+
+    if (selected === "Lkw / Bus") {
+      return {
+        recommendation: "Early-Bird-Liste",
+        title: "Noch kein regulärer Ausbildungsstart",
+        lead: "C, CE, D und D1 sind bei Royal derzeit als künftiges Angebot angekündigt. Dein klarer Weg ist deshalb aktuell die Interessentenliste – keine reguläre Anmeldung.",
+        requirement: "Gewünschte Klasse und Kontaktdaten hinterlegen",
+        next: "Early-Bird-Interesse vorbereiten und Start erst nach offizieller Freigabe planen.",
+      };
+    }
+
+    if (selected === "Motorrad") {
+      const recommendation = age === "15" ? "Klasse AM" : age === "16–17" ? "Klasse A1" : age === "18–23" ? "Klasse A2" : "Klasse A direkt";
+      const alternative = age === "24+" && prior === "B seit 5 Jahren" ? "B196 zusätzlich als Alternative prüfen" : "Alter und Vorbesitz persönlich bestätigen";
+      return {
+        recommendation,
+        title: `${recommendation} ist dein passender Ausgangspunkt`,
+        lead: "Die Empfehlung folgt aus deiner Altersgruppe. Ein vorhandener Motorradführerschein kann stattdessen einen stufenweisen Aufstieg ermöglichen.",
+        requirement: alternative,
+        next: `Mit ${schoolName} Alter, Vorbesitz und gewünschten Motorradweg bestätigen.`,
+      };
+    }
+
+    if ((selected === "BE" || selected === "B96") && prior === "kein Vorbesitz") {
+      return {
+        recommendation: "Zuerst Klasse B",
+        title: `Dein Weg führt über B und anschließend ${selected}`,
+        lead: `${selected} baut auf Klasse B auf. Ohne Klasse-B-Vorbesitz kann die Anhängerqualifikation nicht der erste Schritt sein.`,
+        requirement: "Klasse B erwerben beziehungsweise vorhandenen Vorbesitz nachweisen",
+        next: `Klasse B starten und ${selected} anschließend als zweite Etappe einplanen.`,
+      };
+    }
+
+    const recommendation = selected === "B / BF17"
+      ? (age === "15" || age === "16–17" ? "BF17" : "Klasse B")
+      : selected;
+    const lead = recommendation === "B197"
+      ? "Automatikprüfung und nachgewiesene Schaltkompetenz verbinden Komfort mit späterer Schaltberechtigung."
+      : recommendation === "B78"
+        ? "Ausbildung und Prüfung erfolgen auf Automatik; die Fahrerlaubnis bleibt auf Automatikfahrzeuge beschränkt."
+        : recommendation === "BF17"
+          ? "Begleitetes Fahren ist für deine Altersgruppe der passende Pkw-Einstieg."
+          : recommendation === "BE"
+            ? "BE ist der klare Weg für größere Anhänger und beinhaltet eine praktische Prüfung."
+            : recommendation === "B96"
+              ? "B96 passt zu Gespannen bis 4.250 kg und kommt ohne separate Prüfung aus."
+              : "Der klassische Klasse-B-Weg passt zu deinem angegebenen Ziel.";
+    return {
+      recommendation,
+      title: `${recommendation} ist dein klarer Führerschein-Weg`,
+      lead,
+      requirement: recommendation === "BE" || recommendation === "B96" ? "Klasse-B-Vorbesitz bestätigen" : "Ausweis und Antragsunterlagen vorbereiten",
+      next: `Beratung für ${recommendation} bei ${schoolName} mit deinen Angaben vorbereiten.`,
+    };
+  }
+
+  function getPriceResult() {
+    const license = answers.license || "B / BF17";
+    const need = answers.priceNeed || "Gesamtüberblick";
+
+    if (license === "Lkw / Bus") {
+      return {
+        metric: "Noch kein Preis",
+        metricLabel: "C, CE, D und D1 · derzeit nur Early-Bird-Interesse",
+        title: "Es gibt noch keinen regulären buchbaren Preisweg",
+        lead: "Royal kündigt Lkw- und Busklassen erst als künftiges Angebot an. Deshalb wird weder ein Preis noch ein Start versprochen.",
+        details: [
+          { label: "Aktueller Status", text: "Coming soon · noch keine reguläre Ausbildung" },
+          { label: "Möglich", text: "Gewünschte Klasse und Kontaktdaten für die Interessentenliste vormerken" },
+          { label: "Nächster Schritt", text: "Early-Bird-Interesse hinterlegen und Preis erst nach offiziellem Start bestätigen lassen.", emphasis: true },
+        ] as GuidedResultDetail[],
+      };
+    }
+
+    if (variant !== "royal") {
+      return {
+        metric: "Persönliches Angebot",
+        metricLabel: `${license} · kein verbindlicher Onlinepreis veröffentlicht`,
+        title: "Dein Preisweg ist vollständig vorbereitet",
+        lead: `${schoolName} veröffentlicht aktuell keine vollständige verbindliche Preisliste. Das klare Ergebnis ist deshalb eine konkrete Anfrage für genau deine Klasse – ohne erfundene Beträge.`,
+        details: [
+          { label: "Festgelegt", text: `${license} · ${need}` },
+          { label: "Preisfaktoren", text: "Grundbetrag, Lernmittel, Übungsfahrten, Sonderfahrten und Prüfungsleistungen" },
+          { label: "Nächster Schritt", text: `Aktuelles schriftliches Angebot für ${license} bei ${schoolName} anfordern.`, emphasis: true },
+        ] as GuidedResultDetail[],
+      };
+    }
+
+    const isMotorcycle = license === "Motorrad";
+    const isTrailer = license === "B96" || license === "BE";
+    const isB197Lesson = license === "B197" && need === "Fahrstunden";
+    const start = isMotorcycle ? "250,00 €" : "200,00 €";
+    const lesson = isMotorcycle ? "60,00 €" : "59,50 €";
+    const metric = isTrailer
+      ? "Preis auf Anfrage"
+      : isB197Lesson
+        ? "Aktuell bestätigen"
+        : need === "Fahrstunden"
+          ? lesson
+          : start;
+    const metricLabel = isTrailer
+      ? `${license} · keine vollständigen Beträge veröffentlicht`
+      : isB197Lesson
+        ? "B197-Fahrstunde · Betrag online nicht vollständig lesbar"
+        : need === "Fahrstunden"
+          ? `${license} · je 45 Minuten`
+          : `${license} · Grundbetrag plus Lern-App`;
+    return {
+      metric,
+      metricLabel,
+      title: need === "Gesamtüberblick" ? "Feste und variable Kosten sind getrennt" : need === "Fahrstunden" ? "Dein Fahrstundenpreis ist eingeordnet" : "Deine festen Startkosten sind eingeordnet",
+      lead: "Die Werte stammen aus der veröffentlichten Royal-Preisliste 2026. Der endgültige Gesamtpreis hängt von der individuell benötigten Zahl der Fahrstunden ab.",
+      details: [
+        { label: "Feste Positionen", text: isMotorcycle ? "Grundbetrag 200 € · Lern-App 50 €" : "Grundbetrag 150 € · Lern-App 50 €" },
+        { label: "Fahr-/Sonderfahrt", text: isTrailer ? "Persönlich anfragen" : isB197Lesson ? "B197-Betrag bestätigen lassen" : `${lesson} je 45 Minuten` },
+        { label: "Nächster Schritt", text: isTrailer || isB197Lesson ? "Aktuellen vollständigen Betrag bei Royal bestätigen lassen." : "Gewünschtes Lernpaket wählen und variable Fahrstunden persönlich kalkulieren.", emphasis: true },
+      ] as GuidedResultDetail[],
+    };
+  }
+
+  function getPublishedTimes(location: string, area: string) {
+    if (variant === "hopla") {
+      return area === "Theorie"
+        ? "Mo/Di 18:30–20:00 · Mi/Do 17:00–18:30 · Fr 14:00–15:30 · Sa 12:00–13:30"
+        : "Persönliches Zeitfenster muss von Hopla bestätigt werden";
+    }
+    if (variant === "royal") {
+      return area === "Theorie"
+        ? "Mo–Do 18:00–19:30 Uhr · beide Standorte"
+        : "Büro Mo–Fr 10:00–18:00 Uhr · Fahrstunden persönlich bestätigen";
+    }
+    if (location.includes("Lütgendortmund")) return "Aktuellen Standortstatus vorab telefonisch über Benninghofen bestätigen";
+    const mondayWednesday = ["Dortmund-Mitte", "Dortmund-Hörde", "Dortmund-Schüren", "Dortmund-Oespel"].includes(location);
+    return area === "Theorie"
+      ? `${mondayWednesday ? "Mo/Mi" : "Di/Do"} 18:30–20:00 Uhr · ${location}`
+      : `Fahrstunden und Abholservice für ${location} persönlich abstimmen`;
+  }
+
+  function getScheduleResult() {
+    const area = answers.area || "Theorie";
+    const location = answers.location || locationChoices[0]?.value || schoolName;
+    const availability = answers.availability || "flexibel";
+    const phaseName = answers.phase || "noch nicht angemeldet";
+    const times = getPublishedTimes(location, area);
+    const title = area === "Theorie"
+      ? `Nächster Schritt: Theorie in ${location}`
+      : area === "Fahrstunden"
+        ? "Dein Praxiswunsch ist entscheidungsreif vorbereitet"
+        : "Dein Ausbildungsstart ist in klarer Reihenfolge vorbereitet";
+    const lead = area === "Theorie"
+      ? "Nutze den veröffentlichten Unterricht als nächsten festen Schritt und bestätige bei möglichen kurzfristigen Änderungen kurz den aktuellen Stand."
+      : area === "Fahrstunden"
+        ? `Dein bevorzugtes Zeitfenster ist ${availability}. Eine konkrete Fahrstunde wird erst nach persönlicher Bestätigung verbindlich.`
+        : "Zuerst Anmeldung und Unterlagen klären, danach Theorie beginnen und die erste Praxisetappe persönlich festlegen.";
+    return { area, location, availability, phaseName, times, title, lead };
+  }
+
+  function getTransferResult() {
+    const docs = answers.documents || "Prüfung nötig";
+    const completed = answers.completed || "bisherige Leistungen ungeklärt";
+    const exam = answers.exam || "Prüfungsstatus ungeklärt";
+    const available = docs === "vollständig"
+      ? `Vollständiger Ausbildungsnachweis markiert · ${completed} · ${exam}.`
+      : docs === "teilweise"
+        ? `Ein Teil der Nachweise liegt vor · ${completed} · ${exam}.`
+        : `Noch kein vollständiger Ausbildungsnachweis · ${completed} · ${exam}.`;
+    const missing = docs === "vollständig"
+      ? "Prüfauftrag, Gültigkeit und anrechenbare Leistungen müssen noch geprüft werden."
+      : "Vollständigen Ausbildungsnachweis mit Theorie, Übungsfahrten, Sonderfahrten und Prüfstatus anfordern.";
+    const contact = variant === "hopla"
+      ? "Unterlagen anschließend per WhatsApp oder E-Mail an Hopla zur Vorprüfung geben."
+      : variant === "royal"
+        ? "Unterlagen mit Wunschstandort an Royal übermitteln und Übernahme persönlich bestätigen lassen."
+        : "Unterlagen mit Wunschstandort an Gerlach übermitteln und die Übernahme prüfen lassen.";
+    return { available, missing, next: contact };
+  }
+
+  const currentQuestion = questions[step];
+  const progress = phase === "questions" ? ((step + 1) / Math.max(1, questions.length)) * 100 : 100;
+
+  function choose(value: string) {
+    if (!currentQuestion) return;
+    setAnswers((current) => ({ ...current, [currentQuestion.id]: value }));
+    setError("");
+    if (step + 1 >= questions.length) setPhase("review");
+    else setStep((current) => current + 1);
+  }
+
+  function goBack() {
+    setError("");
+    if (phase === "success") {
+      setPhase("review");
+      return;
+    }
+    if (phase === "review") {
+      setPhase("questions");
+      setStep(Math.max(0, questions.length - 1));
+      return;
+    }
+    if (step > 0) setStep((current) => current - 1);
+    else onPanelChange("home");
+  }
+
+  function restart() {
+    setStep(0);
+    setPhase("questions");
+    setAnswers({});
+    setContactName("");
+    setContactValue("");
+    setFiles([]);
+    setConsent(false);
+    setError("");
+  }
+
+  function submitTransfer(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!contactName.trim() || !contactValue.trim()) {
+      setError("Bitte ergänze deinen Namen und eine Kontaktmöglichkeit.");
+      return;
+    }
+    if (!consent) {
+      setError("Bitte bestätige den Demo-Datenschutzhinweis.");
+      return;
+    }
+    setError("");
+    setPhase("success");
+  }
+
+  if (panel === "dashboard" || panel === "connect") {
+    return (
+      <section className="bt-rathje-interactive bt-guided-flow" style={{ ...glass, padding: isMobile ? 14 : 19, display: "flex", flexDirection: "column", gap: 13, color: textPrimary }}>
+        <GuidedResultView
+          eyebrow={`Dein Führerschein-Cockpit · ${schoolName}`}
+          title="Dein nächster Schritt ist eindeutig festgelegt"
+          lead={demoConfig.dashboardNextStep}
+          details={[
+            { label: "Aktueller Demo-Stand", text: "B197 ausgewählt · Theorie läuft · 4 von 5 Unterlagen vorbereitet" },
+            { label: "Heute erledigen", text: demoConfig.todayPlan },
+            { label: "Danach", text: "Persönlichen Theorie- oder Praxisstand mit der Fahrschule bestätigen.", emphasis: true },
+          ]}
+          accent={accent}
+          accentRgb={accentRgb}
+          textPrimary={textPrimary}
+          textSecondary={textSecondary}
+          isMobile={isMobile}
+        />
+        <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(3, minmax(0, 1fr))", gap: 9 }}>
+          <button type="button" onClick={() => onPanelChange("documents")} style={secondary}>Unterlagen klären</button>
+          <button type="button" onClick={() => onPanelChange("schedule")} style={secondary}>Ausbildung planen</button>
+          <button type="button" onClick={() => onPanelChange("home")} style={primary}>Zur Übersicht</button>
+        </div>
+      </section>
+    );
+  }
+
+  const title = panel === "courses"
+    ? "Führerschein-Weg festlegen"
+    : panel === "coach"
+      ? "Persönliche Preisentscheidung"
+      : panel === "schedule"
+        ? "Theorie & Fahrstunden planen"
+        : "Fahrschulwechsel vorbereiten";
+
+  const licenseResult = getLicenseResult();
+  const priceResult = getPriceResult();
+  const scheduleResult = getScheduleResult();
+  const transferResult = getTransferResult();
+
+  return (
+    <section className="bt-rathje-interactive bt-guided-flow" style={{ ...glass, padding: isMobile ? 14 : 19, display: "flex", flexDirection: "column", gap: 14, color: textPrimary, flex: "0 0 auto" }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
+        <button type="button" onClick={goBack} style={{ ...secondary, minHeight: 38 }}>← Zurück</button>
+        <button type="button" onClick={restart} style={{ ...secondary, minHeight: 38 }}>Neu starten</button>
+      </div>
+
+      {phase !== "review" && (
+        <div>
+          <div style={{ color: accent, fontSize: 11, fontWeight: 950, letterSpacing: 0.48, textTransform: "uppercase" }}>Digitales Fahrschulbüro · {schoolName}</div>
+          <div style={{ fontSize: isMobile ? 24 : 30, fontWeight: 950, marginTop: 4 }}>{phase === "success" ? "Dein Ablauf ist vollständig abgeschlossen" : title}</div>
+          <div style={{ color: textSecondary, fontSize: 13, lineHeight: 1.48, marginTop: 6 }}>
+            {phase === "questions" ? "Beantworte wenige gezielte Fragen. Danach erhältst du eine klare Entscheidung mit Begründung und nächstem Schritt." : "Die Demo zeigt den vollständigen Abschluss. Es wurden keine echten Daten versendet."}
+          </div>
+        </div>
+      )}
+
+      <div style={{ display: "flex", alignItems: "center", gap: 9 }}>
+        <div style={{ flex: 1, height: 7, borderRadius: 999, background: `rgba(${accentRgb}, 0.10)`, overflow: "hidden" }}>
+          <div style={{ width: `${progress}%`, height: "100%", borderRadius: 999, background: accent, transition: "width 220ms ease" }} />
+        </div>
+        <span style={{ color: textSecondary, fontSize: 11.5, fontWeight: 900 }}>{phase === "questions" ? `${step + 1}/${questions.length}` : phase === "review" ? "Ergebnis" : "Fertig"}</span>
+      </div>
+
+      {phase === "questions" && currentQuestion && (
+        <div key={`${panel}-${currentQuestion.id}`} className="bt-guided-step-in">
+          <div style={{ color: accent, fontSize: 11, fontWeight: 950 }}>{currentQuestion.eyebrow}</div>
+          <div style={{ fontSize: isMobile ? 21 : 25, fontWeight: 950, marginTop: 5 }}>{currentQuestion.question}</div>
+          {currentQuestion.helper && <div style={{ color: textSecondary, fontSize: 12.5, marginTop: 6, lineHeight: 1.45 }}>{currentQuestion.helper}</div>}
+          <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(2, minmax(0, 1fr))", gap: 9, marginTop: 14 }}>
+            {currentQuestion.choices?.map((choice) => (
+              <button key={choice.value} type="button" className="bt-guided-choice" onClick={() => choose(choice.value)} style={{ ...soft, minHeight: choice.detail ? 70 : 58, padding: "12px 14px", color: textPrimary, textAlign: "left", cursor: "pointer" }}>
+                <span style={{ display: "block", fontSize: 14, fontWeight: 950 }}>{choice.label}</span>
+                {choice.detail && <span style={{ display: "block", color: textSecondary, fontSize: 11.5, lineHeight: 1.35, marginTop: 4 }}>{choice.detail}</span>}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {phase === "review" && (
+        <div className="bt-guided-step-in" style={{ display: "flex", flexDirection: "column", gap: 11 }}>
+          {panel === "courses" && (
+            <GuidedResultView
+              eyebrow="Deine klare Führerschein-Empfehlung"
+              metric={licenseResult.recommendation}
+              metricLabel={`${schoolName} · auf Basis deiner Angaben`}
+              title={licenseResult.title}
+              lead={licenseResult.lead}
+              details={[
+                { label: "Voraussetzung", text: licenseResult.requirement },
+                { label: "Deine Angaben", text: `Alter ${answers.age} · Vorbesitz: ${answers.prior}` },
+                { label: "Nächster Schritt", text: licenseResult.next, emphasis: true },
+              ]}
+              accent={accent} accentRgb={accentRgb} textPrimary={textPrimary} textSecondary={textSecondary} isMobile={isMobile}
+            />
+          )}
+
+          {panel === "coach" && (
+            <GuidedResultView
+              eyebrow="Deine klare Preisentscheidung"
+              metric={priceResult.metric}
+              metricLabel={priceResult.metricLabel}
+              title={priceResult.title}
+              lead={priceResult.lead}
+              details={priceResult.details}
+              accent={accent} accentRgb={accentRgb} textPrimary={textPrimary} textSecondary={textSecondary} isMobile={isMobile}
+            />
+          )}
+
+          {panel === "schedule" && (
+            <GuidedResultView
+              eyebrow="Dein klarer Ausbildungsplan"
+              title={scheduleResult.title}
+              lead={scheduleResult.lead}
+              details={[
+                { label: "Veröffentlichter Rahmen", text: scheduleResult.times },
+                { label: "Dein Stand", text: `${scheduleResult.phaseName} · bevorzugt ${scheduleResult.availability}` },
+                { label: "Nächster Schritt", text: scheduleResult.area === "Theorie" ? "Diesen Unterricht als nächste Etappe nutzen; kurzfristige Änderungen vorher prüfen." : `Zeitwunsch bei ${schoolName} persönlich bestätigen lassen.`, emphasis: true },
+              ]}
+              accent={accent} accentRgb={accentRgb} textPrimary={textPrimary} textSecondary={textSecondary} isMobile={isMobile}
+            />
+          )}
+
+          {panel === "documents" && (
+            <>
+              <GuidedResultView
+                eyebrow="Dein persönliches Wechselergebnis"
+                title="Dein Fahrschulwechsel hat jetzt einen klaren Weg"
+                lead="Dein bisheriger Stand ist eingeordnet. Du siehst sofort, was vorhanden ist, was fehlt und welcher Schritt als Nächstes notwendig ist."
+                details={[
+                  { label: "Bereits vorhanden", text: transferResult.available },
+                  { label: "Noch erforderlich", text: transferResult.missing, emphasis: true },
+                  { label: "Konkreter nächster Schritt", text: transferResult.next },
+                ]}
+                accent={accent} accentRgb={accentRgb} textPrimary={textPrimary} textSecondary={textSecondary} isMobile={isMobile}
+              />
+              <details style={{ ...soft, padding: "11px 13px" }}>
+                <summary style={{ cursor: "pointer", color: textSecondary, fontSize: 11.5, fontWeight: 900 }}>Erfasste Angaben anzeigen</summary>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginTop: 9 }}>
+                  {Object.entries(answers).map(([key, value]) => <span key={key} style={{ borderRadius: 999, background: "rgba(255,255,255,0.68)", padding: "6px 8px", color: textSecondary, fontSize: 10.5 }}>{key}: <strong style={{ color: textPrimary }}>{value}</strong></span>)}
+                </div>
+              </details>
+              <label style={{ ...soft, padding: 14, cursor: "pointer" }}>
+                <span style={{ display: "block", fontWeight: 950 }}>Unterlagen ergänzen</span>
+                <span style={{ display: "block", color: textSecondary, fontSize: 11.5, marginTop: 3 }}>PDF, JPG oder PNG · in der Demo kein echter Upload</span>
+                <input type="file" multiple accept="application/pdf,image/jpeg,image/png" onChange={(event) => setFiles(Array.from(event.target.files || []))} style={{ width: "100%", marginTop: 10, fontSize: 12 }} />
+                {files.length > 0 && <span style={{ display: "block", color: accent, fontSize: 11.5, fontWeight: 900, marginTop: 7 }}>{files.length} Datei{files.length === 1 ? "" : "en"} ergänzt</span>}
+              </label>
+              <form onSubmit={submitTransfer} style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 9 }}>
+                  <input value={contactName} onChange={(event) => setContactName(event.target.value)} placeholder="Vor- und Nachname" style={field} />
+                  <input value={contactValue} onChange={(event) => setContactValue(event.target.value)} placeholder="E-Mail oder Telefonnummer" style={field} />
+                </div>
+                <label style={{ ...soft, padding: 12, display: "flex", gap: 9, alignItems: "flex-start", color: textSecondary, fontSize: 11.5, lineHeight: 1.4 }}>
+                  <input type="checkbox" checked={consent} onChange={(event) => setConsent(event.target.checked)} />
+                  Ich bestätige den Demo-Hinweis. Es werden keine Daten oder Dateien wirklich versendet.
+                </label>
+                {error && <div style={{ color: "#a23b3b", fontSize: 12.5, fontWeight: 850 }}>{error}</div>}
+                <button type="submit" style={primary}>Demo-Wechselanfrage mit Ergebnis abschließen</button>
+              </form>
+            </>
+          )}
+
+          {panel !== "documents" && (
+            <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(3, minmax(0, 1fr))", gap: 9 }}>
+              <button type="button" onClick={goBack} style={secondary}>Auswahl ändern</button>
+              <button type="button" onClick={restart} style={secondary}>Neu berechnen</button>
+              <button type="button" onClick={() => onPanelChange("home")} style={primary}>Ergebnis übernehmen</button>
+            </div>
+          )}
+        </div>
+      )}
+
+      {phase === "success" && (
+        <div className="bt-guided-step-in" style={{ ...soft, padding: isMobile ? 17 : 21 }}>
+          <div style={{ width: 50, height: 50, borderRadius: 17, display: "grid", placeItems: "center", background: `rgba(${accentRgb}, 0.16)`, color: accent, fontSize: 25, fontWeight: 950 }}>✓</div>
+          <div style={{ color: accent, fontSize: 11, fontWeight: 950, letterSpacing: 0.46, marginTop: 14 }}>DEMO · ERFOLGREICH ABGESCHLOSSEN</div>
+          <div style={{ fontSize: isMobile ? 21 : 25, fontWeight: 950, marginTop: 5 }}>Dein persönlicher Wechselweg steht fest</div>
+          <div style={{ color: textSecondary, fontSize: 12.5, lineHeight: 1.52, marginTop: 7 }}>{schoolName} würde jetzt die geordneten Angaben von {contactName} inklusive Kontakt und {files.length} Datei{files.length === 1 ? "" : "en"} erhalten. Der nächste Schritt ist die Prüfung der Nachweise und anschließend die persönliche Festlegung des verbleibenden Ausbildungswegs.</div>
+          <div style={{ display: "flex", gap: 9, flexWrap: "wrap", marginTop: 16 }}>
+            <button type="button" onClick={() => onPanelChange("home")} style={primary}>Zur Übersicht</button>
+            <button type="button" onClick={restart} style={secondary}>Neue Demo starten</button>
+            <button type="button" onClick={() => onAsk(`Fasse meinen vorbereiteten Fahrschulwechsel zu ${schoolName} zusammen.`)} style={secondary}>Im Chat zusammenfassen</button>
+          </div>
+        </div>
+      )}
+    </section>
+  );
+}
+
 function RathjeSecretaryPanel({
   panel,
   onPanelChange,
@@ -22082,7 +22795,19 @@ body::after {
 
                   {futureDemoVariant &&
                     hohenbadenPanel !== "home" &&
-                    (usesRathjeInterfaceLayout && hohenbadenPanel === "connect" ? (
+                    (isRathjeStyleRegionalInterface ? (
+                      <RegionalGuidedOutcomePanel
+                        variant={futureDemoVariant as RegionalOutcomeVariant}
+                        panel={hohenbadenPanel === "connect" ? "dashboard" : hohenbadenPanel}
+                        onPanelChange={openHohenbadenPanel}
+                        accent={widgetAccent}
+                        accentRgb={accentRgb}
+                        textPrimary={textPrimary}
+                        textSecondary={textSecondary}
+                        isMobile={isMobileViewport}
+                        onAsk={(message) => void sendText(message)}
+                      />
+                    ) : usesRathjeInterfaceLayout && hohenbadenPanel === "connect" ? (
                       <HohenbadenFutureDemo
                         variant={futureDemoVariant}
                         panel="dashboard"
