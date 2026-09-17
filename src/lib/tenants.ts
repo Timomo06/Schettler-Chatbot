@@ -15,6 +15,8 @@ export type TenantId =
   | "fahrwerk-b"
   | "fahrschule-hohenbaden"
   | "fahrschule-hopla"
+  | "fahrschule-gerlach"
+  | "fahrschule-royal"
   | "fahrschule-alamir"
   | "fahrschule-abgefahren"
   | "petermaennchen-fahrschule"
@@ -653,7 +655,7 @@ export const TENANTS: Record<TenantId, TenantConfig> = {
     assistantName: "Digitaler Führerscheinbegleiter",
     language: "de",
     knowledge: {
-      files: ["eKnowledge.md"],
+      files: ["knowledge.md"],
     },
     websiteUrl: "https://www.fahrschule-hopla.de/",
     primaryCta: {
@@ -680,6 +682,84 @@ export const TENANTS: Record<TenantId, TenantConfig> = {
       bg: "#fff8f6",
       glass: "rgba(229,57,53,0.12)",
       text: "#1f2428",
+    },
+    assets: {
+      launcherIcon: "/favicon.ico",
+    },
+  },
+
+  "fahrschule-gerlach": {
+    id: "fahrschule-gerlach",
+    brandName: "Fahrschule Gerlach",
+    assistantName: "Digitaler Führerscheinbegleiter",
+    language: "de",
+    knowledge: {
+      files: ["knowledge.md"],
+    },
+    websiteUrl: "https://fahrschule-gerlach.de/",
+    primaryCta: {
+      label: "Kontakt zur Fahrschule",
+      url: "https://fahrschule-gerlach.de/kontakt/",
+    },
+    fallbackContact: {
+      label: "Zentrale Benninghofen",
+      value: "0231 56 77 144",
+    },
+    companyInfo: {
+      address: "Benninghofer Str. 156 A, 44269 Dortmund",
+      phone: "0231 56 77 144",
+      email: "info@fahrschule-gerlach.de",
+      openingHours: "Zentrale Benninghofen: Mo–Do 10:00–18:30 Uhr, Fr 10:00–14:00 Uhr",
+    },
+    rules: {
+      noMedicalClaims: true,
+      noInventingPrices: true,
+      noGuarantees: true,
+    },
+    theme: {
+      accent: "#f47732",
+      bg: "#fff8f3",
+      glass: "rgba(244,119,50,0.13)",
+      text: "#26221f",
+    },
+    assets: {
+      launcherIcon: "/favicon.ico",
+    },
+  },
+
+  "fahrschule-royal": {
+    id: "fahrschule-royal",
+    brandName: "Fahrschule Royal",
+    assistantName: "Digitaler Führerscheinbegleiter",
+    language: "de",
+    knowledge: {
+      files: ["knowledge.md"],
+    },
+    websiteUrl: "https://fahrschule-royal.de/",
+    primaryCta: {
+      label: "Per WhatsApp anfragen",
+      url: "https://wa.me/4917645824338",
+    },
+    fallbackContact: {
+      label: "Hauptstandort",
+      value: "0231 993 299 32",
+    },
+    companyInfo: {
+      address: "Rahmer Str. 146, 44369 Dortmund",
+      phone: "0231 993 299 32",
+      email: "info@fahrschule-royal.de",
+      openingHours: "Mo–Fr 10:00–18:00 Uhr; Theorie Mo–Do 18:00–19:30 Uhr",
+    },
+    rules: {
+      noMedicalClaims: true,
+      noInventingPrices: true,
+      noGuarantees: true,
+    },
+    theme: {
+      accent: "#c9a91a",
+      bg: "#fbfaf6",
+      glass: "rgba(201,169,26,0.13)",
+      text: "#242327",
     },
     assets: {
       launcherIcon: "/favicon.ico",
@@ -1486,6 +1566,14 @@ const TENANT_ALIASES: Record<string, TenantId> = {
   "fahrschule-hopla.de": "fahrschule-hopla",
   "www.fahrschule-hopla.de": "fahrschule-hopla",
   fahrschulehopla: "fahrschule-hopla",
+  gerlach: "fahrschule-gerlach",
+  "fahrschule-gerlach.de": "fahrschule-gerlach",
+  "www.fahrschule-gerlach.de": "fahrschule-gerlach",
+  fahrschulegerlach: "fahrschule-gerlach",
+  royal: "fahrschule-royal",
+  "fahrschule-royal.de": "fahrschule-royal",
+  "www.fahrschule-royal.de": "fahrschule-royal",
+  fahrschuleroyal: "fahrschule-royal",
   alamir: "fahrschule-alamir",
   "al-amir": "fahrschule-alamir",
   "fahrschulealamir.de": "fahrschule-alamir",

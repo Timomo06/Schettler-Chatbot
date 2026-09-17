@@ -1,5 +1,5 @@
 // TEXTEDIT-KOPIE – Zielpfad im Projekt: app/widget/page.tsx
-// Gemeinsame Widget-Version inkl. Hopla, Al-Amir und weiterer Fahrschul-Demos
+// Gemeinsame Widget-Version inkl. Hopla, Gerlach, Royal und weiterer Fahrschul-Demos
 "use client";
 
 import {
@@ -3239,6 +3239,8 @@ type FutureDemoVariant =
   | "fahrschule7"
   | "niehaus"
   | "hopla"
+  | "gerlach"
+  | "royal"
   | "alamir"
   | "fritz"
   | "fahrtwind"
@@ -3726,6 +3728,8 @@ const NIEHAUS_DEMO_DOCUMENTS = [
 
 type RegionalDemoVariant =
   | "hopla"
+  | "gerlach"
+  | "royal"
   | "alamir"
   | "fritz"
   | "fahrtwind"
@@ -3761,6 +3765,17 @@ const REGIONAL_TENANT_VARIANTS: Record<string, RegionalDemoVariant> = {
   "campus-b27.de": "campus-b27",
   "www.campus-b27.de": "campus-b27",
   "fahrschule-hopla": "hopla",
+  "hopla": "hopla",
+  "fahrschule-hopla.de": "hopla",
+  "www.fahrschule-hopla.de": "hopla",
+  "fahrschule-gerlach": "gerlach",
+  "gerlach": "gerlach",
+  "fahrschule-gerlach.de": "gerlach",
+  "www.fahrschule-gerlach.de": "gerlach",
+  "fahrschule-royal": "royal",
+  "royal": "royal",
+  "fahrschule-royal.de": "royal",
+  "www.fahrschule-royal.de": "royal",
   "fahrschule-alamir": "alamir",
   "fahrschule-fritz": "fritz",
   "fahrschule-fahrtwind": "fahrtwind",
@@ -3991,6 +4006,58 @@ const REGIONAL_DEMO_CONFIGS: Record<RegionalDemoVariant, FutureDemoConfig> = {
         "Termin nach Abstimmung",
         "Kassel",
         "Anhänger-Ausbildung bei Klasse-B-Vorbesitz",
+      ],
+    ],
+  }),
+  gerlach: createRegionalDemoConfig({
+    brand: "Fahrschule Gerlach",
+    code: "GERLACH-2048",
+    focus: "Führerschein & Standort-Navigator",
+    classes: "B · B78 · B197 · BF17 · B96 · BE · AM · A1 · A2 · A",
+    offers: [
+      [
+        "Klasse B / B197 / BF17",
+        "Start nach persönlicher Anmeldung",
+        "Dortmund · acht Standorte",
+        "Standort und Theoriezeiten passend zum Alltag auswählen",
+      ],
+      [
+        "Motorrad AM / A1 / A2 / A / B196",
+        "Start nach Klassen- und Alterscheck",
+        "Dortmund · Mitte oder Benninghofen für Klasse-A-Theorie",
+        "Motorradklasse, Vorbesitz und Voraussetzungen vorab einordnen",
+      ],
+      [
+        "Anhänger B96 / BE",
+        "Termin nach persönlicher Abstimmung",
+        "Dortmund",
+        "Schulung oder Ausbildung passend zu Gespann und Vorbesitz",
+      ],
+    ],
+  }),
+  royal: createRegionalDemoConfig({
+    brand: "Fahrschule Royal",
+    code: "ROYAL-2048",
+    focus: "Königlich zum Führerschein",
+    classes: "B · B197 · BF17 · B96 · BE · AM · A1 · A2 · A · B196 · SZ80",
+    offers: [
+      [
+        "Klasse B / B197 / BF17",
+        "Start nach kostenloser Beratung",
+        "Dortmund · Rahmer Straße oder Evinger Straße",
+        "Theorie Mo–Do · 18:00–19:30 Uhr · ohne Anmeldung",
+      ],
+      [
+        "Motorrad AM / A1 / A2 / A / B196 / SZ80",
+        "Start nach Klassen- und Alterscheck",
+        "Dortmund",
+        "Passende Zweiradklasse anhand von Alter und Vorbesitz finden",
+      ],
+      [
+        "Anhänger B96 / BE",
+        "Termin und Preis auf Anfrage",
+        "Dortmund",
+        "B96-Schulung ohne Prüfung oder BE mit praktischer Prüfung",
       ],
     ],
   }),
