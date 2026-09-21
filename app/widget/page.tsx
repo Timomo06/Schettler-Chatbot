@@ -791,6 +791,30 @@ const RATHJE_START_CARDS: StartCard[] = [
   },
 ];
 
+const HOPLA_START_CARDS: StartCard[] = [
+  {
+    icon: "◎",
+    title: "Führerschein-Finder",
+    description: "B, BF17, B197 oder BE eindeutig einordnen",
+    action: "hohenbadenPanel",
+    hohenbadenPanel: "courses",
+  },
+  {
+    icon: "€",
+    title: "Preise & Kursinfos",
+    description: "B197-Szenario berechnen oder Angebot vorbereiten",
+    action: "hohenbadenPanel",
+    hohenbadenPanel: "coach",
+  },
+  {
+    icon: "→",
+    title: "Anmeldung",
+    description: "Daten und Unterlagen vollständig vorbereiten",
+    action: "hohenbadenPanel",
+    hohenbadenPanel: "documents",
+  },
+];
+
 const FSAZ_START_CARDS: StartCard[] = [
   {
     icon: "i",
@@ -3241,6 +3265,7 @@ type FutureDemoVariant =
   | "fahrschule7"
   | "niehaus"
   | "hopla"
+  | "chioa"
   | "gerlach"
   | "royal"
   | "alamir"
@@ -3730,6 +3755,7 @@ const NIEHAUS_DEMO_DOCUMENTS = [
 
 type RegionalDemoVariant =
   | "hopla"
+  | "chioa"
   | "gerlach"
   | "royal"
   | "alamir"
@@ -3770,6 +3796,10 @@ const REGIONAL_TENANT_VARIANTS: Record<string, RegionalDemoVariant> = {
   "hopla": "hopla",
   "fahrschule-hopla.de": "hopla",
   "www.fahrschule-hopla.de": "hopla",
+  "fahrschule-chioa": "chioa",
+  "chioa": "chioa",
+  "fahrschule-chioa.de": "chioa",
+  "www.fahrschule-chioa.de": "chioa",
   "fahrschule-gerlach": "gerlach",
   "gerlach": "gerlach",
   "fahrschule-gerlach.de": "gerlach",
@@ -4008,6 +4038,32 @@ const REGIONAL_DEMO_CONFIGS: Record<RegionalDemoVariant, FutureDemoConfig> = {
         "Termin nach Abstimmung",
         "Kassel",
         "Anhänger-Ausbildung bei Klasse-B-Vorbesitz",
+      ],
+    ],
+  }),
+  chioa: createRegionalDemoConfig({
+    brand: "Fahrschule Chioa",
+    code: "CHIOA-2048",
+    focus: "Persönlicher Führerschein-Start in Dortmund",
+    classes: "Ausbildungsziel wird persönlich mit Chioa bestätigt",
+    offers: [
+      [
+        "Pkw-Ausbildung",
+        "Start nach persönlicher Bestätigung",
+        "Dortmund · Alte Benninghoferstr. 2",
+        "Ausbildungsweg und Klasse gemeinsam festlegen",
+      ],
+      [
+        "Begleitetes Fahren",
+        "Alter und Voraussetzungen prüfen",
+        "Dortmund",
+        "BF17-Wunsch als Beratung vorbereiten",
+      ],
+      [
+        "Fahrschulwechsel",
+        "Nachweise vorab prüfen lassen",
+        "Dortmund",
+        "Bisherige Leistungen und Prüfstatus strukturiert übergeben",
       ],
     ],
   }),
@@ -4776,6 +4832,7 @@ function GuidedDrivingCompactDemo(props: GuidedDrivingCompactDemoProps) {
   const [documentPhase, setDocumentPhase] = useState<"questions" | "result" | "complete">("questions");
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- Ein Panelwechsel startet den geführten Ablauf bewusst neu.
     setCourseStep(0);
     setCourseAnswers({});
     setCoursePhase("questions");
@@ -5768,6 +5825,7 @@ type RathjeTabBarProps = {
   accentRgb: string;
   textPrimary: string;
   textSecondary: string;
+  items?: ReadonlyArray<{ id: HohenbadenPanel; label: string }>;
 };
 
 const RATHJE_TAB_ITEMS: ReadonlyArray<{
@@ -5780,6 +5838,13 @@ const RATHJE_TAB_ITEMS: ReadonlyArray<{
   { id: "schedule", label: "Theorie & Fahrstunden" },
   { id: "connect", label: "Cockpit" },
   { id: "documents", label: "Fahrschulwechsel" },
+];
+
+const HOPLA_TAB_ITEMS: ReadonlyArray<{ id: HohenbadenPanel; label: string }> = [
+  { id: "home", label: "Start" },
+  { id: "courses", label: "Führerschein-Finder" },
+  { id: "coach", label: "Preise & Kursinfos" },
+  { id: "documents", label: "Anmeldung" },
 ];
 
 const FSAZ_TAB_ITEMS: ReadonlyArray<{ id: HohenbadenPanel; label: string }> = [
@@ -5797,6 +5862,7 @@ function RathjeTabBar({
   accentRgb,
   textPrimary,
   textSecondary,
+  items = RATHJE_TAB_ITEMS,
 }: RathjeTabBarProps) {
   return (
     <nav
@@ -5818,7 +5884,7 @@ function RathjeTabBar({
         WebkitBackdropFilter: "blur(22px) saturate(165%)",
       }}
     >
-      {RATHJE_TAB_ITEMS.map((item) => {
+      {items.map((item) => {
         const active = activePanel === item.id;
         return (
           <button
@@ -5952,6 +6018,7 @@ function RathjeInteractivePanel({
   const [error, setError] = useState("");
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- Ein Panelwechsel startet den geführten Ablauf bewusst neu.
     setStep(0);
     setPhase("questions");
     setAnswers({});
@@ -6388,7 +6455,7 @@ function RathjeInteractivePanel({
   );
 }
 
-type RegionalOutcomeVariant = "hopla" | "gerlach" | "royal";
+type RegionalOutcomeVariant = "hopla" | "chioa" | "gerlach" | "royal";
 
 type RegionalGuidedOutcomePanelProps = Omit<HohenbadenFutureDemoProps, "variant"> & {
   variant: RegionalOutcomeVariant;
@@ -6407,6 +6474,8 @@ function RegionalGuidedOutcomePanel({
 }: RegionalGuidedOutcomePanelProps) {
   const schoolName = variant === "hopla"
     ? "Fahrschule Hopla"
+    : variant === "chioa"
+      ? "Fahrschule Chioa"
     : variant === "gerlach"
       ? "Fahrschule Gerlach"
       : "Fahrschule Royal";
@@ -6417,16 +6486,19 @@ function RegionalGuidedOutcomePanel({
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [contactName, setContactName] = useState("");
   const [contactValue, setContactValue] = useState("");
+  const [registrationData, setRegistrationData] = useState<Record<string, string>>({});
   const [files, setFiles] = useState<File[]>([]);
   const [consent, setConsent] = useState(false);
   const [error, setError] = useState("");
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- Tenant- oder Panelwechsel müssen keine Antworten des vorherigen Ablaufs behalten.
     setStep(0);
     setPhase("questions");
     setAnswers({});
     setContactName("");
     setContactValue("");
+    setRegistrationData({});
     setFiles([]);
     setConsent(false);
     setError("");
@@ -6492,6 +6564,13 @@ function RegionalGuidedOutcomePanel({
         { label: "B197", value: "B197", detail: "Automatikprüfung plus Schaltkompetenz" },
         { label: "BE", value: "BE", detail: "Anhänger-Ausbildung bei Klasse-B-Vorbesitz" },
       ]
+    : variant === "chioa"
+      ? [
+          { label: "Pkw-Ausbildung", value: "Pkw-Ausbildung", detail: "Konkrete Klasse mit Chioa bestätigen" },
+          { label: "Begleitetes Fahren", value: "Begleitetes Fahren", detail: "BF17-Wunsch und Alter prüfen" },
+          { label: "Anhänger-Erweiterung", value: "Anhänger-Erweiterung", detail: "Vorbesitz und Angebot bestätigen" },
+          { label: "Noch unsicher", value: "Beratung", detail: "Ziel im persönlichen Gespräch festlegen" },
+        ]
     : [
         { label: "B / BF17", value: "B / BF17", detail: "Klassischer Pkw-Weg oder begleitetes Fahren" },
         { label: "B197", value: "B197", detail: "Automatikprüfung plus Schaltkompetenz" },
@@ -6506,6 +6585,8 @@ function RegionalGuidedOutcomePanel({
 
   const locationChoices: GuidedChoice[] = variant === "hopla"
     ? [{ label: "Kassel", value: "Kassel · Holländische Straße 27" }]
+    : variant === "chioa"
+      ? [{ label: "Dortmund", value: "Dortmund · Alte Benninghoferstr. 2" }]
     : variant === "royal"
       ? [
           { label: "Rahmer Straße", value: "Rahmer Straße 146" },
@@ -6572,6 +6653,20 @@ function RegionalGuidedOutcomePanel({
               { label: "Gesamter Preisweg", value: "Gesamtüberblick", detail: "Feste und variable Positionen" },
             ],
           },
+          ...(variant === "hopla"
+            ? [{
+                id: "practiceLessons",
+                eyebrow: "SCHRITT 3",
+                question: "Mit wie vielen normalen Fahrstunden soll das B197-Szenario rechnen?",
+                helper: "Die tatsächliche Anzahl richtet sich nach deinem Lernstand. Du kannst das Szenario später neu berechnen.",
+                choices: [
+                  { label: "Noch keine", value: "0", detail: "Nur feste Positionen und Sonderfahrten" },
+                  { label: "10 Fahrstunden", value: "10", detail: "Szenario mit 10 × 70,00 €" },
+                  { label: "20 Fahrstunden", value: "20", detail: "Szenario mit 20 × 70,00 €" },
+                  { label: "30 Fahrstunden", value: "30", detail: "Szenario mit 30 × 70,00 €" },
+                ],
+              }]
+            : []),
         ]
       : panel === "schedule"
         ? [
@@ -6614,7 +6709,38 @@ function RegionalGuidedOutcomePanel({
               ],
             },
           ]
-        : [
+        : variant === "hopla"
+          ? [
+              {
+                id: "license",
+                eyebrow: "SCHRITT 1",
+                question: "Für welchen Weg möchtest du die Anmeldung vorbereiten?",
+                choices: licenseChoices,
+              },
+              {
+                id: "ageStatus",
+                eyebrow: "SCHRITT 2",
+                question: "Welche Situation trifft auf dich zu?",
+                choices: [
+                  { label: "Volljährig", value: "volljährig" },
+                  { label: "Minderjährig", value: "minderjährig", detail: "Angaben eines Erziehungsberechtigten werden benötigt" },
+                  { label: "Führerschein vorhanden", value: "mit Vorbesitz" },
+                  { label: "Noch unsicher", value: "persönlich klären" },
+                ],
+              },
+              {
+                id: "language",
+                eyebrow: "SCHRITT 3",
+                question: "In welcher Sprache soll Hopla dich möglichst beraten?",
+                choices: [
+                  { label: "Deutsch", value: "Deutsch" },
+                  { label: "Türkisch", value: "Türkisch" },
+                  { label: "Persisch", value: "Persisch" },
+                  { label: "Arabisch", value: "Arabisch" },
+                ],
+              },
+            ]
+          : [
             {
               id: "origin",
               eyebrow: "SCHRITT 1",
@@ -6683,6 +6809,28 @@ function RegionalGuidedOutcomePanel({
     const age = answers.age || "18–23";
     const prior = answers.prior || "kein Vorbesitz";
 
+    if (variant === "chioa") {
+      const recommendation = selected === "Begleitetes Fahren"
+        ? "BF17-Beratung bestätigen"
+        : selected === "Anhänger-Erweiterung"
+          ? "Anhänger-Angebot prüfen"
+          : selected === "Beratung"
+            ? "Persönliche Klassenberatung"
+            : "Pkw-Ausbildung bestätigen";
+      const requirement = selected === "Anhänger-Erweiterung"
+        ? "Klasse-B-Vorbesitz und gewünschtes Gespann nachweisen"
+        : selected === "Begleitetes Fahren"
+          ? "Alter und mögliche Begleitpersonen mit Chioa prüfen"
+          : "Gewünschten Ausbildungsweg und angebotene Klasse mit Chioa bestätigen";
+      return {
+        recommendation,
+        title: `${recommendation} ist dein klarer nächster Weg`,
+        lead: "Chioa veröffentlicht online keine vollständige Liste aller angebotenen Klassen. Deshalb ordnet der Finder dein Ziel eindeutig ein, behauptet aber keine unbelegte Klasse.",
+        requirement,
+        next: "Beratungsziel über die Online-Voranmeldung oder direkt bei Fahrschule Chioa bestätigen lassen.",
+      };
+    }
+
     if (selected === "Lkw / Bus") {
       return {
         recommendation: "Early-Bird-Liste",
@@ -6741,6 +6889,24 @@ function RegionalGuidedOutcomePanel({
   function getPriceResult() {
     const license = answers.license || "B / BF17";
     const need = answers.priceNeed || "Gesamtüberblick";
+
+    if (variant === "hopla" && license === "B197") {
+      const lessonCount = Number.parseInt(answers.practiceLessons || "0", 10) || 0;
+      const fixedAmount = 1945.67;
+      const total = fixedAmount + lessonCount * 70;
+      const currency = new Intl.NumberFormat("de-DE", { style: "currency", currency: "EUR" });
+      return {
+        metric: currency.format(total),
+        metricLabel: `B197-Szenario · ${lessonCount} normale Fahrstunden`,
+        title: "Dein B197-Preisszenario ist exakt berechnet",
+        lead: "Die Summe verwendet die im Ausbildungsvertrag dokumentierten Positionen. Nur die Zahl der normalen Fahrstunden ist eine von dir gewählte Annahme und kann je nach Lernstand abweichen.",
+        details: [
+          { label: "Feste Positionen + 12 Sonderfahrten", text: "1.945,67 € inklusive externer TÜV-Kosten" },
+          { label: "Normale Fahrstunden", text: `${lessonCount} × 70,00 € = ${currency.format(lessonCount * 70)}` },
+          { label: "Ergebnis", text: `${currency.format(total)} als transparentes Szenario; vor Vertragsschluss aktuell von Hopla bestätigen lassen.`, emphasis: true },
+        ] as GuidedResultDetail[],
+      };
+    }
 
     if (license === "Lkw / Bus") {
       return {
@@ -6813,6 +6979,11 @@ function RegionalGuidedOutcomePanel({
         ? "Mo–Do 18:00–19:30 Uhr · beide Standorte"
         : "Büro Mo–Fr 10:00–18:00 Uhr · Fahrstunden persönlich bestätigen";
     }
+    if (variant === "chioa") {
+      return area === "Theorie"
+        ? "Mo, Di und Do 18:30–20:00 Uhr · Alte Benninghoferstr. 2"
+        : "Büro Mo–Fr 17:00–19:00 Uhr · Fahrstunden persönlich bestätigen";
+    }
     if (location.includes("Lütgendortmund")) return "Aktuellen Standortstatus vorab telefonisch über Benninghofen bestätigen";
     const mondayWednesday = ["Dortmund-Mitte", "Dortmund-Hörde", "Dortmund-Schüren", "Dortmund-Oespel"].includes(location);
     return area === "Theorie"
@@ -6853,10 +7024,28 @@ function RegionalGuidedOutcomePanel({
       : "Vollständigen Ausbildungsnachweis mit Theorie, Übungsfahrten, Sonderfahrten und Prüfstatus anfordern.";
     const contact = variant === "hopla"
       ? "Unterlagen anschließend per WhatsApp oder E-Mail an Hopla zur Vorprüfung geben."
+      : variant === "chioa"
+        ? "Unterlagen an Chioa zur Vorprüfung geben und die anrechenbaren Leistungen persönlich bestätigen lassen."
       : variant === "royal"
         ? "Unterlagen mit Wunschstandort an Royal übermitteln und Übernahme persönlich bestätigen lassen."
         : "Unterlagen mit Wunschstandort an Gerlach übermitteln und die Übernahme prüfen lassen.";
     return { available, missing, next: contact };
+  }
+
+  function getRegistrationResult() {
+    const license = answers.license || "B / BF17";
+    const ageStatus = answers.ageStatus || "persönlich klären";
+    const language = answers.language || "Deutsch";
+    const guardianNeeded = ageStatus === "minderjährig";
+    return {
+      title: `Anmeldung für ${license} ist vorbereitet`,
+      lead: "Der Assistent bündelt jetzt die Vertragsdaten und optionalen Nachweise. Nach dem Abschluss erhält Hopla in der produktiven Version eine geordnete Übergabe.",
+      details: [
+        { label: "Ausbildungsweg", text: `${license} · Beratung möglichst auf ${language}` },
+        { label: "Noch ausfüllen", text: guardianNeeded ? "Persönliche Daten, Kontakt, Anschrift und Erziehungsberechtigte" : "Persönliche Daten, Kontakt und Anschrift", emphasis: true },
+        { label: "Danach", text: "Angaben prüfen und die Anmeldung persönlich mit Hopla abschließen." },
+      ] as GuidedResultDetail[],
+    };
   }
 
   const currentQuestion = questions[step];
@@ -6891,6 +7080,7 @@ function RegionalGuidedOutcomePanel({
     setAnswers({});
     setContactName("");
     setContactValue("");
+    setRegistrationData({});
     setFiles([]);
     setConsent(false);
     setError("");
@@ -6901,6 +7091,18 @@ function RegionalGuidedOutcomePanel({
     if (!contactName.trim() || !contactValue.trim()) {
       setError("Bitte ergänze deinen Namen und eine Kontaktmöglichkeit.");
       return;
+    }
+    if (variant === "hopla") {
+      const requiredFields = ["birthDate", "birthPlace", "street", "city", "nationality"];
+      const missingField = requiredFields.some((key) => !registrationData[key]?.trim());
+      if (missingField) {
+        setError("Bitte ergänze Geburtsdaten, Anschrift und Staatsangehörigkeit.");
+        return;
+      }
+      if (answers.ageStatus === "minderjährig" && !registrationData.guardian?.trim()) {
+        setError("Bitte ergänze bei Minderjährigen eine erziehungsberechtigte Person.");
+        return;
+      }
     }
     if (!consent) {
       setError("Bitte bestätige den Demo-Datenschutzhinweis.");
@@ -6943,12 +7145,15 @@ function RegionalGuidedOutcomePanel({
       ? "Persönliche Preisentscheidung"
       : panel === "schedule"
         ? "Theorie & Fahrstunden planen"
-        : "Fahrschulwechsel vorbereiten";
+        : variant === "hopla"
+          ? "Anmeldung vorbereiten"
+          : "Fahrschulwechsel vorbereiten";
 
   const licenseResult = getLicenseResult();
   const priceResult = getPriceResult();
   const scheduleResult = getScheduleResult();
   const transferResult = getTransferResult();
+  const registrationResult = getRegistrationResult();
 
   return (
     <section className="bt-rathje-interactive bt-guided-flow" style={{ ...glass, padding: isMobile ? 14 : 19, display: "flex", flexDirection: "column", gap: 14, color: textPrimary, flex: "0 0 auto" }}>
@@ -7037,10 +7242,10 @@ function RegionalGuidedOutcomePanel({
           {panel === "documents" && (
             <>
               <GuidedResultView
-                eyebrow="Dein persönliches Wechselergebnis"
-                title="Dein Fahrschulwechsel hat jetzt einen klaren Weg"
-                lead="Dein bisheriger Stand ist eingeordnet. Du siehst sofort, was vorhanden ist, was fehlt und welcher Schritt als Nächstes notwendig ist."
-                details={[
+                eyebrow={variant === "hopla" ? "Deine vorbereitete Anmeldung" : "Dein persönliches Wechselergebnis"}
+                title={variant === "hopla" ? registrationResult.title : "Dein Fahrschulwechsel hat jetzt einen klaren Weg"}
+                lead={variant === "hopla" ? registrationResult.lead : "Dein bisheriger Stand ist eingeordnet. Du siehst sofort, was vorhanden ist, was fehlt und welcher Schritt als Nächstes notwendig ist."}
+                details={variant === "hopla" ? registrationResult.details : [
                   { label: "Bereits vorhanden", text: transferResult.available },
                   { label: "Noch erforderlich", text: transferResult.missing, emphasis: true },
                   { label: "Konkreter nächster Schritt", text: transferResult.next },
@@ -7053,23 +7258,38 @@ function RegionalGuidedOutcomePanel({
                   {Object.entries(answers).map(([key, value]) => <span key={key} style={{ borderRadius: 999, background: "rgba(255,255,255,0.68)", padding: "6px 8px", color: textSecondary, fontSize: 10.5 }}>{key}: <strong style={{ color: textPrimary }}>{value}</strong></span>)}
                 </div>
               </details>
+              {variant === "hopla" && (
+                <div style={{ ...soft, padding: 14, display: "flex", flexDirection: "column", gap: 9 }}>
+                  <div style={{ fontWeight: 950 }}>Persönliche Vertragsdaten</div>
+                  <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(2, minmax(0, 1fr))", gap: 9 }}>
+                    <input value={registrationData.birthDate || ""} onChange={(event) => setRegistrationData((current) => ({ ...current, birthDate: event.target.value }))} placeholder="Geburtsdatum" style={field} />
+                    <input value={registrationData.birthPlace || ""} onChange={(event) => setRegistrationData((current) => ({ ...current, birthPlace: event.target.value }))} placeholder="Geburtsort" style={field} />
+                    <input value={registrationData.street || ""} onChange={(event) => setRegistrationData((current) => ({ ...current, street: event.target.value }))} placeholder="Straße und Hausnummer" style={field} />
+                    <input value={registrationData.city || ""} onChange={(event) => setRegistrationData((current) => ({ ...current, city: event.target.value }))} placeholder="PLZ und Ort" style={field} />
+                    <input value={registrationData.profession || ""} onChange={(event) => setRegistrationData((current) => ({ ...current, profession: event.target.value }))} placeholder="Beruf (optional)" style={field} />
+                    <input value={registrationData.nationality || ""} onChange={(event) => setRegistrationData((current) => ({ ...current, nationality: event.target.value }))} placeholder="Staatsangehörigkeit" style={field} />
+                    <input value={registrationData.existingLicense || ""} onChange={(event) => setRegistrationData((current) => ({ ...current, existingLicense: event.target.value }))} placeholder="Vorhandene Führerscheinklasse (optional)" style={field} />
+                    {answers.ageStatus === "minderjährig" && <input value={registrationData.guardian || ""} onChange={(event) => setRegistrationData((current) => ({ ...current, guardian: event.target.value }))} placeholder="Erziehungsberechtigte Person" style={field} />}
+                  </div>
+                </div>
+              )}
               <label style={{ ...soft, padding: 14, cursor: "pointer" }}>
-                <span style={{ display: "block", fontWeight: 950 }}>Unterlagen ergänzen</span>
+                <span style={{ display: "block", fontWeight: 950 }}>{variant === "hopla" ? "Anmeldeunterlagen ergänzen" : "Unterlagen ergänzen"}</span>
                 <span style={{ display: "block", color: textSecondary, fontSize: 11.5, marginTop: 3 }}>PDF, JPG oder PNG · in der Demo kein echter Upload</span>
                 <input type="file" multiple accept="application/pdf,image/jpeg,image/png" onChange={(event) => setFiles(Array.from(event.target.files || []))} style={{ width: "100%", marginTop: 10, fontSize: 12 }} />
                 {files.length > 0 && <span style={{ display: "block", color: accent, fontSize: 11.5, fontWeight: 900, marginTop: 7 }}>{files.length} Datei{files.length === 1 ? "" : "en"} ergänzt</span>}
               </label>
               <form onSubmit={submitTransfer} style={{ display: "flex", flexDirection: "column", gap: 10 }}>
                 <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 9 }}>
-                  <input value={contactName} onChange={(event) => setContactName(event.target.value)} placeholder="Vor- und Nachname" style={field} />
-                  <input value={contactValue} onChange={(event) => setContactValue(event.target.value)} placeholder="E-Mail oder Telefonnummer" style={field} />
+                  <input value={contactName} onChange={(event) => setContactName(event.target.value)} placeholder={variant === "hopla" ? "Vor- und Nachname" : "Vor- und Nachname"} style={field} />
+                  <input value={contactValue} onChange={(event) => setContactValue(event.target.value)} placeholder={variant === "hopla" ? "E-Mail oder Mobilnummer" : "E-Mail oder Telefonnummer"} style={field} />
                 </div>
                 <label style={{ ...soft, padding: 12, display: "flex", gap: 9, alignItems: "flex-start", color: textSecondary, fontSize: 11.5, lineHeight: 1.4 }}>
                   <input type="checkbox" checked={consent} onChange={(event) => setConsent(event.target.checked)} />
                   Ich bestätige den Demo-Hinweis. Es werden keine Daten oder Dateien wirklich versendet.
                 </label>
                 {error && <div style={{ color: "#a23b3b", fontSize: 12.5, fontWeight: 850 }}>{error}</div>}
-                <button type="submit" style={primary}>Demo-Wechselanfrage mit Ergebnis abschließen</button>
+                <button type="submit" style={primary}>{variant === "hopla" ? "Demo-Anmeldung vollständig vorbereiten" : "Demo-Wechselanfrage mit Ergebnis abschließen"}</button>
               </form>
             </>
           )}
@@ -7088,12 +7308,12 @@ function RegionalGuidedOutcomePanel({
         <div className="bt-guided-step-in" style={{ ...soft, padding: isMobile ? 17 : 21 }}>
           <div style={{ width: 50, height: 50, borderRadius: 17, display: "grid", placeItems: "center", background: `rgba(${accentRgb}, 0.16)`, color: accent, fontSize: 25, fontWeight: 950 }}>✓</div>
           <div style={{ color: accent, fontSize: 11, fontWeight: 950, letterSpacing: 0.46, marginTop: 14 }}>DEMO · ERFOLGREICH ABGESCHLOSSEN</div>
-          <div style={{ fontSize: isMobile ? 21 : 25, fontWeight: 950, marginTop: 5 }}>Dein persönlicher Wechselweg steht fest</div>
-          <div style={{ color: textSecondary, fontSize: 12.5, lineHeight: 1.52, marginTop: 7 }}>{schoolName} würde jetzt die geordneten Angaben von {contactName} inklusive Kontakt und {files.length} Datei{files.length === 1 ? "" : "en"} erhalten. Der nächste Schritt ist die Prüfung der Nachweise und anschließend die persönliche Festlegung des verbleibenden Ausbildungswegs.</div>
+          <div style={{ fontSize: isMobile ? 21 : 25, fontWeight: 950, marginTop: 5 }}>{variant === "hopla" ? "Deine Anmeldung ist vollständig vorbereitet" : "Dein persönlicher Wechselweg steht fest"}</div>
+          <div style={{ color: textSecondary, fontSize: 12.5, lineHeight: 1.52, marginTop: 7 }}>{variant === "hopla" ? `${schoolName} würde jetzt die strukturierten Vertrags- und Kontaktdaten von ${contactName}${files.length ? ` sowie ${files.length} Datei${files.length === 1 ? "" : "en"}` : ""} erhalten. In dieser Beta wurde nichts wirklich versendet; schließe die Anmeldung persönlich mit Hopla ab.` : `${schoolName} würde jetzt die geordneten Angaben von ${contactName} inklusive Kontakt und ${files.length} Datei${files.length === 1 ? "" : "en"} erhalten. Der nächste Schritt ist die Prüfung der Nachweise und anschließend die persönliche Festlegung des verbleibenden Ausbildungswegs.`}</div>
           <div style={{ display: "flex", gap: 9, flexWrap: "wrap", marginTop: 16 }}>
             <button type="button" onClick={() => onPanelChange("home")} style={primary}>Zur Übersicht</button>
             <button type="button" onClick={restart} style={secondary}>Neue Demo starten</button>
-            <button type="button" onClick={() => onAsk(`Fasse meinen vorbereiteten Fahrschulwechsel zu ${schoolName} zusammen.`)} style={secondary}>Im Chat zusammenfassen</button>
+            <button type="button" onClick={() => onAsk(variant === "hopla" ? "Fasse meine vorbereitete Anmeldung bei Fahrschule Hopla zusammen." : `Fasse meinen vorbereiteten Fahrschulwechsel zu ${schoolName} zusammen.`)} style={secondary}>Im Chat zusammenfassen</button>
           </div>
         </div>
       )}
@@ -7533,6 +7753,7 @@ function GuidedTriDemo({
   const [demoError, setDemoError] = useState("");
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- Ein Panelwechsel startet den geführten Ablauf bewusst neu.
     setStep(0);
     setAnswers({});
     setFreeText("");
@@ -9092,6 +9313,7 @@ function FsazInteractiveDemo({
   const [freeText, setFreeText] = useState("");
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- Der aktive Informationsbereich besitzt einen eigenen Ablaufzustand.
     setStep(0);
     setPhase("questions");
     setAnswers({});
@@ -13224,6 +13446,7 @@ function ProfCarHub({
   const [serviceType, setServiceType] = useState("TÜV / HU");
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- Beim Bereichswechsel wird die vorherige Fahrzeugaktion verworfen.
     setCompletedAction(null);
     setFocusedVehicle(null);
   }, [panel]);
@@ -13236,6 +13459,7 @@ function ProfCarHub({
     );
 
     if (vehicle) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- Eine externe Sprachwahl synchronisiert die sichtbare Fahrzeugkarte.
       setFocusedVehicle(vehicle);
       setGalleryIndex(0);
     }
@@ -15254,6 +15478,7 @@ export default function WidgetPage() {
     REGIONAL_TENANT_VARIANTS[normalizedTenantId] ?? null;
   const isRathjeStyleRegionalInterface =
     regionalDemoVariant === "hopla" ||
+    regionalDemoVariant === "chioa" ||
     regionalDemoVariant === "gerlach" ||
     regionalDemoVariant === "royal";
   const usesRathjeInterfaceLayout =
@@ -15892,6 +16117,10 @@ export default function WidgetPage() {
         ? "Willkommen bei FSAZ. Hier erfährst du, wie der Fahrsimulator funktioniert, welche Trainingsinhalte möglich sind und welche Preise veröffentlicht sind. Anmeldung und Terminvergabe erfolgen bewusst nicht im Interface, sondern persönlich vor Ort."
       : isCampusB27Interface
         ? "Hallo bei Campus B27 in Hünfeld! Ich bin dein digitaler Ausbildungs-Assistent. Suchst du Auto, Motorrad, Lkw, Bus oder einen Spezialkurs wie BKF, ASF oder MPU? Ich helfe dir, den passenden Einstieg und die nächsten Schritte vorzubereiten."
+      : regionalDemoVariant === "hopla"
+        ? "Hallo bei der Fahrschule Hopla in Kassel. Ich helfe dir ausschließlich mit den gewünschten Beta-Funktionen: Führerschein-Finder, B197-Preisszenario und vorbereitete Anmeldung. Womit möchtest du starten?"
+      : regionalDemoVariant === "chioa"
+        ? "Hallo bei der Fahrschule Chioa in Dortmund. Ich führe dich durch Führerscheinwahl, Preise, Theorieplanung, Cockpit oder Fahrschulwechsel und gebe dir am Ende immer einen klaren nächsten Schritt. Womit möchtest du starten?"
       : isNiehausInterface
       ? "Hallo! Ich bin der digitale Führerschein-Assistent der Fahrschule Niehaus. Ich helfe dir bei Führerscheinklassen, Preisen, Unterlagen, Anmeldung sowie den Standorten Baden-Baden und Bühl. Womit möchtest du starten?"
       : isHohenbadenInterface
@@ -15938,6 +16167,7 @@ export default function WidgetPage() {
     isRathjeInterface,
     isFsazInterface,
     isCampusB27Interface,
+    regionalDemoVariant,
     isAbgefahrenInterface,
     isHohenbadenInterface,
     isNiehausInterface,
@@ -19109,8 +19339,10 @@ export default function WidgetPage() {
     ? R_DRIVE_START_CARDS
     : isHappyDrivingInterface
       ? HAPPY_DRIVING_START_CARDS
-      : isProfCarInterface
+    : isProfCarInterface
     ? PROFCAR_START_CARDS
+    : regionalDemoVariant === "hopla"
+      ? HOPLA_START_CARDS
     : usesRathjeInterfaceLayout
       ? RATHJE_START_CARDS
       : isFsazInterface
@@ -22165,6 +22397,7 @@ body::after {
                       accentRgb={accentRgb}
                       textPrimary={textPrimary}
                       textSecondary={textSecondary}
+                      items={regionalDemoVariant === "hopla" ? HOPLA_TAB_ITEMS : RATHJE_TAB_ITEMS}
                     />
                   )}
                   {isFsazInterface && (
@@ -22247,6 +22480,10 @@ body::after {
                                 ? "Dein Führerschein. Persönlich begleitet."
                             : isFahrwerkBInterface
                               ? "Dein Führerschein-Cockpit"
+                              : regionalDemoVariant === "hopla"
+                                ? "Drei Funktionen. Jeder Weg endet mit einem Ergebnis."
+                              : regionalDemoVariant === "chioa"
+                                ? "Wie kann Chioa dir heute weiterhelfen?"
                               : usesRathjeInterfaceLayout
                                 ? "Wie kann ich dir heute weiterhelfen?"
                               : isFsazInterface
@@ -22297,6 +22534,10 @@ body::after {
                               ? isMobileViewport
                                 ? "Wähle deinen Bereich – alles Wichtige direkt auf einen Blick."
                                 : "Wähle aus, wo du gerade stehst. Das Interface zeigt dir den nächsten Schritt, prüft Unterlagen und bereitet Anfragen sauber vor."
+                              : regionalDemoVariant === "hopla"
+                                ? "Wähle Führerschein-Finder, Preis/Kursinfo oder Anmeldung. Die Beta zeigt bewusst nur die im Konfigurationsbogen aktivierten Funktionen."
+                              : regionalDemoVariant === "chioa"
+                                ? "Führerscheinwahl, Preisweg, Theorieplanung, Cockpit und Fahrschulwechsel führen dich Schritt für Schritt zu einem konkreten nächsten Ergebnis."
                               : usesRathjeInterfaceLayout
                                 ? "Ich übernehme die Vorarbeit wie ein digitales Fahrschulbüro. Wähle einfach dein Anliegen."
                               : isFsazInterface

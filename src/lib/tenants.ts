@@ -15,6 +15,7 @@ export type TenantId =
   | "fahrwerk-b"
   | "fahrschule-hohenbaden"
   | "fahrschule-hopla"
+  | "fahrschule-chioa"
   | "fahrschule-gerlach"
   | "fahrschule-royal"
   | "fahrschule-alamir"
@@ -655,7 +656,7 @@ export const TENANTS: Record<TenantId, TenantConfig> = {
     assistantName: "Digitaler Führerscheinbegleiter",
     language: "de",
     knowledge: {
-      files: ["knowledge.md"],
+      files: ["eKnowledge.md"],
     },
     websiteUrl: "https://www.fahrschule-hopla.de/",
     primaryCta: {
@@ -682,6 +683,45 @@ export const TENANTS: Record<TenantId, TenantConfig> = {
       bg: "#fff8f6",
       glass: "rgba(229,57,53,0.12)",
       text: "#1f2428",
+    },
+    assets: {
+      launcherIcon: "/favicon.ico",
+    },
+  },
+
+  "fahrschule-chioa": {
+    id: "fahrschule-chioa",
+    brandName: "Fahrschule Chioa",
+    assistantName: "Digitaler Führerscheinbegleiter",
+    language: "de",
+    knowledge: {
+      files: ["knowledge.md"],
+    },
+    websiteUrl: "https://fahrschule-chioa.de/",
+    primaryCta: {
+      label: "Online voranmelden",
+      url: "https://fs0951.fso360-svc.de/",
+    },
+    fallbackContact: {
+      label: "Telefon",
+      value: "0231 13730860",
+    },
+    companyInfo: {
+      address: "Alte Benninghoferstr. 2, 44263 Dortmund",
+      phone: "0231 13730860 · Mobil 0177 2010409",
+      email: "info@fahrschule-chioa.de",
+      openingHours: "Büro: Mo–Fr 17:00–19:00 Uhr · Theorie: Mo, Di und Do 18:30–20:00 Uhr",
+    },
+    rules: {
+      noMedicalClaims: true,
+      noInventingPrices: true,
+      noGuarantees: true,
+    },
+    theme: {
+      accent: "#d89a16",
+      bg: "#fffaf0",
+      glass: "rgba(216,154,22,0.13)",
+      text: "#20252b",
     },
     assets: {
       launcherIcon: "/favicon.ico",
@@ -1566,6 +1606,10 @@ const TENANT_ALIASES: Record<string, TenantId> = {
   "fahrschule-hopla.de": "fahrschule-hopla",
   "www.fahrschule-hopla.de": "fahrschule-hopla",
   fahrschulehopla: "fahrschule-hopla",
+  chioa: "fahrschule-chioa",
+  "fahrschule-chioa.de": "fahrschule-chioa",
+  "www.fahrschule-chioa.de": "fahrschule-chioa",
+  fahrschulechioa: "fahrschule-chioa",
   gerlach: "fahrschule-gerlach",
   "fahrschule-gerlach.de": "fahrschule-gerlach",
   "www.fahrschule-gerlach.de": "fahrschule-gerlach",

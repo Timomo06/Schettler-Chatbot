@@ -339,7 +339,7 @@ async function getIcloudCalendar(config: ReturnType<typeof getTenantConfig>) {
 
   const calendars = await client.fetchCalendars();
 
-  const calendar = calendars.find((cal: any) => {
+  const calendar = calendars.find((cal) => {
     const displayName =
       typeof cal.displayName === "string"
         ? cal.displayName
@@ -351,7 +351,7 @@ async function getIcloudCalendar(config: ReturnType<typeof getTenantConfig>) {
   if (!calendar) {
     throw new Error(
       `Kalender "${calendarName}" wurde für ${config.businessName} nicht gefunden. Gefunden: ${calendars
-        .map((cal: any) => cal.displayName)
+        .map((cal) => cal.displayName)
         .join(", ")}`
     );
   }
@@ -418,7 +418,7 @@ export async function POST(request: Request) {
       },
     });
 
-    const hasConflict = existingObjects.some((object: any) => {
+    const hasConflict = existingObjects.some((object) => {
       const ics = String(object.data || "");
       const eventTimes = getEventTimesFromIcs(ics, config.timeZone);
 
@@ -513,11 +513,11 @@ export async function POST(request: Request) {
         vehicle,
       },
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     return NextResponse.json(
       {
         ok: false,
-        error: error?.message || "Unbekannter Fehler",
+        error: error instanceof Error ? error.message : "Unbekannter Fehler",
       },
       { status: 500 }
     );

@@ -1,6 +1,6 @@
 # Knowledge Base: Fahrschule Hopla
 
-Stand der Recherche: 17.09.2026  
+Stand der Website- und Kundenunterlagen: 21.09.2026  
 Offizielle Website: https://www.fahrschule-hopla.de/
 
 ## Rolle des Assistenten
@@ -13,11 +13,10 @@ Antworte freundlich, ruhig, klar und möglichst kurz. Die Fahrschule beschreibt 
 
 - Jeder geführte Funktionsablauf muss mit einem klaren Ergebnis enden. Nenne immer: die konkrete Empfehlung oder Entscheidung, die Begründung, noch fehlende Voraussetzungen und genau einen nächsten Schritt.
 - Bei der Führerscheinwahl eine passende Klasse beziehungsweise einen klaren Etappenweg nennen; nicht mit einer offenen Auswahl enden.
-- Bei Preisen ohne veröffentlichte Preisliste ausdrücklich „persönliches Angebot erforderlich“ als Ergebnis nennen und die vollständige Anfrage mit Klasse und gewünschter Kostenart vorbereiten. Niemals nur allgemein an die Fahrschule verweisen.
-- Beim Fahrschulwechsel den vorhandenen Stand, fehlende Nachweise und den konkreten Übergabeweg einzeln benennen.
-- Bei Theorie, Fahrstunden und Cockpit immer einen priorisierten nächsten Schritt ausgeben. Eine Übersicht ohne klare Handlungsempfehlung ist kein fertiges Ergebnis.
+- Für B197 ausschließlich die unten dokumentierte Preisliste des Ausbildungsvertrags verwenden. Die Anzahl normaler Fahrstunden ist individuell und muss im Rechner als auswählbare Szenario-Annahme gekennzeichnet werden.
+- Für B/BF17 und BE liegt in den Kundenunterlagen keine vollständige Preisliste vor. Dafür ausdrücklich „persönliches Angebot erforderlich“ ausgeben und niemals B197-Preise übertragen.
 - Erfinde keine Preise, freien Plätze, Fahrstunden, Starttermine oder Bearbeitungszeiten.
-- Die Website veröffentlicht keine vollständige Preisliste. Bei Preisfragen immer an die Fahrschule verweisen.
+- Das Interface darf sichtbar nur die im Konfigurationsbogen aktivierten Module anbieten: Führerschein-Finder, Preise/Kursinformationen und Anmelde-Assistent. Keine Terminbuchung, Kalenderanbindung, Erinnerungen, Standortübersicht, Fahrschulwechsel-, Cockpit- oder Begleiter-Funktion als eigener Tab.
 - Eine Anfrage im Demo-Interface ist noch keine verbindliche Anmeldung oder Buchung.
 - Bestätige keine Fahrstunde und keinen Prüfungstermin ohne echte Kalender- oder Fahrschulsoftware-Anbindung.
 - Formuliere Ausbildungsdauer nur als unverbindliche Orientierung. Die Fahrschule nennt 8 bis 12 Wochen nach bestandener Theorieprüfung als angestrebten Rahmen; die tatsächliche Dauer hängt von Lernfortschritt und Verfügbarkeit ab.
@@ -99,6 +98,28 @@ Wenn nach einer auf der Website nicht veröffentlichten Klasse gefragt wird, ant
 - Sonderfahrten erfolgen laut Website erst im letzten Drittel der Ausbildung.
 - Bei der Prüfungsreife und Terminplanung entscheidet die Fahrschule anhand des Ausbildungsstands; nichts garantieren.
 
+## Verbindlich übergebene B197-Preise
+
+Die folgenden Beträge stammen aus dem übergebenen Ausbildungsvertrag für Klasse B197:
+
+- Grundbetrag / Anmeldung: 499,00 €
+- Lehrmittel: 65,00 €
+- normale Fahrstunde zu 45 Minuten: 70,00 €
+- Fehlstunde zu 45 Minuten: 50,00 €
+- Überlandfahrt zu 45 Minuten: 75,00 €; für das Mindest-Szenario 5 Stück
+- Autobahnfahrt zu 45 Minuten: 75,00 €; für das Mindest-Szenario 4 Stück
+- Beleuchtungsfahrt zu 45 Minuten: 75,00 €; für das Mindest-Szenario 3 Stück
+- Pauschale B197: 46,67 €
+- Vorstellung zur Theorieprüfung: 80,01 €
+- Vorstellung zur praktischen Prüfung: 200,17 €
+- externe TÜV-Kosten: Theorieprüfung 24,99 € und praktische Prüfung 129,83 €
+
+Die Summe der dokumentierten festen Positionen und zwölf besonderen Ausbildungsfahrten beträgt 1.945,67 €. Normale Fahrstunden sind darin nicht enthalten. Ein Szenario wird daher exakt so berechnet:
+
+`1.945,67 € + ausgewählte Anzahl normaler Fahrstunden × 70,00 €`
+
+Beispiele: 10 normale Fahrstunden = 2.645,67 €; 20 = 3.345,67 €; 30 = 4.045,67 €. Diese Summen sind Rechenszenarien und keine garantierten Gesamtpreise. Fehlstunden werden nicht vorsorglich eingerechnet. Die Vertragslaufzeit beträgt laut Unterlage 12 Monate; bei offenem Saldo findet keine Prüfung statt. Vor Vertragsschluss müssen alle Beträge von der Fahrschule bestätigt werden.
+
 ## Anmeldung und Fahrerlaubnisantrag
 
 Für die Anmeldung bei der Fahrschule wird laut Website ein gültiger Personalausweis oder Reisepass benötigt.
@@ -117,11 +138,13 @@ Die Website empfiehlt Personen auf der Warteliste außerdem:
 
 Die auf der Website erwähnte Wartezeit bei der Führerscheinstelle ist nur eine Momentaufnahme und darf nicht als aktuell garantiert werden.
 
+Der Anmelde-Assistent kann folgende Felder aus dem übergebenen Ausbildungsvertrag strukturiert erfassen: bereits vorhandene Führerscheinklasse, Nachname, Vorname, Geburtsdatum, Geburtsort, Straße und Hausnummer, PLZ und Ort, Beruf, E-Mail, Mobilnummer, Erziehungsberechtigte bei Minderjährigen und Staatsangehörigkeit. Er darf zusätzlich PDF-, JPG- und PNG-Dateien für die Übergabe vormerken. In der Beta werden Daten und Dateien nur lokal im Ablauf gesammelt und nicht wirklich versendet; das muss klar erkennbar bleiben.
+
 ## Häufige Fragen
 
 ### Was kostet der Führerschein?
 
-Die Website nennt keine verbindlichen Einzelpreise. Der Gesamtpreis hängt unter anderem von Klasse und Anzahl der benötigten Fahrstunden ab. Verweise für ein aktuelles Angebot an Telefon, WhatsApp oder E-Mail.
+Für B197 darf der Assistent die dokumentierten Einzelpositionen und Szenario-Summen oben verwenden. Der Gesamtpreis hängt von der Zahl der normalen Fahrstunden ab. Für B/BF17 und BE muss ein aktuelles persönliches Angebot angefordert werden.
 
 ### Wie lange dauert die Ausbildung?
 
@@ -135,19 +158,14 @@ Laut Website Deutsch, Türkisch, Persisch und Arabisch.
 
 Laut Website besteht grundsätzlich keine gesetzliche Pflicht zum Theorieunterricht. Hopla möchte dennoch, dass Umschreiber sechs Themen besuchen, um deutsche Verkehrsregeln und Vorschriften kennenzulernen. Den konkreten Einzelfall immer mit der Fahrschule klären.
 
-### Kann ich direkt einen Termin buchen?
+## Sichtbare Beta-Funktionen laut Konfigurationsbogen
 
-Im Demo-Interface können Wünsche vorbereitet werden. Eine echte Buchung ist erst nach Bestätigung der Fahrschule verbindlich.
+1. Führerschein-Finder für B/BF17, B197 und BE mit eindeutiger Empfehlung.
+2. Preise & Kursinfos; bei B197 mit Szenario-Rechner, bei anderen Klassen mit konkreter Angebotsanfrage.
+3. Anmelde-Assistent mit strukturierten Vertragsdaten, Datei-Upload in der Demo und vorbereitetem Kontaktweg.
+4. KI-Chat und Sprache bleiben als Bedienwege verfügbar; Kontakt- und Lead-Daten können im Anmeldeablauf vorbereitet werden.
 
-## Geeignete Interface-Funktionen
-
-- Führerscheinklasse B, B197 oder BE einordnen
-- BF17 als möglichen Klasse-B-Weg erklären
-- Unterlagen-Checkliste führen
-- Theoriezeiten anzeigen
-- mehrsprachigen Beratungswunsch aufnehmen
-- WhatsApp-Anfrage vorbereiten
-- persönlichen Demo-Lernstand und nächste Schritte zeigen
+Nicht als Modul anzeigen: Terminwunsch, Kalender, Direktbuchung, Erinnerungen, Standortübersicht, Fahrschulwechsel, persönliches Cockpit, Fahrzeugübersicht oder direkte Fahrschulsoftware-Anbindung.
 
 ## Offizielle Quellen
 
