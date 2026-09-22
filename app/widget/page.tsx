@@ -563,37 +563,23 @@ const ABGEFAHREN_START_CARDS: StartCard[] = [
 
 const R_DRIVE_START_CARDS: StartCard[] = [
   {
-    icon: "🪪",
-    title: "Führerschein-Cockpit",
-    description: "Ausbildungsstand, nächsten Schritt, Termine und persönliche Empfehlung auf einen Blick",
-    action: "hohenbadenPanel",
-    hohenbadenPanel: "dashboard",
-  },
-  {
     icon: "🧭",
-    title: "Ausbildung finden",
-    description: "Geführt zum passenden R-DRIVE Kursmodell",
+    title: "Führerschein-Finder",
+    description: "Mit wenigen Fragen zur passenden Klasse und Kursform",
     action: "hohenbadenPanel",
     hohenbadenPanel: "courses",
   },
   {
-    icon: "✨",
-    title: "Infos & Lernsystem",
-    description: "App, VR und Video-Coaching passend einordnen",
+    icon: "€",
+    title: "Preise & Kursinfos",
+    description: "Basis, Plus, Intensiv und Anhänger-Angebote passend vergleichen",
     action: "hohenbadenPanel",
     hohenbadenPanel: "coach",
   },
   {
-    icon: "📅",
-    title: "Ausbildung planen",
-    description: "Theorie, Praxis und nächsten Schritt kompakt planen",
-    action: "hohenbadenPanel",
-    hohenbadenPanel: "schedule",
-  },
-  {
-    icon: "↗️",
-    title: "Fahrschulwechsel",
-    description: "Bisherigen Stand erfassen und als Demo vollständig an R-DRIVE übergeben",
+    icon: "🎯",
+    title: "Theorie- & Praxistipps",
+    description: "Persönliche Tipps erhalten und optional ein Foto oder Dokument auswählen",
     action: "hohenbadenPanel",
     hohenbadenPanel: "documents",
   },
@@ -4678,14 +4664,22 @@ function DrivingDemoTabBar({
   isMobile,
   progress = {},
 }: DrivingDemoTabBarProps) {
-  const items: Array<{ id: HohenbadenPanel; label: string; variantLabel?: string }> = [
-    { id: "home", label: "Start" },
-    { id: "dashboard", label: "Cockpit" },
-    { id: "courses", label: "Auswahl" },
-    { id: "coach", label: "Infos", variantLabel: variant === "happy-driving" ? "Preise" : "Lernsystem" },
-    { id: "schedule", label: "Plan" },
-    { id: "documents", label: "Service", variantLabel: "Wechsel" },
-  ];
+  const items: Array<{ id: HohenbadenPanel; label: string; variantLabel?: string }> =
+    variant === "r-drive"
+      ? [
+          { id: "home", label: "Start" },
+          { id: "courses", label: "Finder" },
+          { id: "coach", label: "Preise & Kurse" },
+          { id: "documents", label: "Tipps & Datei" },
+        ]
+      : [
+          { id: "home", label: "Start" },
+          { id: "dashboard", label: "Cockpit" },
+          { id: "courses", label: "Auswahl" },
+          { id: "coach", label: "Infos", variantLabel: "Preise" },
+          { id: "schedule", label: "Plan" },
+          { id: "documents", label: "Service", variantLabel: "Wechsel" },
+        ];
 
   return (
     <nav
@@ -4797,6 +4791,470 @@ type GuidedDrivingCompactDemoProps = Omit<HohenbadenFutureDemoProps, "variant"> 
 };
 
 function GuidedDrivingCompactDemo(props: GuidedDrivingCompactDemoProps) {
+  if (props.variant === "r-drive") {
+    return <RDriveConfiguredBeta {...props} />;
+  }
+
+  return <LegacyGuidedDrivingCompactDemo {...props} />;
+}
+
+function RDriveConfiguredBeta({
+  panel,
+  onPanelChange,
+  accent,
+  accentRgb,
+  textPrimary,
+  textSecondary,
+  isMobile,
+  onAsk,
+}: GuidedDrivingCompactDemoProps) {
+  const allowedPanels: HohenbadenPanel[] = ["courses", "coach", "documents"];
+  const activePanel = allowedPanels.includes(panel) ? panel : "courses";
+
+  const [finderStep, setFinderStep] = useState<"goal" | "detail" | "result">("goal");
+  const [finderGoal, setFinderGoal] = useState<"auto" | "motorcycle" | "trailer" | "">("");
+  const [finderDetail, setFinderDetail] = useState("");
+  const [priceStep, setPriceStep] = useState<"category" | "model" | "result">("category");
+  const [priceCategory, setPriceCategory] = useState<"auto" | "motorcycle" | "trailer" | "">("");
+  const [priceModel, setPriceModel] = useState("");
+  const [tipStep, setTipStep] = useState<"area" | "focus" | "result">("area");
+  const [tipArea, setTipArea] = useState<"theory" | "practice" | "">("");
+  const [tipFocus, setTipFocus] = useState("");
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+
+  const glass: CSSProperties = {
+    borderRadius: isMobile ? 20 : 24,
+    border: "1px solid rgba(255,255,255,0.62)",
+    background: "linear-gradient(180deg, rgba(255,255,255,0.95), rgba(255,255,255,0.78))",
+    boxShadow: "0 14px 40px rgba(56,35,24,0.08), inset 0 1px 0 rgba(255,255,255,0.82)",
+    backdropFilter: "blur(22px) saturate(155%)",
+    WebkitBackdropFilter: "blur(22px) saturate(155%)",
+  };
+  const soft: CSSProperties = {
+    borderRadius: 17,
+    border: `1px solid rgba(${accentRgb}, 0.16)`,
+    background: `linear-gradient(145deg, rgba(${accentRgb}, 0.09), rgba(255,255,255,0.78))`,
+  };
+  const primary: CSSProperties = {
+    minHeight: 42,
+    border: "none",
+    borderRadius: 14,
+    background: accent,
+    color: "#fff",
+    padding: "0 15px",
+    fontWeight: 900,
+    cursor: "pointer",
+    boxShadow: `0 9px 22px rgba(${accentRgb}, 0.20)`,
+  };
+  const secondary: CSSProperties = {
+    minHeight: 40,
+    borderRadius: 14,
+    border: `1px solid rgba(${accentRgb}, 0.18)`,
+    background: "rgba(255,255,255,0.78)",
+    color: textPrimary,
+    padding: "0 14px",
+    fontWeight: 850,
+    cursor: "pointer",
+  };
+  const choiceStyle: CSSProperties = {
+    ...soft,
+    minHeight: isMobile ? 62 : 68,
+    padding: isMobile ? "12px" : "13px 14px",
+    color: textPrimary,
+    textAlign: "left",
+    cursor: "pointer",
+  };
+
+  const header = (eyebrow: string, title: string, description: string) => (
+    <div>
+      <div style={{ color: accent, fontSize: 10.5, fontWeight: 950, letterSpacing: 0.45 }}>{eyebrow}</div>
+      <div style={{ fontSize: isMobile ? 21 : 26, fontWeight: 950, marginTop: 3, lineHeight: 1.12 }}>{title}</div>
+      <div style={{ color: textSecondary, fontSize: 12.2, lineHeight: 1.45, marginTop: 5 }}>{description}</div>
+    </div>
+  );
+
+  const choiceGrid = (
+    options: Array<[string, string, string]>,
+    onChoose: (value: string) => void,
+  ) => (
+    <div
+      style={{
+        display: "grid",
+        gridTemplateColumns: isMobile ? "1fr" : `repeat(${Math.min(options.length, 3)}, minmax(0, 1fr))`,
+        gap: 8,
+        marginTop: 12,
+      }}
+    >
+      {options.map(([value, label, detail]) => (
+        <button key={value} type="button" onClick={() => onChoose(value)} style={choiceStyle}>
+          <div style={{ fontWeight: 930, fontSize: 13.5, lineHeight: 1.25 }}>{label}</div>
+          <div style={{ color: textSecondary, fontSize: 10.8, marginTop: 4, lineHeight: 1.35 }}>{detail}</div>
+        </button>
+      ))}
+    </div>
+  );
+
+  const resetFinder = () => {
+    setFinderStep("goal");
+    setFinderGoal("");
+    setFinderDetail("");
+  };
+  const resetPrice = () => {
+    setPriceStep("category");
+    setPriceCategory("");
+    setPriceModel("");
+  };
+  const resetTips = () => {
+    setTipStep("area");
+    setTipArea("");
+    setTipFocus("");
+    setSelectedFiles([]);
+  };
+
+  const finderResult = (() => {
+    if (finderGoal === "auto") {
+      if (finderDetail === "intensiv") {
+        return {
+          title: "Klasse B197 · PKW INTENSIV",
+          detail: "Das 12-Tage-Kursmodell passt am ehesten, wenn du werktags sehr viel Zeit freihalten kannst und dein Fahrerlaubnisantrag rechtzeitig bearbeitet ist.",
+          facts: ["7 Tage Blocktheorie", "Praxis ab dem ersten Kurstag", "typisch 2 × 90 Minuten Praxis täglich"],
+        };
+      }
+      if (finderDetail === "plus") {
+        return {
+          title: "Klasse B197 · PKW PLUS",
+          detail: "Das kompakte 4-Wochen-Modell passt am ehesten, wenn du mehrere feste Termine pro Woche zuverlässig einplanen kannst.",
+          facts: ["7 Tage Blocktheorie", "Praxis ab dem ersten Kurstag", "typisch 5 × 90 Minuten Praxis pro Woche"],
+        };
+      }
+      return {
+        title: "Klasse B197 · PKW BASIS",
+        detail: "Das flexible Basis-Modell passt am ehesten zu einem normalen Schul- oder Arbeitsalltag. Der Einstieg ist grundsätzlich jederzeit möglich.",
+        facts: ["Zielmodell ca. 3 Monate", "7 Tage Blocktheorie", "typisch 2 × 90 oder 3 × 60 Minuten Praxis pro Woche"],
+      };
+    }
+
+    if (finderGoal === "motorcycle") {
+      if (finderDetail === "a") {
+        return {
+          title: "Motorradklasse A prüfen",
+          detail: "Auf Basis deiner Altersangabe ist Klasse A die naheliegende Richtung. Vorbesitz und die genauen Zugangsvoraussetzungen prüft R-DRIVE verbindlich.",
+          facts: ["Kursmodelle Basis, Plus und Intensiv", "Praxiszeiten grundsätzlich Montag bis Freitag", "genaue Klasse nach Alter und Vorbesitz"],
+        };
+      }
+      if (finderDetail === "a2") {
+        return {
+          title: "Motorradklasse A2 prüfen",
+          detail: "A2 ist für diese Altersgruppe die naheliegende Richtung. Bestehender Vorbesitz kann den Ausbildungsweg beeinflussen.",
+          facts: ["Kursmodelle Basis, Plus und Intensiv", "Theorie aus Grund- und Zusatzstoff", "Voraussetzungen final mit R-DRIVE prüfen"],
+        };
+      }
+      return {
+        title: "Motorradklasse A1 prüfen",
+        detail: "A1 ist für diese Altersgruppe die naheliegende Richtung. R-DRIVE prüft die persönlichen Voraussetzungen vor dem Start.",
+        facts: ["Einstieg in die Motorrad-Ausbildung", "Kursmodelle Basis, Plus und Intensiv", "verbindliche Einordnung durch die Fahrschule"],
+      };
+    }
+
+    if (finderDetail === "be") {
+      return {
+        title: "Klasse BE",
+        detail: "Für größere Anhänger-Kombinationen ist BE die passende Richtung. Dafür ist eine praktische Prüfung vorgesehen.",
+        facts: ["Vorbesitz Klasse B erforderlich", "Praxis nach individuellem Bedarf", "Fahrzeugdaten vorab prüfen"],
+      };
+    }
+    if (finderDetail === "b96") {
+      return {
+        title: "Erweiterung B96",
+        detail: "Für Kombinationen über 3.500 kg bis 4.250 kg passt häufig B96. Bei R-DRIVE ist das als eintägige Schulung ohne Prüfung angelegt.",
+        facts: ["Voraussetzung Klasse B", "ca. 8–9 Stunden an einem Tag", "keine Prüfung"],
+      };
+    }
+    return {
+      title: "Klasse B kann ausreichen",
+      detail: "Bis 3.500 kg zulässiger Gesamtmasse der Kombination kann Klasse B ausreichen. Entscheidend sind die konkreten Fahrzeugpapiere.",
+      facts: ["Zugfahrzeug und Anhänger gemeinsam prüfen", "Gewichtsangaben aus den Papieren verwenden", "bei Unsicherheit R-DRIVE fragen"],
+    };
+  })();
+
+  const priceResult = (() => {
+    const autoModels: Record<string, { title: string; duration: string; rhythm: string }> = {
+      basis: { title: "PKW BASIS · B197", duration: "Zielmodell ca. 3 Monate", rhythm: "2 × 90 oder 3 × 60 Minuten Praxis pro Woche" },
+      plus: { title: "PKW PLUS · B197", duration: "Zielmodell ca. 4 Wochen", rhythm: "typisch 5 × 90 Minuten Praxis pro Woche" },
+      intensiv: { title: "PKW INTENSIV · B197", duration: "Zielmodell ca. 12 Tage", rhythm: "typisch 2 × 90 Minuten Praxis täglich" },
+    };
+    const motorcycleModels: Record<string, { title: string; duration: string; rhythm: string }> = {
+      basis: { title: "MOTORRAD BASIS", duration: "Zielmodell ca. 2 Monate", rhythm: "typisch 2 × 90 Minuten Praxis pro Woche" },
+      plus: { title: "MOTORRAD PLUS", duration: "Zielmodell ca. 2 Wochen", rhythm: "typisch 5 × 90 Minuten Praxis pro Woche" },
+      intensiv: { title: "MOTORRAD INTENSIV", duration: "Zielmodell ca. 8 Tage", rhythm: "typisch 2 × 90 Minuten Praxis täglich" },
+    };
+    if (priceCategory === "auto") return autoModels[priceModel] || autoModels.basis;
+    if (priceCategory === "motorcycle") return motorcycleModels[priceModel] || motorcycleModels.basis;
+    if (priceModel === "b96") {
+      return { title: "B96-TAGESKURS", duration: "ca. 8–9 Stunden an einem Tag", rhythm: "Theorie und mindestens 7 × 45 Minuten praktische Schulung" };
+    }
+    if (priceModel === "be") {
+      return { title: "KLASSE BE", duration: "individuelle Ausbildungsdauer", rhythm: "Praxis nach Bedarf mit praktischer Prüfung" };
+    }
+    return { title: "B96 ODER BE PRÜFEN", duration: "abhängig von der Fahrzeugkombination", rhythm: "Fahrzeugpapiere und geplante Nutzung zuerst einordnen" };
+  })();
+
+  const tipResult = (() => {
+    const plans: Record<string, { title: string; intro: string; steps: string[] }> = {
+      "theory-start": {
+        title: "Dein ruhiger Theorie-Einstieg",
+        intro: "Kurze, feste Einheiten bringen dich verlässlicher voran als seltene lange Lernsessions.",
+        steps: ["Täglich 20 Minuten in der Lern-App blocken", "Fehler nach Thema statt nur nach Frage sammeln", "Am Ende fünf gemischte Fragen wiederholen"],
+      },
+      "theory-errors": {
+        title: "Dein Plan gegen wiederkehrende Fehler",
+        intro: "Lerne die Regel hinter dem Fehler, nicht nur die richtige Antwort.",
+        steps: ["Drei häufigste Fehlerthemen notieren", "Zu jedem Thema eine eigene Erklärung formulieren", "Danach nur diese Themen gezielt erneut testen"],
+      },
+      "theory-exam": {
+        title: "Dein Theorie-Prüfungscheck",
+        intro: "R-DRIVE nennt für die Prüfungsreife mindestens 70 % App-Lernstand und 12 bestandene Simulationen.",
+        steps: ["Simulationen unter realistischen Bedingungen lösen", "Fehler des Tages kurz nacharbeiten", "Prüfungsfreigabe von R-DRIVE bestätigen lassen"],
+      },
+      "practice-nervous": {
+        title: "Dein Plan für mehr Ruhe am Steuer",
+        intro: "Ein klarer Fokus pro Fahrstunde reduziert den Druck und macht Fortschritt sichtbar.",
+        steps: ["Vor der Stunde ein einziges Lernziel festlegen", "Anweisungen laut in eigenen Worten zusammenfassen", "Nach der Stunde einen Fortschritt und eine offene Frage notieren"],
+      },
+      "practice-view": {
+        title: "Dein Blickführungs-Training",
+        intro: "R-DRIVE nutzt VR unter anderem für Blickführung und Gefahrenerkennung.",
+        steps: ["Blick bewusst weit voraus führen", "Spiegelroutine an feste Fahrsituationen koppeln", "Eine passende VR-Sequenz gezielt wiederholen"],
+      },
+      "practice-feedback": {
+        title: "Dein Feedback-Plan",
+        intro: "Video-Coaching kann mit Zustimmung helfen, die eigene Wahrnehmung objektiver zu prüfen.",
+        steps: ["Vorab eine konkrete Situation auswählen", "Auf Blick, Abstand und Entscheidung achten", "Mit dem Fahrlehrer genau eine Änderung für die nächste Stunde vereinbaren"],
+      },
+    };
+    return plans[`${tipArea}-${tipFocus}`] || plans["theory-start"];
+  })();
+
+  const progress: Partial<Record<HohenbadenPanel, DrivingDemoProgress>> = {
+    courses: { current: finderStep === "goal" ? 1 : finderStep === "detail" ? 2 : 3, total: 3, done: finderStep === "result" },
+    coach: { current: priceStep === "category" ? 1 : priceStep === "model" ? 2 : 3, total: 3, done: priceStep === "result" },
+    documents: { current: tipStep === "area" ? 1 : tipStep === "focus" ? 2 : 3, total: 3, done: tipStep === "result" },
+  };
+
+  if (panel === "home") return null;
+
+  return (
+    <div style={{ display: "grid", gap: 10 }}>
+      <DrivingDemoTabBar
+        variant="r-drive"
+        panel={activePanel}
+        onPanelChange={onPanelChange}
+        accent={accent}
+        accentRgb={accentRgb}
+        textPrimary={textPrimary}
+        isMobile={isMobile}
+        progress={progress}
+      />
+
+      {activePanel === "courses" && (
+        <section style={{ ...glass, padding: isMobile ? 14 : 17 }}>
+          {finderStep === "goal" && (
+            <>
+              {header("FÜHRERSCHEIN-FINDER · 1 / 3", "Was möchtest du fahren?", "Wähle dein Ziel. Danach folgt nur noch eine passende Detailfrage.")}
+              {choiceGrid(
+                [
+                  ["auto", "Auto", "R-DRIVE bildet im PKW-Bereich B197 aus"],
+                  ["motorcycle", "Motorrad", "passende Klasse nach Alter einordnen"],
+                  ["trailer", "Anhänger", "B, B96 oder BE unterscheiden"],
+                ],
+                (value) => {
+                  setFinderGoal(value as typeof finderGoal);
+                  setFinderStep("detail");
+                },
+              )}
+            </>
+          )}
+
+          {finderStep === "detail" && (
+            <>
+              {header(
+                "FÜHRERSCHEIN-FINDER · 2 / 3",
+                finderGoal === "auto" ? "Welches Tempo passt zu deinem Alltag?" : finderGoal === "motorcycle" ? "Welche Altersgruppe passt?" : "Wie schwer ist die geplante Kombination?",
+                finderGoal === "auto" ? "Das Wunschtempo muss zu deiner echten Verfügbarkeit passen." : finderGoal === "motorcycle" ? "Das ist eine erste Orientierung; Vorbesitz und Details prüft R-DRIVE." : "Nutze dafür die zulässigen Gesamtmassen aus den Fahrzeugpapieren.",
+              )}
+              {choiceGrid(
+                finderGoal === "auto"
+                  ? [["basis", "Flexibel", "Basis · ca. 3 Monate"], ["plus", "Kompakt", "Plus · ca. 4 Wochen"], ["intensiv", "Sehr kompakt", "Intensiv · ca. 12 Tage"]]
+                  : finderGoal === "motorcycle"
+                    ? [["a1", "16–17 Jahre", "A1 als Richtung prüfen"], ["a2", "18–23 Jahre", "A2 als Richtung prüfen"], ["a", "Ab 24 Jahre", "Direkteinstieg A prüfen"]]
+                    : [["b", "Bis 3.500 kg", "Klasse B kann ausreichen"], ["b96", "3.501–4.250 kg", "B96 prüfen"], ["be", "Über 4.250 kg", "BE prüfen"]],
+                (value) => {
+                  setFinderDetail(value);
+                  setFinderStep("result");
+                },
+              )}
+              <button type="button" onClick={resetFinder} style={{ ...secondary, marginTop: 10 }}>← Zurück</button>
+            </>
+          )}
+
+          {finderStep === "result" && (
+            <div style={{ display: "grid", gap: 12 }}>
+              {header("DEIN ERGEBNIS", finderResult.title, finderResult.detail)}
+              <div style={{ ...soft, padding: 13, display: "grid", gap: 8 }}>
+                {finderResult.facts.map((fact) => (
+                  <div key={fact} style={{ display: "flex", gap: 8, fontSize: 11.7, lineHeight: 1.4 }}><strong style={{ color: accent }}>✓</strong><span>{fact}</span></div>
+                ))}
+              </div>
+              <div style={{ color: textSecondary, fontSize: 10.8, lineHeight: 1.45 }}>Orientierung, keine verbindliche Zulassungs- oder Dauerzusage. R-DRIVE prüft Voraussetzungen und aktuelle Kursstarts persönlich.</div>
+              <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                <button type="button" onClick={() => onPanelChange("coach")} style={primary}>Kursinfos ansehen</button>
+                <button type="button" onClick={resetFinder} style={secondary}>Neu starten</button>
+              </div>
+            </div>
+          )}
+        </section>
+      )}
+
+      {activePanel === "coach" && (
+        <section style={{ ...glass, padding: isMobile ? 14 : 17 }}>
+          {priceStep === "category" && (
+            <>
+              {header("PREISE & KURSINFOS · 1 / 3", "Wofür suchst du Informationen?", "Du erhältst das passende Kursmodell, den Ablauf und eine ehrliche Preiseinordnung.")}
+              {choiceGrid(
+                [["auto", "Auto · B197", "Basis, Plus oder Intensiv"], ["motorcycle", "Motorrad", "Basis, Plus oder Intensiv"], ["trailer", "Anhänger", "B96 oder BE"]],
+                (value) => {
+                  setPriceCategory(value as typeof priceCategory);
+                  setPriceStep("model");
+                },
+              )}
+            </>
+          )}
+
+          {priceStep === "model" && (
+            <>
+              {header(
+                "PREISE & KURSINFOS · 2 / 3",
+                priceCategory === "trailer" ? "Welche Anhänger-Ausbildung interessiert dich?" : "Welches Zeitmodell interessiert dich?",
+                priceCategory === "trailer" ? "Wenn du unsicher bist, ordnet R-DRIVE die Fahrzeugkombination ein." : "Die Dauer ist ein Kurskonzept und keine persönliche Garantie.",
+              )}
+              {choiceGrid(
+                priceCategory === "trailer"
+                  ? [["b96", "B96", "eintägige Schulung ohne Prüfung"], ["be", "BE", "Praxis mit praktischer Prüfung"], ["unsure", "Noch unsicher", "Gewichte zuerst prüfen"]]
+                  : [["basis", "Basis", priceCategory === "auto" ? "ca. 3 Monate" : "ca. 2 Monate"], ["plus", "Plus", priceCategory === "auto" ? "ca. 4 Wochen" : "ca. 2 Wochen"], ["intensiv", "Intensiv", priceCategory === "auto" ? "ca. 12 Tage" : "ca. 8 Tage"]],
+                (value) => {
+                  setPriceModel(value);
+                  setPriceStep("result");
+                },
+              )}
+              <button type="button" onClick={resetPrice} style={{ ...secondary, marginTop: 10 }}>← Zurück</button>
+            </>
+          )}
+
+          {priceStep === "result" && (
+            <div style={{ display: "grid", gap: 12 }}>
+              {header("PASSENDE KURSINFO", priceResult.title, "Das ist die passende veröffentlichte Kursstruktur zu deiner Auswahl.")}
+              <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 9 }}>
+                <div style={{ ...soft, padding: 13 }}><div style={{ color: textSecondary, fontSize: 10.3, fontWeight: 900 }}>DAUER</div><div style={{ fontSize: 13.5, fontWeight: 950, marginTop: 4 }}>{priceResult.duration}</div></div>
+                <div style={{ ...soft, padding: 13 }}><div style={{ color: textSecondary, fontSize: 10.3, fontWeight: 900 }}>ABLAUF</div><div style={{ fontSize: 13.5, fontWeight: 950, marginTop: 4 }}>{priceResult.rhythm}</div></div>
+              </div>
+              <div style={{ ...soft, padding: 13 }}>
+                <div style={{ color: textSecondary, fontSize: 10.3, fontWeight: 900 }}>PREIS</div>
+                <div style={{ fontSize: 14.5, fontWeight: 950, marginTop: 4 }}>{priceCategory === "trailer" && priceModel === "b96" ? "Aktuellen Festpreis bei R-DRIVE prüfen" : "Individueller Kostenvoranschlag"}</div>
+                <div style={{ color: textSecondary, fontSize: 11, lineHeight: 1.45, marginTop: 4 }}>R-DRIVE veröffentlicht online keinen belastbaren Einzel- oder Gesamtpreis. Deshalb zeigt die Beta bewusst keine erfundene Summe.</div>
+              </div>
+              <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                <a href="https://www.r-drive.info" target="_blank" rel="noreferrer" style={{ ...primary, display: "inline-flex", alignItems: "center", textDecoration: "none" }}>Aktuelle Website öffnen</a>
+                <button type="button" onClick={resetPrice} style={secondary}>Andere Auswahl</button>
+              </div>
+            </div>
+          )}
+        </section>
+      )}
+
+      {activePanel === "documents" && (
+        <section style={{ ...glass, padding: isMobile ? 14 : 17 }}>
+          {tipStep === "area" && (
+            <>
+              {header("THEORIE- & PRAXISTIPPS · 1 / 3", "Wobei möchtest du besser werden?", "Die Empfehlung wird an dein konkretes Lernziel angepasst.")}
+              {choiceGrid(
+                [["theory", "Theorie", "App, Fehleranalyse und Prüfungssimulation"], ["practice", "Praxis", "Ruhe, Blickführung und Feedback"]],
+                (value) => {
+                  setTipArea(value as typeof tipArea);
+                  setTipStep("focus");
+                },
+              )}
+            </>
+          )}
+
+          {tipStep === "focus" && (
+            <>
+              {header("THEORIE- & PRAXISTIPPS · 2 / 3", "Was ist gerade deine größte Hürde?", "Wähle den Punkt, der heute am meisten hilft.")}
+              {choiceGrid(
+                tipArea === "theory"
+                  ? [["start", "Ins Lernen kommen", "eine verlässliche Routine aufbauen"], ["errors", "Gleiche Fehler", "Ursachen statt Antworten lernen"], ["exam", "Prüfung vorbereiten", "Lernstand realistisch prüfen"]]
+                  : [["nervous", "Nervosität", "Fokus und Nachbereitung strukturieren"], ["view", "Blickführung", "Gefahren früher erkennen"], ["feedback", "Feedback umsetzen", "Video-Coaching sinnvoll nutzen"]],
+                (value) => {
+                  setTipFocus(value);
+                  setTipStep("result");
+                },
+              )}
+              <button type="button" onClick={resetTips} style={{ ...secondary, marginTop: 10 }}>← Zurück</button>
+            </>
+          )}
+
+          {tipStep === "result" && (
+            <div style={{ display: "grid", gap: 12 }}>
+              {header("DEIN PERSÖNLICHER 3-SCHRITTE-PLAN", tipResult.title, tipResult.intro)}
+              <div style={{ ...soft, padding: 13, display: "grid", gap: 9 }}>
+                {tipResult.steps.map((step, index) => (
+                  <div key={step} style={{ display: "grid", gridTemplateColumns: "24px 1fr", gap: 8, alignItems: "start" }}>
+                    <span style={{ width: 22, height: 22, borderRadius: 8, display: "grid", placeItems: "center", background: accent, color: "#fff", fontSize: 10, fontWeight: 950 }}>{index + 1}</span>
+                    <span style={{ fontSize: 11.8, lineHeight: 1.45 }}>{step}</span>
+                  </div>
+                ))}
+              </div>
+
+              <div style={{ ...soft, padding: 13, display: "grid", gap: 9 }}>
+                <div>
+                  <div style={{ fontSize: 12.5, fontWeight: 950 }}>Foto oder Dokument ergänzen</div>
+                  <div style={{ color: textSecondary, fontSize: 10.8, lineHeight: 1.4, marginTop: 3 }}>Zum Beispiel ein Foto einer Übungsaufgabe oder ein PDF. In dieser Beta bleibt die Auswahl lokal im Browser und wird nicht gespeichert oder versendet.</div>
+                </div>
+                <label style={{ ...secondary, display: "inline-flex", alignItems: "center", justifyContent: "center", justifySelf: "start" }}>
+                  Foto / Datei auswählen
+                  <input
+                    type="file"
+                    accept="image/jpeg,image/png,application/pdf"
+                    multiple
+                    onChange={(event) => setSelectedFiles(Array.from(event.target.files ?? []))}
+                    style={{ display: "none" }}
+                  />
+                </label>
+                {selectedFiles.length > 0 && (
+                  <div style={{ color: textSecondary, fontSize: 10.8, lineHeight: 1.45 }}>
+                    Ausgewählt: {selectedFiles.map((file) => file.name).join(", ")}
+                  </div>
+                )}
+              </div>
+
+              <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                <button
+                  type="button"
+                  onClick={() => void onAsk(`Ich arbeite gerade an ${tipArea === "theory" ? "der Theorie" : "meiner Praxis"} und möchte meinen persönlichen Tipp-Plan vertiefen. Bitte stelle mir genau eine passende Rückfrage.`)}
+                  style={primary}
+                >
+                  Im KI-Chat vertiefen
+                </button>
+                <button type="button" onClick={resetTips} style={secondary}>Neuen Tipp erstellen</button>
+              </div>
+            </div>
+          )}
+        </section>
+      )}
+    </div>
+  );
+}
+
+function LegacyGuidedDrivingCompactDemo(props: GuidedDrivingCompactDemoProps) {
   const {
     variant,
     panel,
@@ -15774,7 +16232,7 @@ export default function WidgetPage() {
         ? "Willi"
         : cfg.brandName;
   const displayAssistantName = isRDriveInterface
-    ? "Führerschein-Cockpit"
+    ? "Führerschein-Assistent"
     : isHappyDrivingInterface
       ? "Führerschein-Cockpit"
       : isProfCarInterface
@@ -16986,6 +17444,10 @@ export default function WidgetPage() {
       (!isFsazInterface ||
         (["dashboard", "courses", "documents", "coach"] as HohenbadenPanel[]).includes(
           requestedFuturePanel,
+        )) &&
+      (!isRDriveInterface ||
+        (["home", "courses", "coach", "documents"] as HohenbadenPanel[]).includes(
+          requestedFuturePanel,
         ))
     ) {
       setHohenbadenPanel(requestedFuturePanel);
@@ -17088,6 +17550,17 @@ export default function WidgetPage() {
 
     if (isFutureDemoInterface) {
       const normalizedFutureIntent = rawText.toLowerCase();
+
+      if (isRDriveInterface) {
+        if (/preis|kosten|kursinfo|basis|plus|intensiv|b96/.test(normalizedFutureIntent)) {
+          setHohenbadenPanel("coach");
+        } else if (/theorie|praxis|lern|übung|uebung|tipp|foto|datei|dokument/.test(normalizedFutureIntent)) {
+          setHohenbadenPanel("documents");
+        } else if (/welche klasse|führerschein|fuehrerschein|motorrad|anhänger|anhaenger|b197|\bbe\b/.test(normalizedFutureIntent)) {
+          setHohenbadenPanel("courses");
+        }
+        return;
+      }
 
       if (/unterlagen|dokument|sehtest|erste hilfe|passbild|antrag/.test(normalizedFutureIntent)) {
         setHohenbadenPanel("documents");
@@ -17536,6 +18009,9 @@ export default function WidgetPage() {
     const nextPanel =
       isFsazInterface && (panel === "connect" || panel === "schedule")
         ? "documents"
+        : isRDriveInterface &&
+            !(["home", "courses", "coach", "documents"] as HohenbadenPanel[]).includes(panel)
+          ? "courses"
         : panel;
 
     setHohenbadenPanel(nextPanel);
@@ -22460,6 +22936,8 @@ body::after {
                         >
                           {isProfCarInterface
                             ? "Dein nächstes Auto. Klar ausgewählt."
+                            : isRDriveInterface
+                              ? "Dein Führerschein. Klar ausgewählt."
                             : isNiehausInterface
                             ? "Dein Führerschein. Klar geplant und persönlich begleitet."
                             : isHohenbadenInterface
@@ -22507,7 +22985,7 @@ body::after {
                           }}
                         >
                           {isRDriveInterface
-                            ? "Finde dein passendes Kursmodell, öffne dein Führerschein-Cockpit und verbinde Theorie, Antrag, Praxis sowie digitale Lernbausteine in einem geführten Ablauf."
+                            ? "Finde die passende Führerscheinklasse, vergleiche die veröffentlichten Kursmodelle oder erhalte persönliche Theorie- und Praxistipps. Die Beta zeigt bewusst nur die im Konfigurationsbogen aktivierten Funktionen."
                             : isHappyDrivingInterface
                               ? "Finde die passende Klasse, behalte Theorie, Preise, Unterlagen und Praxis im Blick und öffne dein persönliches Führerschein-Cockpit."
                               : isProfCarInterface

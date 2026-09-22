@@ -3,7 +3,7 @@
   "use strict";
   const script = document.currentScript;
   if (!script || document.getElementById("bt-school-demo-frame")) return;
-  const tenants = {"fahrschule-rathje.de":"fahrschule-rathje","fsaz.de":"fsaz","campus-b27.de":"campus-b27","fahrschule-hopla.de":"fahrschule-hopla","fahrschule-chioa.de":"fahrschule-chioa"};
+  const tenants = {"fahrschule-rathje.de":"fahrschule-rathje","fsaz.de":"fsaz","campus-b27.de":"campus-b27","fahrschule-hopla.de":"fahrschule-hopla","fahrschule-chioa.de":"fahrschule-chioa","r-drive.info":"r-drive"};
   const host = window.location.hostname.toLowerCase().replace(/^www\./, "").replace(/\.$/, "");
   const tenant = tenants[host];
   if (!tenant) return;
@@ -14,7 +14,7 @@
   src.searchParams.set("embed", "1");
   const frame = document.createElement("iframe");
   frame.id = "bt-school-demo-frame";
-  const titles = {"fsaz":"Simulator-Assistent der Fahrschule Rathje","campus-b27":"Campus B27 Ausbildungs-Assistent","fahrschule-hopla":"Fahrschule Hopla Führerschein-Assistent","fahrschule-chioa":"Fahrschule Chioa Führerschein-Assistent","fahrschule-rathje":"Fahrschule Rathje Führerschein-Assistent"};
+  const titles = {"fsaz":"Simulator-Assistent der Fahrschule Rathje","campus-b27":"Campus B27 Ausbildungs-Assistent","fahrschule-hopla":"Fahrschule Hopla Führerschein-Assistent","fahrschule-chioa":"Fahrschule Chioa Führerschein-Assistent","fahrschule-rathje":"Fahrschule Rathje Führerschein-Assistent","r-drive":"R-DRIVE Führerschein-Assistent"};
   frame.title = titles[tenant] || "Digitaler Führerschein-Assistent";
   frame.allow = "microphone";
   frame.referrerPolicy = "strict-origin-when-cross-origin";

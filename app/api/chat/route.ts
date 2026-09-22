@@ -235,6 +235,7 @@ const FAHRSCHULE_TENANT_IDS = [
   "fahrschule-rathje",
   "fsaz",
   "campus-b27",
+  "r-drive",
 ] as const;
 
 const PROFCAR_TENANT_ALIASES = [
@@ -740,10 +741,24 @@ Sprachmodus:
 `
       : "";
 
+    const tenantFeaturePrompt = tenant.id === "r-drive"
+      ? `
+Verbindlicher Funktionsumfang R-DRIVE:
+- Unterstütze ausschließlich Führerschein-Finder, Preise und Kursinformationen, persönliche Theorie-/Praxistipps sowie allgemeine Fragen per Text oder Sprache.
+- Ein ausgewähltes Foto oder Dokument dient nur als lokale Beta-Vorschau. Behaupte niemals, dass du die Datei empfangen, gelesen, gespeichert oder an R-DRIVE gesendet hast.
+- Erfasse keine Kontaktdaten und bereite keine Leads, Anmeldungen, Termine, Rückrufe oder E-Mail-Übergaben vor.
+- Buche oder reserviere nichts und behaupte keine Kalender-, Fahrschulsoftware- oder API-Anbindung.
+- Biete kein Fahrschüler-Cockpit, keine Statusverfolgung, keine Unterlagen-Checkliste und keinen Fahrschulwechsel an.
+- Bei Preisen nenne keine erfundene Zahl. Erkläre das passende Kursmodell und verweise für den aktuellen Kostenvoranschlag oder B96-Festpreis neutral auf R-DRIVE.
+`
+      : "";
+
     const systemPrompt =
       buildSystemPrompt(tenant, knowledgeText) +
       "\n\n" +
       tenantIdentityPrompt +
+      "\n\n" +
+      tenantFeaturePrompt +
       "\n\n" +
       bookingPromptAddOn +
       "\n\n" +

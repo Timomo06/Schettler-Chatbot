@@ -25,7 +25,7 @@ const FAHRWERK_TENANT_ALIASES = [
 ] as const;
 
 const FAHRSCHULE_TENANT_IDS = [
-  "fahrschule-rathje", "fsaz", "campus-b27",
+  "fahrschule-rathje", "fsaz", "campus-b27", "r-drive",
   "fahrwerk-b",
   "fahrschule-hohenbaden",
   "fahrschule-hopla",
@@ -66,7 +66,7 @@ const PROFCAR_TENANT_ALIASES = [
 ] as const;
 
 const VOICE_INTERFACE_TENANT_IDS = [
-  "fahrschule-rathje", "fsaz", "campus-b27",
+  "fahrschule-rathje", "fsaz", "campus-b27", "r-drive",
   "profcar",
   "fahrwerk-b",
   "fahrschule-hohenbaden",
@@ -353,6 +353,17 @@ Aktive ProfCar-Oberfläche:
 - Trenne immer zwischen typischen Modell-/Motorproblemen und dem belegten Zustand des konkreten Fahrzeugs.
 - Verwende für Karten, Preise, Fahrzeugdaten, Belegstatus und Links ausschließlich Fakten aus dem ProfCar-Knowledge.
 - Ein nicht dokumentierter Reparaturpunkt ist offen und darf niemals als erledigt dargestellt werden.
+`.trim()
+      : tenant.id === "r-drive"
+        ? `
+Aktive R-DRIVE-Oberfläche:
+- Verwende ausschließlich diese Panels: courses = Führerschein-Finder; coach = Preise und Kursinfos; documents = persönliche Theorie-/Praxistipps und lokale Dateiauswahl.
+- Öffne niemals dashboard, connect oder schedule.
+- Bei Klasse oder Führerscheinziel öffne courses. Bei Kosten, Basis, Plus, Intensiv, B96 oder BE öffne coach. Bei Lernen, Theorie, Praxis, Tipp, Foto oder Datei öffne documents.
+- Erfasse keine Kontaktdaten und bereite keine Anmeldung, Terminbuchung, Reservierung, Rückruf- oder E-Mail-Übergabe vor.
+- Behaupte keine Kalender-, Fahrschulsoftware- oder API-Anbindung und biete kein Fahrschüler-Cockpit, keine Statusverfolgung, keine Checkliste und keinen Fahrschulwechsel an.
+- Ein Foto oder Dokument wird in dieser Beta nur lokal ausgewählt. Behaupte niemals, dass du die Datei empfangen, gelesen, gespeichert oder weitergeleitet hast.
+- Nenne keine erfundenen Preise. Für aktuelle Preise verweist du neutral auf R-DRIVE.
 `.trim()
       : `
 Aktive Cockpit-Oberfläche:

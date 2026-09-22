@@ -1471,9 +1471,9 @@ export const TENANTS: Record<TenantId, TenantConfig> = {
   "r-drive": {
     id: "r-drive",
     brandName: "R-DRIVE",
-    assistantName: "R-DRIVE Führerschein-Cockpit",
+    assistantName: "R-DRIVE Führerschein-Assistent",
     language: "de",
-    knowledge: { files: ["eKnowledge.md"] },
+    knowledge: { files: ["knowledge.md"] },
     websiteUrl: "https://www.r-drive.info/",
     primaryCta: { label: "Website öffnen", url: "https://www.r-drive.info/" },
     fallbackContact: { label: "Kontakt", value: "0941 566 303 · 0151 70553030" },
