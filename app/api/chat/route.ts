@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import OpenAI from "openai";
-import { createClient } from "@supabase/supabase-js";
+import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import { Ratelimit } from "@upstash/ratelimit";
 import { Redis } from "@upstash/redis";
 
@@ -10,6 +10,8 @@ import { loadTenantKnowledge } from "@/lib/loadTenantKnowledge";
 import { getTenantFromPath } from "@/lib/getTenant";
 import { asSchoolDemo } from "@/lib/schoolDemos";
 import { getSchoolDemoKnowledge } from "@/lib/schoolDemoKnowledge";
+import { BUSINESS_TIME_ZONE, parseEventDate } from "@/lib/calendar/apple-booking";
+import { buildProfCarInventoryPrompt, stripStaticProfCarInventory } from "@/lib/profcar/public-inventory";
 
 export const runtime = "nodejs";
 
@@ -40,19 +42,24 @@ const ratelimit = redis
     })
   : null;
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+let openaiClient: OpenAI | null = null;
+function getOpenAI() {
+  if (openaiClient) return openaiClient;
+  const apiKey = process.env.OPENAI_API_KEY?.trim();
+  if (!apiKey) throw new Error("OPENAI_NOT_CONFIGURED");
+  openaiClient = new OpenAI({ apiKey });
+  return openaiClient;
+}
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim();
-const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY?.trim();
-
-if (!supabaseUrl) throw new Error("NEXT_PUBLIC_SUPABASE_URL fehlt");
-if (!supabaseServiceRoleKey) throw new Error("SUPABASE_SERVICE_ROLE_KEY fehlt");
-
-const supabase = createClient(supabaseUrl, supabaseServiceRoleKey, {
-  auth: { persistSession: false },
-});
+let chatLogClient: SupabaseClient | null = null;
+function getChatLogClient() {
+  if (chatLogClient) return chatLogClient;
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim();
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY?.trim();
+  if (!url || !key) throw new Error("CHAT_LOG_STORAGE_NOT_CONFIGURED");
+  chatLogClient = createClient(url, key, { auth: { persistSession: false } });
+  return chatLogClient;
+}
 
 const TENANT_KNOWLEDGE_TTL_MS = 5 * 60 * 1000;
 const tenantKnowledgeCache = new Map<
@@ -79,6 +86,7 @@ type BookingExtraction = {
   email: string | null;
   phone: string | null;
   topic: string | null;
+  vehicle: string | null;
   start: string | null;
   end: string | null;
   missing: string[];
@@ -116,7 +124,9 @@ function formatGermanTime(iso: string): string {
 }
 
 function addMinutes(iso: string, minutes: number): string {
-  return new Date(new Date(iso).getTime() + minutes * 60000).toISOString();
+  const parsed = parseEventDate(iso, BUSINESS_TIME_ZONE);
+  if (!parsed) return iso;
+  return new Date(parsed.getTime() + minutes * 60000).toISOString();
 }
 
 function tenantFromReferer(req: NextRequest): string | null {
@@ -154,7 +164,7 @@ async function logChat(params: {
   userMessage: string;
   assistantMessage: string;
 }) {
-  const { error } = await supabase.from("chat_logs").insert({
+  const { error } = await getChatLogClient().from("chat_logs").insert({
     tenant: params.tenantId,
     session_id: params.sessionId,
     user_message: params.userMessage,
@@ -297,7 +307,7 @@ async function extractBookingData(
 ): Promise<BookingExtraction> {
   const today = new Date().toISOString().slice(0, 10);
 
-  const completion = await openai.chat.completions.create({
+  const completion = await getOpenAI().chat.completions.create({
     model: "gpt-4o-mini",
     temperature: 0,
     response_format: { type: "json_object" },
@@ -318,6 +328,7 @@ Antworte ausschließlich als JSON:
   "email": string | null,
   "phone": string | null,
   "topic": string | null,
+  "vehicle": string | null,
   "start": string | null,
   "end": string | null,
   "missing": string[]
@@ -330,6 +341,7 @@ Regeln:
 - start und end im Format YYYY-MM-DDTHH:mm:ss.
 - Wenn keine Endzeit genannt ist, nutze 30 Minuten Dauer.
 - Erfinde keine Namen, Mails, Telefonnummern oder Zeiten.
+- vehicle enthält das konkret genannte Fahrzeug bei einer Probefahrt, sonst null.
 - Für Werkstatttermine kann die Telefonnummer die E-Mail ersetzen, wenn keine E-Mail genannt wurde.
 - Wenn Daten fehlen, liste sie in missing.
         `.trim(),
@@ -351,6 +363,7 @@ Regeln:
       email: null,
       phone: null,
       topic: null,
+      vehicle: null,
       start: null,
       end: null,
       missing: [],
@@ -358,11 +371,12 @@ Regeln:
   }
 }
 
-async function checkSlot(origin: string, start: string, end: string) {
+async function checkSlot(origin: string, tenant: string, start: string, end: string) {
   const response = await fetch(`${origin}/api/create-event`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
+      tenant,
       start,
       end,
       checkOnly: true,
@@ -377,6 +391,7 @@ async function checkSlot(origin: string, start: string, end: string) {
 
 async function findNextFreeSlotSameDay(
   origin: string,
+  tenant: string,
   start: string,
   end: string
 ) {
@@ -393,7 +408,7 @@ async function findNextFreeSlotSameDay(
     const hour = new Date(nextStart).getHours();
     if (hour < 8 || hour > 19) continue;
 
-    const check = await checkSlot(origin, nextStart, nextEnd);
+    const check = await checkSlot(origin, tenant, nextStart, nextEnd);
 
     if (check.ok) {
       return { start: nextStart, end: nextEnd };
@@ -494,7 +509,7 @@ export async function POST(req: NextRequest) {
     const tenant = getTenant(normalizedTenantParam);
     const sessionId = body.sessionId || crypto.randomUUID();
 
-    const calendarBookingEnabled = ["btdesigns", "demo", "lina", "mm-wartung"].includes(
+    const calendarBookingEnabled = ["btdesigns", "demo", "lina", "mm-wartung", "profcar"].includes(
       tenant.id
     );
 
@@ -511,28 +526,36 @@ export async function POST(req: NextRequest) {
         booking.confirmed &&
         typeof booking.name === "string" &&
         (typeof booking.email === "string" || typeof booking.phone === "string") &&
+        (tenant.id !== "profcar" || typeof booking.vehicle === "string") &&
         typeof booking.start === "string" &&
         typeof booking.end === "string";
 
       if (hasAllBookingData) {
-        const bookingStart = booking.start;
-        const bookingEnd = booking.end;
+        const rawBookingStart = booking.start!;
+        const rawBookingEnd = booking.end!;
+        const bookingStart = parseEventDate(rawBookingStart, BUSINESS_TIME_ZONE)?.toISOString() || rawBookingStart;
+        const bookingEnd = parseEventDate(rawBookingEnd, BUSINESS_TIME_ZONE)?.toISOString() || rawBookingEnd;
 
         const eventResponse = await fetch(`${requestOrigin}/api/create-event`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
+            tenant: tenant.id,
             name: booking.name,
             email: booking.email || "",
             phone: booking.phone || "",
-            topic:
+            service:
               booking.topic ||
               (tenant.id === "mm-wartung"
                 ? "Werkstatttermin über MM-Doc"
+                : tenant.id === "profcar"
+                  ? "Probefahrt"
                 : "Beratung über den Chatbot"),
+            vehicle: booking.vehicle || "",
             start: bookingStart,
             end: bookingEnd,
             checkOnly: false,
+            idempotencyKey: `chat:${sessionId}:${bookingStart}:${booking.name}:${booking.vehicle || ""}`,
           }),
         });
 
@@ -540,20 +563,25 @@ export async function POST(req: NextRequest) {
 
         let reply = "";
 
-        if (eventResponse.ok && eventData.success) {
+        if (eventResponse.ok && (eventData.success || eventData.ok)) {
           reply =
             tenant.id === "mm-wartung"
               ? `Perfekt, ich habe den Termin bei MM Wartung verbindlich eingetragen: ${formatGermanTime(
-                  booking.start!
+                  bookingStart
                 )}. Moritz sieht sich das dann vor Ort genauer an. ✅`
+              : tenant.id === "profcar"
+                ? `Perfekt, die Probefahrt wurde verbindlich in Michis Apple-Kalender eingetragen: ${formatGermanTime(
+                    bookingStart
+                  )}. Buchungs-ID: ${eventData.bookingId}. ✅`
               : `Perfekt, ich habe den Termin verbindlich eingetragen: ${formatGermanTime(
-                  booking.start!
+                  bookingStart
                 )}. ✅`;
         } else if (eventResponse.status === 409) {
           const alternative = await findNextFreeSlotSameDay(
             requestOrigin,
-            booking.start!,
-            booking.end!
+            tenant.id,
+            bookingStart,
+            bookingEnd
           );
 
           reply = alternative
@@ -562,7 +590,7 @@ export async function POST(req: NextRequest) {
               )} noch frei. Passt dir dieser Termin? 📅`
             : "Der gewünschte Zeitraum ist leider bereits belegt. Am gleichen Tag habe ich keinen passenden freien Alternativtermin gefunden. Bitte nenne mir einen anderen Tag. 📅";
         } else {
-          console.error("CREATE EVENT ERROR:", eventData);
+          console.error("CREATE EVENT ERROR", { status: eventResponse.status, code: eventData?.code || "UNKNOWN" });
           reply =
             "Der Termin konnte gerade technisch nicht eingetragen werden. Bitte versuche es noch einmal oder kontaktiere uns direkt. ⚠️";
         }
@@ -581,11 +609,12 @@ export async function POST(req: NextRequest) {
       }
 
       if (hasProposedTime && !booking.confirmed) {
-        const bookingStart = booking.start as string;
-        const bookingEnd = booking.end as string;
+        const bookingStart = parseEventDate(booking.start, BUSINESS_TIME_ZONE)?.toISOString() || booking.start as string;
+        const bookingEnd = parseEventDate(booking.end, BUSINESS_TIME_ZONE)?.toISOString() || booking.end as string;
 
         const checkResponse = await checkSlot(
           requestOrigin,
+          tenant.id,
           bookingStart,
           bookingEnd
         );
@@ -600,6 +629,7 @@ export async function POST(req: NextRequest) {
         } else if (checkResponse.status === 409) {
           const alternative = await findNextFreeSlotSameDay(
             requestOrigin,
+            tenant.id,
             bookingStart,
             bookingEnd
           );
@@ -634,11 +664,16 @@ export async function POST(req: NextRequest) {
     // Rathje/FSAZ/Campus nutzen die speziell für diese Verkaufsdemos
     // gebündelte Wissensbasis. Der normale Loader sucht im alten
     // src/tenants/<id>-Schema und würde hier sonst einen 500er auslösen.
-    const knowledgeText = schoolDemoTenant
+    let knowledgeText = schoolDemoTenant
       ? getSchoolDemoKnowledge(schoolDemoTenant)
       : isFahrschuleTenant(tenant.id) || isProfCarTenant(tenant.id)
         ? await loadTenantKnowledge(tenant.id)
         : await getCachedTenantKnowledge(tenant.id);
+
+    if (isProfCarTenant(tenant.id)) {
+      const liveInventory = await buildProfCarInventoryPrompt(lastUserMessage);
+      knowledgeText = `${stripStaticProfCarInventory(knowledgeText)}\n\n${liveInventory.prompt}`;
+    }
 
     if (isProfCarTenant(tenant.id) && !knowledgeText.trim()) {
       throw new Error(
@@ -666,6 +701,10 @@ Wenn der Nutzer keine E-Mail nennen möchte, ist das okay.
 
 Wenn tenant.id nicht "mm-wartung" ist, geht es um einen Beratungstermin.
 Dann frage nacheinander Name, E-Mail, Telefonnummer optional, Thema sowie Datum und Uhrzeit ab.
+
+Wenn tenant.id "profcar" ist, geht es um eine Probefahrt oder Fahrzeugberatung bei ProfCar.
+Dann frage nacheinander Wunschfahrzeug, Name, E-Mail oder Telefonnummer sowie Datum und eine angebotene freie Uhrzeit ab.
+Bestätige eine Buchung ausschließlich mit der vom Server zurückgegebenen Buchungs-ID.
 
 Wenn der Nutzer eine konkrete Wunschzeit nennt, prüft das System automatisch die Verfügbarkeit.
 
@@ -719,13 +758,12 @@ ${
 Feste Identität:
 - Du bist ${tenant.assistantName} von „${tenant.brandName}“.
 - Du arbeitest ausschließlich als digitaler Fahrzeugberater für ProfCar in Köln.
-- Das geladene ProfCar-Knowledge ist dein verbindliches fachliches Gedächtnis.
-- Nutze für Fahrzeugdaten, Preise, Verfügbarkeit, Ausstattung und Motorhinweise ausschließlich dieses Knowledge.
+- Das geladene ProfCar-Knowledge und der serverseitig ergänzte Bestandskontext sind dein verbindliches fachliches Gedächtnis.
+- Nutze für Fahrzeugdaten, Preise, Verfügbarkeit und Ausstattung ausschließlich den serverseitig ergänzten Bestandskontext.
 - Wenn der Nutzer ein Fahrzeug nennt, ordne genau dieses Fahrzeug aus dem ProfCar-Bestand ein.
 - Erkläre bekannte typische Schwachstellen sachlich, aber stelle niemals eine Diagnose aus der Ferne.
 - Sage nur dann, dass eine Reparatur oder Prüfung am angebotenen Fahrzeug erledigt wurde, wenn das im Knowledge ausdrücklich als belegt steht.
 - Ist ein Punkt nicht dokumentiert, sage klar, dass ProfCar ihn am Fahrzeug beziehungsweise anhand der Unterlagen prüfen muss.
-- Weise beim BMW M6 immer auf den dokumentierten Motorschaden und die fehlende Fahrtauglichkeit hin.
 - Verwechsle allgemeine Modellrisiken niemals mit dem tatsächlichen Zustand des konkreten ProfCar-Fahrzeugs.
 `
         : "";
@@ -764,7 +802,7 @@ Verbindlicher Funktionsumfang R-DRIVE:
       "\n\n" +
       voicePromptAddOn;
 
-    const completion = await openai.chat.completions.create({
+    const completion = await getOpenAI().chat.completions.create({
       model: "gpt-4o-mini",
       max_tokens: voiceMode ? 110 : 400,
       temperature: voiceMode ? 0.25 : 0.4,

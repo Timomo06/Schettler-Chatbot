@@ -21,9 +21,17 @@ export function buildProfCarVehicleAiContext(vehicle: ProfCarVehicle) {
   })).map(f => ({ ...f, summary: f.evidenceStatus === "unknown" ? null : f.summary }));
   return {
     vehicleId: vehicle.id, source: vehicle.source, title: clean(vehicle.title),
+    make: vehicle.make && clean(vehicle.make), model: vehicle.model && clean(vehicle.model),
+    modelDescription: vehicle.modelDescription && clean(vehicle.modelDescription),
     price: vehicle.price, currency: vehicle.currency, mileage: vehicle.mileage,
     firstRegistration: vehicle.firstRegistration, powerKw: vehicle.powerKw, powerPs: vehicle.powerPs,
     fuel: vehicle.fuel && clean(vehicle.fuel), gearbox: vehicle.gearbox && clean(vehicle.gearbox),
+    category: vehicle.category && clean(vehicle.category),
+    exteriorColor: vehicle.exteriorColor && clean(vehicle.exteriorColor),
+    equipment: vehicle.equipment.slice(0, 80).map(clean),
+    // Free-form listing descriptions can contain arbitrary instructions. They are
+    // useful for server-side search, but are deliberately excluded from model input.
+    mobileUrl: vehicle.mobileUrl,
     availabilityStatus: vehicle.availabilityStatus, lastSuccessfulSync: vehicle.lastSuccessfulSync,
     maintenanceRecords: facts(vehicle.extras.maintenanceRecords), repairs: facts(vehicle.extras.repairs),
     conditionReports: facts(vehicle.extras.conditionReports),

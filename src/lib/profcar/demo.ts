@@ -195,3 +195,78 @@ export type ProfCarDemoView = ProfCarVehicle & ProfCarDemoPresentation;
 export const PROFCAR_DEMO_VIEWS: ProfCarDemoView[] = PROFCAR_DEMO_VEHICLES.map((vehicle, index) => ({
   ...vehicle, ...DEMO_PRESENTATION[index],
 }));
+
+export type ProfCarUiVehicle = ProfCarVehicle & {
+  brand: string;
+  name: string;
+  /** Only demo data currently contains an advertised example rate. */
+  monthly: number | null;
+  year: number | null;
+  km: number | null;
+  power: number | null;
+  note: string;
+  strength: string;
+  tags: string[];
+};
+
+const FUEL_LABELS: Record<string, string> = {
+  PETROL: "Benzin",
+  DIESEL: "Diesel",
+  ELECTRICITY: "Elektro",
+  HYBRID: "Hybrid",
+  LPG: "Autogas",
+  CNG: "Erdgas",
+};
+
+const EQUIPMENT_LABELS: Record<string, string> = {
+  abs: "ABS",
+  esp: "ESP",
+  navigationSystem: "Navigation",
+  centralLocking: "Zentralverriegelung",
+  electricWindows: "Elektrische Fensterheber",
+  alloyWheels: "Leichtmetallfelgen",
+  sunroof: "Schiebedach",
+  panoramicGlassRoof: "Panoramadach",
+  heatedSeats: "Sitzheizung",
+  memorySeats: "Memory-Sitze",
+  heatPump: "Wärmepumpe",
+  startStopSystem: "Start-Stopp-System",
+};
+
+function compactText(value: string | null, maxLength = 150) {
+  if (!value) return "";
+  const clean = value.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
+  return clean.length > maxLength ? `${clean.slice(0, maxLength - 1).trim()}…` : clean;
+}
+
+/** Presentation-only projection. It never fabricates a price, financing rate or availability. */
+export function toProfCarUiVehicle(vehicle: ProfCarVehicle): ProfCarUiVehicle {
+  const brand = vehicle.make || "Marke unbekannt";
+  const name = vehicle.modelDescription || vehicle.model || vehicle.title.replace(brand, "").trim() || vehicle.title;
+  const fuel = vehicle.fuel ? (FUEL_LABELS[vehicle.fuel] || vehicle.fuel) : "Unbekannt";
+  const equipment = vehicle.equipment.map(item => EQUIPMENT_LABELS[item] || item);
+  const note = equipment.length
+    ? equipment.slice(0, 5).join(" · ")
+    : compactText(vehicle.description) || "Weitere Fahrzeugdetails im Inserat";
+  const tagSource = [brand, name, fuel, vehicle.category || "", ...equipment]
+    .join(" ")
+    .toLocaleLowerCase("de-DE")
+    .split(/[^a-z0-9äöüß]+/i)
+    .filter(Boolean);
+
+  return {
+    ...vehicle,
+    brand,
+    name,
+    monthly: null,
+    year: vehicle.firstRegistration ? Number(vehicle.firstRegistration.slice(0, 4)) || null : null,
+    km: vehicle.mileage,
+    power: vehicle.powerPs,
+    fuel,
+    note,
+    strength: "Aktuelles mobile.de-Inserat – technische Angaben und Verfügbarkeit vor Ort prüfen",
+    tags: [...new Set(tagSource)],
+  };
+}
+
+export const PROFCAR_DEMO_UI_VEHICLES: ProfCarUiVehicle[] = PROFCAR_DEMO_VIEWS;

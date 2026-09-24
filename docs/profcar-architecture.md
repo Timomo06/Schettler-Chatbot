@@ -1,30 +1,47 @@
-# ProfCar: vorbereitete Datenebene
+# ProfCar: mobile.de-Bestand und Apple-Kalender
 
-## Datenfluss und Erweiterungspunkte
+Stand: 24.09.2026. Die Supabase-Migrationen sind produktiv angewandt und der erste mobile.de-Vollsync ist erfolgreich. Die Codeänderungen müssen noch veröffentlicht und die fehlenden Servervariablen sowie der Scheduler in der Deployment-Umgebung gesetzt werden.
 
-- `src/lib/profcar/model.ts`: gemeinsames `ProfCarVehicle` mit allen Bestandsfeldern und separat ProfCar-eigenen `extras`. Fehlende Werte sind `null`; `listed` bedeutet inseriert, keine garantierte Verfügbarkeit. Preise sind Brutto-Verbraucherpreise mit separater Währung, Kilometer in km, Leistung in kW/PS, Erstzulassung YYYY-MM (Demo ggf. nur Jahr).
-- `mobile-mapper.ts`: New-JSON-mobile.de-Anzeige → normalisiertes Modell. Unveränderte Rohdaten bleiben im Repository (`rawAds`/`mobile_raw_data`), nicht im Interface-Modell. Grundlage: [offizielle Search-API-Datenreferenz](https://services.mobile.de/docs/search-api.html). Legacy XML ist kein unterstütztes Eingabeformat. Ausstattung wird derzeit über eine explizite Teil-Allowlist übernommen; diese anhand realer Testantworten erweitern. Enum-Codes bei Bedarf im Präsentationslayer übersetzen.
-- `inventory.ts`: `syncProfCarInventory({ sellerId, fetchSnapshot, repository })`. Der zukünftige mobile.de-Client muss sämtliche Seiten und benötigte Einzelinserate laden, Verkäufer/Anzahl prüfen, Warnungen und Abbrüche melden und nur einen unfiltrierten Gesamtbestand als `complete` markieren. Ein HTTP-200 allein reicht nicht. Der Service validiert den gesamten Snapshot vor Änderungen, erhält ProfCar-Zusatzdaten, deaktiviert fehlende Anzeigen und speichert den erfolgreichen Zeitpunkt gemeinsam. Nichts wird gelöscht. Eine erfolgreiche leere Antwort deaktiviert den Bestand; eine unvollständige/fehlgeschlagene Antwort verändert nichts.
-- `ProfCarInventoryRepository`: Produktionsadapter noch offen. `commit` muss atomar mit Revision-Prüfung arbeiten (inklusive paralleler ProfCar-Änderungen); einzelne Supabase-Upserts ohne Transaktion erfüllen den Vertrag nicht. Seller-Lock/Revision in einer Transaktion bzw. RPC ergänzen. Bei Konflikten einen neuen vollständigen Lauf starten. Die Memory-Implementierung dient ausschließlich lokalen Tests und ist nicht dauerhaft.
-- `demo.ts`: bestehende Demo-Fahrzeuge zentral normalisiert; das Widget nutzt vorerst einen kompatiblen Demo-Präsentationsadapter. Bestehende Monatswerte sind unveränderte Demo-Beispiele. Der künftige Bestandsloader nutzt `selectProfCarInventory`: Demo bis zum ersten vollständig erfolgreichen Test, danach letzter erfolgreicher Live-Bestand auch bei API-Fehlern. Erfolgreich leer bleibt leer. Noch kein Live-Loader aktiviert.
-- Fahrzeugakten: `extras.vehicleFiles` und `profcar_vehicle_files` für Dropbox/Drive/manuelle Dateien. Später ausschließlich serverseitig authentifizieren und Dateiberechtigungen prüfen; Dateien beim Laden in `extras` einfügen, nicht doppelt in JSON speichern. Wartung, Reparaturen und Zustand nutzen `VehicleFact` mit verpflichtendem Nachweisstatus. `verified` benötigt geprüfte Belegreferenzen, Inseratsbehauptungen sind höchstens `profcar_reported`.
-- Finanzierung: `extras.financing` reserviert Santander/KOSYFA-Referenzen und Entwürfe. Keine Authentifizierung oder Berechnung/Zusage angebunden.
-- Kalender: `extras.appointments` reserviert Probefahrt-/Beratungswünsche und externe Referenzen, ausschließlich Entwürfe. Keine Apple-Kalender-Anbindung oder automatische Buchung.
-- Chat/Voice: `buildProfCarVehicleAiContext` und `PROFCAR_AI_RULES` gemeinsam verwenden. Nur freigegebene Zustandsangaben, keine privaten Akten-/Kunden-/Termin-/Finanzierungsdaten. Modellprüfpunkte bleiben separat und sind niemals konkrete Defekte. Fehlende geprüfte Belege führen im KI-Kontext zu `unknown`. Freitext bleibt untrusted; JSON als Daten übergeben, Regeln separat als Instruktionen. Die bestehende Knowledge-Anbindung von Textchat/Realtime bleibt bis zur späteren Umstellung aktiv; bei Live-Aktivierung statische Fahrzeugbestände dort entfernen und den gemeinsamen Kontext einbinden, um widersprüchliche Bestände zu verhindern.
+## Gemeinsamer Fahrzeugbestand
 
-## Supabase
+- `src/lib/profcar/mobile-client.ts` liest ausschließlich per `GET`: Händlerliste und vollständige Fahrzeugdaten kommen aus der Seller API. Da dieser Zugang auch alte, nicht veröffentlichte Datensätze ohne Aktivstatus liefert und die Search API nicht freigeschaltet ist, werden die aktuell sichtbaren IDs fail-closed mit der öffentlichen mobile.de-Händlerseite abgeglichen. Für den produktiven Sync sind eine feste `MOBILE_DE_SELLER_ID` und der bestätigte Händler-Slug Pflicht.
+- `src/lib/profcar/mobile-mapper.ts` normalisiert jede Anzeige in das einheitliche `ProfCarVehicle`-Modell. Rohdaten und öffentliche Daten bleiben getrennt.
+- `src/lib/profcar/inventory.ts` lehnt unvollständige, fehlerhafte, doppelte oder händlerfremde Snapshots ab. Nur ein vollständiger Lauf darf den Bestand umschalten. Fehlende Inserate werden als inaktiv markiert; ProfCar-eigene Zusatzdaten bleiben erhalten.
+- `src/lib/profcar/supabase-repository.ts` und `supabase/migrations/202609240001_profcar_live_sync.sql` speichern den Gesamtbestand atomar mit Revisionsprüfung. Die Migration setzt `202609170001_profcar_inventory.sql` voraus.
+- `GET /api/profcar/inventory` liefert nur normalisierte öffentliche Daten. Der Status ist ausdrücklich `live`, `stale` oder `demo`. Bei fehlgeschlagenem Sync darf der vorherige Bestand nicht als aktuell bezeichnet werden.
+- Das ProfCar-Widget, der Textchat und die Sprachsession laden denselben serverseitigen Bestand. Freie Inseratstexte dienen nur der serverseitigen Suche und werden wegen möglicher Prompt-Injection nicht an das Modell weitergegeben.
+- `GET /api/profcar/mobile-test` ist nur lokal im Development-Modus erreichbar und schreibt nichts. `GET`/`POST /api/profcar/sync` ist mit einem Bearer-Secret geschützt und schreibt nur nach vollständiger Validierung.
 
-`supabase/migrations/202609170001_profcar_inventory.sql` bereitet `profcar_vehicles`, `profcar_vehicle_files`, `profcar_sync_runs` mit RLS ohne Browserfreigaben vor. Rohdaten, normalisierte Daten und Zusätze sind getrennt. Zeit/Verfügbarkeit beim Hydrieren aus den dedizierten Spalten nehmen. Revision dient späterer Nebenläufigkeitskontrolle; der vollständige Transaktionsadapter ist noch anzubinden. Vor Anwendung Schema und Rechte in einer lokalen/Staging-Datenbank prüfen. Diese Migration wurde nicht angewendet.
+Am 24.09.2026 wurde der rein lesende Test mit den vorhandenen lokalen Zugangsdaten wiederholt: Händler `ProfCar-M.Profft`, Seller-ID `464113`, Seller-API-Lesezugriff. Die Seller API liefert 729 aktive und historische Datensätze; die Search API ist für diese Zugangsdaten nicht freigeschaltet (`401`). Die öffentliche Händlerseite zeigt 10 Pkw und einen Transporter. Nach der Gegenprüfung wurde der produktive Bestand auf 11 gelistete und 718 inaktive Fahrzeuge korrigiert; der Status ist `live`, Revision 2. Alle 11 aktuellen Fahrzeuge enthalten Preis und Bilder.
 
-Kein Cronjob, keine externen Löschungen, keine neuen externen Dienste oder produktiven DB-Zugriffe eingerichtet. Der vorbereitete Mapper benötigt vor Live-Freigabe einen authentifizierten Test mit echten ProfCar-API-Daten.
+## Gemeinsamer Terminablauf
 
-## Lokale Prüfung
+- `src/lib/calendar/apple-booking.ts` enthält die gemeinsame serverseitige CalDAV-Logik.
+- `GET /api/profcar/availability?date=YYYY-MM-DD` liest Michis Zielkalender und liefert nur freie, regelkonforme Zeiten in `Europe/Berlin`.
+- `POST /api/create-event` prüft unmittelbar vor dem Schreiben erneut. Erst ein bestätigter CalDAV-Schreibvorgang führt zu einer Erfolgsantwort.
+- Jede Buchung erhält eine stabile Buchungs-ID. Der identische Zeitraum verwendet serverübergreifend denselben CalDAV-Ressourcennamen mit `If-None-Match: *`; wiederholte identische Requests sind idempotent, konkurrierende Requests erhalten einen Konflikt.
+- Für ProfCar sind Zielkalender, Terminlänge und Wochenfenster Pflicht. Der Abstand der angebotenen Startzeiten darf zur sicheren Kollisionsvermeidung nicht kürzer als die Terminlänge sein.
+- Das ProfCar-Formular, Textchat und Sprache verwenden alle `/api/create-event`. `checkOnly` schreibt keinen Termin.
 
-`npx tsc --noEmit --incremental false`
+## Noch notwendige Aktivierung
 
-Tests ohne zusätzliche Dependencies in ein temporäres Verzeichnis kompilieren und ausführen:
+1. Alle Variablen aus `docs/profcar-env.example` direkt in `.env.local` und in der Deployment-Umgebung setzen. Keine Zugangsdaten committen oder in Chats einfügen.
+2. Mit Michi Zielkalender, Terminlänge, Startabstand, Buchungshorizont und Wochenzeiten festlegen.
+3. Die Codeänderungen veröffentlichen und die Deployment-Umgebung kontrollieren.
+4. Eine echte Probefahrt buchen, den Eintrag in Michis Apple-Kalender kontrollieren und anschließend belegten Slot, Wiederholung und simulierten Verbindungsfehler prüfen.
+5. Einen Scheduler für `/api/profcar/sync` einrichten. Das Intervall ist mit ProfCar und den mobile.de-Nutzungsgrenzen festzulegen; es wurde absichtlich nicht geraten.
+
+## Lokale Prüfungen
 
 ```sh
-npx tsc --module commonjs --moduleResolution node --target es2022 --esModuleInterop --skipLibCheck --outDir /tmp/profcar-tests src/lib/profcar/*.ts
-node --test /tmp/profcar-tests/profcar.test.js
+npx tsc --noEmit --incremental false
+npm run build
+```
+
+Die Tests werden ohne zusätzliche Testbibliothek kompiliert und mit Node ausgeführt:
+
+```sh
+profcar_test_dir=$(mktemp -d /tmp/profcar-tests.XXXXXX)
+npx tsc --module commonjs --moduleResolution node --target es2022 --esModuleInterop --skipLibCheck --outDir "$profcar_test_dir" src/lib/profcar/*.ts src/lib/calendar/*.ts
+NODE_PATH="$PWD/node_modules:$PWD/node_modules/next/dist/compiled" node --conditions=react-server --test "$profcar_test_dir/profcar/profcar.test.js" "$profcar_test_dir/profcar/mobile-client.test.js" "$profcar_test_dir/calendar/apple-booking.test.js"
 ```

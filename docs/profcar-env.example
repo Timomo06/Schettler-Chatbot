@@ -1,0 +1,32 @@
+# Diese Datei enthält absichtlich keine Geheimnisse. Werte niemals committen oder in Chats posten.
+
+# mobile.de Seller API
+MOBILE_DE_USERNAME=
+MOBILE_DE_PASSWORD=
+MOBILE_DE_BASE_URL=https://services.mobile.de
+# Früher dokumentierter Wert: 464113. Vor Produktion mit dem read-only Test bestätigen.
+MOBILE_DE_SELLER_ID=
+# Öffentliche mobile.de-Händlerseite zur Gegenprüfung aktiver Inserate
+MOBILE_DE_DEALER_SLUG=PROFCAR
+
+# Supabase: erforderlich für atomaren Live-Bestand, ausschließlich serverseitig
+NEXT_PUBLIC_SUPABASE_URL=
+SUPABASE_SERVICE_ROLE_KEY=
+
+# Langes zufälliges Secret für GET/POST /api/profcar/sync
+PROFCAR_SYNC_SECRET=
+# Bestand wird nach diesem Alter als nicht mehr aktuell markiert
+PROFCAR_INVENTORY_STALE_AFTER_MINUTES=180
+
+# Apple CalDAV. Als Passwort ein eigenes Apple-App-Passwort verwenden.
+ICLOUD_CALDAV_USER_PROFCAR=
+ICLOUD_CALDAV_PASSWORD_PROFCAR=
+ICLOUD_CALENDAR_NAME_PROFCAR=
+
+# Mit Michi festlegen. Keine Beispielwerte ungeprüft produktiv übernehmen.
+PROFCAR_BOOKING_DURATION_MINUTES=
+PROFCAR_BOOKING_SLOT_STEP_MINUTES=
+PROFCAR_BOOKING_HORIZON_DAYS=60
+# Wochentage: 0=Sonntag, 1=Montag, ... 6=Samstag
+# Formatbeispiel: {"1":[["09:00","18:00"]],"2":[["09:00","18:00"]]}
+PROFCAR_BOOKING_WINDOWS_JSON=

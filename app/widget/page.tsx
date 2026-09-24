@@ -2,7 +2,11 @@
 // Gemeinsame Widget-Version inkl. Hopla, Gerlach, Royal und weiterer Fahrschul-Demos
 "use client";
 
-import { PROFCAR_DEMO_VIEWS as PROFCAR_VEHICLES, type ProfCarDemoView as ProfCarVehicle } from "@/lib/profcar/demo";
+import {
+  PROFCAR_DEMO_UI_VEHICLES as PROFCAR_VEHICLES,
+  toProfCarUiVehicle,
+  type ProfCarUiVehicle as ProfCarVehicle,
+} from "@/lib/profcar/demo";
 
 import {
   type ChangeEvent,
@@ -1407,8 +1411,8 @@ const PROFCAR_START_CARDS: StartCard[] = [
   },
   {
     icon: "📅",
-    title: "Probefahrt anfragen",
-    description: "Wunschfahrzeug und Termin für ProfCar vorbereiten",
+    title: "Probefahrt buchen",
+    description: "Wunschfahrzeug wählen und freie Kalenderzeit verbindlich buchen",
     action: "profcarPanel",
     profcarPanel: "testdrive",
   },
@@ -13644,6 +13648,16 @@ type ProfCarVoiceVehicleSelection = {
   requestId: number;
 };
 
+type ProfCarInventoryMode = "live" | "stale" | "demo";
+
+type ProfCarInventoryMeta = {
+  mode: ProfCarInventoryMode;
+  message: string;
+  lastSuccessfulSync: string | null;
+};
+
+type ProfCarSlot = { start: string; end: string };
+
 type ProfCarPanel =
   | "home"
   | "finder"
@@ -13840,7 +13854,10 @@ function getProfCarInsight(vehicleId: string) {
   return PROFCAR_VEHICLE_INSIGHTS[vehicleId];
 }
 
-function findProfCarVehicleFromText(rawText: string) {
+function findProfCarVehicleFromText(
+  rawText: string,
+  vehicles: readonly ProfCarVehicle[] = PROFCAR_VEHICLES,
+) {
   const normalized = rawText
     .toLowerCase()
     .normalize("NFD")
@@ -13851,9 +13868,10 @@ function findProfCarVehicleFromText(rawText: string) {
 
   if (!normalized) return undefined;
 
-  return PROFCAR_VEHICLES.find((vehicle) => {
+  return vehicles.find((vehicle) => {
     const insight = getProfCarInsight(vehicle.id);
-    return insight?.voiceAliases.some((alias) =>
+    const aliases = insight?.voiceAliases ?? [vehicle.brand, vehicle.name, `${vehicle.brand} ${vehicle.name}`];
+    return aliases.some((alias) =>
       normalized.includes(
         alias
           .toLowerCase()
@@ -13864,7 +13882,8 @@ function findProfCarVehicleFromText(rawText: string) {
   });
 }
 
-function formatProfCarPrice(value: number) {
+function formatProfCarPrice(value: number | null) {
+  if (value === null) return "Preis auf Anfrage";
   return new Intl.NumberFormat("de-DE", {
     style: "currency",
     currency: "EUR",
@@ -13872,11 +13891,19 @@ function formatProfCarPrice(value: number) {
   }).format(value);
 }
 
+function isCriticalProfCarVehicle(vehicle: ProfCarVehicle) {
+  return /motorschaden|nicht\s+fahrbereit|unfallfahrzeug|beschädigt/i.test(
+    [vehicle.title, vehicle.note, vehicle.description || ""].join(" "),
+  );
+}
+
 function ProfCarHub({
   panel,
   onPanelChange,
   isMobile,
   onAsk,
+  vehicles,
+  inventoryMeta,
   voiceVehicle,
   onVoiceVehicleHandled,
 }: {
@@ -13884,6 +13911,8 @@ function ProfCarHub({
   onPanelChange: (panel: ProfCarPanel) => void;
   isMobile: boolean;
   onAsk: (message: string) => void;
+  vehicles: ProfCarVehicle[];
+  inventoryMeta: ProfCarInventoryMeta;
   voiceVehicle: ProfCarVoiceVehicleSelection | null;
   onVoiceVehicleHandled: () => void;
 }) {
@@ -13892,38 +13921,85 @@ function ProfCarHub({
   const [finderUse, setFinderUse] = useState("alltag");
   const [finderFuel, setFinderFuel] = useState("egal");
   const [finderStarted, setFinderStarted] = useState(false);
-  const [compareLeft, setCompareLeft] = useState(PROFCAR_VEHICLES[0].id);
-  const [compareRight, setCompareRight] = useState(PROFCAR_VEHICLES[1].id);
+  const [compareLeft, setCompareLeft] = useState(vehicles[0]?.id || "");
+  const [compareRight, setCompareRight] = useState(vehicles[1]?.id || vehicles[0]?.id || "");
   const [selectedVehicleId, setSelectedVehicleId] = useState(
-    PROFCAR_VEHICLES[0].id,
+    vehicles[0]?.id || "",
   );
   const [focusedVehicle, setFocusedVehicle] =
     useState<ProfCarVehicle | null>(null);
   const [galleryIndex, setGalleryIndex] = useState(0);
   const [completedAction, setCompletedAction] = useState<string | null>(null);
   const [serviceType, setServiceType] = useState("TÜV / HU");
+  const [bookingDate, setBookingDate] = useState("");
+  const [bookingSlotStart, setBookingSlotStart] = useState("");
+  const [bookingSlots, setBookingSlots] = useState<ProfCarSlot[]>([]);
+  const [bookingLoading, setBookingLoading] = useState(false);
+  const [bookingSubmitting, setBookingSubmitting] = useState(false);
+  const [bookingError, setBookingError] = useState("");
+  const [bookingContact, setBookingContact] = useState({ name: "", email: "", phone: "", message: "" });
+  const [bookingConfirmation, setBookingConfirmation] = useState<{ bookingId: string; start: string; end: string } | null>(null);
+  const bookingAttemptKeyRef = useRef<string | null>(null);
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect -- Beim Bereichswechsel wird die vorherige Fahrzeugaktion verworfen.
     setCompletedAction(null);
     setFocusedVehicle(null);
   }, [panel]);
 
   useEffect(() => {
+    const firstId = vehicles[0]?.id || "";
+    const secondId = vehicles[1]?.id || firstId;
+    if (!vehicles.some(vehicle => vehicle.id === compareLeft)) setCompareLeft(firstId);
+    if (!vehicles.some(vehicle => vehicle.id === compareRight)) setCompareRight(secondId);
+    if (!vehicles.some(vehicle => vehicle.id === selectedVehicleId)) setSelectedVehicleId(firstId);
+  }, [vehicles, compareLeft, compareRight, selectedVehicleId]);
+
+  useEffect(() => {
     if (!voiceVehicle) return;
 
-    const vehicle = PROFCAR_VEHICLES.find(
+    const vehicle = vehicles.find(
       (entry) => entry.id === voiceVehicle.id,
     );
 
     if (vehicle) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect -- Eine externe Sprachwahl synchronisiert die sichtbare Fahrzeugkarte.
       setFocusedVehicle(vehicle);
       setGalleryIndex(0);
     }
 
     onVoiceVehicleHandled();
-  }, [voiceVehicle, onVoiceVehicleHandled]);
+  }, [voiceVehicle, onVoiceVehicleHandled, vehicles]);
+
+  useEffect(() => {
+    if (panel !== "testdrive" || !bookingDate || inventoryMeta.mode !== "live") {
+      setBookingSlots([]);
+      setBookingSlotStart("");
+      return;
+    }
+    const controller = new AbortController();
+    setBookingLoading(true);
+    setBookingError("");
+    fetch(`/api/profcar/availability?date=${encodeURIComponent(bookingDate)}`, {
+      cache: "no-store",
+      signal: controller.signal,
+    })
+      .then(async response => {
+        const data = await response.json().catch(() => null);
+        if (!response.ok || !data?.ok) throw new Error(data?.error || "Freie Zeiten konnten nicht geladen werden.");
+        const slots = Array.isArray(data.slots) ? data.slots as ProfCarSlot[] : [];
+        setBookingSlots(slots);
+        setBookingSlotStart(slots[0]?.start || "");
+      })
+      .catch(error => {
+        if (error instanceof DOMException && error.name === "AbortError") return;
+        setBookingSlots([]);
+        setBookingSlotStart("");
+        setBookingError(error instanceof Error ? error.message : "Freie Zeiten konnten nicht geladen werden.");
+      })
+      .finally(() => {
+        if (!controller.signal.aborted) setBookingLoading(false);
+      });
+    return () => controller.abort();
+  }, [panel, bookingDate, inventoryMeta.mode]);
 
   const panelCopy: Record<
     Exclude<ProfCarPanel, "home">,
@@ -13934,7 +14010,7 @@ function ProfCarHub({
       eyebrow: "FAHRZEUGFINDER",
       title: "Welches Auto passt zu dir?",
       description:
-        "Budget und Nutzung auswählen – die Demo filtert direkt passende Fahrzeuge aus dem ProfCar-Bestand.",
+        "Budget und Nutzung auswählen – das Interface filtert direkt passende Fahrzeuge aus dem geladenen ProfCar-Bestand.",
     },
     inventory: {
       icon: "✨",
@@ -13969,7 +14045,7 @@ function ProfCarHub({
       eyebrow: "PROBEFAHRT",
       title: "Wunschfahrzeug live erleben",
       description:
-        "Fahrzeug und Wunschtermin auswählen. ProfCar bestätigt den Termin anschließend persönlich.",
+        "Fahrzeug auswählen, freie Kalenderzeit prüfen und die Probefahrt verbindlich buchen.",
     },
     service: {
       icon: "🛠️",
@@ -13982,10 +14058,19 @@ function ProfCarHub({
 
   if (panel === "home") return null;
 
+  if (!vehicles.length) {
+    return (
+      <section style={{ padding: 24, borderRadius: 22, background: "#ffffff", border: "1px solid #d9dee6", color: "#252b35" }}>
+        <strong>Zurzeit sind keine aktiven Fahrzeuge im bestätigten Bestand.</strong>
+        <p style={{ margin: "8px 0 0", color: "#687281" }}>{inventoryMeta.message}</p>
+      </section>
+    );
+  }
+
   const copy = panelCopy[panel];
   const normalizedSearch = inventorySearch.trim().toLowerCase();
   const visibleVehicles = normalizedSearch
-    ? PROFCAR_VEHICLES.filter((vehicle) =>
+    ? vehicles.filter((vehicle) =>
         [
           vehicle.brand,
           vehicle.name,
@@ -13998,40 +14083,43 @@ function ProfCarHub({
           .toLowerCase()
           .includes(normalizedSearch),
       )
-    : PROFCAR_VEHICLES;
+    : vehicles;
 
   const budget = Number(finderBudget) || Number.POSITIVE_INFINITY;
-  const finderResults = PROFCAR_VEHICLES.filter(
+  const finderResults = vehicles.filter(
     (vehicle) =>
-      vehicle.price <= budget &&
+      (vehicle.price === null || vehicle.price <= budget) &&
       (finderFuel === "egal" || vehicle.fuel === finderFuel),
   )
     .map((vehicle) => ({
       vehicle,
       score:
         (vehicle.tags.includes(finderUse) ? 30 : 0) +
-        Math.max(0, 20 - Math.round(vehicle.price / 5000)),
+        Math.max(0, 20 - Math.round((vehicle.price ?? budget) / 5000)),
     }))
     .sort((a, b) => b.score - a.score)
     .slice(0, 4)
     .map((entry) => entry.vehicle);
 
   const leftVehicle =
-    PROFCAR_VEHICLES.find((vehicle) => vehicle.id === compareLeft) ||
-    PROFCAR_VEHICLES[0];
+    vehicles.find((vehicle) => vehicle.id === compareLeft) ||
+    vehicles[0];
   const rightVehicle =
-    PROFCAR_VEHICLES.find((vehicle) => vehicle.id === compareRight) ||
-    PROFCAR_VEHICLES[1];
+    vehicles.find((vehicle) => vehicle.id === compareRight) ||
+    vehicles[1] || vehicles[0];
   const rawSelectedVehicle =
-    PROFCAR_VEHICLES.find((vehicle) => vehicle.id === selectedVehicleId) ||
-    PROFCAR_VEHICLES[0];
+    vehicles.find((vehicle) => vehicle.id === selectedVehicleId) ||
+    vehicles[0];
   const selectedVehicle =
-    panel === "testdrive" && rawSelectedVehicle.id === "bmw-m6"
-      ? PROFCAR_VEHICLES[0]
+    panel === "testdrive" && isCriticalProfCarVehicle(rawSelectedVehicle)
+      ? vehicles.find(vehicle => !isCriticalProfCarVehicle(vehicle)) || rawSelectedVehicle
       : rawSelectedVehicle;
   const focusedInsight = focusedVehicle
     ? getProfCarInsight(focusedVehicle.id)
     : undefined;
+  const focusedImages = focusedVehicle
+    ? (focusedVehicle.images.length ? focusedVehicle.images : focusedInsight?.images || [])
+    : [];
 
   const inputStyle: CSSProperties = {
     width: "100%",
@@ -14097,17 +14185,17 @@ function ProfCarHub({
         padding: 17,
         borderRadius: 19,
         border:
-          vehicle.id === "bmw-m6"
+          isCriticalProfCarVehicle(vehicle)
             ? "1px solid #efb6ba"
             : "1px solid #dde2e8",
         background:
-          vehicle.id === "bmw-m6"
+          isCriticalProfCarVehicle(vehicle)
             ? "linear-gradient(150deg, #fff7f7, #ffffff)"
             : "linear-gradient(150deg, #ffffff, #f7f8fa)",
         boxShadow: "0 9px 24px rgba(15,23,42,.06)",
       }}
     >
-      {getProfCarInsight(vehicle.id)?.images[0] ? (
+      {(vehicle.images[0] || getProfCarInsight(vehicle.id)?.images[0]) ? (
         <button
           type="button"
           onClick={() => {
@@ -14128,7 +14216,7 @@ function ProfCarHub({
           }}
         >
           <img
-            src={getProfCarInsight(vehicle.id)?.images[0]}
+            src={vehicle.images[0] || getProfCarInsight(vehicle.id)?.images[0]}
             alt={`${vehicle.brand} ${vehicle.name} aus dem ProfCar-Bestand`}
             loading="lazy"
             referrerPolicy="no-referrer"
@@ -14148,13 +14236,13 @@ function ProfCarHub({
           alignItems: "center",
           justifyContent: "space-between",
           gap: 10,
-          color: vehicle.id === "bmw-m6" ? "#b4232d" : "#168453",
+          color: isCriticalProfCarVehicle(vehicle) ? "#b4232d" : inventoryMeta.mode === "live" ? "#168453" : "#9a6700",
           fontSize: 10.5,
           fontWeight: 900,
           letterSpacing: ".05em",
         }}
       >
-        <span>{vehicle.id === "bmw-m6" ? "⚠ BESONDERER HINWEIS" : "● IM BESTAND-SNAPSHOT"}</span>
+        <span>{isCriticalProfCarVehicle(vehicle) ? "⚠ BESONDERER HINWEIS" : inventoryMeta.mode === "live" ? "● LIVE-BESTAND" : inventoryMeta.mode === "stale" ? "● LETZTER ERFOLGREICHER STAND" : "● DEMO-BESTAND"}</span>
         {rank ? <span style={{ color: "#dc1f2b" }}>MATCH {rank}</span> : null}
       </div>
       <h3
@@ -14179,7 +14267,12 @@ function ProfCarHub({
         {vehicle.note}
       </p>
       <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
-        {[`${vehicle.year}`, `${vehicle.km.toLocaleString("de-DE")} km`, `${vehicle.power} PS`, vehicle.fuel].map(
+        {[
+          vehicle.year ? `${vehicle.year}` : "EZ unbekannt",
+          vehicle.km === null ? "km unbekannt" : `${vehicle.km.toLocaleString("de-DE")} km`,
+          vehicle.power === null ? "Leistung unbekannt" : `${vehicle.power} PS`,
+          vehicle.fuel,
+        ].map(
           (spec) => (
             <span
               key={spec}
@@ -14212,7 +14305,7 @@ function ProfCarHub({
             {formatProfCarPrice(vehicle.price)}
           </strong>
           <small style={{ color: "#697382", fontSize: 10.5 }}>
-            Inserat: ab {formatProfCarPrice(vehicle.monthly)} mtl.*
+            {vehicle.monthly === null ? "Finanzierung nach persönlicher Prüfung" : `Inserat: ab ${formatProfCarPrice(vehicle.monthly)} mtl.*`}
           </small>
         </div>
         <button
@@ -14264,6 +14357,55 @@ function ProfCarHub({
       </div>
     </div>
   );
+
+  const submitProfCarBooking = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (bookingSubmitting) return;
+    if (inventoryMeta.mode !== "live") {
+      setBookingError("Eine verbindliche Probefahrt ist erst möglich, wenn der mobile.de-Bestand aktuell bestätigt ist.");
+      return;
+    }
+    const slot = bookingSlots.find(entry => entry.start === bookingSlotStart);
+    if (!slot) {
+      setBookingError("Bitte wähle zuerst einen freien Termin.");
+      return;
+    }
+    if (!bookingContact.name.trim() || (!bookingContact.email.trim() && !bookingContact.phone.trim())) {
+      setBookingError("Bitte gib deinen Namen und mindestens E-Mail oder Telefonnummer an.");
+      return;
+    }
+    if (!bookingAttemptKeyRef.current) bookingAttemptKeyRef.current = crypto.randomUUID();
+    setBookingSubmitting(true);
+    setBookingError("");
+    try {
+      const response = await fetch("/api/create-event", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          tenant: "profcar",
+          name: bookingContact.name.trim(),
+          email: bookingContact.email.trim(),
+          phone: bookingContact.phone.trim(),
+          message: bookingContact.message.trim(),
+          service: "Probefahrt",
+          vehicle: `${selectedVehicle.brand} ${selectedVehicle.name}${selectedVehicle.mobileAdId ? ` (mobile.de ${selectedVehicle.mobileAdId})` : ""}`,
+          start: slot.start,
+          end: slot.end,
+          idempotencyKey: bookingAttemptKeyRef.current,
+        }),
+      });
+      const data = await response.json().catch(() => null);
+      if (!response.ok || !data?.ok || !data?.bookingId) {
+        throw new Error(data?.error || "Der Termin konnte nicht verbindlich eingetragen werden.");
+      }
+      setBookingConfirmation({ bookingId: data.bookingId, start: data.event.start, end: data.event.end });
+      bookingAttemptKeyRef.current = null;
+    } catch (error) {
+      setBookingError(error instanceof Error ? error.message : "Der Termin konnte nicht verbindlich eingetragen werden.");
+    } finally {
+      setBookingSubmitting(false);
+    }
+  };
 
   return (
     <section
@@ -14345,18 +14487,28 @@ function ProfCarHub({
             style={{
               flex: "0 0 auto",
               padding: "9px 12px",
-              border: "1px solid #cfe7d9",
+              border: inventoryMeta.mode === "live" ? "1px solid #cfe7d9" : "1px solid #ead7aa",
               borderRadius: 13,
-              background: "#f2fbf6",
-              color: "#26724e",
+              background: inventoryMeta.mode === "live" ? "#f2fbf6" : "#fff9e9",
+              color: inventoryMeta.mode === "live" ? "#26724e" : "#805d13",
               fontSize: 11,
               fontWeight: 850,
             }}
           >
-            ● mobile.de-Snapshot · 04.09.2026
+            {inventoryMeta.mode === "live"
+              ? `● mobile.de aktuell${inventoryMeta.lastSuccessfulSync ? ` · ${new Date(inventoryMeta.lastSuccessfulSync).toLocaleString("de-DE", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit", timeZone: "Europe/Berlin" })}` : ""}`
+              : inventoryMeta.mode === "stale"
+                ? "● Aktualisierung nicht bestätigt"
+                : "● Demo-Bestand"}
           </div>
         ) : null}
       </div>
+
+      {inventoryMeta.mode !== "live" ? (
+        <div role="status" style={{ marginTop: 14, padding: "11px 13px", borderRadius: 13, background: "#fff9e9", border: "1px solid #ead7aa", color: "#805d13", fontSize: 12, fontWeight: 720 }}>
+          {inventoryMeta.message}
+        </div>
+      ) : null}
 
       <div style={{ paddingTop: 20 }}>
         {panel === "inventory" && (
@@ -14548,7 +14700,7 @@ function ProfCarHub({
                   onChange={(event) => setCompareLeft(event.target.value)}
                   style={inputStyle}
                 >
-                  {PROFCAR_VEHICLES.map((vehicle) => (
+                  {vehicles.map((vehicle) => (
                     <option key={vehicle.id} value={vehicle.id}>
                       {vehicle.brand} {vehicle.name}
                     </option>
@@ -14562,7 +14714,7 @@ function ProfCarHub({
                   onChange={(event) => setCompareRight(event.target.value)}
                   style={inputStyle}
                 >
-                  {PROFCAR_VEHICLES.map((vehicle) => (
+                  {vehicles.map((vehicle) => (
                     <option key={vehicle.id} value={vehicle.id}>
                       {vehicle.brand} {vehicle.name}
                     </option>
@@ -14582,10 +14734,10 @@ function ProfCarHub({
               {[
                 ["Fahrzeug", `${leftVehicle.brand} ${leftVehicle.name}`, `${rightVehicle.brand} ${rightVehicle.name}`],
                 ["Kaufpreis", formatProfCarPrice(leftVehicle.price), formatProfCarPrice(rightVehicle.price)],
-                ["Inseratsrate*", `ab ${formatProfCarPrice(leftVehicle.monthly)}`, `ab ${formatProfCarPrice(rightVehicle.monthly)}`],
-                ["Erstzulassung", `${leftVehicle.year}`, `${rightVehicle.year}`],
-                ["Kilometer", `${leftVehicle.km.toLocaleString("de-DE")} km`, `${rightVehicle.km.toLocaleString("de-DE")} km`],
-                ["Leistung", `${leftVehicle.power} PS`, `${rightVehicle.power} PS`],
+                ["Inseratsrate*", leftVehicle.monthly === null ? "Nach Prüfung" : `ab ${formatProfCarPrice(leftVehicle.monthly)}`, rightVehicle.monthly === null ? "Nach Prüfung" : `ab ${formatProfCarPrice(rightVehicle.monthly)}`],
+                ["Erstzulassung", leftVehicle.year ? `${leftVehicle.year}` : "Unbekannt", rightVehicle.year ? `${rightVehicle.year}` : "Unbekannt"],
+                ["Kilometer", leftVehicle.km === null ? "Unbekannt" : `${leftVehicle.km.toLocaleString("de-DE")} km`, rightVehicle.km === null ? "Unbekannt" : `${rightVehicle.km.toLocaleString("de-DE")} km`],
+                ["Leistung", leftVehicle.power === null ? "Unbekannt" : `${leftVehicle.power} PS`, rightVehicle.power === null ? "Unbekannt" : `${rightVehicle.power} PS`],
                 ["Kraftstoff", leftVehicle.fuel, rightVehicle.fuel],
                 ["Stärke", leftVehicle.strength, rightVehicle.strength],
               ].map((row, index) => (
@@ -14659,7 +14811,7 @@ function ProfCarHub({
                     onChange={(event) => setSelectedVehicleId(event.target.value)}
                     style={inputStyle}
                   >
-                    {PROFCAR_VEHICLES.map((vehicle) => (
+                    {vehicles.map((vehicle) => (
                       <option key={vehicle.id} value={vehicle.id}>
                         {vehicle.brand} {vehicle.name} · {formatProfCarPrice(vehicle.price)}
                       </option>
@@ -14681,7 +14833,7 @@ function ProfCarHub({
                 </label>
                 <label style={labelStyle}>
                   Gewünschte Monatsrate
-                  <input required type="number" min="50" step="10" placeholder={`Inserat ab ${selectedVehicle.monthly} €`} style={inputStyle} />
+                  <input required type="number" min="50" step="10" placeholder={selectedVehicle.monthly === null ? "Gewünschte Rate" : `Inserat ab ${selectedVehicle.monthly} €`} style={inputStyle} />
                 </label>
                 <label style={labelStyle}>
                   Name
@@ -14758,7 +14910,7 @@ function ProfCarHub({
                     onChange={(event) => setSelectedVehicleId(event.target.value)}
                     style={inputStyle}
                   >
-                    {PROFCAR_VEHICLES.map((vehicle) => (
+                    {vehicles.map((vehicle) => (
                       <option key={vehicle.id} value={vehicle.id}>
                         {vehicle.brand} {vehicle.name}
                       </option>
@@ -14784,27 +14936,39 @@ function ProfCarHub({
           ))}
 
         {panel === "testdrive" &&
-          (completedAction === "testdrive" ? (
-            successView(
-              `Fahrzeug, Terminwunsch und Kontaktdaten für den ${selectedVehicle.brand} ${selectedVehicle.name} sind erfasst.`,
-              `Ich möchte die vorbereitete Probefahrt für den ${selectedVehicle.brand} ${selectedVehicle.name} mit ProfCar abstimmen.`,
-            )
+          (bookingConfirmation ? (
+            <div style={{ padding: isMobile ? 18 : 24, border: "1px solid #b9e5cc", borderRadius: 20, background: "linear-gradient(145deg, #f0fbf5, #ffffff)", color: "#184f35" }}>
+              <div style={{ fontSize: 28, marginBottom: 8 }}>✓</div>
+              <strong style={{ display: "block", fontSize: 18 }}>Probefahrt verbindlich gebucht</strong>
+              <p style={{ margin: "8px 0", lineHeight: 1.5 }}>
+                {new Date(bookingConfirmation.start).toLocaleString("de-DE", {
+                  weekday: "long", day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit", timeZone: "Europe/Berlin",
+                })} Uhr · {selectedVehicle.brand} {selectedVehicle.name}
+              </p>
+              <p style={{ margin: "8px 0 16px", fontWeight: 850 }}>Buchungs-ID: {bookingConfirmation.bookingId}</p>
+              <button type="button" style={secondaryButton} onClick={() => {
+                setBookingConfirmation(null);
+                setBookingDate("");
+                setBookingSlots([]);
+                setBookingContact({ name: "", email: "", phone: "", message: "" });
+              }}>
+                Weitere Probefahrt buchen
+              </button>
+            </div>
           ) : (
-            <form
-              onSubmit={(event) => {
-                event.preventDefault();
-                setCompletedAction("testdrive");
-              }}
-            >
+            <form onSubmit={submitProfCarBooking}>
               <div style={formGridStyle}>
                 <label style={labelStyle}>
                   Wunschfahrzeug
                   <select
                     value={selectedVehicle.id}
-                    onChange={(event) => setSelectedVehicleId(event.target.value)}
+                    onChange={(event) => {
+                      setSelectedVehicleId(event.target.value);
+                      setBookingConfirmation(null);
+                    }}
                     style={inputStyle}
                   >
-                    {PROFCAR_VEHICLES.filter((vehicle) => vehicle.id !== "bmw-m6").map((vehicle) => (
+                    {vehicles.filter((vehicle) => !isCriticalProfCarVehicle(vehicle)).map((vehicle) => (
                       <option key={vehicle.id} value={vehicle.id}>
                         {vehicle.brand} {vehicle.name}
                       </option>
@@ -14812,33 +14976,56 @@ function ProfCarHub({
                   </select>
                 </label>
                 <label style={labelStyle}>
-                  Wunschtag
-                  <input required type="date" style={inputStyle} />
+                  Tag
+                  <input
+                    required
+                    type="date"
+                    value={bookingDate}
+                    min={new Date().toISOString().slice(0, 10)}
+                    onChange={(event) => {
+                      setBookingDate(event.target.value);
+                      setBookingError("");
+                      bookingAttemptKeyRef.current = null;
+                    }}
+                    disabled={inventoryMeta.mode !== "live"}
+                    style={inputStyle}
+                  />
                 </label>
                 <label style={labelStyle}>
-                  Zeitfenster
-                  <select defaultValue="Vormittags" style={inputStyle}>
-                    <option>Vormittags</option>
-                    <option>Mittags</option>
-                    <option>Nachmittags</option>
-                    <option>Flexibel</option>
-                  </select>
-                </label>
-                <label style={labelStyle}>
-                  Bevorzugter Kontakt
-                  <select defaultValue="WhatsApp" style={inputStyle}>
-                    <option>WhatsApp</option>
-                    <option>Telefon</option>
-                    <option>E-Mail</option>
+                  Freie Uhrzeit
+                  <select
+                    required
+                    value={bookingSlotStart}
+                    onChange={(event) => {
+                      setBookingSlotStart(event.target.value);
+                      bookingAttemptKeyRef.current = null;
+                    }}
+                    disabled={!bookingDate || bookingLoading || inventoryMeta.mode !== "live"}
+                    style={inputStyle}
+                  >
+                    <option value="">{bookingLoading ? "Freie Zeiten werden geladen…" : bookingSlots.length ? "Uhrzeit auswählen" : "Keine freie Zeit ausgewählt"}</option>
+                    {bookingSlots.map(slot => (
+                      <option key={slot.start} value={slot.start}>
+                        {new Date(slot.start).toLocaleTimeString("de-DE", { hour: "2-digit", minute: "2-digit", timeZone: "Europe/Berlin" })}–{new Date(slot.end).toLocaleTimeString("de-DE", { hour: "2-digit", minute: "2-digit", timeZone: "Europe/Berlin" })} Uhr
+                      </option>
+                    ))}
                   </select>
                 </label>
                 <label style={labelStyle}>
                   Name
-                  <input required placeholder="Vor- und Nachname" style={inputStyle} />
+                  <input required value={bookingContact.name} onChange={(event) => setBookingContact(current => ({ ...current, name: event.target.value }))} placeholder="Vor- und Nachname" style={inputStyle} />
                 </label>
                 <label style={labelStyle}>
-                  Telefon oder E-Mail
-                  <input required placeholder="Kontaktmöglichkeit" style={inputStyle} />
+                  E-Mail
+                  <input type="email" value={bookingContact.email} onChange={(event) => setBookingContact(current => ({ ...current, email: event.target.value }))} placeholder="name@beispiel.de" style={inputStyle} />
+                </label>
+                <label style={labelStyle}>
+                  Telefon
+                  <input inputMode="tel" value={bookingContact.phone} onChange={(event) => setBookingContact(current => ({ ...current, phone: event.target.value }))} placeholder="0151 …" style={inputStyle} />
+                </label>
+                <label style={labelStyle}>
+                  Nachricht (optional)
+                  <input value={bookingContact.message} onChange={(event) => setBookingContact(current => ({ ...current, message: event.target.value }))} placeholder="Frage oder Hinweis" style={inputStyle} />
                 </label>
               </div>
               <div
@@ -14853,10 +15040,13 @@ function ProfCarHub({
                   lineHeight: 1.5,
                 }}
               >
-                ProfCar Köln · Neue Eiler Straße 50–52 · Samstag 08:00–15:00 Uhr. Der Wunschtermin gilt erst nach persönlicher Bestätigung.
+                {inventoryMeta.mode === "live"
+                  ? "Der Kalender wird unmittelbar vor dem Eintrag erneut geprüft. Eine Bestätigung erscheint erst nach erfolgreichem Schreiben in Michis Apple-Kalender."
+                  : inventoryMeta.message}
               </div>
-              <button type="submit" style={primaryButton}>
-                Probefahrt vorbereiten
+              {bookingError ? <p role="alert" style={{ color: "#b4232d", fontSize: 12.5, fontWeight: 750 }}>{bookingError}</p> : null}
+              <button type="submit" disabled={bookingSubmitting || inventoryMeta.mode !== "live" || !bookingSlotStart} style={{ ...primaryButton, opacity: bookingSubmitting || inventoryMeta.mode !== "live" || !bookingSlotStart ? 0.55 : 1 }}>
+                {bookingSubmitting ? "Kalender wird geprüft…" : "Probefahrt verbindlich buchen"}
               </button>
             </form>
           ))}
@@ -15006,7 +15196,7 @@ function ProfCarHub({
               </button>
             </div>
 
-            {focusedInsight?.images.length ? (
+            {focusedImages.length ? (
               <div style={{ marginTop: 20 }}>
                 <div
                   style={{
@@ -15019,8 +15209,8 @@ function ProfCarHub({
                 >
                   <img
                     src={
-                      focusedInsight.images[galleryIndex] ||
-                      focusedInsight.images[0]
+                      focusedImages[galleryIndex] ||
+                      focusedImages[0]
                     }
                     alt={`${focusedVehicle.brand} ${focusedVehicle.name} – Fahrzeugbild ${galleryIndex + 1}`}
                     referrerPolicy="no-referrer"
@@ -15045,19 +15235,19 @@ function ProfCarHub({
                       backdropFilter: "blur(8px)",
                     }}
                   >
-                    Bild {galleryIndex + 1} / {focusedInsight.images.length}
+                    Bild {galleryIndex + 1} / {focusedImages.length}
                   </div>
                 </div>
-                {focusedInsight.images.length > 1 ? (
+                {focusedImages.length > 1 ? (
                   <div
                     style={{
                       display: "grid",
-                      gridTemplateColumns: `repeat(${focusedInsight.images.length}, minmax(0, 1fr))`,
+                      gridTemplateColumns: `repeat(${Math.min(focusedImages.length, 6)}, minmax(0, 1fr))`,
                       gap: 7,
                       marginTop: 8,
                     }}
                   >
-                    {focusedInsight.images.map((imageUrl, index) => (
+                    {focusedImages.slice(0, 12).map((imageUrl, index) => (
                       <button
                         type="button"
                         key={imageUrl}
@@ -15105,9 +15295,9 @@ function ProfCarHub({
             >
               {[
                 ["Preis", formatProfCarPrice(focusedVehicle.price)],
-                ["Inseratsrate", `ab ${formatProfCarPrice(focusedVehicle.monthly)}`],
-                ["Kilometer", focusedVehicle.km.toLocaleString("de-DE")],
-                ["Leistung", `${focusedVehicle.power} PS`],
+                ["Inseratsrate", focusedVehicle.monthly === null ? "Nach Prüfung" : `ab ${formatProfCarPrice(focusedVehicle.monthly)}`],
+                ["Kilometer", focusedVehicle.km === null ? "Unbekannt" : focusedVehicle.km.toLocaleString("de-DE")],
+                ["Leistung", focusedVehicle.power === null ? "Unbekannt" : `${focusedVehicle.power} PS`],
               ].map(([label, value]) => (
                 <div key={label} style={{ padding: 12, borderRadius: 13, background: "#f2f4f7" }}>
                   <small style={{ display: "block", color: "#737c89" }}>{label}</small>
@@ -15246,7 +15436,7 @@ function ProfCarHub({
               </div>
             ) : null}
             <div style={{ display: "flex", flexWrap: "wrap", gap: 9, marginTop: 18 }}>
-              {focusedVehicle.id !== "bmw-m6" ? (
+              {!isCriticalProfCarVehicle(focusedVehicle) ? (
                 <button
                   type="button"
                   style={primaryButton}
@@ -15318,7 +15508,7 @@ function ProfCarDemo({ embedded }: { embedded: boolean }) {
       }
       if (
         (normalized.includes("sport") || normalized.includes("schnell")) &&
-        vehicle.power >= 200
+        (vehicle.power ?? 0) >= 200
       ) {
         score += 22;
       }
@@ -15331,8 +15521,8 @@ function ProfCarDemo({ embedded }: { embedded: boolean }) {
       if (
         detectedBudget &&
         (meansMonthly
-          ? vehicle.monthly <= detectedBudget
-          : vehicle.price <= detectedBudget)
+          ? vehicle.monthly !== null && vehicle.monthly <= detectedBudget
+          : vehicle.price !== null && vehicle.price <= detectedBudget)
       ) {
         score += 26;
       }
@@ -15703,8 +15893,8 @@ function ProfCarDemo({ embedded }: { embedded: boolean }) {
                   <p className="profcar-car-note">{vehicle.note}</p>
                   <div className="profcar-specs">
                     <span>{vehicle.year}</span>
-                    <span>{vehicle.km.toLocaleString("de-DE")} km</span>
-                    <span>{vehicle.power} PS</span>
+                    <span>{vehicle.km === null ? "Kilometer unbekannt" : `${vehicle.km.toLocaleString("de-DE")} km`}</span>
+                    <span>{vehicle.power === null ? "Leistung unbekannt" : `${vehicle.power} PS`}</span>
                     <span>{vehicle.fuel}</span>
                   </div>
                   <div className="profcar-price-row">
@@ -16478,6 +16668,41 @@ export default function WidgetPage() {
   const [profcarPanel, setProfCarPanel] = useState<ProfCarPanel>("home");
   const [profCarVoiceVehicle, setProfCarVoiceVehicle] =
     useState<ProfCarVoiceVehicleSelection | null>(null);
+  const [profCarVehicles, setProfCarVehicles] = useState<ProfCarVehicle[]>(PROFCAR_VEHICLES);
+  const [profCarInventoryMeta, setProfCarInventoryMeta] = useState<ProfCarInventoryMeta>({
+    mode: "demo",
+    message: "Demo-Bestand – noch kein bestätigter Live-Abgleich mit mobile.de.",
+    lastSuccessfulSync: null,
+  });
+
+  useEffect(() => {
+    if (!mounted || !isProfCarInterface) return;
+    const controller = new AbortController();
+    fetch("/api/profcar/inventory", { cache: "no-store", signal: controller.signal })
+      .then(async response => {
+        const data = await response.json().catch(() => null);
+        if (!response.ok || !data?.ok || !Array.isArray(data.vehicles)) {
+          throw new Error("Bestand konnte nicht geladen werden.");
+        }
+        const vehicles = data.vehicles.map((vehicle: Parameters<typeof toProfCarUiVehicle>[0]) => toProfCarUiVehicle(vehicle));
+        setProfCarVehicles(vehicles);
+        setProfCarInventoryMeta({
+          mode: data.mode === "live" || data.mode === "stale" ? data.mode : "demo",
+          message: String(data.message || "Bestandsstatus ist nicht verfügbar."),
+          lastSuccessfulSync: typeof data.lastSuccessfulSync === "string" ? data.lastSuccessfulSync : null,
+        });
+      })
+      .catch(error => {
+        if (error instanceof DOMException && error.name === "AbortError") return;
+        setProfCarVehicles(PROFCAR_VEHICLES);
+        setProfCarInventoryMeta({
+          mode: "demo",
+          message: "Demo-Bestand – der Live-Bestand konnte nicht geladen werden.",
+          lastSuccessfulSync: null,
+        });
+      });
+    return () => controller.abort();
+  }, [mounted, isProfCarInterface]);
 
   const isEmbedClosed = isEmbedded && !open;
   const listRef = useRef<HTMLDivElement | null>(null);
@@ -17273,10 +17498,26 @@ export default function WidgetPage() {
 
   function showProfCarVehicleCheck(vehicle: ProfCarVehicle) {
     const insight = getProfCarInsight(vehicle.id);
-    if (!insight) return false;
-
     setProfCarPanel("inventory");
     setProfCarVoiceVehicle({ id: vehicle.id, requestId: Date.now() });
+    if (!insight) {
+      setVoiceUiAction({
+        id: `profcar-vehicle-${vehicle.id}-${Date.now()}`,
+        kind: "info",
+        eyebrow: profCarInventoryMeta.mode === "live" ? "ProfCar · Live-Bestand" : "ProfCar · Bestandsstand",
+        title: `${vehicle.brand} ${vehicle.name}`,
+        description: vehicle.note,
+        items: [
+          { label: "Preis", value: formatProfCarPrice(vehicle.price) },
+          { label: "Kilometer", value: vehicle.km === null ? "Unbekannt" : `${vehicle.km.toLocaleString("de-DE")} km` },
+          { label: "Leistung", value: vehicle.power === null ? "Unbekannt" : `${vehicle.power} PS` },
+          { label: "Kraftstoff", value: vehicle.fuel || "Unbekannt" },
+        ],
+        url: vehicle.mobileUrl || undefined,
+        cta: vehicle.mobileUrl ? "Inserat öffnen" : undefined,
+      });
+      return true;
+    }
     setVoiceUiAction({
       id: `profcar-vehicle-check-${vehicle.id}-${Date.now()}`,
       kind: "checklist",
@@ -17310,7 +17551,7 @@ export default function WidgetPage() {
   }
 
   function applyProfCarSurfaceIntent(rawText: string) {
-    const vehicle = findProfCarVehicleFromText(rawText);
+    const vehicle = findProfCarVehicleFromText(rawText, profCarVehicles);
     if (vehicle && showProfCarVehicleCheck(vehicle)) return;
 
     const normalized = rawText
@@ -17465,6 +17706,7 @@ export default function WidgetPage() {
         `${title} ${description} ${items
           .map((item) => `${item.label} ${item.value || ""} ${item.detail || ""}`)
           .join(" ")}`,
+        profCarVehicles,
       );
 
       if (mentionedVehicle) {
@@ -19257,13 +19499,43 @@ export default function WidgetPage() {
 
     const handledRealtimeToolCalls = new Set<string>();
 
-    const runRealtimeInterfaceTool = (
+    const completeRealtimeToolCall = (callId: string, output: Record<string, unknown>) => {
+      const activeClient = realtimeVoiceRef.current;
+      if (!activeClient) return;
+      activeClient.send({
+        type: "conversation.item.create",
+        item: {
+          type: "function_call_output",
+          call_id: callId,
+          output: JSON.stringify(output),
+        },
+      });
+      activeClient.send({ type: "response.create" });
+    };
+
+    const parseRealtimeToolArguments = (rawArguments: unknown) => {
+      if (typeof rawArguments === "string") {
+        const parsed = JSON.parse(rawArguments);
+        return parsed && typeof parsed === "object" ? parsed as Record<string, unknown> : {};
+      }
+      return rawArguments && typeof rawArguments === "object"
+        ? rawArguments as Record<string, unknown>
+        : {};
+    };
+
+    const runRealtimeTool = (
       toolName: string,
       callId: string,
       rawArguments: unknown,
     ) => {
+      const supported = new Set([
+        "show_interface_card",
+        "search_profcar_inventory",
+        "get_profcar_availability",
+        "book_profcar_test_drive",
+      ]);
       if (
-        toolName !== "show_interface_card" ||
+        !supported.has(toolName) ||
         !callId ||
         handledRealtimeToolCalls.has(callId)
       ) {
@@ -19277,26 +19549,138 @@ export default function WidgetPage() {
       setVoiceEnergy(0.20);
       setVoicePhase("thinking");
 
-      const applied = applyRealtimeInterfaceTool(rawArguments);
-      const activeClient = realtimeVoiceRef.current;
-
-      if (activeClient) {
-        activeClient.send({
-          type: "conversation.item.create",
-          item: {
-            type: "function_call_output",
-            call_id: callId,
-            output: JSON.stringify({
-              success: applied,
-              visible_in_interface: applied,
-            }),
-          },
+      if (toolName === "show_interface_card") {
+        const applied = applyRealtimeInterfaceTool(rawArguments);
+        completeRealtimeToolCall(callId, {
+          success: applied,
+          visible_in_interface: applied,
         });
-
-        // Nach dem UI-Tool erzeugt das Modell noch eine sehr kurze
-        // gesprochene Einordnung. Die eigentlichen Details stehen sichtbar.
-        activeClient.send({ type: "response.create" });
+        return true;
       }
+
+      void (async () => {
+        if (!isProfCarInterface) {
+          completeRealtimeToolCall(callId, { success: false, error: "Tool ist nur für ProfCar verfügbar." });
+          return;
+        }
+        const args = parseRealtimeToolArguments(rawArguments);
+
+        if (toolName === "search_profcar_inventory") {
+          const query = String(args.query || "").trim();
+          const normalized = query.toLocaleLowerCase("de-DE").normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+          const tokens = normalized.split(/[^a-z0-9]+/).filter(token => token.length >= 2);
+          const budgetMatch = normalized.match(/(?:bis|max(?:imal)?|budget)\s*(\d[\d.]*)/);
+          const budget = budgetMatch ? Number(budgetMatch[1].replaceAll(".", "")) : null;
+          const ranked = profCarVehicles
+            .map((vehicle, index) => {
+              const haystack = [vehicle.brand, vehicle.name, vehicle.fuel, vehicle.note, vehicle.strength, ...vehicle.tags]
+                .join(" ")
+                .toLocaleLowerCase("de-DE")
+                .normalize("NFD")
+                .replace(/[\u0300-\u036f]/g, "");
+              const textScore = tokens.reduce((score, token) => score + (haystack.includes(token) ? 1 : 0), 0);
+              const withinBudget = budget === null || (vehicle.price !== null && vehicle.price <= budget);
+              return { vehicle, index, score: textScore, withinBudget };
+            })
+            .filter(entry => entry.withinBudget && (!tokens.length || entry.score > 0))
+            .sort((left, right) => right.score - left.score || left.index - right.index);
+          const matches = ranked.length || tokens.length || budget !== null
+            ? ranked
+            : profCarVehicles.map((vehicle, index) => ({ vehicle, index, score: 0, withinBudget: true }));
+          if (matches.length === 1) showProfCarVehicleCheck(matches[0].vehicle);
+          else setProfCarPanel("inventory");
+          completeRealtimeToolCall(callId, {
+            success: true,
+            inventory_mode: profCarInventoryMeta.mode,
+            inventory_message: profCarInventoryMeta.message,
+            total_inventory: profCarVehicles.length,
+            total_matches: matches.length,
+            truncated: matches.length > 20,
+            vehicles: matches.slice(0, 20).map(({ vehicle }) => ({
+              vehicle_id: vehicle.id,
+              title: `${vehicle.brand} ${vehicle.name}`.trim(),
+              price: vehicle.price,
+              mileage_km: vehicle.km,
+              power_ps: vehicle.power,
+              fuel: vehicle.fuel,
+              first_registration_year: vehicle.year,
+              equipment: vehicle.equipment.slice(0, 20),
+              mobile_url: vehicle.mobileUrl,
+            })),
+          });
+          return;
+        }
+
+        if (toolName === "get_profcar_availability") {
+          const date = String(args.date || "").trim();
+          if (profCarInventoryMeta.mode !== "live") {
+            completeRealtimeToolCall(callId, { success: false, error: "Der Fahrzeugbestand ist derzeit nicht als aktuell bestätigt." });
+            return;
+          }
+          const response = await fetch(`/api/profcar/availability?date=${encodeURIComponent(date)}`, { cache: "no-store" });
+          const data = await response.json().catch(() => null);
+          completeRealtimeToolCall(callId, response.ok && data?.ok
+            ? { success: true, date: data.date, time_zone: data.timeZone, duration_minutes: data.durationMinutes, slots: data.slots }
+            : { success: false, error: data?.error || "Freie Zeiten konnten nicht gelesen werden.", code: data?.code });
+          if (response.ok && data?.ok) setProfCarPanel("testdrive");
+          return;
+        }
+
+        const confirmed = args.confirmed === true;
+        const vehicle = profCarVehicles.find(entry => entry.id === String(args.vehicle_id || ""));
+        const name = String(args.name || "").trim();
+        const email = String(args.email || "").trim();
+        const phone = String(args.phone || "").trim();
+        const start = String(args.start || "").trim();
+        const end = String(args.end || "").trim();
+        if (!confirmed || !vehicle || !name || (!email && !phone) || !start || !end || profCarInventoryMeta.mode !== "live") {
+          completeRealtimeToolCall(callId, { success: false, error: "Fahrzeug, bestätigter Termin oder Kontaktdaten fehlen." });
+          return;
+        }
+        const response = await fetch("/api/create-event", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            tenant: "profcar",
+            name,
+            email,
+            phone,
+            service: "Probefahrt",
+            vehicle: `${vehicle.brand} ${vehicle.name}${vehicle.mobileAdId ? ` (mobile.de ${vehicle.mobileAdId})` : ""}`,
+            start,
+            end,
+            idempotencyKey: `voice:${vehicle.id}:${start}:${name}:${email}:${phone}`,
+          }),
+        });
+        const data = await response.json().catch(() => null);
+        if (!response.ok || !data?.ok || !data?.bookingId) {
+          completeRealtimeToolCall(callId, { success: false, error: data?.error || "Die Probefahrt konnte nicht gebucht werden.", code: data?.code });
+          return;
+        }
+        setProfCarPanel("testdrive");
+        setVoiceUiAction({
+          id: `profcar-booking-${data.bookingId}`,
+          kind: "info",
+          eyebrow: "ProfCar · Apple-Kalender",
+          title: "Probefahrt verbindlich gebucht",
+          description: `${vehicle.brand} ${vehicle.name} · Buchungs-ID ${data.bookingId}`,
+          items: [{
+            label: "Termin",
+            value: new Date(data.event.start).toLocaleString("de-DE", { weekday: "short", day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit", timeZone: "Europe/Berlin" }),
+          }],
+        });
+        completeRealtimeToolCall(callId, {
+          success: true,
+          booking_id: data.bookingId,
+          already_existed: data.alreadyExisted === true,
+          vehicle: `${vehicle.brand} ${vehicle.name}`,
+          start: data.event.start,
+          end: data.event.end,
+          time_zone: "Europe/Berlin",
+        });
+      })().catch(() => {
+        completeRealtimeToolCall(callId, { success: false, error: "Die Verbindung zum ProfCar-Dienst ist fehlgeschlagen." });
+      });
 
       return true;
     };
@@ -19355,7 +19739,7 @@ export default function WidgetPage() {
           const callId = String(event.call_id || "");
 
           if (
-            runRealtimeInterfaceTool(
+            runRealtimeTool(
               toolName,
               callId,
               event.arguments,
@@ -19384,7 +19768,7 @@ export default function WidgetPage() {
               "arguments" in item ? item.arguments : undefined;
 
             if (
-              runRealtimeInterfaceTool(
+              runRealtimeTool(
                 toolName,
                 callId,
                 rawArguments,
@@ -24229,6 +24613,8 @@ body::after {
                       onPanelChange={openProfCarPanel}
                       isMobile={isMobileViewport}
                       onAsk={sendProfCarGuidedMessage}
+                      vehicles={profCarVehicles}
+                      inventoryMeta={profCarInventoryMeta}
                       voiceVehicle={profCarVoiceVehicle}
                       onVoiceVehicleHandled={() =>
                         setProfCarVoiceVehicle(null)

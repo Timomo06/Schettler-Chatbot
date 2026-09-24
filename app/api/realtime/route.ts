@@ -5,6 +5,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getTenant } from "@/lib/tenants";
 import { buildSystemPrompt } from "@/lib/prompt";
 import { loadTenantKnowledge } from "@/lib/loadTenantKnowledge";
+import { getProfCarInventoryPayload, stripStaticProfCarInventory } from "@/lib/profcar/public-inventory";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -198,6 +199,54 @@ const VOICE_INTERFACE_TOOLS = [
   },
 ] as const;
 
+const PROFCAR_VOICE_TOOLS = [
+  {
+    type: "function",
+    name: "search_profcar_inventory",
+    description: "Durchsucht den vollständigen aktuell im ProfCar-Interface geladenen Fahrzeugbestand. Vor jeder konkreten Aussage über Fahrzeuge, Preise, Kilometer, Bilder, Ausstattung oder Verfügbarkeit aufrufen. Die Rückgabe ist maßgeblich.",
+    parameters: {
+      type: "object",
+      additionalProperties: false,
+      properties: {
+        query: { type: "string", description: "Marke, Modell, Budget, Kraftstoff oder sonstiger Fahrzeugwunsch des Nutzers." },
+      },
+      required: ["query"],
+    },
+  },
+  {
+    type: "function",
+    name: "get_profcar_availability",
+    description: "Liest freie Probefahrtzeiten aus Michis Apple-Kalender für einen Tag. Vor dem Vorschlagen einer konkreten Uhrzeit aufrufen.",
+    parameters: {
+      type: "object",
+      additionalProperties: false,
+      properties: {
+        date: { type: "string", description: "Datum im Format YYYY-MM-DD." },
+      },
+      required: ["date"],
+    },
+  },
+  {
+    type: "function",
+    name: "book_profcar_test_drive",
+    description: "Bucht eine Probefahrt über denselben serverseitigen Apple-Kalender-Ablauf wie das Formular. Nur nach ausdrücklicher Bestätigung des Nutzers aufrufen. Eine Buchung ist ausschließlich bei success=true bestätigt.",
+    parameters: {
+      type: "object",
+      additionalProperties: false,
+      properties: {
+        confirmed: { type: "boolean", description: "Nur true, wenn der Nutzer Fahrzeug, Termin und Kontaktdaten ausdrücklich bestätigt hat." },
+        name: { type: "string" },
+        email: { type: "string" },
+        phone: { type: "string" },
+        vehicle_id: { type: "string", description: "Exakte vehicle_id aus search_profcar_inventory." },
+        start: { type: "string", description: "Exakter ISO-Startwert aus get_profcar_availability." },
+        end: { type: "string", description: "Exakter ISO-Endwert aus get_profcar_availability." },
+      },
+      required: ["confirmed", "name", "email", "phone", "vehicle_id", "start", "end"],
+    },
+  },
+] as const;
+
 function isFahrwerkTenant(tenantId: string) {
   return FAHRWERK_TENANT_ALIASES.includes(
     tenantId
@@ -270,10 +319,15 @@ async function buildRealtimeInstructions(rawTenantId: string) {
   // Live-Demos werden bewusst ohne Cache geladen, damit Änderungen an der
   // jeweiligen Knowledge-Datei beim nächsten Gespräch sofort gelten.
   const schoolDemoId = asSchoolDemo(tenant.id);
-  const knowledgeText = schoolDemoId ? getSchoolDemoKnowledge(schoolDemoId)
+  let knowledgeText = schoolDemoId ? getSchoolDemoKnowledge(schoolDemoId)
     : isFahrschuleTenant(tenant.id) || isProfCarTenant(tenant.id)
     ? await loadTenantKnowledge(tenant.id)
     : await getCachedTenantKnowledge(tenant.id);
+
+  if (isProfCarTenant(tenant.id)) {
+    const inventory = await getProfCarInventoryPayload();
+    knowledgeText = `${stripStaticProfCarInventory(knowledgeText)}\n\nPROFCAR BESTANDSSTATUS:\nModus: ${inventory.mode}. ${inventory.message}\nGesamtzahl geladener Fahrzeuge: ${inventory.vehicles.length}.\nFür jede konkrete Fahrzeugfrage ist search_profcar_inventory aufzurufen; er durchsucht den vollständigen Bestand.`;
+  }
 
   console.log("🧠 Realtime-Knowledge geprüft:", {
     requestedTenant: rawTenantId,
@@ -314,14 +368,16 @@ ${
 Feste Identität:
 - Du bist ${tenant.assistantName} von „${tenant.brandName}“.
 - Du arbeitest in dieser Sitzung ausschließlich als digitaler Fahrzeugberater für ProfCar in Köln.
-- Das geladene ProfCar-Knowledge ist dein verbindliches fachliches Gedächtnis.
-- Nutze für Fahrzeugdaten, Preise, Verfügbarkeit, Ausstattung und Motorhinweise ausschließlich dieses Knowledge.
+- Das geladene ProfCar-Knowledge und der serverseitig ergänzte Bestandskontext sind dein verbindliches fachliches Gedächtnis.
+- Nutze für Fahrzeugdaten, Preise, Verfügbarkeit und Ausstattung ausschließlich den serverseitig ergänzten Bestandskontext.
 - Wenn der Nutzer ein Fahrzeug nennt, ordne genau dieses Fahrzeug aus dem ProfCar-Bestand ein.
 - Erkläre bekannte typische Schwachstellen sachlich, aber stelle niemals eine Diagnose aus der Ferne.
 - Sage nur dann, dass eine Reparatur oder Prüfung am angebotenen Fahrzeug erledigt wurde, wenn das im Knowledge ausdrücklich als belegt steht.
 - Ist ein Punkt nicht dokumentiert, sage klar: „Das ist im aktuellen Datensatz nicht belegt und muss ProfCar am Fahrzeug beziehungsweise anhand der Unterlagen prüfen.“
-- Weise beim BMW M6 immer auf den dokumentierten Motorschaden und die fehlende Fahrtauglichkeit hin.
 - Verwechsle allgemeine Modellrisiken niemals mit dem tatsächlichen Zustand des konkreten ProfCar-Fahrzeugs.
+- Rufe vor jeder konkreten Fahrzeugauskunft search_profcar_inventory auf; verlasse dich nicht auf frühere Gesprächsinhalte oder statische Demo-Daten.
+- Rufe vor einem Terminvorschlag get_profcar_availability auf. Buche erst nach ausdrücklicher Bestätigung mit book_profcar_test_drive.
+- Sage nur dann, dass eine Probefahrt gebucht ist, wenn book_profcar_test_drive success=true und eine Buchungs-ID zurückgegeben hat.
 `.trim()
       : "";
 
@@ -351,7 +407,7 @@ Aktive ProfCar-Oberfläche:
 - Bei der Fahrzeugsuche nutze panel „finder“, beim Vergleich „compare“, bei Finanzierung „finance“, bei Inzahlungnahme „tradein“, bei Probefahrt „testdrive“ und bei Werkstattfragen „service“.
 - Zeige bei einem konkreten Fahrzeug höchstens die wichtigsten Fakten und Motorprüfpunkte. Lies die sichtbare Liste nicht vollständig vor.
 - Trenne immer zwischen typischen Modell-/Motorproblemen und dem belegten Zustand des konkreten Fahrzeugs.
-- Verwende für Karten, Preise, Fahrzeugdaten, Belegstatus und Links ausschließlich Fakten aus dem ProfCar-Knowledge.
+- Verwende für Karten, Preise, Fahrzeugdaten, Belegstatus und Links ausschließlich Fakten aus dem ProfCar-Knowledge und dem serverseitig ergänzten Bestandskontext.
 - Ein nicht dokumentierter Reparaturpunkt ist offen und darf niemals als erledigt dargestellt werden.
 `.trim()
       : tenant.id === "r-drive"
@@ -392,7 +448,9 @@ Aktive Cockpit-Oberfläche:
     tenantId: tenant.id,
     instructions,
     tools: supportsVoiceInterfaceTools(tenant.id)
-      ? VOICE_INTERFACE_TOOLS
+      ? tenant.id === "profcar"
+        ? [...VOICE_INTERFACE_TOOLS, ...PROFCAR_VOICE_TOOLS]
+        : VOICE_INTERFACE_TOOLS
       : [],
   };
 }

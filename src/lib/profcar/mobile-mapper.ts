@@ -1,6 +1,6 @@
 import type { ProfCarVehicle } from "./model";
 
-/** New JSON Search API only. Raw data is stored separately, unchanged. */
+/** New JSON Search/Seller API. Raw data is stored separately, unchanged. */
 export type MobileRawAd = Readonly<Record<string, unknown>>;
 const text = (v: unknown): string | null => typeof v === "string" && v.trim() ? v.trim() : null;
 function number(v: unknown): number | null {
@@ -42,7 +42,7 @@ export function mapMobileAdToProfCarVehicle(input: unknown): ProfCarVehicle {
     description: text(ad.plainTextDescription) || text(ad.description),
     images: ((ad.images || []) as unknown[]).map(image => {
       const img = object(image);
-      return url(img.xxxl) || url(img.xxl) || url(img.xl) || url(img.l) || url(img.m);
+      return url(img.xxxl) || url(img.xxl) || url(img.xl) || url(img.l) || url(img.m) || url(img.ref);
     }).filter((u): u is string => u !== null),
     mobileUrl: url(ad.detailPageUrl), modificationDate, availabilityStatus: "listed", lastSuccessfulSync: null, extras: {},
   };

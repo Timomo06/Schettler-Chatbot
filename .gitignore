@@ -23,6 +23,9 @@
 # misc
 .DS_Store
 *.pem
+# Local transfer artifacts; the real repository is the project root.
+/chioa-hopla-projekt/
+/chioa-hopla-projekt.zip
 
 # debug
 npm-debug.log*
