@@ -525,7 +525,12 @@ export async function POST(req: NextRequest) {
         booking.bookingIntent &&
         booking.confirmed &&
         typeof booking.name === "string" &&
-        (typeof booking.email === "string" || typeof booking.phone === "string") &&
+        (tenant.id === "profcar"
+          ? typeof booking.email === "string" &&
+            booking.email.trim().length > 0 &&
+            typeof booking.phone === "string" &&
+            booking.phone.trim().length > 0
+          : typeof booking.email === "string" || typeof booking.phone === "string") &&
         (tenant.id !== "profcar" || typeof booking.vehicle === "string") &&
         typeof booking.start === "string" &&
         typeof booking.end === "string";
@@ -703,7 +708,9 @@ Wenn tenant.id nicht "mm-wartung" ist, geht es um einen Beratungstermin.
 Dann frage nacheinander Name, E-Mail, Telefonnummer optional, Thema sowie Datum und Uhrzeit ab.
 
 Wenn tenant.id "profcar" ist, geht es um eine Probefahrt oder Fahrzeugberatung bei ProfCar.
-Dann frage nacheinander Wunschfahrzeug, Name, E-Mail oder Telefonnummer sowie Datum und eine angebotene freie Uhrzeit ab.
+Dann frage nacheinander Wunschfahrzeug, Name, E-Mail-Adresse, Telefonnummer sowie Datum und eine angebotene freie Uhrzeit ab.
+Für ProfCar sind Name, E-Mail-Adresse und Telefonnummer gemeinsam Pflicht.
+Eine Probefahrt dauert 60 Minuten; danach sind 30 Minuten Puffer reserviert.
 Bestätige eine Buchung ausschließlich mit der vom Server zurückgegebenen Buchungs-ID.
 
 Wenn der Nutzer eine konkrete Wunschzeit nennt, prüft das System automatisch die Verfügbarkeit.

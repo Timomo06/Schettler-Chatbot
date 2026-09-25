@@ -14370,8 +14370,8 @@ function ProfCarHub({
       setBookingError("Bitte wähle zuerst einen freien Termin.");
       return;
     }
-    if (!bookingContact.name.trim() || (!bookingContact.email.trim() && !bookingContact.phone.trim())) {
-      setBookingError("Bitte gib deinen Namen und mindestens E-Mail oder Telefonnummer an.");
+    if (!bookingContact.name.trim() || !bookingContact.email.trim() || !bookingContact.phone.trim()) {
+      setBookingError("Bitte gib deinen Namen, deine E-Mail-Adresse und deine Telefonnummer an.");
       return;
     }
     if (!bookingAttemptKeyRef.current) bookingAttemptKeyRef.current = crypto.randomUUID();
@@ -15017,11 +15017,11 @@ function ProfCarHub({
                 </label>
                 <label style={labelStyle}>
                   E-Mail
-                  <input type="email" value={bookingContact.email} onChange={(event) => setBookingContact(current => ({ ...current, email: event.target.value }))} placeholder="name@beispiel.de" style={inputStyle} />
+                  <input required type="email" value={bookingContact.email} onChange={(event) => setBookingContact(current => ({ ...current, email: event.target.value }))} placeholder="name@beispiel.de" style={inputStyle} />
                 </label>
                 <label style={labelStyle}>
                   Telefon
-                  <input inputMode="tel" value={bookingContact.phone} onChange={(event) => setBookingContact(current => ({ ...current, phone: event.target.value }))} placeholder="0151 …" style={inputStyle} />
+                  <input required inputMode="tel" value={bookingContact.phone} onChange={(event) => setBookingContact(current => ({ ...current, phone: event.target.value }))} placeholder="0151 …" style={inputStyle} />
                 </label>
                 <label style={labelStyle}>
                   Nachricht (optional)
@@ -15041,7 +15041,7 @@ function ProfCarHub({
                 }}
               >
                 {inventoryMeta.mode === "live"
-                  ? "Der Kalender wird unmittelbar vor dem Eintrag erneut geprüft. Eine Bestätigung erscheint erst nach erfolgreichem Schreiben in Michis Apple-Kalender."
+                  ? "Die Probefahrt dauert 60 Minuten; danach bleiben 30 Minuten Puffer. Der Kalender wird unmittelbar vor dem Eintrag erneut geprüft. Eine Bestätigung erscheint erst nach erfolgreichem Schreiben in Michis Apple-Kalender."
                   : inventoryMeta.message}
               </div>
               {bookingError ? <p role="alert" style={{ color: "#b4232d", fontSize: 12.5, fontWeight: 750 }}>{bookingError}</p> : null}
@@ -19633,7 +19633,7 @@ export default function WidgetPage() {
         const phone = String(args.phone || "").trim();
         const start = String(args.start || "").trim();
         const end = String(args.end || "").trim();
-        if (!confirmed || !vehicle || !name || (!email && !phone) || !start || !end || profCarInventoryMeta.mode !== "live") {
+        if (!confirmed || !vehicle || !name || !email || !phone || !start || !end || profCarInventoryMeta.mode !== "live") {
           completeRealtimeToolCall(callId, { success: false, error: "Fahrzeug, bestätigter Termin oder Kontaktdaten fehlen." });
           return;
         }

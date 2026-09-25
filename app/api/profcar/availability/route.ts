@@ -14,6 +14,7 @@ export async function GET(request: NextRequest) {
       ok: true,
       date: result.date,
       durationMinutes: result.config.durationMinutes,
+      bufferMinutes: result.config.bufferMinutes,
       timeZone: result.config.timeZone,
       slots: result.slots,
     }, { headers });

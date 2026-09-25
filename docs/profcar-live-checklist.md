@@ -3,8 +3,9 @@
 ## 1. Regeln mit Michi bestätigen
 
 - Exakter Name des Zielkalenders in Apple Kalender
-- Dauer einer Probefahrt in Minuten
-- Abstand zwischen angebotenen Startzeiten (mindestens so lang wie die Termindauer)
+- Dauer einer Probefahrt: 60 Minuten
+- Puffer nach jeder Probefahrt: 30 Minuten
+- Pflichtangaben: Name, E-Mail-Adresse und Telefonnummer
 - Buchbare Wochentage und Zeitfenster
 - Wie viele Tage im Voraus gebucht werden darf
 

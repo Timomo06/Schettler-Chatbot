@@ -34,6 +34,7 @@ export type CalendarTenantConfig = {
   calendarName: string;
   strictRules: boolean;
   durationMinutes: number;
+  bufferMinutes: number;
   slotStepMinutes: number;
   bookingHorizonDays: number;
   windows: WeeklyBookingWindows | null;
@@ -149,12 +150,16 @@ export function getCalendarTenantConfig(value: unknown): CalendarTenantConfig {
     if (!durationMinutes) {
       throw new CalendarBookingError("BOOKING_RULES_NOT_CONFIGURED", 503, "Die Terminlänge für ProfCar ist ungültig.");
     }
-    const slotStepMinutes = positiveInteger(process.env.PROFCAR_BOOKING_SLOT_STEP_MINUTES, durationMinutes);
-    if (slotStepMinutes < durationMinutes) {
+    const bufferMinutes = positiveInteger(process.env.PROFCAR_BOOKING_BUFFER_MINUTES, 30);
+    const slotStepMinutes = positiveInteger(
+      process.env.PROFCAR_BOOKING_SLOT_STEP_MINUTES,
+      durationMinutes + bufferMinutes,
+    );
+    if (slotStepMinutes < durationMinutes + bufferMinutes) {
       throw new CalendarBookingError(
         "BOOKING_RULES_NOT_CONFIGURED",
         503,
-        "Der Abstand zwischen ProfCar-Terminen darf nicht kürzer als die Terminlänge sein.",
+        "Der Abstand zwischen ProfCar-Terminen muss Terminlänge und Puffer berücksichtigen.",
       );
     }
     return {
@@ -170,6 +175,7 @@ export function getCalendarTenantConfig(value: unknown): CalendarTenantConfig {
       calendarName,
       strictRules: true,
       durationMinutes,
+      bufferMinutes,
       slotStepMinutes,
       bookingHorizonDays: positiveInteger(process.env.PROFCAR_BOOKING_HORIZON_DAYS, 60),
       windows: parseBookingWindows(windowsRaw),
@@ -189,6 +195,7 @@ export function getCalendarTenantConfig(value: unknown): CalendarTenantConfig {
       calendarName: cleanEnv(process.env.ICLOUD_CALENDAR_NAME_MM_WARTUNG || "MM Wartung Termine"),
       strictRules: false,
       durationMinutes: 60,
+      bufferMinutes: 0,
       slotStepMinutes: 30,
       bookingHorizonDays: 365,
       windows: null,
@@ -207,6 +214,7 @@ export function getCalendarTenantConfig(value: unknown): CalendarTenantConfig {
     calendarName: cleanEnv(process.env.ICLOUD_CALENDAR_NAME_BTDESIGNS || process.env.ICLOUD_CALENDAR_NAME || "BTDesigns Termine"),
     strictRules: false,
     durationMinutes: 30,
+    bufferMinutes: 0,
     slotStepMinutes: 30,
     bookingHorizonDays: 365,
     windows: null,
@@ -395,6 +403,30 @@ function overlaps(startA: Date, endA: Date, startB: Date, endB: Date) {
   return startA < endB && endA > startB;
 }
 
+export function bookingConflictsWithInterval(
+  start: Date,
+  end: Date,
+  intervalStart: Date,
+  intervalEnd: Date,
+  bufferMinutes: number,
+) {
+  const bufferMs = Math.max(0, bufferMinutes) * 60_000;
+  return overlaps(
+    start,
+    new Date(end.getTime() + bufferMs),
+    intervalStart,
+    new Date(intervalEnd.getTime() + bufferMs),
+  );
+}
+
+function bufferedQueryRange(start: Date, end: Date, bufferMinutes: number) {
+  const bufferMs = Math.max(0, bufferMinutes) * 60_000;
+  return {
+    start: new Date(start.getTime() - bufferMs),
+    end: new Date(end.getTime() + bufferMs),
+  };
+}
+
 async function connect(config: CalendarTenantConfig) {
   if (!config.username || !config.password) {
     throw new CalendarBookingError("CALENDAR_NOT_CONFIGURED", 503, `Der Apple-Kalender für ${config.businessName} ist noch nicht verbunden.`);
@@ -495,8 +527,11 @@ export async function checkCalendarAvailability(input: CalendarBookingInput) {
   const config = getCalendarTenantConfig(input.tenant);
   const { start, end } = parsedRange(input, config);
   const { client, calendar } = await connect(config);
-  const intervals = await intervalsForRange(client, calendar, start, end, config.timeZone);
-  const available = !intervals.some(interval => overlaps(start, end, interval.start, interval.end));
+  const query = bufferedQueryRange(start, end, config.bufferMinutes);
+  const intervals = await intervalsForRange(client, calendar, query.start, query.end, config.timeZone);
+  const available = !intervals.some(interval =>
+    bookingConflictsWithInterval(start, end, interval.start, interval.end, config.bufferMinutes),
+  );
   return { config, start, end, available };
 }
 
@@ -510,6 +545,9 @@ export async function createCalendarBooking(input: CalendarBookingInput) {
   const message = String(input.message || "").trim();
   const vehicle = String(input.vehicle || "").trim();
   if (!name) throw new CalendarBookingError("MISSING_NAME", 400, "Name fehlt.");
+  if (config.tenant === "profcar" && (!email || !phone)) {
+    throw new CalendarBookingError("MISSING_CONTACT", 400, "E-Mail und Telefonnummer fehlen oder sind unvollständig.");
+  }
   if (!email && !phone) throw new CalendarBookingError("MISSING_CONTACT", 400, "E-Mail oder Telefonnummer fehlt.");
   if (config.tenant === "profcar" && /probefahrt/i.test(service) && !vehicle) {
     throw new CalendarBookingError("MISSING_VEHICLE", 400, "Für eine Probefahrt fehlt das Wunschfahrzeug.");
@@ -519,12 +557,15 @@ export async function createCalendarBooking(input: CalendarBookingInput) {
   return withBookingLock(`${config.tenant}:${start.toISOString().slice(0, 10)}`, async () => {
     const { client, calendar } = await connect(config);
     // This is the authoritative check immediately before the write.
-    const intervals = await intervalsForRange(client, calendar, start, end, config.timeZone);
+    const query = bufferedQueryRange(start, end, config.bufferMinutes);
+    const intervals = await intervalsForRange(client, calendar, query.start, query.end, config.timeZone);
     const existing = intervals.find(interval => interval.bookingId === bookingId || interval.uid === uid);
     if (existing) {
       return { config, bookingId, uid, start, end, service, vehicle, alreadyExisted: true };
     }
-    if (intervals.some(interval => overlaps(start, end, interval.start, interval.end))) {
+    if (intervals.some(interval =>
+      bookingConflictsWithInterval(start, end, interval.start, interval.end, config.bufferMinutes),
+    )) {
       throw new CalendarBookingError("SLOT_CONFLICT", 409, "Der Zeitraum ist bereits belegt. Bitte wähle eine andere Uhrzeit.");
     }
     const title = `${config.businessName} Termin – ${service} – ${name}`;
@@ -571,11 +612,13 @@ export async function createCalendarBooking(input: CalendarBookingInput) {
     });
     if (!result.ok) {
       if (result.status === 409 || result.status === 412) {
-        const afterConflict = await intervalsForRange(client, calendar, start, end, config.timeZone);
+        const afterConflict = await intervalsForRange(client, calendar, query.start, query.end, config.timeZone);
         if (afterConflict.some(interval => interval.bookingId === bookingId || interval.uid === uid)) {
           return { config, bookingId, uid, start, end, service, vehicle, alreadyExisted: true };
         }
-        if (afterConflict.some(interval => overlaps(start, end, interval.start, interval.end))) {
+        if (afterConflict.some(interval =>
+          bookingConflictsWithInterval(start, end, interval.start, interval.end, config.bufferMinutes),
+        )) {
           throw new CalendarBookingError("SLOT_CONFLICT", 409, "Der Zeitraum ist bereits belegt. Bitte wähle eine andere Uhrzeit.");
         }
       }
@@ -613,7 +656,9 @@ export async function listAvailableCalendarSlots(tenant: unknown, dateValue: str
       const start = zonedTimeToUtc(year, month, day, Math.floor(minute / 60), minute % 60, 0, config.timeZone);
       const end = new Date(start.getTime() + config.durationMinutes * 60_000);
       if (start <= new Date()) continue;
-      if (!intervals.some(interval => overlaps(start, end, interval.start, interval.end))) {
+      if (!intervals.some(interval =>
+        bookingConflictsWithInterval(start, end, interval.start, interval.end, config.bufferMinutes),
+      )) {
         slots.push({ start: start.toISOString(), end: end.toISOString() });
       }
     }

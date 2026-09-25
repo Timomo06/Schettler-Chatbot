@@ -25,6 +25,8 @@ ICLOUD_CALENDAR_NAME_PROFCAR=
 
 # Mit Michi festlegen. Keine Beispielwerte ungeprüft produktiv übernehmen.
 PROFCAR_BOOKING_DURATION_MINUTES=
+# Abstand nach jedem Termin, in dem kein weiterer Termin beginnen darf
+PROFCAR_BOOKING_BUFFER_MINUTES=
 PROFCAR_BOOKING_SLOT_STEP_MINUTES=
 PROFCAR_BOOKING_HORIZON_DAYS=60
 # Wochentage: 0=Sonntag, 1=Montag, ... 6=Samstag

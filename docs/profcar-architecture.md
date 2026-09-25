@@ -20,7 +20,7 @@ Am 24.09.2026 wurde der rein lesende Test mit den vorhandenen lokalen Zugangsdat
 - `GET /api/profcar/availability?date=YYYY-MM-DD` liest Michis Zielkalender und liefert nur freie, regelkonforme Zeiten in `Europe/Berlin`.
 - `POST /api/create-event` prüft unmittelbar vor dem Schreiben erneut. Erst ein bestätigter CalDAV-Schreibvorgang führt zu einer Erfolgsantwort.
 - Jede Buchung erhält eine stabile Buchungs-ID. Der identische Zeitraum verwendet serverübergreifend denselben CalDAV-Ressourcennamen mit `If-None-Match: *`; wiederholte identische Requests sind idempotent, konkurrierende Requests erhalten einen Konflikt.
-- Für ProfCar sind Zielkalender, Terminlänge und Wochenfenster Pflicht. Der Abstand der angebotenen Startzeiten darf zur sicheren Kollisionsvermeidung nicht kürzer als die Terminlänge sein.
+- Für ProfCar sind Zielkalender, Terminlänge, Puffer und Wochenfenster Pflicht. Eine Probefahrt dauert 60 Minuten; danach bleiben 30 Minuten frei. Name, E-Mail-Adresse und Telefonnummer sind Pflichtangaben.
 - Das ProfCar-Formular, Textchat und Sprache verwenden alle `/api/create-event`. `checkOnly` schreibt keinen Termin.
 
 ## Noch notwendige Aktivierung

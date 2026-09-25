@@ -1,6 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import {
+  bookingConflictsWithInterval,
   calendarObjectFilename,
   extractCalendarIntervals,
   getCalendarTenantConfig,
@@ -12,16 +13,22 @@ import {
 test("ProfCar rules are explicit and timezone-safe", () => {
   const previous = {
     duration: process.env.PROFCAR_BOOKING_DURATION_MINUTES,
+    buffer: process.env.PROFCAR_BOOKING_BUFFER_MINUTES,
+    step: process.env.PROFCAR_BOOKING_SLOT_STEP_MINUTES,
     windows: process.env.PROFCAR_BOOKING_WINDOWS_JSON,
     calendar: process.env.ICLOUD_CALENDAR_NAME_PROFCAR,
   };
   process.env.PROFCAR_BOOKING_DURATION_MINUTES = "60";
-  process.env.PROFCAR_BOOKING_WINDOWS_JSON = JSON.stringify({ 1: [["08:00", "18:00"]], 6: [["08:00", "15:00"]] });
+  process.env.PROFCAR_BOOKING_BUFFER_MINUTES = "30";
+  process.env.PROFCAR_BOOKING_SLOT_STEP_MINUTES = "90";
+  process.env.PROFCAR_BOOKING_WINDOWS_JSON = JSON.stringify({ 1: [["09:00", "17:00"]], 6: [["09:00", "13:00"]] });
   process.env.ICLOUD_CALENDAR_NAME_PROFCAR = "ProfCar Termine";
   try {
     const config = getCalendarTenantConfig("profcar");
-    const start = parseEventDate("2026-09-28T10:00:00", "Europe/Berlin");
-    assert.equal(start?.toISOString(), "2026-09-28T08:00:00.000Z");
+    assert.equal(config.bufferMinutes, 30);
+    assert.equal(config.slotStepMinutes, 90);
+    const start = parseEventDate("2026-09-28T10:30:00", "Europe/Berlin");
+    assert.equal(start?.toISOString(), "2026-09-28T08:30:00.000Z");
     const end = new Date(start!.getTime() + 60 * 60_000);
     assert.doesNotThrow(() => validateBookingRules(start!, end, config, new Date("2026-09-24T08:00:00Z")));
     assert.throws(
@@ -31,11 +38,40 @@ test("ProfCar rules are explicit and timezone-safe", () => {
   } finally {
     if (previous.duration === undefined) delete process.env.PROFCAR_BOOKING_DURATION_MINUTES;
     else process.env.PROFCAR_BOOKING_DURATION_MINUTES = previous.duration;
+    if (previous.buffer === undefined) delete process.env.PROFCAR_BOOKING_BUFFER_MINUTES;
+    else process.env.PROFCAR_BOOKING_BUFFER_MINUTES = previous.buffer;
+    if (previous.step === undefined) delete process.env.PROFCAR_BOOKING_SLOT_STEP_MINUTES;
+    else process.env.PROFCAR_BOOKING_SLOT_STEP_MINUTES = previous.step;
     if (previous.windows === undefined) delete process.env.PROFCAR_BOOKING_WINDOWS_JSON;
     else process.env.PROFCAR_BOOKING_WINDOWS_JSON = previous.windows;
     if (previous.calendar === undefined) delete process.env.ICLOUD_CALENDAR_NAME_PROFCAR;
     else process.env.ICLOUD_CALENDAR_NAME_PROFCAR = previous.calendar;
   }
+});
+
+test("ProfCar buffer keeps 30 minutes free between calendar events", () => {
+  const existingStart = new Date("2026-09-28T08:00:00.000Z");
+  const existingEnd = new Date("2026-09-28T09:00:00.000Z");
+  assert.equal(
+    bookingConflictsWithInterval(
+      new Date("2026-09-28T09:15:00.000Z"),
+      new Date("2026-09-28T10:15:00.000Z"),
+      existingStart,
+      existingEnd,
+      30,
+    ),
+    true,
+  );
+  assert.equal(
+    bookingConflictsWithInterval(
+      new Date("2026-09-28T09:30:00.000Z"),
+      new Date("2026-09-28T10:30:00.000Z"),
+      existingStart,
+      existingEnd,
+      30,
+    ),
+    false,
+  );
 });
 
 test("booking windows reject malformed configuration", () => {
