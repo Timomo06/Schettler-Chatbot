@@ -1,6 +1,25 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { testMobileDeConnection, withMobileDeadline } from "./mobile-client";
+import { parseActiveInventoryCache, testMobileDeConnection, withMobileDeadline } from "./mobile-client";
+
+test("active inventory cache is fresh, complete and duplicate-free", () => {
+  const now = new Date("2026-09-25T12:30:00.000Z");
+  assert.deepEqual(
+    [...parseActiveInventoryCache({
+      updatedAt: "2026-09-25T14:00:00+02:00",
+      vehicles: [{ id: "459051092" }, { id: "40617028693408" }],
+    }, now, 180)],
+    ["459051092", "40617028693408"],
+  );
+  assert.throws(() => parseActiveInventoryCache({
+    updatedAt: "2026-09-25T08:00:00.000Z",
+    vehicles: [{ id: "459051092" }],
+  }, now, 180), { message: "STALE_ACTIVE_INVENTORY" });
+  assert.throws(() => parseActiveInventoryCache({
+    updatedAt: now.toISOString(),
+    vehicles: [{ id: "459051092" }, { id: "459051092" }],
+  }, now, 180), { message: "INVALID_ACTIVE_INVENTORY" });
+});
 
 test("GET-only seller discovery, normalized samples and safe failures", async () => {
   const originalFetch = globalThis.fetch;

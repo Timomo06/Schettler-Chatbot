@@ -8,6 +8,9 @@ MOBILE_DE_BASE_URL=https://services.mobile.de
 MOBILE_DE_SELLER_ID=
 # Öffentliche mobile.de-Händlerseite zur Gegenprüfung aktiver Inserate
 MOBILE_DE_DEALER_SLUG=PROFCAR
+# Bevorzugte fail-closed Quelle: bestehender stündlicher Search-API-Cache der ProfCar-Website
+PROFCAR_ACTIVE_INVENTORY_URL=https://profcar.com/vehicles-cache.json
+PROFCAR_ACTIVE_INVENTORY_MAX_AGE_MINUTES=180
 
 # Supabase: erforderlich für atomaren Live-Bestand, ausschließlich serverseitig
 NEXT_PUBLIC_SUPABASE_URL=

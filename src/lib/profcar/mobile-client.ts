@@ -80,6 +80,97 @@ function dealerHomepageUrl() {
   return new URL(`https://home.mobile.de/${slug}`);
 }
 
+function activeInventoryCacheUrl() {
+  const raw = process.env.PROFCAR_ACTIVE_INVENTORY_URL?.trim();
+  if (!raw) return null;
+  let url: URL;
+  try {
+    url = new URL(raw);
+  } catch {
+    throw new MobileDeError("INVALID_ACTIVE_INVENTORY_URL");
+  }
+  if (
+    url.protocol !== "https:" ||
+    url.hostname !== "profcar.com" ||
+    url.pathname !== "/vehicles-cache.json" ||
+    url.username ||
+    url.password ||
+    url.search ||
+    url.hash
+  ) {
+    throw new MobileDeError("INVALID_ACTIVE_INVENTORY_URL");
+  }
+  return url;
+}
+
+function activeInventoryMaxAgeMinutes() {
+  const raw = process.env.PROFCAR_ACTIVE_INVENTORY_MAX_AGE_MINUTES?.trim() || "180";
+  const value = Number(raw);
+  if (!Number.isSafeInteger(value) || value < 15 || value > 1_440) {
+    throw new MobileDeError("INVALID_ACTIVE_INVENTORY_MAX_AGE");
+  }
+  return value;
+}
+
+export function parseActiveInventoryCache(
+  value: unknown,
+  now = new Date(),
+  maxAgeMinutes = 180,
+) {
+  const body = object(value);
+  if (typeof body.updatedAt !== "string" || !Array.isArray(body.vehicles) || !body.vehicles.length) {
+    throw new MobileDeError("INVALID_ACTIVE_INVENTORY");
+  }
+  const updatedAt = new Date(body.updatedAt);
+  const ageMs = now.getTime() - updatedAt.getTime();
+  if (!Number.isFinite(updatedAt.getTime()) || ageMs < -10 * 60_000 || ageMs > maxAgeMinutes * 60_000) {
+    throw new MobileDeError("STALE_ACTIVE_INVENTORY");
+  }
+  const ids = new Set<string>();
+  for (const entry of body.vehicles) {
+    const vehicle = object(entry);
+    if (typeof vehicle.id !== "string" || !/^\d{7,14}$/.test(vehicle.id) || ids.has(vehicle.id)) {
+      throw new MobileDeError("INVALID_ACTIVE_INVENTORY");
+    }
+    ids.add(vehicle.id);
+  }
+  return ids;
+}
+
+async function fetchCachedActiveAdIds(url: URL, signal?: AbortSignal) {
+  console.info("ProfCar active inventory cache request", { start: true });
+  try {
+    return await withMobileDeadline(async requestSignal => {
+      let response: Response;
+      try {
+        response = await fetch(url, {
+          method: "GET",
+          headers: { Accept: "application/json" },
+          cache: "no-store",
+          redirect: "error",
+          signal: requestSignal,
+        });
+      } catch {
+        throw new MobileDeError(requestSignal.aborted ? "TIMEOUT" : "CONNECTION_FAILED");
+      }
+      if (!response.ok) throw new MobileDeError("ACTIVE_INVENTORY_HTTP_ERROR", response.status);
+      const contentType = response.headers.get("content-type") || "";
+      if (!contentType.toLowerCase().includes("application/json")) {
+        throw new MobileDeError("INVALID_ACTIVE_INVENTORY");
+      }
+      let body: unknown;
+      try {
+        body = await response.json();
+      } catch {
+        throw new MobileDeError(requestSignal.aborted ? "TIMEOUT" : "INVALID_ACTIVE_INVENTORY");
+      }
+      return parseActiveInventoryCache(body, new Date(), activeInventoryMaxAgeMinutes());
+    }, 12_000, signal);
+  } finally {
+    console.info("ProfCar active inventory cache request", { complete: true });
+  }
+}
+
 function publicCategoryCounts(html: string) {
   const categories = new Map<string, number>();
   const pattern = /<input[^>]+value="([A-Za-z][A-Za-z0-9]*)"[^>]*\/><div[\s\S]{0,3000}?<div>\(<!-- -->(\d+)<!-- -->\)<\/div>/g;
@@ -155,6 +246,13 @@ async function fetchPublicActiveAdIds(signal?: AbortSignal) {
   return ids;
 }
 
+async function fetchActiveAdIds(signal?: AbortSignal) {
+  const cacheUrl = activeInventoryCacheUrl();
+  return cacheUrl
+    ? fetchCachedActiveAdIds(cacheUrl, signal)
+    : fetchPublicActiveAdIds(signal);
+}
+
 async function mobileGet(path: string, signal?: AbortSignal): Promise<unknown> {
   const { username, password, configuredUrl } = mobileConfiguration();
   const started = Date.now();
@@ -219,7 +317,7 @@ export async function fetchProfCarMobileInventory(signal?: AbortSignal) {
   const seller = await discoverProfCarSeller(signal);
   const [sellerAds, activeIds] = await Promise.all([
     mobileGet(`/seller-api/sellers/${seller.sellerId}/ads`, signal).then(value => collection(value, "ads")),
-    fetchPublicActiveAdIds(signal),
+    fetchActiveAdIds(signal),
   ]);
   const ads = sellerAds.filter(ad => typeof ad.mobileAdId === "string" && activeIds.has(ad.mobileAdId));
   try {

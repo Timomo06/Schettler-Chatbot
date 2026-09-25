@@ -4,7 +4,7 @@ Stand: 24.09.2026. Die Supabase-Migrationen sind produktiv angewandt und der ers
 
 ## Gemeinsamer Fahrzeugbestand
 
-- `src/lib/profcar/mobile-client.ts` liest ausschließlich per `GET`: Händlerliste und vollständige Fahrzeugdaten kommen aus der Seller API. Da dieser Zugang auch alte, nicht veröffentlichte Datensätze ohne Aktivstatus liefert und die Search API nicht freigeschaltet ist, werden die aktuell sichtbaren IDs fail-closed mit der öffentlichen mobile.de-Händlerseite abgeglichen. Für den produktiven Sync sind eine feste `MOBILE_DE_SELLER_ID` und der bestätigte Händler-Slug Pflicht.
+- `src/lib/profcar/mobile-client.ts` liest ausschließlich per `GET`: Händlerliste und vollständige Fahrzeugdaten kommen aus der Seller API. Da dieser Zugang auch alte, nicht veröffentlichte Datensätze ohne Aktivstatus liefert, werden die aktuell sichtbaren IDs fail-closed mit dem stündlich aus der Search API erzeugten Fahrzeugcache der ProfCar-Website abgeglichen. Ist der Cache älter als drei Stunden, schlägt der Abgleich bewusst fehl. Ohne konfigurierte Cache-URL bleibt die öffentliche mobile.de-Händlerseite als Rückfallweg erhalten.
 - `src/lib/profcar/mobile-mapper.ts` normalisiert jede Anzeige in das einheitliche `ProfCarVehicle`-Modell. Rohdaten und öffentliche Daten bleiben getrennt.
 - `src/lib/profcar/inventory.ts` lehnt unvollständige, fehlerhafte, doppelte oder händlerfremde Snapshots ab. Nur ein vollständiger Lauf darf den Bestand umschalten. Fehlende Inserate werden als inaktiv markiert; ProfCar-eigene Zusatzdaten bleiben erhalten.
 - `src/lib/profcar/supabase-repository.ts` und `supabase/migrations/202609240001_profcar_live_sync.sql` speichern den Gesamtbestand atomar mit Revisionsprüfung. Die Migration setzt `202609170001_profcar_inventory.sql` voraus.
