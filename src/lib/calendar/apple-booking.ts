@@ -446,11 +446,19 @@ async function connect(config: CalendarTenantConfig) {
     fetch: calendarFetch,
   });
   const calendars = await client.fetchCalendars();
-  const calendar = calendars.find(candidate => String(candidate.displayName || "").trim().toLocaleLowerCase("de-DE") === config.calendarName.toLocaleLowerCase("de-DE"));
-  if (!calendar) {
+  const discoveredCalendar = calendars.find(candidate => String(candidate.displayName || "").trim().toLocaleLowerCase("de-DE") === config.calendarName.toLocaleLowerCase("de-DE"));
+  if (!discoveredCalendar) {
     throw new CalendarBookingError("CALENDAR_NOT_FOUND", 503, `Der konfigurierte Zielkalender für ${config.businessName} wurde nicht gefunden.`);
   }
-  return { client, calendar };
+  // A CalDAV object URL must be a child of the calendar collection. Without
+  // the trailing slash, URL resolution replaces the collection id and Apple
+  // answers the resulting PUT with 401 even though reads still succeed.
+  const discoveredUrlHadTrailingSlash = discoveredCalendar.url.endsWith("/");
+  const calendar = {
+    ...discoveredCalendar,
+    url: discoveredUrlHadTrailingSlash ? discoveredCalendar.url : `${discoveredCalendar.url}/`,
+  };
+  return { client, calendar, discoveredUrlHadTrailingSlash };
 }
 
 async function intervalsForRange(
@@ -572,7 +580,7 @@ function collectPrivilegeNames(value: unknown, names = new Set<string>()) {
 
 export async function inspectCalendarAccess(tenant: unknown) {
   const config = getCalendarTenantConfig(tenant);
-  const { client, calendar } = await connect(config);
+  const { client, calendar, discoveredUrlHadTrailingSlash } = await connect(config);
   const responses = await client.propfind({
     url: calendar.url,
     props: { "d:current-user-privilege-set": {} },
@@ -582,6 +590,7 @@ export async function inspectCalendarAccess(tenant: unknown) {
   const privilegeSet = response?.props?.currentUserPrivilegeSet;
   const names = collectPrivilegeNames(privilegeSet);
   const writable = names.has("all") || names.has("write") || names.has("writecontent");
+  const calendarUrl = new URL(calendar.url);
   return {
     tenant: config.tenant,
     businessName: config.businessName,
@@ -589,6 +598,10 @@ export async function inspectCalendarAccess(tenant: unknown) {
     readable: true,
     writable,
     privilegeInformationAvailable: privilegeSet !== undefined,
+    privileges: [...names].filter(name => ["all", "read", "write", "writecontent", "writeproperties", "bind", "unbind"].includes(name)).sort(),
+    collectionHost: calendarUrl.hostname,
+    discoveredUrlHadTrailingSlash,
+    normalizedCollectionUrlHasTrailingSlash: calendar.url.endsWith("/"),
   };
 }
 
@@ -695,11 +708,23 @@ export async function createCalendarBooking(input: CalendarBookingInput) {
       headers: { "If-None-Match": "*" },
     });
     if (!result.ok) {
+      const responseBody = await result.clone().text().catch(() => "");
       console.error("ProfCar CalDAV write failed", {
         tenant: config.tenant,
         status: result.status,
         statusText: result.statusText,
+        collectionHost: new URL(calendar.url).hostname,
+        collectionUrlHasTrailingSlash: calendar.url.endsWith("/"),
+        authenticate: result.headers.get("www-authenticate"),
+        responseBody: responseBody.slice(0, 500),
       });
+      if (result.status === 401) {
+        throw new CalendarBookingError(
+          "CALENDAR_WRITE_UNAUTHORIZED",
+          503,
+          "Apple hat den Schreibzugriff abgelehnt. Der Kalenderzugang muss neu bestätigt werden.",
+        );
+      }
       if (result.status === 409 || result.status === 412) {
         const afterConflict = await intervalsForRange(client, calendar, query.start, query.end, config.timeZone);
         if (afterConflict.some(interval => interval.bookingId === bookingId || interval.uid === uid)) {
