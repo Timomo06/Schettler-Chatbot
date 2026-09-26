@@ -1375,59 +1375,46 @@ const FAHRSCHULE7_START_CARDS: StartCard[] = [
 
 const PROFCAR_START_CARDS: StartCard[] = [
   {
-    icon: "🚘",
+    icon: "car-search",
     title: "Passendes Auto finden",
     description: "Budget, Alltag und Wünsche kurz gemeinsam eingrenzen",
     action: "profcarPanel",
     profcarPanel: "finder",
   },
   {
-    icon: "✨",
+    icon: "inventory",
     title: "Aktuelle Fahrzeuge",
     description: "Verfügbare Modelle und ihre wichtigsten Daten ansehen",
     action: "profcarPanel",
     profcarPanel: "inventory",
   },
   {
-    icon: "⚖️",
+    icon: "compare",
     title: "Fahrzeuge vergleichen",
     description: "Zwei Modelle ehrlich nach meinem Bedarf einordnen",
     action: "profcarPanel",
     profcarPanel: "compare",
   },
   {
-    icon: "💶",
+    icon: "finance",
     title: "Finanzierung prüfen",
     description: "Anzahlung, Laufzeit und gewünschte Rate vorbereiten",
     action: "profcarPanel",
     profcarPanel: "finance",
   },
   {
-    icon: "🔁",
+    icon: "tradein",
     title: "Inzahlungnahme",
     description: "Aktuelles Fahrzeug strukturiert bewerten lassen",
     action: "profcarPanel",
     profcarPanel: "tradein",
   },
   {
-    icon: "📅",
+    icon: "testdrive",
     title: "Probefahrt buchen",
     description: "Wunschfahrzeug wählen und freie Kalenderzeit verbindlich buchen",
     action: "profcarPanel",
     profcarPanel: "testdrive",
-  },
-  {
-    icon: "🛠️",
-    title: "Service & Werkstatt",
-    description: "TÜV/HU, Reifen, Fahrwerk und Einlagerung klären",
-    action: "profcarPanel",
-    profcarPanel: "service",
-  },
-  {
-    icon: "🎙️",
-    title: "Einfach sprechen",
-    description: "Fahrzeugwunsch oder Frage natürlich einsprechen",
-    action: "voice",
   },
 ];
 
@@ -13617,6 +13604,49 @@ function BtServiceIcon({ name, size = 30 }: BtServiceIconProps) {
         <path {...common} d="m9.5 23 5.2-5.2 3.4 3.4 2.4-2.4 4 4.2M23.5 5v7m-3-3 3-3 3 3" />
       </>
     ),
+    "car-search": (
+      <>
+        <path {...common} d="M7 21.5v-5.2l2.5-5.1h11.2l2.7 5.1v5.2" />
+        <path {...common} d="M7 18h16.4M10 21.5v2.2m10.5-2.2v2.2M10.2 15h10" />
+        <circle {...common} cx="25.2" cy="9.2" r="3.3" />
+        <path {...common} d="m27.7 11.7 2.3 2.3" />
+      </>
+    ),
+    inventory: (
+      <>
+        <path {...common} d="M6.5 20.8v-5.1l2.8-5.4h15.4l2.8 5.4v5.1" />
+        <path {...common} d="M6.5 17.2h21M10.2 20.8v2.8m13.6-2.8v2.8M10.8 14h12.4" />
+        <path {...common} d="M10 27h14" />
+      </>
+    ),
+    compare: (
+      <>
+        <path {...common} d="M6.5 22.5v-4.1l2.3-4.5h8.3l2.4 4.5v4.1" />
+        <path {...common} d="M6.5 19.2h13M9.4 22.5v2m7.2-2v2" />
+        <path {...common} d="M19.5 11.5h8m-2.8-2.8 2.8 2.8-2.8 2.8M27.5 27h-8m2.8 2.8-2.8-2.8 2.8-2.8" />
+      </>
+    ),
+    finance: (
+      <>
+        <rect {...common} x="6.5" y="8" width="21" height="18" rx="4" />
+        <path {...common} d="M6.5 13.2h21M10.5 20.5h6" />
+        <circle {...common} cx="23" cy="20.2" r="2.6" />
+      </>
+    ),
+    tradein: (
+      <>
+        <path {...common} d="M7 19.5v-4.1l2.3-4.5h12.2l2.4 4.5v4.1" />
+        <path {...common} d="M7 16.2h16.9M10.2 19.5v2.3m10.5-2.3v2.3" />
+        <path {...common} d="M22.5 25.5h6m-2.2-2.2 2.2 2.2-2.2 2.2M11.5 28.5h-6m2.2-2.2-2.2 2.2 2.2 2.2" />
+      </>
+    ),
+    testdrive: (
+      <>
+        <rect {...common} x="6.5" y="8.5" width="21" height="19" rx="4" />
+        <path {...common} d="M11.5 5.8v5.4m11-5.4v5.4M6.5 14h21" />
+        <path {...common} d="m12.2 20 2.5 2.5 6-6" />
+      </>
+    ),
   };
 
   return (
@@ -13897,6 +13927,45 @@ function isCriticalProfCarVehicle(vehicle: ProfCarVehicle) {
   );
 }
 
+const PROFCAR_TABS: Array<{
+  id: Exclude<ProfCarPanel, "service">;
+  label: string;
+}> = [
+  { id: "home", label: "Start" },
+  { id: "finder", label: "Finden" },
+  { id: "inventory", label: "Fahrzeuge" },
+  { id: "compare", label: "Vergleich" },
+  { id: "finance", label: "Finanzierung" },
+  { id: "tradein", label: "Inzahlungnahme" },
+  { id: "testdrive", label: "Probefahrt" },
+];
+
+function ProfCarTabBar({
+  activePanel,
+  onPanelChange,
+}: {
+  activePanel: ProfCarPanel;
+  onPanelChange: (panel: ProfCarPanel) => void;
+}) {
+  return (
+    <nav className="bt-profcar-tabs" aria-label="ProfCar-Bereiche">
+      {PROFCAR_TABS.map((item) => {
+        const active = activePanel === item.id;
+        return (
+          <button
+            key={item.id}
+            type="button"
+            aria-current={active ? "page" : undefined}
+            onClick={() => onPanelChange(item.id)}
+          >
+            {item.label}
+          </button>
+        );
+      })}
+    </nav>
+  );
+}
+
 function ProfCarHub({
   panel,
   onPanelChange,
@@ -13970,7 +14039,7 @@ function ProfCarHub({
   }, [voiceVehicle, onVoiceVehicleHandled, vehicles]);
 
   useEffect(() => {
-    if (panel !== "testdrive" || !bookingDate || inventoryMeta.mode !== "live") {
+    if (panel !== "testdrive" || !bookingDate || inventoryMeta.mode === "demo") {
       setBookingSlots([]);
       setBookingSlotStart("");
       return;
@@ -14006,49 +14075,49 @@ function ProfCarHub({
     { icon: string; eyebrow: string; title: string; description: string }
   > = {
     finder: {
-      icon: "🚘",
+      icon: "car-search",
       eyebrow: "FAHRZEUGFINDER",
       title: "Welches Auto passt zu dir?",
       description:
         "Budget und Nutzung auswählen – das Interface filtert direkt passende Fahrzeuge aus dem geladenen ProfCar-Bestand.",
     },
     inventory: {
-      icon: "✨",
+      icon: "inventory",
       eyebrow: "AKTUELLER BESTAND",
       title: "Fahrzeuge auf einen Blick",
       description:
         "Durchsuchen, Eckdaten prüfen und ein Wunschfahrzeug für die nächsten Schritte auswählen.",
     },
     compare: {
-      icon: "⚖️",
+      icon: "compare",
       eyebrow: "FAHRZEUGVERGLEICH",
       title: "Zwei Modelle direkt vergleichen",
       description:
         "Preis, Monatsrate, Laufleistung, Leistung und Fahrzeugcharakter übersichtlich gegenüberstellen.",
     },
     finance: {
-      icon: "💶",
+      icon: "finance",
       eyebrow: "FINANZIERUNG",
       title: "Finanzierungswunsch vorbereiten",
       description:
         "Wunschfahrzeug, Anzahlung, Laufzeit und Zielrate erfassen. Die verbindliche Prüfung erfolgt persönlich.",
     },
     tradein: {
-      icon: "🔁",
+      icon: "tradein",
       eyebrow: "INZAHLUNGNAHME",
       title: "Dein Fahrzeug vorbewerten lassen",
       description:
         "Alle wichtigen Daten strukturiert erfassen, damit ProfCar schnell eine persönliche Einschätzung geben kann.",
     },
     testdrive: {
-      icon: "📅",
+      icon: "testdrive",
       eyebrow: "PROBEFAHRT",
       title: "Wunschfahrzeug live erleben",
       description:
         "Fahrzeug auswählen, freie Kalenderzeit prüfen und die Probefahrt verbindlich buchen.",
     },
     service: {
-      icon: "🛠️",
+      icon: "interface",
       eyebrow: "SERVICE & WERKSTATT",
       title: "Serviceanliegen vorbereiten",
       description:
@@ -14242,7 +14311,7 @@ function ProfCarHub({
           letterSpacing: ".05em",
         }}
       >
-        <span>{isCriticalProfCarVehicle(vehicle) ? "⚠ BESONDERER HINWEIS" : inventoryMeta.mode === "live" ? "● LIVE-BESTAND" : inventoryMeta.mode === "stale" ? "● LETZTER ERFOLGREICHER STAND" : "● DEMO-BESTAND"}</span>
+        <span>{isCriticalProfCarVehicle(vehicle) ? "BESONDERER HINWEIS" : inventoryMeta.mode === "live" ? "● LIVE-BESTAND" : inventoryMeta.mode === "stale" ? "● LETZTER ERFOLGREICHER STAND" : "● DEMO-BESTAND"}</span>
         {rank ? <span style={{ color: "#dc1f2b" }}>MATCH {rank}</span> : null}
       </div>
       <h3
@@ -14361,8 +14430,8 @@ function ProfCarHub({
   const submitProfCarBooking = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (bookingSubmitting) return;
-    if (inventoryMeta.mode !== "live") {
-      setBookingError("Eine verbindliche Probefahrt ist erst möglich, wenn der mobile.de-Bestand aktuell bestätigt ist.");
+    if (inventoryMeta.mode === "demo") {
+      setBookingError("Eine verbindliche Probefahrt ist erst mit einem bestätigten ProfCar-Fahrzeugbestand möglich.");
       return;
     }
     const slot = bookingSlots.find(entry => entry.start === bookingSlotStart);
@@ -14456,7 +14525,10 @@ function ProfCarHub({
                 letterSpacing: ".12em",
               }}
             >
-              {copy.icon} {copy.eyebrow}
+              <span className="bt-profcar-panel-icon" aria-hidden="true">
+                <BtServiceIcon name={copy.icon} size={16} />
+              </span>
+              {copy.eyebrow}
             </div>
             <h2
               style={{
@@ -14987,7 +15059,7 @@ function ProfCarHub({
                       setBookingError("");
                       bookingAttemptKeyRef.current = null;
                     }}
-                    disabled={inventoryMeta.mode !== "live"}
+                    disabled={inventoryMeta.mode === "demo"}
                     style={inputStyle}
                   />
                 </label>
@@ -15000,7 +15072,7 @@ function ProfCarHub({
                       setBookingSlotStart(event.target.value);
                       bookingAttemptKeyRef.current = null;
                     }}
-                    disabled={!bookingDate || bookingLoading || inventoryMeta.mode !== "live"}
+                    disabled={!bookingDate || bookingLoading || inventoryMeta.mode === "demo"}
                     style={inputStyle}
                   >
                     <option value="">{bookingLoading ? "Freie Zeiten werden geladen…" : bookingSlots.length ? "Uhrzeit auswählen" : "Keine freie Zeit ausgewählt"}</option>
@@ -15042,10 +15114,12 @@ function ProfCarHub({
               >
                 {inventoryMeta.mode === "live"
                   ? "Die Probefahrt dauert 60 Minuten; danach bleiben 30 Minuten Puffer. Der Kalender wird unmittelbar vor dem Eintrag erneut geprüft. Eine Bestätigung erscheint erst nach erfolgreichem Schreiben in Michis Apple-Kalender."
-                  : inventoryMeta.message}
+                  : inventoryMeta.mode === "stale"
+                    ? "Der letzte erfolgreiche Fahrzeugbestand bleibt auswählbar. Die freien Zeiten werden unabhängig davon live in Michis Apple-Kalender geprüft; die Fahrzeugverfügbarkeit bestätigt ProfCar bei Bedarf persönlich."
+                    : inventoryMeta.message}
               </div>
               {bookingError ? <p role="alert" style={{ color: "#b4232d", fontSize: 12.5, fontWeight: 750 }}>{bookingError}</p> : null}
-              <button type="submit" disabled={bookingSubmitting || inventoryMeta.mode !== "live" || !bookingSlotStart} style={{ ...primaryButton, opacity: bookingSubmitting || inventoryMeta.mode !== "live" || !bookingSlotStart ? 0.55 : 1 }}>
+              <button type="submit" disabled={bookingSubmitting || inventoryMeta.mode === "demo" || !bookingSlotStart} style={{ ...primaryButton, opacity: bookingSubmitting || inventoryMeta.mode === "demo" || !bookingSlotStart ? 0.55 : 1 }}>
                 {bookingSubmitting ? "Kalender wird geprüft…" : "Probefahrt verbindlich buchen"}
               </button>
             </form>
@@ -20884,12 +20958,15 @@ body::after {
   .bt-profcar-stage-video { animation: none; }
 }
 
-/* ProfCar nutzt bewusst helle, kontrastreiche Arbeitsflächen im BTDesigns-Rahmen. */
+/* ProfCar folgt dem neuen Konfigurator-Look: ruhig, hell und mit klarer Navigation. */
 .bt-profcar-interface .bt-panel {
   border-color: rgba(255,255,255,.82) !important;
   background:
-    radial-gradient(720px 360px at 96% 0%, rgba(220,31,43,.12), transparent 66%),
-    linear-gradient(180deg, rgba(252,252,253,.98), rgba(240,243,246,.96)) !important;
+    radial-gradient(760px 420px at 96% 2%, rgba(245,98,106,.18), transparent 68%),
+    radial-gradient(620px 380px at 4% 2%, rgba(244,229,192,.22), transparent 72%),
+    linear-gradient(160deg, rgba(255,255,255,.96), rgba(249,246,243,.93)) !important;
+  backdrop-filter: blur(34px) saturate(165%) !important;
+  -webkit-backdrop-filter: blur(34px) saturate(165%) !important;
   box-shadow:
     0 30px 100px rgba(0,0,0,.34),
     inset 0 1px 0 rgba(255,255,255,.92) !important;
@@ -20897,34 +20974,138 @@ body::after {
 
 .bt-profcar-interface .bt-panel-header,
 .bt-profcar-interface .bt-composer {
-  border-color: #d9dde4 !important;
-  background: rgba(255,255,255,.88) !important;
-  backdrop-filter: blur(26px) saturate(150%) !important;
-  -webkit-backdrop-filter: blur(26px) saturate(150%) !important;
+  border-color: rgba(219,222,228,.82) !important;
+  background: linear-gradient(180deg, rgba(255,255,255,.90), rgba(255,255,255,.72)) !important;
+  backdrop-filter: blur(30px) saturate(165%) !important;
+  -webkit-backdrop-filter: blur(30px) saturate(165%) !important;
+}
+
+.bt-profcar-interface .bt-panel-header {
+  min-height: 96px !important;
+  padding-top: 18px !important;
+  padding-bottom: 18px !important;
 }
 
 .bt-profcar-interface .bt-panel-scroll {
   background:
-    radial-gradient(520px 300px at 92% 4%, rgba(220,31,43,.075), transparent 70%),
-    linear-gradient(180deg, #f7f8fa, #edf0f3) !important;
+    radial-gradient(560px 340px at 92% 4%, rgba(244,91,100,.10), transparent 70%),
+    radial-gradient(480px 320px at 5% 0%, rgba(235,211,158,.12), transparent 72%),
+    linear-gradient(180deg, rgba(250,249,248,.96), rgba(242,244,247,.94)) !important;
+}
+
+.bt-profcar-tabs {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 5px;
+  padding: 5px;
+  box-sizing: border-box;
+  border: 1px solid rgba(255,255,255,.88);
+  border-radius: 19px;
+  background: rgba(255,255,255,.68);
+  box-shadow: 0 13px 34px rgba(27,31,40,.09), inset 0 1px 0 rgba(255,255,255,.96);
+  backdrop-filter: blur(24px) saturate(175%);
+  -webkit-backdrop-filter: blur(24px) saturate(175%);
+}
+
+.bt-profcar-tabs button {
+  min-width: 0;
+  min-height: 42px;
+  padding: 0 10px;
+  border: 0;
+  border-radius: 14px;
+  background: transparent;
+  color: #697386;
+  font: 760 12px/1.2 ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: color 170ms ease, background 170ms ease, box-shadow 170ms ease, transform 170ms ease;
+}
+
+.bt-profcar-tabs button:hover:not([aria-current="page"]) {
+  color: #1d2430;
+  background: rgba(255,255,255,.70);
+}
+
+.bt-profcar-tabs button[aria-current="page"] {
+  color: #fff;
+  background: linear-gradient(180deg, #f34854, #dc1f2b);
+  box-shadow: 0 9px 22px rgba(220,31,43,.24), inset 0 1px 0 rgba(255,255,255,.28);
+}
+
+.bt-profcar-tabs button:active {
+  transform: scale(.98);
 }
 
 .bt-profcar-interface .bt-start-card {
-  border-color: #d9dee5 !important;
+  min-height: 156px !important;
+  padding: 22px !important;
+  border-radius: 28px !important;
+  border-color: rgba(255,255,255,.94) !important;
   background:
-    radial-gradient(180px 100px at 8% 0%, rgba(220,31,43,.10), transparent 72%),
-    linear-gradient(155deg, #ffffff, #f6f7f9) !important;
+    radial-gradient(220px 130px at 3% 0%, rgba(255,255,255,.98), transparent 70%),
+    linear-gradient(145deg, rgba(255,255,255,.88), rgba(250,248,246,.72)) !important;
+  backdrop-filter: blur(22px) saturate(155%) !important;
+  -webkit-backdrop-filter: blur(22px) saturate(155%) !important;
   color: #171b24 !important;
   box-shadow:
-    0 10px 26px rgba(15,23,42,.08),
-    inset 0 1px 0 rgba(255,255,255,.94) !important;
+    0 15px 36px rgba(15,23,42,.08),
+    inset 0 1px 0 rgba(255,255,255,.98) !important;
 }
 
 .bt-profcar-interface .bt-start-card:hover:not(:disabled) {
   border-color: rgba(220,31,43,.46) !important;
   background:
-    radial-gradient(200px 110px at 8% 0%, rgba(220,31,43,.15), transparent 72%),
-    linear-gradient(155deg, #ffffff, #f7f8fa) !important;
+    radial-gradient(220px 130px at 3% 0%, rgba(255,255,255,1), transparent 70%),
+    linear-gradient(145deg, #ffffff, rgba(255,241,241,.78)) !important;
+  box-shadow: 0 20px 46px rgba(120,28,34,.13), inset 0 1px 0 #fff !important;
+}
+
+.bt-profcar-service-icon {
+  width: 48px !important;
+  height: 48px !important;
+  border-radius: 16px !important;
+  color: #ee3040;
+  border: 1px solid rgba(255,255,255,.92);
+  background: linear-gradient(145deg, rgba(255,238,240,.96), rgba(250,207,211,.58)) !important;
+  box-shadow: 0 9px 22px rgba(220,31,43,.12), inset 0 1px 0 rgba(255,255,255,.98) !important;
+}
+
+.bt-profcar-panel-icon {
+  width: 22px;
+  height: 22px;
+  margin-right: 7px;
+  display: inline-grid;
+  place-items: center;
+  vertical-align: middle;
+  color: #dc1f2b;
+}
+
+.bt-mobile-viewport.bt-profcar-interface .bt-profcar-tabs {
+  position: relative;
+  display: flex;
+  overflow-x: auto;
+  scrollbar-width: none;
+  border-radius: 16px;
+}
+
+.bt-mobile-viewport.bt-profcar-interface .bt-profcar-tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.bt-mobile-viewport.bt-profcar-interface .bt-profcar-tabs button {
+  flex: 0 0 auto;
+  min-height: 39px;
+  padding: 0 14px;
+}
+
+.bt-mobile-viewport.bt-profcar-interface .bt-start-card {
+  min-height: 132px !important;
+  padding: 17px !important;
+  border-radius: 22px !important;
 }
 
 .bt-profcar-interface .bt-message-input::placeholder {
@@ -23249,6 +23430,12 @@ body::after {
                       "inset 0 1px 0 rgba(255,255,255,0.10), inset 0 -1px 0 rgba(22,49,38,0.04)",
                   }}
                 >
+                  {isProfCarInterface && (
+                    <ProfCarTabBar
+                      activePanel={profcarPanel}
+                      onPanelChange={openProfCarPanel}
+                    />
+                  )}
                   {usesRathjeInterfaceLayout && (
                     <RathjeTabBar
                       activePanel={hohenbadenPanel}
@@ -23419,7 +23606,7 @@ body::after {
                                       : `Wähle einen Einstieg aus. Danach führt dich ${displayAssistantName} gezielt weiter.`}
                         </div>
 
-                        {(isProfCarInterface || isFahrwerkBInterface || isPetermaennchenInterface || isAbgefahrenInterface || isFutureDemoInterface) && !usesRathjeInterfaceLayout && !isRDriveInterface && !isHappyDrivingInterface && (
+                        {(isFahrwerkBInterface || isPetermaennchenInterface || isAbgefahrenInterface || isFutureDemoInterface) && !usesRathjeInterfaceLayout && !isRDriveInterface && !isHappyDrivingInterface && (
                           <div
                             className="bt-fahrwerk-steps"
                             style={{
@@ -23555,7 +23742,7 @@ body::after {
                           display: "grid",
                           gridTemplateColumns: isMobileViewport
                             ? "1fr"
-                            : isFsazInterface
+                            : isProfCarInterface || isFsazInterface
                               ? "repeat(2, minmax(0, 1fr))"
                             : isEnhancedInterface
                               ? "repeat(3, minmax(0, 1fr))"
@@ -23663,9 +23850,13 @@ body::after {
                             >
                               <span
                                 className={
-                                  isLinaInterface ? "bt-service-icon" : undefined
+                                  isLinaInterface
+                                    ? "bt-service-icon"
+                                    : isProfCarInterface
+                                      ? "bt-profcar-service-icon"
+                                      : undefined
                                 }
-                                data-icon={isLinaInterface ? card.icon : undefined}
+                                data-icon={isLinaInterface || isProfCarInterface ? card.icon : undefined}
                                 style={{
                                   width: isEnhancedInterface ? 42 : 30,
                                   height: isEnhancedInterface ? 42 : 30,
@@ -23678,7 +23869,7 @@ body::after {
                                   flex: "0 0 auto",
                                 }}
                               >
-                                {isLinaInterface ? (
+                                {isLinaInterface || isProfCarInterface ? (
                                   <BtServiceIcon
                                     name={card.icon}
                                     size={isEnhancedInterface ? 30 : 23}
