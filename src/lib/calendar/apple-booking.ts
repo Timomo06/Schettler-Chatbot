@@ -498,6 +498,45 @@ export function calendarObjectFilename(config: Pick<CalendarTenantConfig, "tenan
   return `${config.tenant}-slot-${digest}.ics`;
 }
 
+export function buildCalendarObject({
+  config,
+  bookingId,
+  uid,
+  start,
+  end,
+  title,
+  description,
+}: {
+  config: Pick<CalendarTenantConfig, "prodId">;
+  bookingId: string;
+  uid: string;
+  start: Date;
+  end: Date;
+  title: string;
+  description: string;
+}) {
+  return [
+    "BEGIN:VCALENDAR",
+    "VERSION:2.0",
+    `PRODID:${config.prodId}`,
+    "CALSCALE:GREGORIAN",
+    // CalDAV calendar object resources must not contain METHOD. Apple
+    // rejects METHOD:PUBLISH on PUT even though calendar reads still work.
+    "BEGIN:VEVENT",
+    `UID:${uid}`,
+    `X-PROFCAR-BOOKING-ID:${bookingId}`,
+    `DTSTAMP:${toIcsDate(new Date())}`,
+    `DTSTART:${toIcsDate(start)}`,
+    `DTEND:${toIcsDate(end)}`,
+    "STATUS:CONFIRMED",
+    "TRANSP:OPAQUE",
+    `SUMMARY:${escapeIcsText(title)}`,
+    `DESCRIPTION:${escapeIcsText(description)}`,
+    "END:VEVENT",
+    "END:VCALENDAR",
+  ].join("\r\n");
+}
+
 const bookingQueues = new Map<string, Promise<void>>();
 
 async function withBookingLock<T>(key: string, action: () => Promise<T>) {
@@ -583,25 +622,15 @@ export async function createCalendarBooking(input: CalendarBookingInput) {
       "",
       `Quelle: ${config.source}`,
     ].filter(Boolean).join("\n");
-    const iCalString = [
-      "BEGIN:VCALENDAR",
-      "VERSION:2.0",
-      `PRODID:${config.prodId}`,
-      "CALSCALE:GREGORIAN",
-      "METHOD:PUBLISH",
-      "BEGIN:VEVENT",
-      `UID:${uid}`,
-      `X-PROFCAR-BOOKING-ID:${bookingId}`,
-      `DTSTAMP:${toIcsDate(new Date())}`,
-      `DTSTART:${toIcsDate(start)}`,
-      `DTEND:${toIcsDate(end)}`,
-      "STATUS:CONFIRMED",
-      "TRANSP:OPAQUE",
-      `SUMMARY:${escapeIcsText(title)}`,
-      `DESCRIPTION:${escapeIcsText(description)}`,
-      "END:VEVENT",
-      "END:VCALENDAR",
-    ].join("\r\n");
+    const iCalString = buildCalendarObject({
+      config,
+      bookingId,
+      uid,
+      start,
+      end,
+      title,
+      description,
+    });
     const result = await client.createCalendarObject({
       calendar,
       // Same time range always uses the same CalDAV resource. Together with
@@ -611,6 +640,11 @@ export async function createCalendarBooking(input: CalendarBookingInput) {
       headers: { "If-None-Match": "*" },
     });
     if (!result.ok) {
+      console.error("ProfCar CalDAV write failed", {
+        tenant: config.tenant,
+        status: result.status,
+        statusText: result.statusText,
+      });
       if (result.status === 409 || result.status === 412) {
         const afterConflict = await intervalsForRange(client, calendar, query.start, query.end, config.timeZone);
         if (afterConflict.some(interval => interval.bookingId === bookingId || interval.uid === uid)) {
@@ -640,15 +674,17 @@ export async function listAvailableCalendarSlots(tenant: unknown, dateValue: str
   const midday = zonedTimeToUtc(year, month, day, 12, 0, 0, config.timeZone);
   const parts = localParts(midday, config.timeZone);
   if (parts.date !== dateValue) throw new CalendarBookingError("INVALID_DATE", 400, "Das Datum ist ungültig.");
+  const todayLocal = localParts(new Date(), config.timeZone).date;
+  const distance = daysBetweenLocalDates(todayLocal, dateValue);
+  if (distance < 0 || distance > config.bookingHorizonDays) {
+    throw new CalendarBookingError("OUTSIDE_BOOKING_HORIZON", 400, "Dieser Termin liegt außerhalb des buchbaren Zeitraums.");
+  }
   const dayWindows = config.windows[parts.weekday] ?? [];
   const slots: AvailableSlot[] = [];
   if (!dayWindows.length) return { config, date: dateValue, slots };
   const rangeStart = zonedTimeToUtc(year, month, day, 0, 0, 0, config.timeZone);
   const nextDay = new Date(Date.UTC(year, month - 1, day + 1));
   const rangeEnd = zonedTimeToUtc(nextDay.getUTCFullYear(), nextDay.getUTCMonth() + 1, nextDay.getUTCDate(), 0, 0, 0, config.timeZone);
-  // Validates horizon and past dates using the first theoretical slot.
-  const validationStart = zonedTimeToUtc(year, month, day, Math.floor(dayWindows[0].startMinutes / 60), dayWindows[0].startMinutes % 60, 0, config.timeZone);
-  validateBookingRules(validationStart, new Date(validationStart.getTime() + config.durationMinutes * 60_000), config);
   const { client, calendar } = await connect(config);
   const intervals = await intervalsForRange(client, calendar, rangeStart, rangeEnd, config.timeZone);
   for (const window of dayWindows) {

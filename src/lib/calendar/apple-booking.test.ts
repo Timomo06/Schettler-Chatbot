@@ -2,6 +2,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import {
   bookingConflictsWithInterval,
+  buildCalendarObject,
   calendarObjectFilename,
   extractCalendarIntervals,
   getCalendarTenantConfig,
@@ -9,6 +10,22 @@ import {
   parseEventDate,
   validateBookingRules,
 } from "./apple-booking";
+
+test("stored CalDAV objects omit the forbidden METHOD property", () => {
+  const start = new Date("2026-09-28T07:00:00.000Z");
+  const end = new Date("2026-09-28T08:00:00.000Z");
+  const ics = buildCalendarObject({
+    config: { prodId: "-//ProfCar//Website Booking//DE" },
+    bookingId: "PC-TEST",
+    uid: "pc-test@profcar.com",
+    start,
+    end,
+    title: "ProfCar Termin – Probefahrt – Test",
+    description: "Buchungs-ID: PC-TEST",
+  });
+  assert.match(ics, /BEGIN:VEVENT/);
+  assert.doesNotMatch(ics, /^METHOD:/m);
+});
 
 test("ProfCar rules are explicit and timezone-safe", () => {
   const previous = {

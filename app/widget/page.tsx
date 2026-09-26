@@ -14192,25 +14192,25 @@ function ProfCarHub({
 
   const inputStyle: CSSProperties = {
     width: "100%",
-    minHeight: 46,
-    marginTop: 7,
-    padding: "11px 13px",
-    borderRadius: 13,
+    minHeight: 40,
+    marginTop: 5,
+    padding: "8px 11px",
+    borderRadius: 11,
     border: "1px solid #d8dde5",
     background: "#ffffff",
     color: "#151922",
     outline: "none",
-    fontSize: 14,
+    fontSize: 13,
     boxShadow: "0 1px 2px rgba(15,23,42,.04)",
   };
   const labelStyle: CSSProperties = {
     color: "#555f6f",
-    fontSize: 12.5,
+    fontSize: 11.5,
     fontWeight: 750,
     lineHeight: 1.3,
   };
   const primaryButton: CSSProperties = {
-    minHeight: 46,
+    minHeight: 42,
     border: 0,
     borderRadius: 14,
     padding: "0 18px",
@@ -14232,8 +14232,8 @@ function ProfCarHub({
   };
   const formGridStyle: CSSProperties = {
     display: "grid",
-    gridTemplateColumns: isMobile ? "1fr" : "repeat(2, minmax(0, 1fr))",
-    gap: 14,
+    gridTemplateColumns: isMobile ? "1fr" : "repeat(3, minmax(0, 1fr))",
+    gap: isMobile ? 12 : 10,
   };
 
   const openVehicleFlow = (
@@ -14481,9 +14481,9 @@ function ProfCarHub({
       className="bt-profcar-hub"
       style={{
         width: "100%",
-        minHeight: isMobile ? 560 : 600,
-        padding: isMobile ? 15 : 24,
-        borderRadius: isMobile ? 22 : 28,
+        minHeight: isMobile ? 560 : 0,
+        padding: isMobile ? 15 : 16,
+        borderRadius: isMobile ? 22 : 24,
         border: "1px solid #d9dee6",
         background:
           "radial-gradient(520px 260px at 100% 0%, rgba(220,31,43,.09), transparent 66%), linear-gradient(180deg, #fbfbfc, #f3f5f7)",
@@ -14497,7 +14497,7 @@ function ProfCarHub({
           alignItems: isMobile ? "flex-start" : "center",
           justifyContent: "space-between",
           gap: 14,
-          paddingBottom: 18,
+          paddingBottom: isMobile ? 16 : 12,
           borderBottom: "1px solid #dde2e8",
         }}
       >
@@ -14534,7 +14534,7 @@ function ProfCarHub({
               style={{
                 margin: "5px 0 4px",
                 color: "#141821",
-                fontSize: isMobile ? 22 : 27,
+                fontSize: isMobile ? 22 : 23,
                 lineHeight: 1.12,
                 letterSpacing: "-.025em",
               }}
@@ -14546,8 +14546,8 @@ function ProfCarHub({
                 maxWidth: 650,
                 margin: 0,
                 color: "#5e6876",
-                fontSize: isMobile ? 12.5 : 13.5,
-                lineHeight: 1.45,
+                fontSize: 12.5,
+                lineHeight: 1.35,
               }}
             >
               {copy.description}
@@ -14582,7 +14582,7 @@ function ProfCarHub({
         </div>
       ) : null}
 
-      <div style={{ paddingTop: 20 }}>
+      <div style={{ paddingTop: isMobile ? 18 : 13 }}>
         {panel === "inventory" && (
           <div>
             <div
@@ -15028,7 +15028,7 @@ function ProfCarHub({
               </button>
             </div>
           ) : (
-            <form onSubmit={submitProfCarBooking}>
+            <form className="bt-profcar-booking-form" onSubmit={submitProfCarBooking}>
               <div style={formGridStyle}>
                 <label style={labelStyle}>
                   Wunschfahrzeug
@@ -15101,15 +15101,16 @@ function ProfCarHub({
                 </label>
               </div>
               <div
+                className="bt-profcar-booking-note"
                 style={{
-                  margin: "16px 0",
-                  padding: 14,
-                  borderRadius: 15,
+                  margin: "10px 0",
+                  padding: "9px 11px",
+                  borderRadius: 12,
                   background: "#ffffff",
                   border: "1px solid #dde2e8",
                   color: "#596372",
-                  fontSize: 12,
-                  lineHeight: 1.5,
+                  fontSize: 11,
+                  lineHeight: 1.35,
                 }}
               >
                 {inventoryMeta.mode === "live"
@@ -15118,10 +15119,12 @@ function ProfCarHub({
                     ? "Der letzte erfolgreiche Fahrzeugbestand bleibt auswählbar. Die freien Zeiten werden unabhängig davon live in Michis Apple-Kalender geprüft; die Fahrzeugverfügbarkeit bestätigt ProfCar bei Bedarf persönlich."
                     : inventoryMeta.message}
               </div>
-              {bookingError ? <p role="alert" style={{ color: "#b4232d", fontSize: 12.5, fontWeight: 750 }}>{bookingError}</p> : null}
-              <button type="submit" disabled={bookingSubmitting || inventoryMeta.mode === "demo" || !bookingSlotStart} style={{ ...primaryButton, opacity: bookingSubmitting || inventoryMeta.mode === "demo" || !bookingSlotStart ? 0.55 : 1 }}>
-                {bookingSubmitting ? "Kalender wird geprüft…" : "Probefahrt verbindlich buchen"}
-              </button>
+              <div className="bt-profcar-booking-action">
+                {bookingError ? <p role="alert" style={{ margin: 0, color: "#b4232d", fontSize: 12, fontWeight: 750 }}>{bookingError}</p> : null}
+                <button type="submit" disabled={bookingSubmitting || inventoryMeta.mode === "demo" || !bookingSlotStart} style={{ ...primaryButton, opacity: bookingSubmitting || inventoryMeta.mode === "demo" || !bookingSlotStart ? 0.55 : 1 }}>
+                  {bookingSubmitting ? "Kalender wird geprüft…" : "Probefahrt verbindlich buchen"}
+                </button>
+              </div>
             </form>
           ))}
 
@@ -21084,6 +21087,129 @@ body::after {
   color: #dc1f2b;
 }
 
+/* Desktop: möglichst viele Funktionen ohne Scrollen sichtbar halten. */
+.bt-profcar-interface:not(.bt-mobile-viewport) .bt-panel-header {
+  min-height: 74px !important;
+  padding: 10px 18px !important;
+}
+
+.bt-profcar-interface:not(.bt-mobile-viewport) .bt-powered-logo {
+  width: 142px !important;
+  height: 46px !important;
+  padding: 6px 10px !important;
+  border-radius: 14px !important;
+}
+
+.bt-profcar-interface:not(.bt-mobile-viewport) .bt-primary-cta,
+.bt-profcar-interface:not(.bt-mobile-viewport) .bt-reset-button {
+  min-height: 40px !important;
+  padding: 8px 12px !important;
+}
+
+.bt-profcar-interface:not(.bt-mobile-viewport) .bt-panel-scroll {
+  padding: 11px 16px !important;
+  gap: 9px !important;
+}
+
+.bt-profcar-interface:not(.bt-mobile-viewport) .bt-profcar-tabs {
+  border-radius: 16px;
+  padding: 4px;
+}
+
+.bt-profcar-interface:not(.bt-mobile-viewport) .bt-profcar-tabs button {
+  min-height: 35px;
+  border-radius: 12px;
+  font-size: 11.5px;
+}
+
+.bt-profcar-interface:not(.bt-mobile-viewport) .bt-start-view {
+  gap: 8px !important;
+}
+
+.bt-profcar-interface:not(.bt-mobile-viewport) .bt-start-intro {
+  padding: 6px 8px 2px !important;
+}
+
+.bt-profcar-interface:not(.bt-mobile-viewport) .bt-start-title {
+  margin-bottom: 3px !important;
+  font-size: 23px !important;
+  line-height: 1.08 !important;
+}
+
+.bt-profcar-interface:not(.bt-mobile-viewport) .bt-start-description {
+  font-size: 12.5px !important;
+  line-height: 1.32 !important;
+}
+
+.bt-profcar-interface:not(.bt-mobile-viewport) .bt-start-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: 9px !important;
+}
+
+.bt-profcar-interface:not(.bt-mobile-viewport) .bt-start-card {
+  min-height: 104px !important;
+  padding: 13px 14px !important;
+  border-radius: 20px !important;
+}
+
+.bt-profcar-interface:not(.bt-mobile-viewport) .bt-start-card > div:first-child {
+  gap: 9px !important;
+  margin-bottom: 6px !important;
+}
+
+.bt-profcar-interface:not(.bt-mobile-viewport) .bt-start-card > div:first-child > span:last-child {
+  font-size: 14px !important;
+}
+
+.bt-profcar-interface:not(.bt-mobile-viewport) .bt-start-card > div:last-child {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  font-size: 11.5px !important;
+  line-height: 1.32 !important;
+}
+
+.bt-profcar-interface:not(.bt-mobile-viewport) .bt-profcar-service-icon {
+  width: 38px !important;
+  height: 38px !important;
+  border-radius: 13px !important;
+}
+
+.bt-profcar-interface:not(.bt-mobile-viewport) .bt-composer {
+  padding: 9px 14px !important;
+  gap: 9px !important;
+}
+
+.bt-profcar-interface:not(.bt-mobile-viewport) .bt-round-action-button {
+  width: 44px !important;
+  height: 44px !important;
+  border-radius: 14px !important;
+}
+
+.bt-profcar-interface:not(.bt-mobile-viewport) .bt-message-input,
+.bt-profcar-interface:not(.bt-mobile-viewport) .bt-send-button {
+  height: 44px !important;
+  min-height: 44px !important;
+}
+
+.bt-profcar-booking-action {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.bt-profcar-booking-action > button {
+  flex: 0 0 auto;
+}
+
+@media (max-width: 980px) {
+  .bt-profcar-interface:not(.bt-mobile-viewport) .bt-start-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+}
+
 .bt-mobile-viewport.bt-profcar-interface .bt-profcar-tabs {
   position: relative;
   display: flex;
@@ -21106,6 +21232,15 @@ body::after {
   min-height: 132px !important;
   padding: 17px !important;
   border-radius: 22px !important;
+}
+
+.bt-mobile-viewport.bt-profcar-interface .bt-profcar-booking-action {
+  align-items: stretch;
+  flex-direction: column;
+}
+
+.bt-mobile-viewport.bt-profcar-interface .bt-profcar-booking-action > button {
+  width: 100%;
 }
 
 .bt-profcar-interface .bt-message-input::placeholder {
@@ -23560,7 +23695,7 @@ body::after {
                             : isHappyDrivingInterface
                               ? "Finde die passende Klasse, behalte Theorie, Preise, Unterlagen und Praxis im Blick und öffne dein persönliches Führerschein-Cockpit."
                               : isProfCarInterface
-                            ? "Wähle einen Bereich. Jede Karte öffnet eine eigene übersichtliche Maske – der Chat bleibt für persönliche Rückfragen jederzeit verfügbar."
+                            ? "Bereich direkt auswählen – der Chat bleibt für persönliche Rückfragen jederzeit verfügbar."
                             : isNiehausInterface
                             ? "Finde die passende Klasse, vergleiche Baden-Baden und Bühl, behalte Unterlagen sowie Preise im Blick und öffne deinen persönlichen Führerscheinbegleiter. Diese Demo zeigt, wie die Ausbildung bei Niehaus digital an einem Ort zusammenlaufen könnte."
                             : isHohenbadenInterface
@@ -25540,6 +25675,7 @@ body::after {
                   )}
 
                   {(!isProfCarInterface || profcarPanel === "home") && msgs.map((m, i) => {
+                    if (isProfCarInterface && showStartCards && i === 0 && m.role === "assistant") return null;
                     const isUser = m.role === "user";
                     return (
                       <div
