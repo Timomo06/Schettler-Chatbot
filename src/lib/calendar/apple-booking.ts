@@ -436,7 +436,12 @@ async function connect(config: CalendarTenantConfig) {
     const signal = init.signal
       ? AbortSignal.any([init.signal, timeoutSignal])
       : timeoutSignal;
-    return fetch(input, { ...init, signal, cache: "no-store", redirect: "error" });
+    // Keep tsdav's redirect mode intact. Its iCloud discovery deliberately
+    // requests manual redirects so it can move from caldav.icloud.com to the
+    // account's partition host without forwarding credentials blindly. A
+    // forced redirect:error leaves reads on the global proxy, where Apple
+    // accepts REPORT requests but rejects object PUTs with 401.
+    return fetch(input, { ...init, signal, cache: "no-store" });
   };
   const client = await createDAVClient({
     serverUrl: "https://caldav.icloud.com",
