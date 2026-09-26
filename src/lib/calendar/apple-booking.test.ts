@@ -25,6 +25,23 @@ test("stored CalDAV objects omit the forbidden METHOD property", () => {
   });
   assert.match(ics, /BEGIN:VEVENT/);
   assert.doesNotMatch(ics, /^METHOD:/m);
+  assert.equal(ics.endsWith("\r\n"), true);
+});
+
+test("long and unicode calendar lines are folded to RFC 5545 limits", () => {
+  const ics = buildCalendarObject({
+    config: { prodId: "-//ProfCar//Website Booking//DE" },
+    bookingId: "PC-LONG",
+    uid: "pc-long@profcar.com",
+    start: new Date("2026-09-28T07:00:00.000Z"),
+    end: new Date("2026-09-28T08:00:00.000Z"),
+    title: `Probefahrt ${"Äußerst langes Wunschfahrzeug ".repeat(5)}`,
+    description: `Nachricht: ${"Prüfung mit Umlauten und Details ".repeat(8)}`,
+  });
+  for (const line of ics.split("\r\n").filter(Boolean)) {
+    assert.ok(Buffer.byteLength(line, "utf8") <= 75, `line exceeds 75 octets: ${line}`);
+  }
+  assert.match(ics, /\r\n /);
 });
 
 test("ProfCar rules are explicit and timezone-safe", () => {

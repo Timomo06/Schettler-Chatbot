@@ -476,6 +476,22 @@ function escapeIcsText(text: string) {
   return String(text || "").replace(/\\/g, "\\\\").replace(/\n/g, "\\n").replace(/,/g, "\\,").replace(/;/g, "\\;");
 }
 
+function foldIcsLine(line: string) {
+  if (Buffer.byteLength(line, "utf8") <= 75) return [line];
+  const folded: string[] = [];
+  let current = "";
+  for (const character of line) {
+    if (current && Buffer.byteLength(current + character, "utf8") > 75) {
+      folded.push(current);
+      current = ` ${character}`;
+    } else {
+      current += character;
+    }
+  }
+  if (current) folded.push(current);
+  return folded;
+}
+
 function stableBookingId(config: CalendarTenantConfig, input: CalendarBookingInput, start: Date, end: Date) {
   const explicit = String(input.idempotencyKey || "").trim().slice(0, 200);
   const material = explicit || [
@@ -515,7 +531,7 @@ export function buildCalendarObject({
   title: string;
   description: string;
 }) {
-  return [
+  const lines = [
     "BEGIN:VCALENDAR",
     "VERSION:2.0",
     `PRODID:${config.prodId}`,
@@ -534,7 +550,46 @@ export function buildCalendarObject({
     `DESCRIPTION:${escapeIcsText(description)}`,
     "END:VEVENT",
     "END:VCALENDAR",
-  ].join("\r\n");
+  ];
+  // RFC 5545 limits content lines to 75 UTF-8 octets and requires folded
+  // continuation lines. Long vehicle names and customer notes otherwise make
+  // Apple reject an otherwise valid CalDAV PUT.
+  return `${lines.flatMap(foldIcsLine).join("\r\n")}\r\n`;
+}
+
+function collectPrivilegeNames(value: unknown, names = new Set<string>()) {
+  if (!value || typeof value !== "object") return names;
+  if (Array.isArray(value)) {
+    value.forEach(entry => collectPrivilegeNames(entry, names));
+    return names;
+  }
+  for (const [key, entry] of Object.entries(value as Record<string, unknown>)) {
+    if (!key.startsWith("_")) names.add(key.toLowerCase().replace(/[^a-z]/g, ""));
+    collectPrivilegeNames(entry, names);
+  }
+  return names;
+}
+
+export async function inspectCalendarAccess(tenant: unknown) {
+  const config = getCalendarTenantConfig(tenant);
+  const { client, calendar } = await connect(config);
+  const responses = await client.propfind({
+    url: calendar.url,
+    props: { "d:current-user-privilege-set": {} },
+    depth: "0",
+  });
+  const response = responses.find(entry => entry.ok) ?? responses[0];
+  const privilegeSet = response?.props?.currentUserPrivilegeSet;
+  const names = collectPrivilegeNames(privilegeSet);
+  const writable = names.has("all") || names.has("write") || names.has("writecontent");
+  return {
+    tenant: config.tenant,
+    businessName: config.businessName,
+    calendarName: config.calendarName,
+    readable: true,
+    writable,
+    privilegeInformationAvailable: privilegeSet !== undefined,
+  };
 }
 
 const bookingQueues = new Map<string, Promise<void>>();
