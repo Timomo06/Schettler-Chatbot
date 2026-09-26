@@ -707,10 +707,11 @@ export async function createCalendarBooking(input: CalendarBookingInput) {
     const result = await client.createCalendarObject({
       calendar,
       // Same time range always uses the same CalDAV resource. Together with
-      // If-None-Match this prevents two app instances from writing the same slot.
+      // tsdav's built-in If-None-Match header this prevents two app instances
+      // from writing the same slot. Do not pass a custom headers object here:
+      // tsdav <= 2.3.0 replaces its authentication headers in that case.
       filename: calendarObjectFilename(config, start, end),
       iCalString,
-      headers: { "If-None-Match": "*" },
     });
     if (!result.ok) {
       const responseBody = await result.clone().text().catch(() => "");
