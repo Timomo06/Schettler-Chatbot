@@ -1,0 +1,1033 @@
+[
+  {
+    "slug": "bu-100-wd-l-fs",
+    "code": "BU-100-WD-L-FS",
+    "name": "Haus Dragun",
+    "category": "Bungalow",
+    "area": 102,
+    "roof": "Walmdach",
+    "roofPitch": 25,
+    "features": [
+      "Freisitz"
+    ],
+    "description": "Bungalow 100 mit Freisitz",
+    "price": 223380,
+    "priceNote": "",
+    "pdfName": "Hauskonzept-BU-100-WD-L-FS-2026.pdf",
+    "pdfUrl": "/generated/houses/bu-100-wd-l-fs/concept.pdf",
+    "image": "/generated/houses/bu-100-wd-l-fs/cover.webp",
+    "conceptFacts": [
+      "Einfamilienhaus",
+      "Individuelle Grundrissplanung",
+      "Wohnfläche ca. 102 m²",
+      "Walmdach 25°",
+      "Haus auf Bodenplatte",
+      "Ausstattung gemäß Bauleistungsbeschreibung"
+    ]
+  },
+  {
+    "slug": "bu-120-sd",
+    "code": "BU-120-SD",
+    "name": "Haus Vellahn",
+    "category": "Bungalow",
+    "area": 118,
+    "roof": "Satteldach",
+    "roofPitch": 25,
+    "features": [],
+    "description": "Bungalow 120",
+    "price": 258420,
+    "priceNote": "",
+    "pdfName": "Hauskonzept-BU-120-SD-2026.pdf",
+    "pdfUrl": "/generated/houses/bu-120-sd/concept.pdf",
+    "image": "/generated/houses/bu-120-sd/cover.webp",
+    "conceptFacts": [
+      "Einfamilienhaus",
+      "Individuelle Grundrissplanung",
+      "Wohnfläche ca. 118 m²",
+      "Satteldach 25°",
+      "Haus auf Bodenplatte",
+      "Ausstattung gemäß Bauleistungsbeschreibung"
+    ]
+  },
+  {
+    "slug": "bu-120-wd-l-fs",
+    "code": "BU-120-WD-L-FS",
+    "name": "Haus Cramon",
+    "category": "Bungalow",
+    "area": 120,
+    "roof": "Walmdach",
+    "roofPitch": 25,
+    "features": [
+      "Freisitz"
+    ],
+    "description": "Bungalow 120 mit Freisitz",
+    "price": 262800,
+    "priceNote": "",
+    "pdfName": "Hauskonzept-BU-120-WD-L-FS-2026.pdf",
+    "pdfUrl": "/generated/houses/bu-120-wd-l-fs/concept.pdf",
+    "image": "/generated/houses/bu-120-wd-l-fs/cover.webp",
+    "conceptFacts": [
+      "Einfamilienhaus",
+      "Individuelle Grundrissplanung",
+      "Wohnfläche ca. 120 m²",
+      "Walmdach 25°",
+      "Haus auf Bodenplatte",
+      "Ausstattung gemäß Bauleistungsbeschreibung"
+    ]
+  },
+  {
+    "slug": "bu-130-sd-fs",
+    "code": "BU-130-SD-FS",
+    "name": "Haus Weberin",
+    "category": "Bungalow",
+    "area": 130,
+    "roof": "Satteldach",
+    "roofPitch": 25,
+    "features": [
+      "Freisitz"
+    ],
+    "description": "Bungalow 130 mit Freisitz",
+    "price": 291850,
+    "priceNote": "",
+    "pdfName": "Hauskonzept-BU-130-SD-FS-2026.pdf",
+    "pdfUrl": "/generated/houses/bu-130-sd-fs/concept.pdf",
+    "image": "/generated/houses/bu-130-sd-fs/cover.webp",
+    "conceptFacts": [
+      "Einfamilienhaus",
+      "Individuelle Grundrissplanung",
+      "Wohnfläche ca. 130 m²",
+      "Satteldach 25°",
+      "Haus auf Bodenplatte",
+      "Ausstattung gemäß Bauleistungsbeschreibung"
+    ]
+  },
+  {
+    "slug": "bu-130-sd-l",
+    "code": "BU-130-SD-L",
+    "name": "Konzept BU-130-SD-L",
+    "category": "Bungalow",
+    "area": 130,
+    "roof": "Satteldach",
+    "roofPitch": 25,
+    "features": [],
+    "description": "Kennung und Unterlagen dieses Konzepts werden geprüft.",
+    "price": null,
+    "priceNote": "Ordner nennt 130 m², das PDF beschreibt 150 m²; Haus Perlin nicht sicher zuordenbar.",
+    "pdfName": null,
+    "pdfUrl": null,
+    "image": "/generated/houses/bu-130-sd-l/cover.webp",
+    "conceptFacts": []
+  },
+  {
+    "slug": "bu-130-wd-l-fs",
+    "code": "BU-130-WD-L-FS",
+    "name": "Haus Lützow",
+    "category": "Bungalow",
+    "area": 130,
+    "roof": "Walmdach",
+    "roofPitch": 25,
+    "features": [
+      "Freisitz"
+    ],
+    "description": "Bungalow 130 mit Freisitz",
+    "price": 302510,
+    "priceNote": "",
+    "pdfName": "Hauskonzept-BU-130-WD-L-FS-2026.pdf",
+    "pdfUrl": "/generated/houses/bu-130-wd-l-fs/concept.pdf",
+    "image": "/generated/houses/bu-130-wd-l-fs/cover.webp",
+    "conceptFacts": [
+      "Einfamilienhaus",
+      "Individuelle Grundrissplanung",
+      "Wohnfläche ca. 130 m²",
+      "Walmdach 25°",
+      "Haus auf Bodenplatte",
+      "Ausstattung gemäß Bauleistungsbeschreibung"
+    ]
+  },
+  {
+    "slug": "bu-145-wd-l-fs",
+    "code": "BU-145-WD-L-FS",
+    "name": "Haus Sukow",
+    "category": "Bungalow",
+    "area": 145,
+    "roof": "Walmdach",
+    "roofPitch": 25,
+    "features": [
+      "Freisitz"
+    ],
+    "description": "Bungalow 145 mit Freisitz",
+    "price": 337415,
+    "priceNote": "",
+    "pdfName": "Hauskonzept-BU-145-WD-L-FS-2026.pdf",
+    "pdfUrl": "/generated/houses/bu-145-wd-l-fs/concept.pdf",
+    "image": "/generated/houses/bu-145-wd-l-fs/cover.webp",
+    "conceptFacts": [
+      "Einfamilienhaus",
+      "Individuelle Grundrissplanung",
+      "Wohnfläche ca. 145 m²",
+      "Walmdach 25°",
+      "Haus auf Bodenplatte",
+      "Ausstattung gemäß Bauleistungsbeschreibung"
+    ]
+  },
+  {
+    "slug": "bu-150-sd-fs",
+    "code": "BU-150-SD-FS",
+    "name": "Haus Basthorst",
+    "category": "Bungalow",
+    "area": 150,
+    "roof": "Satteldach",
+    "roofPitch": 25,
+    "features": [
+      "Freisitz"
+    ],
+    "description": "Bungalow 150 mit Freisitz",
+    "price": 349050,
+    "priceNote": "",
+    "pdfName": "Hauskonzept-BU-150-SD-FS-2026.pdf",
+    "pdfUrl": "/generated/houses/bu-150-sd-fs/concept.pdf",
+    "image": "/generated/houses/bu-150-sd-fs/cover.webp",
+    "conceptFacts": [
+      "Einfamilienhaus",
+      "Individuelle Grundrissplanung",
+      "Wohnfläche ca. 150 m²",
+      "Satteldach 25°",
+      "Haus auf Bodenplatte",
+      "Ausstattung gemäß Bauleistungsbeschreibung"
+    ]
+  },
+  {
+    "slug": "bu-155-fd-fs-ga",
+    "code": "BU-155-FD-FS-GA",
+    "name": "Haus Wickendorf",
+    "category": "Bungalow",
+    "area": 155,
+    "roof": "Flachdach",
+    "roofPitch": null,
+    "features": [
+      "Freisitz",
+      "Garage"
+    ],
+    "description": "Bungalow 155 mit Freisitz",
+    "price": 339450,
+    "priceNote": "",
+    "pdfName": "Hauskonzept-BU-155-FD-FS-Ga.pdf",
+    "pdfUrl": "/generated/houses/bu-155-fd-fs-ga/concept.pdf",
+    "image": "/generated/houses/bu-155-fd-fs-ga/cover.webp",
+    "conceptFacts": [
+      "Einfamilienhaus im Bauhausstil",
+      "Individuelle Grundrissplanung",
+      "Wohnfläche ca. 155 m²",
+      "Flachdach mit Attika",
+      "Haus auf Bodenplatte",
+      "Ausstattung gemäß Bauleistungsbeschreibung"
+    ]
+  },
+  {
+    "slug": "bu-80-sd",
+    "code": "BU-80-SD",
+    "name": "Haus Bobitz",
+    "category": "Bungalow",
+    "area": 80,
+    "roof": "Satteldach",
+    "roofPitch": 35,
+    "features": [],
+    "description": "Bungalow 80",
+    "price": 175200,
+    "priceNote": "",
+    "pdfName": "Hauskonzept-BU-80-SD-2026.pdf",
+    "pdfUrl": "/generated/houses/bu-80-sd/concept.pdf",
+    "image": "/generated/houses/bu-80-sd/cover.webp",
+    "conceptFacts": [
+      "Einfamilienhaus",
+      "Individuelle Grundrissplanung",
+      "Wohnfläche ca. 80 m²",
+      "Satteldach 35°",
+      "Haus auf Bodenplatte",
+      "Ausstattung gemäß Bauleistungsbeschreibung"
+    ]
+  },
+  {
+    "slug": "bu-duo-150-wd",
+    "code": "BU-Duo-150-WD",
+    "name": "Haus Lübstorf",
+    "category": "Bungalow",
+    "area": 150,
+    "roof": "Walmdach",
+    "roofPitch": 25,
+    "features": [
+      "Duo-Konzept"
+    ],
+    "description": "Bungalow Duo 150",
+    "price": 328500,
+    "priceNote": "",
+    "pdfName": "Hauskonzept-BU-Duo-150-WD-2026.pdf",
+    "pdfUrl": "/generated/houses/bu-duo-150-wd/concept.pdf",
+    "image": "/generated/houses/bu-duo-150-wd/cover.webp",
+    "conceptFacts": [
+      "Zweiparteienhaus",
+      "Individuelle Grundrissplanung",
+      "Wohnfläche 2x ca. 75 m²",
+      "Walmdach 25°",
+      "Haus auf Bodenplatte",
+      "Ausstattung gemäß Bauleistungsbeschreibung"
+    ]
+  },
+  {
+    "slug": "bu-elw-190-25-sd",
+    "code": "BU-ELW-190-25-SD",
+    "name": "Haus Böken",
+    "category": "Bungalow",
+    "area": 190,
+    "roof": "Satteldach",
+    "roofPitch": 25,
+    "features": [
+      "Einliegerwohnung"
+    ],
+    "description": "Bungalow 190 mit Einliegerwohnung",
+    "price": 442130,
+    "priceNote": "",
+    "pdfName": "Hauskonzept-BU-ELW-190-25-SD.pdf",
+    "pdfUrl": "/generated/houses/bu-elw-190-25-sd/concept.pdf",
+    "image": "/generated/houses/bu-elw-190-25-sd/cover.webp",
+    "conceptFacts": [
+      "Zweiparteienhaus",
+      "Individuelle Grundrissplanung",
+      "Wohnfläche insg. ca. 190 m²",
+      "Satteldach 25°",
+      "Haus auf Bodenplatte",
+      "Ausstattung gemäß Bauleistungsbeschreibung"
+    ]
+  },
+  {
+    "slug": "dh-250-25-sd",
+    "code": "DH-250-25-SD",
+    "name": "Haus Selmsdorf",
+    "category": "Doppelhaus",
+    "area": 250,
+    "roof": "Satteldach",
+    "roofPitch": 25,
+    "features": [],
+    "description": "DH 250 25 SD",
+    "price": 547500,
+    "priceNote": "Hauskonzept-PDF fehlt im gelieferten Ordner.",
+    "pdfName": null,
+    "pdfUrl": null,
+    "image": "/generated/houses/dh-250-25-sd/cover.webp",
+    "conceptFacts": []
+  },
+  {
+    "slug": "dh-250-35-sd",
+    "code": "DH-250-35-SD",
+    "name": "Haus Ludwigslust",
+    "category": "Doppelhaus",
+    "area": 250,
+    "roof": "Satteldach",
+    "roofPitch": 35,
+    "features": [],
+    "description": "DH 250",
+    "price": 547500,
+    "priceNote": "",
+    "pdfName": "Hauskonzept-DH-250-35-SD.pdf",
+    "pdfUrl": "/generated/houses/dh-250-35-sd/concept.pdf",
+    "image": "/generated/houses/dh-250-35-sd/cover.webp",
+    "conceptFacts": [
+      "Doppelhaus",
+      "Individuelle Grundrissplanung",
+      "Wohnfläche 2x ca. 125 m²",
+      "Satteldach 35°",
+      "Haus auf Bodenplatte",
+      "Ausstattung gemäß Bauleistungsbeschreibung"
+    ]
+  },
+  {
+    "slug": "dh-250-45-sd",
+    "code": "DH-250-45-SD",
+    "name": "Haus Eldena",
+    "category": "Doppelhaus",
+    "area": 250,
+    "roof": "Satteldach",
+    "roofPitch": 45,
+    "features": [],
+    "description": "DH 250 45 SD",
+    "price": 547500,
+    "priceNote": "Hauskonzept-PDF fehlt im gelieferten Ordner.",
+    "pdfName": null,
+    "pdfUrl": null,
+    "image": "/generated/houses/dh-250-45-sd/cover.webp",
+    "conceptFacts": []
+  },
+  {
+    "slug": "dh-260-35-sd",
+    "code": "DH-260-35-SD",
+    "name": "Konzept DH-260-35-SD",
+    "category": "Doppelhaus",
+    "area": 260,
+    "roof": "Satteldach",
+    "roofPitch": 35,
+    "features": [],
+    "description": "Kennung und Unterlagen dieses Konzepts werden geprüft.",
+    "price": null,
+    "priceNote": "Haus Wittenburg und Haus Rehna haben dieselbe Kennung und denselben Preis.",
+    "pdfName": null,
+    "pdfUrl": null,
+    "image": "/generated/houses/dh-260-35-sd/cover.webp",
+    "conceptFacts": []
+  },
+  {
+    "slug": "dh-280-25-wd",
+    "code": "DH-280-25-WD",
+    "name": "Haus Gadebusch",
+    "category": "Doppelhaus",
+    "area": 280,
+    "roof": "Walmdach",
+    "roofPitch": 25,
+    "features": [],
+    "description": "DH 280 /25",
+    "price": 613200,
+    "priceNote": "",
+    "pdfName": "Hauskonzept-DH-280-25-WD.pdf",
+    "pdfUrl": "/generated/houses/dh-280-25-wd/concept.pdf",
+    "image": "/generated/houses/dh-280-25-wd/cover.webp",
+    "conceptFacts": [
+      "Doppelhaus",
+      "Individuelle Grundrissplanung",
+      "Wohnfläche 2x ca. 140 m²",
+      "Walmdach 25°",
+      "Haus auf Bodenplatte",
+      "Ausstattung gemäß Bauleistungsbeschreibung"
+    ]
+  },
+  {
+    "slug": "dh-350-35-sd",
+    "code": "DH-350-35-SD",
+    "name": "Haus Upahl",
+    "category": "Doppelhaus",
+    "area": 350,
+    "roof": "Satteldach",
+    "roofPitch": 35,
+    "features": [],
+    "description": "DH 350 35 SD",
+    "price": 766500,
+    "priceNote": "Hauskonzept-PDF fehlt im gelieferten Ordner.",
+    "pdfName": null,
+    "pdfUrl": null,
+    "image": "/generated/houses/dh-350-35-sd/cover.webp",
+    "conceptFacts": []
+  },
+  {
+    "slug": "efh-130-45-sd-e",
+    "code": "EFH-130-45-SD-E",
+    "name": "Haus Hagenow",
+    "category": "Einfamilienhaus",
+    "area": 130,
+    "roof": "Satteldach",
+    "roofPitch": 45,
+    "features": [
+      "Erker"
+    ],
+    "description": "EFH 130 mit Erker unter Dachabschleppung",
+    "price": 284700,
+    "priceNote": "",
+    "pdfName": "Hauskonzept-EFH-130-45-SD-E-2026.pdf",
+    "pdfUrl": "/generated/houses/efh-130-45-sd-e/concept.pdf",
+    "image": "/generated/houses/efh-130-45-sd-e/cover.webp",
+    "conceptFacts": [
+      "Einfamilienhaus",
+      "Individuelle Grundrissplanung",
+      "Wohnfläche ca. 130 m²",
+      "Satteldach 45°",
+      "Haus auf Bodenplatte",
+      "Ausstattung gemäß Bauleistungsbeschreibung"
+    ]
+  },
+  {
+    "slug": "efh-140-35-sd-zg",
+    "code": "EFH-140-35-SD-ZG",
+    "name": "Haus Rastow",
+    "category": "Einfamilienhaus",
+    "area": 138,
+    "roof": "Satteldach",
+    "roofPitch": 35,
+    "features": [
+      "Zwerchgiebel"
+    ],
+    "description": "EFH 140 mit Zwerchgiebel",
+    "price": 311328,
+    "priceNote": "",
+    "pdfName": "Hauskonzept-EFH-140-35-SD-ZG-2026.pdf",
+    "pdfUrl": "/generated/houses/efh-140-35-sd-zg/concept.pdf",
+    "image": "/generated/houses/efh-140-35-sd-zg/cover.webp",
+    "conceptFacts": [
+      "Einfamilienhaus",
+      "Individuelle Grundrissplanung",
+      "Wohnfläche ca. 138 m²",
+      "Satteldach 35°",
+      "Haus auf Bodenplatte",
+      "Ausstattung gemäß Bauleistungsbeschreibung"
+    ]
+  },
+  {
+    "slug": "efh-140-45-sd-e",
+    "code": "EFH-140-45-SD-E",
+    "name": "Haus Lübesse",
+    "category": "Einfamilienhaus",
+    "area": 140,
+    "roof": "Satteldach",
+    "roofPitch": 45,
+    "features": [
+      "Erker"
+    ],
+    "description": "EFH 140 mit Erker unter Dachabschleppung",
+    "price": 306600,
+    "priceNote": "",
+    "pdfName": "Hauskonzept-EFH-140-45-SD-E-2026.pdf",
+    "pdfUrl": "/generated/houses/efh-140-45-sd-e/concept.pdf",
+    "image": "/generated/houses/efh-140-45-sd-e/cover.webp",
+    "conceptFacts": [
+      "Einfamilienhaus",
+      "Individuelle Grundrissplanung",
+      "Wohnfläche ca. 140 m²",
+      "Satteldach 45°",
+      "Haus auf Bodenplatte",
+      "Ausstattung gemäß Bauleistungsbeschreibung"
+    ]
+  },
+  {
+    "slug": "efh-150-35-sd",
+    "code": "EFH-150-35-SD",
+    "name": "Haus Leezen",
+    "category": "Einfamilienhaus",
+    "area": 150,
+    "roof": "Satteldach",
+    "roofPitch": 35,
+    "features": [],
+    "description": "EFH 150",
+    "price": 328500,
+    "priceNote": "",
+    "pdfName": "Hauskonzept-EFH-150-35-SD-2026.pdf",
+    "pdfUrl": "/generated/houses/efh-150-35-sd/concept.pdf",
+    "image": "/generated/houses/efh-150-35-sd/cover.webp",
+    "conceptFacts": [
+      "Einfamilienhaus",
+      "Individuelle Grundrissplanung",
+      "Wohnfläche ca. 150 m²",
+      "Satteldach 35°",
+      "Haus auf Bodenplatte",
+      "Ausstattung gemäß Bauleistungsbeschreibung"
+    ]
+  },
+  {
+    "slug": "efh-150-35-sd-e",
+    "code": "EFH-150-35-SD-E",
+    "name": "Haus Gneven",
+    "category": "Einfamilienhaus",
+    "area": 150,
+    "roof": "Satteldach",
+    "roofPitch": 35,
+    "features": [
+      "Erker"
+    ],
+    "description": "EFH 150 mit Erker",
+    "price": 338400,
+    "priceNote": "",
+    "pdfName": "Hauskonzept-EFH-150-35-SD-E-2026.pdf",
+    "pdfUrl": "/generated/houses/efh-150-35-sd-e/concept.pdf",
+    "image": "/generated/houses/efh-150-35-sd-e/cover.webp",
+    "conceptFacts": [
+      "Einfamilienhaus",
+      "Individuelle Grundrissplanung",
+      "Wohnfläche ca. 150 m²",
+      "Satteldach 35°",
+      "Haus auf Bodenplatte",
+      "Ausstattung gemäß Bauleistungsbeschreibung"
+    ]
+  },
+  {
+    "slug": "efh-150-45-sd-zg",
+    "code": "EFH-150-45-SD-ZG",
+    "name": "Konzept EFH-150-45-SD-ZG",
+    "category": "Einfamilienhaus",
+    "area": 150,
+    "roof": "Satteldach",
+    "roofPitch": 45,
+    "features": [
+      "Zwerchgiebel"
+    ],
+    "description": "Kennung und Unterlagen dieses Konzepts werden geprüft.",
+    "price": null,
+    "priceNote": "Kein passender Eintrag in der Preisliste; PDF nennt unplausible 1540 m².",
+    "pdfName": null,
+    "pdfUrl": null,
+    "image": "/generated/houses/efh-150-45-sd-zg/cover.webp",
+    "conceptFacts": []
+  },
+  {
+    "slug": "efh-160-35-sd-e",
+    "code": "EFH-160-35-SD-E",
+    "name": "Haus Banzkow",
+    "category": "Einfamilienhaus",
+    "area": 160,
+    "roof": "Satteldach",
+    "roofPitch": 35,
+    "features": [
+      "Erker"
+    ],
+    "description": "EFH 160 mit Erker unter Dachabschleppung",
+    "price": 350400,
+    "priceNote": "",
+    "pdfName": "Hauskonzept-EFH-160-35-SD-E-2026.pdf",
+    "pdfUrl": "/generated/houses/efh-160-35-sd-e/concept.pdf",
+    "image": "/generated/houses/efh-160-35-sd-e/cover.webp",
+    "conceptFacts": [
+      "Einfamilienhaus",
+      "Individuelle Grundrissplanung",
+      "Wohnfläche ca. 160 m²",
+      "Satteldach 35°",
+      "Haus auf Bodenplatte",
+      "Ausstattung gemäß Bauleistungsbeschreibung"
+    ]
+  },
+  {
+    "slug": "efh-170-35-sd",
+    "code": "EFH-170-35-SD",
+    "name": "Haus Seehof",
+    "category": "Einfamilienhaus",
+    "area": 170,
+    "roof": "Satteldach",
+    "roofPitch": 35,
+    "features": [],
+    "description": "EFH 170",
+    "price": 372300,
+    "priceNote": "",
+    "pdfName": "Hauskonzept-EFH-170-35-SD.pdf",
+    "pdfUrl": "/generated/houses/efh-170-35-sd/concept.pdf",
+    "image": "/generated/houses/efh-170-35-sd/cover.webp",
+    "conceptFacts": [
+      "Einfamilienhaus",
+      "Individuelle Grundrissplanung",
+      "Wohnfläche ca. 170 m²",
+      "Satteldach 35°",
+      "Haus auf Bodenplatte",
+      "Ausstattung gemäß Bauleistungsbeschreibung"
+    ]
+  },
+  {
+    "slug": "efh-170-42-sd-zg-e-l",
+    "code": "EFH-170-42-SD-ZG-E-L",
+    "name": "Haus Gadebusch",
+    "category": "Einfamilienhaus",
+    "area": 172,
+    "roof": "Satteldach",
+    "roofPitch": 42,
+    "features": [
+      "Zwerchgiebel",
+      "Erker",
+      "Loggia"
+    ],
+    "description": "EFH 170 mit Erker und Loggia",
+    "price": 411188,
+    "priceNote": "",
+    "pdfName": "Hauskonzept-EFH-170-42-SD-ZG-E-L-2026.pdf",
+    "pdfUrl": "/generated/houses/efh-170-42-sd-zg-e-l/concept.pdf",
+    "image": "/generated/houses/efh-170-42-sd-zg-e-l/cover.webp",
+    "conceptFacts": [
+      "Einfamilienhaus",
+      "Individuelle Grundrissplanung",
+      "Wohnfläche ca. 172 m²",
+      "Satteldach 42°",
+      "Haus auf Bodenplatte",
+      "Ausstattung gemäß Bauleistungsbeschreibung"
+    ]
+  },
+  {
+    "slug": "efh-175-44-sd-e",
+    "code": "EFH-175-44-SD-E",
+    "name": "Haus Wendorf",
+    "category": "Einfamilienhaus",
+    "area": 174,
+    "roof": "Satteldach",
+    "roofPitch": 44,
+    "features": [
+      "Erker"
+    ],
+    "description": "EFH 175 mit Erker",
+    "price": 381060,
+    "priceNote": "",
+    "pdfName": "Hauskonzept-EFH-175-44-SD-E-2026.pdf",
+    "pdfUrl": "/generated/houses/efh-175-44-sd-e/concept.pdf",
+    "image": "/generated/houses/efh-175-44-sd-e/cover.webp",
+    "conceptFacts": [
+      "Einfamilienhaus",
+      "Individuelle Grundrissplanung",
+      "Wohnfläche ca. 174 m²",
+      "Satteldach 45°",
+      "Haus auf Bodenplatte",
+      "Ausstattung gemäß Bauleistungsbeschreibung"
+    ]
+  },
+  {
+    "slug": "efh-180-45-sd-fewo",
+    "code": "EFH-180-45-SD-FeWo",
+    "name": "Haus Boltenhagen",
+    "category": "Einfamilienhaus",
+    "area": 178,
+    "roof": "Satteldach",
+    "roofPitch": 45,
+    "features": [
+      "Ferienwohnung"
+    ],
+    "description": "EFH 180 Ferienhaus",
+    "price": 389820,
+    "priceNote": "",
+    "pdfName": "Hauskonzept-EFH-180-45-SD-FeWo.pdf",
+    "pdfUrl": "/generated/houses/efh-180-45-sd-fewo/concept.pdf",
+    "image": "/generated/houses/efh-180-45-sd-fewo/cover.webp",
+    "conceptFacts": [
+      "Ferienhaus mit 2 FeWo",
+      "Individuelle Grundrissplanung",
+      "Wohnfläche insg. ca. 178 m²",
+      "Satteldach 45°",
+      "Haus auf Bodenplatte",
+      "Ausstattung gemäß Bauleistungsbeschreibung"
+    ]
+  },
+  {
+    "slug": "efh-elw-185-22-sd",
+    "code": "EFH-ELW-185-22-SD",
+    "name": "Haus Grambow",
+    "category": "Einfamilienhaus",
+    "area": 185,
+    "roof": "Satteldach",
+    "roofPitch": 22,
+    "features": [
+      "Einliegerwohnung"
+    ],
+    "description": "EFH 185 mit Einliegerwohnung",
+    "price": 420897,
+    "priceNote": "",
+    "pdfName": "Hauskonzept-EFH-ELW-185-22-SD.pdf",
+    "pdfUrl": "/generated/houses/efh-elw-185-22-sd/concept.pdf",
+    "image": "/generated/houses/efh-elw-185-22-sd/cover.webp",
+    "conceptFacts": [
+      "Zweiparteienhaus",
+      "Individuelle Grundrissplanung",
+      "Wohnfläche insg. ca. 185 m²",
+      "Satteldach 22°",
+      "Haus auf Bodenplatte",
+      "Ausstattung gemäß Bauleistungsbeschreibung"
+    ]
+  },
+  {
+    "slug": "efh-studio-205-45-sd-zg",
+    "code": "EFH-Studio-205-45-SD-ZG",
+    "name": "Haus Dümmer",
+    "category": "Einfamilienhaus",
+    "area": 205,
+    "roof": "Satteldach",
+    "roofPitch": 45,
+    "features": [
+      "Studio",
+      "Zwerchgiebel"
+    ],
+    "description": "EFH 205 Studio",
+    "price": 474165,
+    "priceNote": "",
+    "pdfName": "Hauskonzept-EFH-Studio-205-45-SD-ZG.pdf",
+    "pdfUrl": "/generated/houses/efh-studio-205-45-sd-zg/concept.pdf",
+    "image": "/generated/houses/efh-studio-205-45-sd-zg/cover.webp",
+    "conceptFacts": [
+      "Einfamilienhaus",
+      "Individuelle Grundrissplanung",
+      "Wohnfläche insg. ca. 205 m²",
+      "Satteldach 45°",
+      "Haus auf Bodenplatte",
+      "Ausstattung gemäß Bauleistungsbeschreibung"
+    ]
+  },
+  {
+    "slug": "fh-210-pd-2026",
+    "code": "FH-210-PD-2026",
+    "name": "Haus Holthusen",
+    "category": "Sonderplanung",
+    "area": 210,
+    "roof": "Pultdach",
+    "roofPitch": 5,
+    "features": [],
+    "description": "FH 210 Senioren- / Ferienhaus",
+    "price": 479850,
+    "priceNote": "",
+    "pdfName": "Hauskonzept-FH-210-PD-2026.pdf",
+    "pdfUrl": "/generated/houses/fh-210-pd-2026/concept.pdf",
+    "image": "/generated/houses/fh-210-pd-2026/cover.webp",
+    "conceptFacts": [
+      "Apartmenthaus mit 3 Studios / FeWos",
+      "Individuelle Grundrissplanung",
+      "Wohnfläche insg. ca. 210 m²",
+      "Pultdach 5°",
+      "Haus auf Bodenplatte",
+      "Ausstattung gemäß Bauleistungsbeschreibung"
+    ]
+  },
+  {
+    "slug": "villa-140-25-sd",
+    "code": "VILLA-140-25-SD",
+    "name": "Konzept VILLA-140-25-SD",
+    "category": "Villa",
+    "area": 140,
+    "roof": "Satteldach",
+    "roofPitch": 25,
+    "features": [],
+    "description": "Kennung und Unterlagen dieses Konzepts werden geprüft.",
+    "price": null,
+    "priceNote": "Haus Gottesgabe nennt keine Dachform; es gibt zwei Villa-140-Konzepte.",
+    "pdfName": null,
+    "pdfUrl": null,
+    "image": "/generated/houses/villa-140-25-sd/cover.webp",
+    "conceptFacts": []
+  },
+  {
+    "slug": "villa-140-25-wd",
+    "code": "VILLA-140-25-WD",
+    "name": "Konzept VILLA-140-25-WD",
+    "category": "Villa",
+    "area": 140,
+    "roof": "Walmdach",
+    "roofPitch": 25,
+    "features": [],
+    "description": "Kennung und Unterlagen dieses Konzepts werden geprüft.",
+    "price": null,
+    "priceNote": "Haus Gottesgabe nennt keine Dachform; es gibt zwei Villa-140-Konzepte.",
+    "pdfName": null,
+    "pdfUrl": null,
+    "image": "/generated/houses/villa-140-25-wd/cover.webp",
+    "conceptFacts": []
+  },
+  {
+    "slug": "villa-165-25-wd",
+    "code": "VILLA-165-25-WD",
+    "name": "Haus Wittenförden",
+    "category": "Villa",
+    "area": 165,
+    "roof": "Walmdach",
+    "roofPitch": 25,
+    "features": [],
+    "description": "Villa 165",
+    "price": 361350,
+    "priceNote": "",
+    "pdfName": "Hauskonzept-VILLA-165-25-WD.pdf",
+    "pdfUrl": "/generated/houses/villa-165-25-wd/concept.pdf",
+    "image": "/generated/houses/villa-165-25-wd/cover.webp",
+    "conceptFacts": [
+      "Einfamilienhaus",
+      "Individuelle Grundrissplanung",
+      "Wohnfläche ca. 165 m²",
+      "Walmdach 25°",
+      "Haus auf Bodenplatte",
+      "Ausstattung gemäß Bauleistungsbeschreibung"
+    ]
+  },
+  {
+    "slug": "villa-165-25-wd-hanglage",
+    "code": "VILLA-165-25-WD-Hanglage",
+    "name": "Haus Tessin",
+    "category": "Villa",
+    "area": 165,
+    "roof": "Walmdach",
+    "roofPitch": 25,
+    "features": [
+      "Hanglage"
+    ],
+    "description": "Villa 165 / Hanglage",
+    "price": 404250,
+    "priceNote": "",
+    "pdfName": "Hauskonzept-VILLA-165-25-WD-Hanglage.pdf",
+    "pdfUrl": "/generated/houses/villa-165-25-wd-hanglage/concept.pdf",
+    "image": "/generated/houses/villa-165-25-wd-hanglage/cover.webp",
+    "conceptFacts": [
+      "Einfamilienhaus",
+      "Individuelle Grundrissplanung",
+      "Wohnfläche ca. 165 m²",
+      "Walmdach 25°",
+      "Haus auf Bodenplatte / Teilkeller",
+      "Ausstattung gemäß Bauleistungsbeschreibung"
+    ]
+  },
+  {
+    "slug": "villa-175-25-wd",
+    "code": "VILLA-175-25-WD",
+    "name": "Haus Lübtheen",
+    "category": "Villa",
+    "area": 173,
+    "roof": "Walmdach",
+    "roofPitch": 25,
+    "features": [],
+    "description": "Villa 175",
+    "price": 378870,
+    "priceNote": "",
+    "pdfName": "Hauskonzept-VILLA-175-25-WD.pdf",
+    "pdfUrl": "/generated/houses/villa-175-25-wd/concept.pdf",
+    "image": "/generated/houses/villa-175-25-wd/cover.webp",
+    "conceptFacts": [
+      "Einfamilienhaus",
+      "Individuelle Grundrissplanung",
+      "Wohnfläche ca. 173 m²",
+      "Walmdach 25°",
+      "Haus auf Bodenplatte",
+      "Ausstattung gemäß Bauleistungsbeschreibung"
+    ]
+  },
+  {
+    "slug": "villa-210-25-wd-ga-e-b",
+    "code": "VILLA-210-25-WD-GA-E-B",
+    "name": "Haus Pinnow",
+    "category": "Villa",
+    "area": 210,
+    "roof": "Walmdach",
+    "roofPitch": 25,
+    "features": [
+      "Garage",
+      "Erker",
+      "Balkon"
+    ],
+    "description": "Villa 210 mit integrierter Garage",
+    "price": 499320,
+    "priceNote": "",
+    "pdfName": "Hauskonzept-VILLA-210-25-WD-Ga-E-B.pdf",
+    "pdfUrl": "/generated/houses/villa-210-25-wd-ga-e-b/concept.pdf",
+    "image": "/generated/houses/villa-210-25-wd-ga-e-b/cover.webp",
+    "conceptFacts": [
+      "Einfamilienhaus",
+      "Individuelle Grundrissplanung",
+      "Wohnfläche ca. 210 m²",
+      "Walmdach 25°",
+      "Haus auf Bodenplatte",
+      "Ausstattung gemäß Bauleistungsbeschreibung"
+    ]
+  },
+  {
+    "slug": "villa-220-25-wd-anbau",
+    "code": "VILLA-220-25-WD-Anbau",
+    "name": "Haus Zierow",
+    "category": "Villa",
+    "area": 220,
+    "roof": "Walmdach",
+    "roofPitch": 25,
+    "features": [
+      "Anbau"
+    ],
+    "description": "Villa 220 mit Anbau /ELW",
+    "price": 481800,
+    "priceNote": "",
+    "pdfName": "Hauskonzept-VILLA-220-25-WD-Anbau.pdf",
+    "pdfUrl": "/generated/houses/villa-220-25-wd-anbau/concept.pdf",
+    "image": "/generated/houses/villa-220-25-wd-anbau/cover.webp",
+    "conceptFacts": [
+      "Einfamilienhaus",
+      "Individuelle Grundrissplanung",
+      "Wohnfläche ca. 220 m²",
+      "Walmdach 25° / 12°",
+      "Haus auf Bodenplatte",
+      "Ausstattung gemäß Bauleistungsbeschreibung"
+    ]
+  },
+  {
+    "slug": "zfh-260-40-sd",
+    "code": "ZFH-260-40-SD",
+    "name": "Haus Warnitz",
+    "category": "Zweifamilienhaus",
+    "area": 260,
+    "roof": "Satteldach",
+    "roofPitch": 40,
+    "features": [],
+    "description": "ZFH 260",
+    "price": 569400,
+    "priceNote": "",
+    "pdfName": "Hauskonzept-ZFH-260-40-SD.pdf",
+    "pdfUrl": "/generated/houses/zfh-260-40-sd/concept.pdf",
+    "image": "/generated/houses/zfh-260-40-sd/cover.webp",
+    "conceptFacts": [
+      "Zweifamilienhaus",
+      "Individuelle Grundrissplanung",
+      "Wohnfläche 2x ca. 130 m²",
+      "Satteldach 40°",
+      "Haus auf Bodenplatte",
+      "Ausstattung gemäß Bauleistungsbeschreibung"
+    ]
+  },
+  {
+    "slug": "zfh-villa-200-25-wd-e-b",
+    "code": "ZFH-Villa-200-25-WD-E-B",
+    "name": "Haus Boltenhagen",
+    "category": "Zweifamilienhaus",
+    "area": 200,
+    "roof": "Walmdach",
+    "roofPitch": 25,
+    "features": [
+      "Erker",
+      "Balkon"
+    ],
+    "description": "ZFH 200 mit Erker und Balkon",
+    "price": 468000,
+    "priceNote": "",
+    "pdfName": "Hauskonzept-ZFH-Villa-200-25-WD-E-B.pdf",
+    "pdfUrl": "/generated/houses/zfh-villa-200-25-wd-e-b/concept.pdf",
+    "image": "/generated/houses/zfh-villa-200-25-wd-e-b/cover.webp",
+    "conceptFacts": [
+      "Zweifamilienhaus",
+      "Individuelle Grundrissplanung",
+      "Wohnfläche 2x ca. 100 m²",
+      "Walmdach 25°",
+      "Haus auf Bodenplatte",
+      "Ausstattung gemäß Bauleistungsbeschreibung"
+    ]
+  },
+  {
+    "slug": "zfh-villa-260-25-wd",
+    "code": "ZFH-Villa-260-25-WD",
+    "name": "Haus Klütz",
+    "category": "Zweifamilienhaus",
+    "area": 260,
+    "roof": "Walmdach",
+    "roofPitch": 25,
+    "features": [],
+    "description": "ZFH Villa 260",
+    "price": 569400,
+    "priceNote": "",
+    "pdfName": "Hauskonzept-ZFH-Villa-260-25-WD.pdf",
+    "pdfUrl": "/generated/houses/zfh-villa-260-25-wd/concept.pdf",
+    "image": "/generated/houses/zfh-villa-260-25-wd/cover.webp",
+    "conceptFacts": [
+      "Zweifamilienhaus",
+      "Individuelle Grundrissplanung",
+      "Wohnfläche insg. ca. 260 m²",
+      "Walmdach 25°",
+      "Haus auf Bodenplatte",
+      "Ausstattung gemäß Bauleistungsbeschreibung"
+    ]
+  },
+  {
+    "slug": "zfh-villa-285-25-wd",
+    "code": "ZFH-Villa-285-25-WD",
+    "name": "Haus Dassow",
+    "category": "Zweifamilienhaus",
+    "area": 285,
+    "roof": "Walmdach",
+    "roofPitch": 25,
+    "features": [],
+    "description": "ZFH Villa 285",
+    "price": 624150,
+    "priceNote": "",
+    "pdfName": "Hauskonzept-ZFH-Villa-285-25-WD.pdf",
+    "pdfUrl": "/generated/houses/zfh-villa-285-25-wd/concept.pdf",
+    "image": "/generated/houses/zfh-villa-285-25-wd/cover.webp",
+    "conceptFacts": [
+      "Zweifamilienhaus",
+      "Individuelle Grundrissplanung",
+      "Wohnfläche insg. ca. 285 m²",
+      "Walmdach 25°",
+      "Haus auf Bodenplatte",
+      "Ausstattung gemäß Bauleistungsbeschreibung"
+    ]
+  }
+]
