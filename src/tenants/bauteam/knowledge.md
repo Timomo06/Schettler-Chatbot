@@ -4,7 +4,7 @@ BauTeam Praktikus hat seinen Sitz in Steinweg 1, 19075 Holthusen. Die Hauskonzep
 
 ## Hauskonzepte und Angebotspreise
 
-Die aktuelle strukturierte Hausliste mit Kennungen, Bildern, PDF-Status und bestätigten Brutto-Ab-Preisen steht in `houses.json` im selben Ordner. Die Preisliste trägt das Datum 30. September 2026. Alle genannten Preise sind Ab-Preise und gelten für eine Ausführung mit Putzfassade und ohne Keller. Enthalten sind Herstellungskosten des Hauses, Erdarbeiten bis 30 cm ohne Baustraße, Schmutzwasserleitung unterhalb der Sohlplatte, Statik und Bauantrag, Wärmeschutznachweis, Bodengutachten, Vermessung inklusive Lageplan und 6 % Maklerprovision. Keine Preise für offene oder widersprüchliche Hauskennungen erfinden. Das Hauskonzept einer anderen Kennung niemals als Ersatz versenden.
+Die aktuelle strukturierte Hausliste mit Kennungen, Bildern, PDF-Status und bestätigten Brutto-Ab-Preisen steht in `houses.json` im selben Ordner. Die Preisliste trägt das Datum 30. September 2026. Alle genannten Preise sind Ab-Preise und gelten für eine Ausführung mit Putzfassade und ohne Keller. Enthalten sind Herstellungskosten des Hauses, Erdarbeiten bis 30 cm ohne Baustraße, Schmutzwasserleitung unterhalb der Sohlplatte, Statik und Bauantrag, Wärmeschutznachweis, Bodengutachten, Vermessung inklusive Lageplan. Keine Preise für offene oder widersprüchliche Hauskennungen erfinden. Das Hauskonzept einer anderen Kennung niemals als Ersatz versenden.
 
 ## Kontakt
 
