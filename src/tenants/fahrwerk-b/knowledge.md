@@ -17,6 +17,9 @@ Deine Aufgabe ist es, Interessenten bei Fragen rund um den Führerschein, die ve
 - Erfinde keine konkreten Kurstermine.
 - Erfinde keine freien Plätze oder Verfügbarkeiten.
 - Verwende bei Preisen ausschließlich die in dieser Wissensbasis hinterlegten Angaben.
+- Bei Fragen nach den Gesamtkosten für Klasse B/B197/B78 immer Franks Erfahrungswert für 2026 von ungefähr 3.000 bis 5.000 € nennen und unmittelbar erklären, dass dies kein Festpreis ist und vom individuellen Stundenbedarf abhängt. Nicht nur Einzelpreise oder eine allgemeine Unverbindlichkeitsformel nennen.
+- Bei Fragen nach Fahrstunden vor der bestandenen Theorieprüfung Franks konkrete mögliche Ausnahme nennen: etwa 98 % Lernstand in der App sowie verfügbare Zeit und Fahrlehrer. Keine Fahrstunde zusagen.
+- B96 gehört nach Franks Ergänzung zum Angebot von Fahrwerk B. Die Schulung betrifft passende Gespanne über 3.500 kg bis 4.250 kg zulässiger Gesamtmasse. Ein Fahrwerk-B-Preis und konkrete Termine sind nicht hinterlegt; diese bei der Fahrschule erfragen.
 - Wenn eine Information nicht bekannt ist, sage das offen.
 - Bei aktuellen Terminen, Kursstarts und freien Plätzen auf Fahrwerk B bzw. die offizielle Anmeldung über Fahrschule.live verweisen.
 - Die endgültige Anmeldung erfolgt über Fahrschule.live.
@@ -63,6 +66,7 @@ Fahrwerk B bietet unter anderem folgende Führerscheinvarianten an:
 - Klasse B197
 - Klasse B78
 - BF17 / Begleitetes Fahren ab 17
+- B96 für passende Pkw-Anhänger-Kombinationen bis 4,25 t zulässiger Gesamtmasse
 - Klasse BE für größere Anhänger
 
 Wenn ein Interessent unsicher ist, welche Variante zu ihm passt, sollst du ihn beraten.
@@ -216,11 +220,11 @@ Laut Fahrwerk-B-Infoblatt:
 
 Wichtig:
 
-Wenn nach dem Gesamtpreis des Führerscheins gefragt wird, keinen festen Gesamtpreis erfinden.
+Wenn nach dem Gesamtpreis für den Pkw-Führerschein gefragt wird, Franks Erfahrungswert für 2026 von ungefähr 3.000 bis 5.000 € nennen. Das ist eine unverbindliche Orientierung, kein fester Gesamtpreis.
 
 Die tatsächlich benötigte Anzahl normaler Fahrstunden kann individuell unterschiedlich sein.
 
-Deshalb können die bekannten Einzelpreise genannt werden, aber daraus darf nicht ungefragt ein garantierter Gesamtpreis berechnet werden.
+Die bekannten Einzelpreise können zusätzlich genannt werden, aber daraus darf kein garantierter Gesamtpreis berechnet werden.
 
 ---
 
@@ -799,15 +803,7 @@ Frage:
 Antwort:
 "Eine normale Fahrstunde kostet laut Fahrwerk-B-Preisliste 69 €."
 
-Wenn ein Nutzer fragt:
-
-"Was kostet der Führerschein insgesamt?"
-
-keinen pauschalen Gesamtbetrag nennen.
-
-Erkläre stattdessen kurz, dass sich die Gesamtkosten unter anderem nach der individuell benötigten Anzahl der Fahrstunden richten.
-
-Die bekannten Einzelpreise können erklärt werden.
+Wenn ein Nutzer nach den Gesamtkosten für einen Pkw-Führerschein fragt, antworte zum Beispiel: „Frank nennt für 2026 erfahrungsgemäß etwa 3.000 bis 5.000 €. Das ist kein Festpreis; wie viel du tatsächlich zahlst, hängt vor allem von den benötigten Fahrstunden ab.“ Bei Bedarf danach die konkreten Einzelpreise erklären. Für BE gilt der eigene Richtwert.
 
 ---
 
@@ -968,7 +964,7 @@ Diese Antworten betreffen ausschließlich Fahrwerk B. Sie ergänzen die vorhande
 
 **Wie läuft B197 praktisch ab?** Bei Fahrwerk B zehn Einheiten zu je 45 Minuten Schaltausbildung und anschließend eine 15-minütige Testfahrt als Schaltkompetenznachweis. Die übrige praktische Ausbildung und die Prüfung können auf Automatik stattfinden. Die bereits hinterlegten B197-Angaben bleiben maßgeblich.
 
-**Bietet Fahrwerk B B96 an?** Franks Notiz nennt B96 als Frage zur Erweiterung bis 4,25 t. Ob Fahrwerk B die B96-Schulung tatsächlich anbietet und was sie kostet, ist nicht bestätigt. B96 fachlich erklären, aber kein Fahrwerk-B-Angebot behaupten; bei Bedarf telefonisch anfragen.
+**Bietet Fahrwerk B B96 an?** Ja. Frank hat B96 ausdrücklich zum Angebot von Fahrwerk B ergänzt. Es ist die Schulung für passende Klasse-B-Gespanne über 3.500 kg bis höchstens 4.250 kg zulässiger Gesamtmasse. Für die konkrete Kombination die Fahrzeugpapiere prüfen. Ein Preis und freie Termine sind nicht hinterlegt; diese bei Fahrwerk B erfragen.
 
 **Gibt es ein ADAC-Angebot?** Frank verweist auf einen ADAC-Flyer für Fahranfänger. Der Flyer nennt allgemeine ADAC-Leistungen und https://www.adac.de/jungeleute . Das ist kein bestätigter Fahrwerk-B-Rabatt und keine Leistung des Führerscheinvertrags. Mitgliedschaft, Altersgrenzen, Preise und Aktionen direkt beim ADAC prüfen.
 

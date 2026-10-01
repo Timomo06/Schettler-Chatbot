@@ -12,7 +12,7 @@ Ja. Die für die beantragte Klasse vorgeschriebene theoretische Ausbildung muss 
 Theoretische und praktische Ausbildung können sich überschneiden. Den Start der Praxis organisiert die jeweilige Fahrschule. Für die praktische Prüfung muss die Theorieprüfung grundsätzlich bestanden sein.
 
 ## Wie viele normale Fahrstunden brauche ich und was kostet der Führerschein insgesamt?
-Die Zahl der Übungsfahrten richtet sich nach dem individuellen Lernfortschritt; es gibt keine seriöse feste Gesamtsumme für alle. Vorgeschriebene besondere Ausbildungsfahrten, Einzelpreise und Prüfgebühren sind davon zu unterscheiden. Nur die Preise der betreffenden Fahrschule nennen.
+Die Zahl der Übungsfahrten richtet sich nach dem individuellen Lernfortschritt; es gibt keine seriöse feste Gesamtsumme für alle. Vorgeschriebene besondere Ausbildungsfahrten, Einzelpreise und Prüfgebühren sind davon zu unterscheiden. Nur die Preise und ausdrücklich als solche gekennzeichneten Erfahrungswerte der betreffenden Fahrschule nennen.
 
 ## Kann ich die Fahrschule wechseln?
 Ja. Die bisherige Fahrschule muss die bereits absolvierten Theorie- und Praxisteile im Ausbildungsnachweis bestätigen und den Nachweis aushändigen oder elektronisch übermitteln. Die neue Fahrschule und gegebenenfalls die Fahrerlaubnisbehörde klären die weitere Übernahme und mögliche Gebühren.

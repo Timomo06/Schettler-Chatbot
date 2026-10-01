@@ -196,6 +196,7 @@ const FAHRWERK_LICENSE_CLASSES = [
   "Klasse B",
   "B197",
   "BF17",
+  "B96 Anhänger",
   "BE Anhänger",
   "Ich bin noch unsicher",
 ];
@@ -24378,6 +24379,11 @@ body::after {
                                   "BF17",
                                   "Begleitetes Fahren ab 17 vorbereiten",
                                   "Schnell starten",
+                                ],
+                                [
+                                  "B96 Anhänger",
+                                  "Anhänger-Schulung bis 4,25 t anfragen",
+                                  "Erstmal beraten lassen",
                                 ],
                                 [
                                   "BE Anhänger",
