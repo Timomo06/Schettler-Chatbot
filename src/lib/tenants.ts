@@ -582,7 +582,7 @@ export const TENANTS: Record<TenantId, TenantConfig> = {
 
     primaryCta: {
       label: "Online anmelden",
-      url: "https://www.fahrwerk-b.de",
+      url: "https://www.fahrwerk-b.de/anmeldung/anmeldung.html",
     },
 
     fallbackContact: {

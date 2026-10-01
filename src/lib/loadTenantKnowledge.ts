@@ -2,6 +2,7 @@ import { promises as fs } from "node:fs";
 import path from "node:path";
 
 import { getTenant, type TenantId } from "@/lib/tenants";
+import { DRIVING_SCHOOL_GENERAL_KNOWLEDGE, hasGeneralDrivingSchoolKnowledge } from "@/lib/drivingSchoolGeneralKnowledge";
 
 function isMissingFileError(error: unknown) {
   return (
@@ -108,6 +109,10 @@ export async function loadTenantKnowledge(
 
     knowledgeParts.push(loaded.content);
     loadedFiles.push(loaded.usedFile);
+  }
+
+  if (hasGeneralDrivingSchoolKnowledge(tenant.id)) {
+    knowledgeParts.push(DRIVING_SCHOOL_GENERAL_KNOWLEDGE);
   }
 
   const knowledge = knowledgeParts.filter(Boolean).join("\n\n---\n\n").trim();

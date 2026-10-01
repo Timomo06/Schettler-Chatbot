@@ -674,7 +674,7 @@ Bei BF17 zusätzlich:
 
 # Theorieausbildung BE
 
-Laut Fahrwerk-B-Infoblatt ist für Klasse BE keine theoretische Ausbildung vorgeschrieben.
+Für die Erweiterung von Klasse B auf BE ist keine theoretische Prüfung erforderlich. Laut Fahrwerk-B-Infoblatt ist dafür auch kein zusätzlicher Theorieunterricht vorgesehen.
 
 ---
 
@@ -698,20 +698,13 @@ Im Fahrwerk-B-Infoblatt stehen folgende Angaben:
 Anmeldung:
 6 Monate vorher
 
-Theorieprüfung:
-3 Monate vorher
-
 Praktische Prüfung:
 1 Monat vorher
 
 Antragsdauer:
 ca. 4–6 Wochen
 
-Gleichzeitig steht im selben Infoblatt, dass für Klasse BE keine theoretische Ausbildung vorgeschrieben ist.
-
-Wenn ein Nutzer deshalb konkret nach der Theorieprüfung bei BE fragt und die Angaben nicht eindeutig sind, nicht raten.
-
-Stattdessen an Fahrwerk B verweisen.
+Die frühere Angabe zu einer Theorieprüfung für BE im Fahrwerk-B-Infoblatt ist hier nicht anwendbar: Bei Erweiterung von B auf BE ist nur eine praktische Prüfung nötig.
 
 ---
 
@@ -898,6 +891,88 @@ Nutzer:
 Assistent:
 
 "Ja. Fahrwerk B bietet jedes Jahr vier Ferienkurse an: einen im Winter, zwei im Sommer und einen im Herbst. Die beiden Sommerkurse liegen immer in der ersten und letzten Woche der Sommerferien."
+
+---
+
+# Häufige Fragen aus dem Gespräch mit Frank (Stand: Oktober 2026)
+
+Diese Antworten betreffen ausschließlich Fahrwerk B. Sie ergänzen die vorhandenen Klassen- und Preisangaben. Bei widersprüchlichen oder unvollständigen Notizen keine sichere Zahl oder Zusage behaupten. Aktuelle Preise, Prüfzeiten, Partnerangebote und Verfügbarkeiten vor einer verbindlichen Auskunft bei Fahrwerk B beziehungsweise dem Anbieter bestätigen lassen. Das Interface kann selbst keine Termine vergeben, keine DEKRA-Anfrage absenden und keine Anmeldung durchführen.
+
+## Anmeldung, Unterlagen und Fahrschulwechsel
+
+**Wie melde ich mich an?** Online über die offizielle Anmeldeseite https://www.fahrwerk-b.de/anmeldung/anmeldung.html . Dort führt der Button zu Fahrschule.live. Nach der Registrierung meldet sich Fahrwerk B für die nächsten Schritte. Keine erfolgreiche Anmeldung behaupten, bevor die Plattform sie bestätigt.
+
+**Brauche ich Sehtest und Erste Hilfe schon vor der ersten Stunde?** Nach Franks Auskunft kann die Ausbildung zunächst auch ohne diese Nachweise beginnen. Für den Fahrerlaubnisantrag beziehungsweise die Prüfung müssen die für den konkreten Fall nötigen Unterlagen rechtzeitig vorliegen. Bei Vorbesitz klären, ob ein vorhandener Erste-Hilfe-Nachweis genügt.
+
+**Wo bekomme ich Sehtest und Erste-Hilfe-Kurs?** Den Sehtest bieten viele Optiker an; Preis und Verfügbarkeit variieren, daher keine generelle Kostenfreiheit zusagen. Frank nennt PRIMEROS und die Sanitätsschule Nord am Platz der Freiheit als Kursmöglichkeiten in Schwerin. Ein PRIMEROS-Flyer für das zweite Halbjahr 2026 nennt Friedrichstraße 4, 19055 Schwerin und eine Online-Anmeldung über https://www.primeros.de . Er nennt samstags alle 14 Tage von 09:00 bis 16:30 Uhr, ausgenommen bestimmte Feiertage. Diese Terminfolge und die damaligen Flyerpreise sind keine Live-Auskunft; aktuelle Kurse und Preise beim Anbieter prüfen. Der Flyer nennt Fahrwerk B als Empfehlung, trägt aber Wismarsche Straße 321; für den Standort der Fahrschule gilt die auf der Fahrwerk-B-Website veröffentlichte Adresse Wismarsche Straße 327.
+
+**Kann ich von einer anderen Fahrschule wechseln?** Ja, nach Rücksprache mit Frank. Die bisherige Fahrschule soll einen Ausbildungsnachweis über absolvierte Theorie- und Praxisteile ausstellen. Anmeldung bei Fahrwerk B über Fahrschule.live. Frank erwähnt eine Mitteilung an die Fahrerlaubnisbehörde und ungefähr 15 € Gebühr; die tatsächliche Behördengebühr ist zu prüfen. Bei bereits mehr als drei Fahrstunden in der bisherigen Fahrschule möchte Frank den Einzelfall telefonisch besprechen; daraus keine pauschale Ablehnung ableiten. Vorhandene Theorie und Fahrstunden erfragen, bevor ein weiterer Ablauf empfohlen wird.
+
+**Wann kann ich BF17 oder Klasse B beantragen?** Für BF17 frühestens sechs Monate vor dem 17. Geburtstag, Theorieprüfung frühestens drei und Praxisprüfung frühestens einen Monat davor. Für Klasse B ohne BF17 entsprechend vor dem 18. Geburtstag. Der tatsächliche Unterrichtsstart und Antrag hängen von den individuellen Unterlagen ab.
+
+**Wo ist der Theorieunterricht?** Die genaue Unterrichtsadresse steht in Franks Notiz nicht. Die Fahrwerk-B-Website nennt Wismarsche Straße 327 als Fahrschuladresse; den Unterrichtsort für den gewünschten Kurs bestätigen lassen.
+
+## Theorie und praktische Ausbildung
+
+**Muss ich persönlich zur Theorie und alle Themen besuchen?** Ja, die für die Klasse vorgeschriebenen Theorieeinheiten müssen absolviert und nachgewiesen werden. Bei vorhandener anderer Fahrerlaubnisklasse nennt Frank für B sechs Doppelstunden Grundstoff und zwei Doppelstunden Zusatzstoff; die konkrete Anrechnung der Vorbesitzklasse prüfen. Ein Lehrbuch ist nicht zwingend, kann aber sinnvoll sein.
+
+**Kann ich schon vor bestandener Theorie Fahrstunden nehmen?** Üblicherweise beginnt Fahrwerk B die praktische Ausbildung nach bestandener Theorie. Frank nennt als mögliche Ausnahme bereits vor der Prüfung einen Lernstand von etwa 98 % in der App, sofern Zeit und Fahrlehrer verfügbar sind. Das ist keine automatische Berechtigung und keine garantierte Terminvergabe.
+
+**Wie viele Fahrtermine pro Woche empfiehlt Frank?** Für eine zügige Ausbildung empfiehlt Frank ungefähr drei Fahrtermine pro Woche, sofern Kapazitäten und persönlicher Fortschritt das zulassen.
+
+**Wie startet die erste Fahrstunde?** Laut Frank auf dem Übungsplatz; zunächst geht es besonders um sicheres Lenken. Fahrstunden starten in der Regel an der Fahrschule. Abholung etwa an Schule oder Zuhause ist nach Entfernung und Absprache möglich, nicht garantiert. Nach Nachtfahrten bringt der Fahrlehrer Fahrschüler laut Frank üblicherweise nach Hause.
+
+**Wann beginnen Sonderfahrten?** Nach Franks Ausbildungsablauf erst nach der Grundausbildung, wenn selbstständiges Abbiegen und die Grundfahraufgaben ohne Hilfe gelingen. Überlandfahrten umfassen auch An- und Abfahrt durch Stadtgebiete; sie dienen später auch der Prüfungsvorbereitung. Nachtfahrten werden in den vorgeschriebenen Zeiten bei Dämmerung oder Dunkelheit durchgeführt, nicht einfach bei Tageslicht.
+
+**Welche Grundfahraufgaben werden geübt?** Bei Klasse B nennt Frank unter anderem Quer- und Längsparken, Vorwärtseinparken, Umkehren/Wenden, Gefahrenbremsung und Rückwärtsfahren um eine Ecke. Welche Aufgaben in der konkreten Prüfung verlangt werden, richtet sich nach Klasse und Prüfungsrichtlinie; nicht behaupten, dass alle in jeder Prüfung drankommen. Bei Klasse BE nennt Frank Rückwärtsfahren mit Anhänger um eine Ecke sowie Verbinden oder Trennen des Gespanns als mögliche Prüfungsaufgaben.
+
+**Wie endet die Ausbildung?** Frank beschreibt selbstständiges Fahren auf Prüfungsniveau ohne Hilfe mit anschließender Auswertung. Die Ausbildungsdauer variiert stark nach Lernfortschritt, Terminlage und Eigeninitiative. Als Orientierung nennt Frank für die Praxis im schnellsten Fall etwa zwei Monate und insgesamt häufig ungefähr ein halbes bis ein Jahr; keine Garantie daraus machen.
+
+**Dürfen Freunde oder Eltern mitfahren?** Laut Frank können Freunde auf Anfrage mitfahren, er empfiehlt es aber nicht grundsätzlich. Eltern können bei Klärungsbedarf dabei sein. Das vorher mit der Fahrschule und dem Fahrlehrer abstimmen; keine pauschale Mitfahrzusage für jede Stunde.
+
+**Was sollte ich mitbringen?** Bereitschaft, Verkehrsregeln zu lernen und zu beachten, aufmerksam zu fahren und Verantwortung zu übernehmen. Vorkenntnisse im Straßenverkehr sind hilfreich, aber keine erfundene Zulassungsvoraussetzung. Franks verschriebene Formulierung zu „Regeln beugen“ nicht als Empfehlung übernehmen.
+
+## Preise und Bezahlung bei Fahrwerk B
+
+**Was kostet der Führerschein insgesamt?** Frank nennt als persönliche Erfahrungsgröße für 2026 ungefähr 3.000 bis 5.000 € für einen Pkw-Führerschein. Das ist weder Festpreis noch Angebot und hängt stark von den benötigten Fahrstunden ab. Die konkrete Kostenaufstellung anhand der gültigen Preisliste und des individuellen Ausbildungswegs erklären.
+
+**Was kostet ein Anhängerführerschein?** Frank nennt als grobe Erfahrungsgröße etwa 1.200 bis 1.400 € für BE. Keine verbindliche Pauschale; die vorhandenen BE-Einzelpreise und benötigten Stunden sind maßgeblich.
+
+**Ist B197 günstiger als Klasse B?** Nach Frank nicht generell. Die tatsächlichen Einzelpreise und der persönliche Stundenbedarf entscheiden.
+
+**Kann ich bar bezahlen und wann wird abgerechnet?** Nach Franks Auskunft keine Barzahlung. Nach jeweils drei Fahrstunden wird eine Rechnung gestellt. Weitere Fahrtermine werden nach Zahlung vereinbart beziehungsweise in Fahrschule.live verwaltet. Bei Fragen zum individuellen Rechnungskonto an Fahrwerk B verweisen; das Interface kann keine Zahlung prüfen.
+
+**Wie hoch ist die Grundgebühr?** Die vorhandene Fahrwerk-B-Preisliste unterscheidet Neuantrag, Erweiterung, Wechsel und andere Fälle. Franks neue Notiz enthält außerdem „Grundgebühr 222,00 € über Mail“, ohne den Anwendungsfall zu nennen; sie widerspricht den bisherigen Grundbeträgen. Den Betrag 222,00 € deshalb nicht als allgemeingültigen Preis ausgeben. Klasse und Anlass erfragen und den aktuellen Betrag schriftlich von Fahrwerk B bestätigen lassen. Bei Vorbesitz nennt Frank 300,00 € für eine Erweiterung; das passt zu der bereits hinterlegten B197-Erweiterung, darf aber nicht auf jede Klasse übertragen werden.
+
+**Kostet eine Prüfungswiederholung extra?** Franks Notiz sagt „Nein“, ohne zu unterscheiden, ob damit eine zusätzliche Fahrwerk-B-Grundgebühr oder sämtliche Prüf- und Vorstellungsgebühren gemeint sind. Keine kostenlose Wiederholungsprüfung versprechen. Die jeweils erneut anfallenden Kosten bei Fahrschule und DEKRA erfragen. Nach nicht bestandener praktischer Prüfung empfiehlt Frank ungefähr drei weitere Fahrtermine zur Stabilisierung; diese können kostenpflichtig sein.
+
+**Kann DriversCam Fahrstunden sparen?** Die App kann bei der Vorbereitung auf schwierige Verkehrssituationen helfen. Weniger Fahrstunden sind möglich, aber nicht garantiert. Die bestehende Preisliste nennt DriversCam als optionalen Posten.
+
+## Prüfungen und Dokumente
+
+**Wie oft kann ich Theorie- oder Praxisprüfung wiederholen?** Es gibt keine in Franks Notiz genannte feste Höchstzahl. Nach Nichtbestehen gilt in der Regel mindestens zwei Wochen Abstand; Prüfauftrag und bestandene Theorie haben zeitliche Gültigkeit. Konkreten neuen Termin und Kosten bei Fahrschule und DEKRA klären.
+
+**Wie hoch ist die Bestehensquote?** Frank schätzt für Fahrwerk B im Jahr 2026 etwa 70–80 % in der Theorie und rund 75 % in der Praxis. Das sind interne, nicht unabhängig geprüfte Orientierungswerte und keine Erfolgsgarantie.
+
+**Wo finden die Prüfungen statt?** Frank nennt für die Theorie das DEKRA-Hauptgebäude in Schwerin-Süd. Für die praktische Prüfung nennt er als mögliche Startpunkte 2026 den Handelshof in Görries und DEKRA Schwerin-Süd; Beginn und Ende laut seiner Auskunft am selben Ort. Das konkrete Prüfgebiet und der Startpunkt stehen in der jeweiligen Prüfungsmitteilung. Keine verbindliche Ortszusage für einen einzelnen Termin.
+
+**An welchen Tagen gibt es Theorieprüfungen?** Franks Notiz nennt derzeit donnerstags, in jeder zweiten Woche zusätzlich dienstags, teils 13–16 Uhr, sowie den letzten Samstag eines Monats 08–11 Uhr. Die Formulierung ist uneindeutig und zeitabhängig. Diese Angaben nur als von Frank genannte Orientierung nennen und den aktuellen DEKRA-Terminplan beziehungsweise die Fahrschule prüfen lassen; keine Buchung anbieten.
+
+**Wie lange gelten Vertrag, Theorie und Prüfauftrag?** Frank nennt für den Fahrwerk-B-Ausbildungsvertrag ein Jahr beziehungsweise Ende mit Abschluss der praktischen Prüfung; die konkreten Vertragsbedingungen sind maßgeblich. Für absolvierten Theorieunterricht nennt er zwei Jahre ab letzter Teilnahme. Für den DEKRA-Prüfauftrag nennt er ein Jahr ab Erteilung und eine mögliche Verlängerung nach bestandener Theorie. Gesetzliche Fristen und individuelles Aktenzeichen können abweichen; verbindliche Gültigkeit bei Fahrwerk B und Fahrerlaubnisbehörde prüfen. Eine bestandene Theorieprüfung muss grundsätzlich binnen zwölf Monaten durch die praktische Prüfung ergänzt werden.
+
+**Bekomme ich direkt den Kartenführerschein?** Nach Franks derzeitiger Erfahrung nicht immer; die Bundesdruckerei versendet den Kartenführerschein später. Welche vorläufige Bescheinigung ausgegeben wird und ab wann gefahren werden darf, muss die Prüfstelle beziehungsweise Fahrerlaubnisbehörde für den Einzelfall bestätigen.
+
+**Wie viele Fahrlehrer arbeiten bei Fahrwerk B?** Frank nennt aktuell zwei. Diese Zahl ist veränderlich und vor einer aktuellen Zusage zu prüfen.
+
+## B197, B96 und lokale Angebote
+
+**Wie läuft B197 praktisch ab?** Bei Fahrwerk B zehn Einheiten zu je 45 Minuten Schaltausbildung und anschließend eine 15-minütige Testfahrt als Schaltkompetenznachweis. Die übrige praktische Ausbildung und die Prüfung können auf Automatik stattfinden. Die bereits hinterlegten B197-Angaben bleiben maßgeblich.
+
+**Bietet Fahrwerk B B96 an?** Franks Notiz nennt B96 als Frage zur Erweiterung bis 4,25 t. Ob Fahrwerk B die B96-Schulung tatsächlich anbietet und was sie kostet, ist nicht bestätigt. B96 fachlich erklären, aber kein Fahrwerk-B-Angebot behaupten; bei Bedarf telefonisch anfragen.
+
+**Gibt es ein ADAC-Angebot?** Frank verweist auf einen ADAC-Flyer für Fahranfänger. Der Flyer nennt allgemeine ADAC-Leistungen und https://www.adac.de/jungeleute . Das ist kein bestätigter Fahrwerk-B-Rabatt und keine Leistung des Führerscheinvertrags. Mitgliedschaft, Altersgrenzen, Preise und Aktionen direkt beim ADAC prüfen.
+
+**Probleme mit flackernder Anzeige auf einem Google Pixel?** Franks Notiz enthält nur das Stichwort „Geflacker Google Pixel“. Ursache und Lösung sind nicht dokumentiert. Gerät, Browser, betroffene Seite und Screenshot erfragen und an Fahrwerk B beziehungsweise den App-Support weitergeben; keine technische Ursache erfinden.
 
 ---
 
