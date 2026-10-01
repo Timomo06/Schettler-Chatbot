@@ -14,17 +14,17 @@ export async function POST(request: NextRequest) {
     const phone = typeof body.phone === "string" ? body.phone.trim().slice(0, 60) : "";
     const house = houses.find((item) => item.slug === body.houseSlug);
     if (body.website || !body.consent || name.length < 2 || !emailPattern.test(email) || phone.length < 5 || !house) return NextResponse.json({ error: "Bitte die Angaben prüfen und der Kontaktaufnahme zustimmen." }, { status: 400 });
-    if (!house.pdfName || !house.price) return NextResponse.json({ error: "Für dieses Haus ist das Hauskonzept noch nicht eindeutig freigegeben. Bitte kontaktieren Sie Lothar direkt." }, { status: 409 });
+    if (!house.pdfName || !house.price) return NextResponse.json({ error: "Für dieses Haus ist das Hauskonzept noch nicht eindeutig freigegeben. Bitte kontaktieren Sie unseren Verkäufer direkt." }, { status: 409 });
     const key = `${request.headers.get("x-forwarded-for")?.split(",")[0] || "local"}:${email}:${house.slug}`;
     if (Date.now() - (recent.get(key) || 0) < 5 * 60_000) return NextResponse.json({ error: "Die Anfrage wurde bereits gesendet. Bitte prüfen Sie Ihr Postfach." }, { status: 429 });
     const apiKey = process.env.RESEND_API_KEY;
     const from = process.env.BAUTEAM_EMAIL_FROM;
     const lothar = process.env.BAUTEAM_LOTHAR_EMAIL || "ruthe@bauteam-praktikus.de";
-    if (!apiKey || !from) return NextResponse.json({ error: "Der PDF-Versand wird gerade eingerichtet. Bitte kontaktieren Sie Lothar direkt." }, { status: 503 });
+    if (!apiKey || !from) return NextResponse.json({ error: "Der PDF-Versand wird gerade eingerichtet. Bitte kontaktieren Sie unseren Verkäufer direkt." }, { status: 503 });
     const pdfResponse = await fetch(new URL(`/bauteam/concepts/${house.slug}.pdf`, request.url));
     if (!pdfResponse.ok) throw new Error(`Hauskonzept fehlt: ${house.slug}`);
     const pdf = Buffer.from(await pdfResponse.arrayBuffer());
-    const text = `Guten Tag ${name},\n\nvielen Dank für Ihr Interesse an ${house.name} (${house.code}). Im Anhang finden Sie das passende Hauskonzept. Der Angebotspreis laut Liste vom 30. September 2026 beträgt ${new Intl.NumberFormat("de-DE", { style: "currency", currency: "EUR" }).format(house.price)} brutto für eine Ausführung mit Putzfassade und ohne Keller. Die konkrete Planung und der Leistungsumfang werden persönlich geprüft.\n\nFür ein Gespräch: Lothar Hans Ruthe, +49 151 15624073, ${lothar}.\n\nIhre angegebenen Kontaktdaten: ${name}, ${email}, ${phone}.\n\nBauTeam Praktikus`;
+    const text = `Guten Tag ${name},\n\nvielen Dank für Ihr Interesse an ${house.name} (${house.code}). Im Anhang finden Sie das passende Hauskonzept. Der Brutto-Ab-Preis laut Liste vom 30. September 2026 beginnt bei ${new Intl.NumberFormat("de-DE", { style: "currency", currency: "EUR" }).format(house.price)} brutto für eine Ausführung mit Putzfassade und ohne Keller. Die konkrete Planung und der Leistungsumfang werden persönlich geprüft.\n\nFür ein Gespräch: unser Verkäufer Lothar Hans Ruthe, +49 151 15624073, ${lothar}.\n\nIhre angegebenen Kontaktdaten: ${name}, ${email}, ${phone}.\n\nBauTeam Praktikus`;
     const result = await fetch("https://api.resend.com/emails", {
       method: "POST",
       headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json", "Idempotency-Key": crypto.randomUUID() },
@@ -32,7 +32,7 @@ export async function POST(request: NextRequest) {
     });
     if (!result.ok) {
       console.error("BauTeam email provider failed", result.status);
-      return NextResponse.json({ error: "Der Versand hat nicht geklappt. Bitte versuchen Sie es später erneut oder kontaktieren Sie Lothar." }, { status: 502 });
+      return NextResponse.json({ error: "Der Versand hat nicht geklappt. Bitte versuchen Sie es später erneut oder kontaktieren Sie unseren Verkäufer." }, { status: 502 });
     }
     recent.set(key, Date.now());
     return NextResponse.json({ sent: true });
