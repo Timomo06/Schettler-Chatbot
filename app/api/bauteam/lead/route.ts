@@ -24,7 +24,7 @@ export async function POST(request: NextRequest) {
     const pdfResponse = await fetch(new URL(`/bauteam/concepts/${house.slug}.pdf`, request.url));
     if (!pdfResponse.ok) throw new Error(`Hauskonzept fehlt: ${house.slug}`);
     const pdf = Buffer.from(await pdfResponse.arrayBuffer());
-    const text = `Guten Tag ${name},\n\nvielen Dank für Ihr Interesse an ${house.name} (${house.code}). Im Anhang finden Sie das passende Hauskonzept. Der Brutto-Ab-Preis laut Liste vom 30. September 2026 beginnt bei ${new Intl.NumberFormat("de-DE", { style: "currency", currency: "EUR" }).format(house.price)} brutto für eine Ausführung mit Putzfassade und ohne Keller. Die konkrete Planung und der Leistungsumfang werden persönlich geprüft.\n\nFür ein Gespräch: unser Verkäufer Lothar Hans Ruthe, +49 151 15624073, ${lothar}.\n\nIhre angegebenen Kontaktdaten: ${name}, ${email}, ${phone}.\n\nBauTeam Praktikus`;
+    const text = `Guten Tag ${name},\n\nvielen Dank für Ihr Interesse an ${house.name} (${house.code}). Im Anhang finden Sie das passende Hauskonzept. Der Preis laut Liste vom 30. September 2026 beträgt ab ${new Intl.NumberFormat("de-DE", { style: "currency", currency: "EUR" }).format(house.price)} brutto für eine Ausführung mit Putzfassade und ohne Keller. Die konkrete Planung und der Leistungsumfang werden persönlich geprüft.\n\nFür ein Gespräch: unser Verkäufer Lothar Hans Ruthe, +49 151 15624073, ${lothar}.\n\nIhre angegebenen Kontaktdaten: ${name}, ${email}, ${phone}.\n\nBauTeam Praktikus`;
     const result = await fetch("https://api.resend.com/emails", {
       method: "POST",
       headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json", "Idempotency-Key": crypto.randomUUID() },
