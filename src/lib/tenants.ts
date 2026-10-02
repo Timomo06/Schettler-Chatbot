@@ -310,25 +310,25 @@ export const TENANTS: Record<TenantId, TenantConfig> = {
       files: ["knowledge.md"],
     },
 
-    websiteUrl: "https://praktikus-bau.de",
+    websiteUrl: "https://praktikus-bauteam.de",
 
     fallbackContact: {
       label: "Kontakt",
-      value: "info@praktikus-bau.de",
+      value: "ruthe@praktikus-bauteam.de",
     },
 
     companyInfo: {
-      address: "Deutschland",
-      phone: "+49",
-      email: "info@praktikus-bau.de",
+      address: "Steinweg 1, 19075 Holthusen",
+      phone: "+49 151 15624073",
+      email: "info@bauteam-online.de",
       openingHours: "Nach Vereinbarung",
     },
 
     contacts: [
       {
-        name: "BauTeam Praktikus",
-        role: "Beratung",
-        email: "info@praktikus-bau.de",
+        name: "Lothar Hans Ruthe",
+        role: "Hausberatung und Verkauf",
+        email: "ruthe@praktikus-bauteam.de",
       },
     ],
 
