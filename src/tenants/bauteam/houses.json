@@ -14,7 +14,7 @@
     "price": 223380,
     "priceNote": "",
     "pdfName": "Hauskonzept-BU-100-WD-L-FS-2026.pdf",
-    "pdfUrl": "/generated/houses/bu-100-wd-l-fs/concept.pdf",
+    "pdfUrl": "/bauteam/concepts/bu-100-wd-l-fs.pdf",
     "image": "/generated/houses/bu-100-wd-l-fs/cover.webp",
     "conceptFacts": [
       "Einfamilienhaus",
@@ -38,7 +38,7 @@
     "price": 258420,
     "priceNote": "",
     "pdfName": "Hauskonzept-BU-120-SD-2026.pdf",
-    "pdfUrl": "/generated/houses/bu-120-sd/concept.pdf",
+    "pdfUrl": "/bauteam/concepts/bu-120-sd.pdf",
     "image": "/generated/houses/bu-120-sd/cover.webp",
     "conceptFacts": [
       "Einfamilienhaus",
@@ -64,7 +64,7 @@
     "price": 262800,
     "priceNote": "",
     "pdfName": "Hauskonzept-BU-120-WD-L-FS-2026.pdf",
-    "pdfUrl": "/generated/houses/bu-120-wd-l-fs/concept.pdf",
+    "pdfUrl": "/bauteam/concepts/bu-120-wd-l-fs.pdf",
     "image": "/generated/houses/bu-120-wd-l-fs/cover.webp",
     "conceptFacts": [
       "Einfamilienhaus",
@@ -90,7 +90,7 @@
     "price": 291850,
     "priceNote": "",
     "pdfName": "Hauskonzept-BU-130-SD-FS-2026.pdf",
-    "pdfUrl": "/generated/houses/bu-130-sd-fs/concept.pdf",
+    "pdfUrl": "/bauteam/concepts/bu-130-sd-fs.pdf",
     "image": "/generated/houses/bu-130-sd-fs/cover.webp",
     "conceptFacts": [
       "Einfamilienhaus",
@@ -104,18 +104,18 @@
   {
     "slug": "bu-130-sd-l",
     "code": "BU-130-SD-L",
-    "name": "Konzept BU-130-SD-L",
+    "name": "Haus Perlin",
     "category": "Bungalow",
     "area": 130,
-    "roof": "Satteldach",
-    "roofPitch": 25,
+    "roof": "Dachform nicht bestätigt",
+    "roofPitch": null,
     "features": [],
-    "description": "Kennung und Unterlagen dieses Konzepts werden geprüft.",
-    "price": null,
-    "priceNote": "Ordner nennt 130 m², das PDF beschreibt 150 m²; Haus Perlin nicht sicher zuordenbar.",
+    "description": "Bungalow 130",
+    "price": 284700,
+    "priceNote": "Die Preisliste nennt 130 m², das Konzept-PDF 150 m². PDF-Versand bis zur Klärung gesperrt.",
     "pdfName": null,
     "pdfUrl": null,
-    "image": "/generated/houses/bu-130-sd-l/cover.webp",
+    "image": "/images/concept-pending.svg",
     "conceptFacts": []
   },
   {
@@ -133,7 +133,7 @@
     "price": 302510,
     "priceNote": "",
     "pdfName": "Hauskonzept-BU-130-WD-L-FS-2026.pdf",
-    "pdfUrl": "/generated/houses/bu-130-wd-l-fs/concept.pdf",
+    "pdfUrl": "/bauteam/concepts/bu-130-wd-l-fs.pdf",
     "image": "/generated/houses/bu-130-wd-l-fs/cover.webp",
     "conceptFacts": [
       "Einfamilienhaus",
@@ -159,7 +159,7 @@
     "price": 337415,
     "priceNote": "",
     "pdfName": "Hauskonzept-BU-145-WD-L-FS-2026.pdf",
-    "pdfUrl": "/generated/houses/bu-145-wd-l-fs/concept.pdf",
+    "pdfUrl": "/bauteam/concepts/bu-145-wd-l-fs.pdf",
     "image": "/generated/houses/bu-145-wd-l-fs/cover.webp",
     "conceptFacts": [
       "Einfamilienhaus",
@@ -185,7 +185,7 @@
     "price": 349050,
     "priceNote": "",
     "pdfName": "Hauskonzept-BU-150-SD-FS-2026.pdf",
-    "pdfUrl": "/generated/houses/bu-150-sd-fs/concept.pdf",
+    "pdfUrl": "/bauteam/concepts/bu-150-sd-fs.pdf",
     "image": "/generated/houses/bu-150-sd-fs/cover.webp",
     "conceptFacts": [
       "Einfamilienhaus",
@@ -212,7 +212,7 @@
     "price": 339450,
     "priceNote": "",
     "pdfName": "Hauskonzept-BU-155-FD-FS-Ga.pdf",
-    "pdfUrl": "/generated/houses/bu-155-fd-fs-ga/concept.pdf",
+    "pdfUrl": "/bauteam/concepts/bu-155-fd-fs-ga.pdf",
     "image": "/generated/houses/bu-155-fd-fs-ga/cover.webp",
     "conceptFacts": [
       "Einfamilienhaus im Bauhausstil",
@@ -236,7 +236,7 @@
     "price": 175200,
     "priceNote": "",
     "pdfName": "Hauskonzept-BU-80-SD-2026.pdf",
-    "pdfUrl": "/generated/houses/bu-80-sd/concept.pdf",
+    "pdfUrl": "/bauteam/concepts/bu-80-sd.pdf",
     "image": "/generated/houses/bu-80-sd/cover.webp",
     "conceptFacts": [
       "Einfamilienhaus",
@@ -262,7 +262,7 @@
     "price": 328500,
     "priceNote": "",
     "pdfName": "Hauskonzept-BU-Duo-150-WD-2026.pdf",
-    "pdfUrl": "/generated/houses/bu-duo-150-wd/concept.pdf",
+    "pdfUrl": "/bauteam/concepts/bu-duo-150-wd.pdf",
     "image": "/generated/houses/bu-duo-150-wd/cover.webp",
     "conceptFacts": [
       "Zweiparteienhaus",
@@ -288,7 +288,7 @@
     "price": 442130,
     "priceNote": "",
     "pdfName": "Hauskonzept-BU-ELW-190-25-SD.pdf",
-    "pdfUrl": "/generated/houses/bu-elw-190-25-sd/concept.pdf",
+    "pdfUrl": "/bauteam/concepts/bu-elw-190-25-sd.pdf",
     "image": "/generated/houses/bu-elw-190-25-sd/cover.webp",
     "conceptFacts": [
       "Zweiparteienhaus",
@@ -329,7 +329,7 @@
     "price": 547500,
     "priceNote": "",
     "pdfName": "Hauskonzept-DH-250-35-SD.pdf",
-    "pdfUrl": "/generated/houses/dh-250-35-sd/concept.pdf",
+    "pdfUrl": "/bauteam/concepts/dh-250-35-sd.pdf",
     "image": "/generated/houses/dh-250-35-sd/cover.webp",
     "conceptFacts": [
       "Doppelhaus",
@@ -360,19 +360,26 @@
   {
     "slug": "dh-260-35-sd",
     "code": "DH-260-35-SD",
-    "name": "Konzept DH-260-35-SD",
+    "name": "Haus Wittenburg",
     "category": "Doppelhaus",
     "area": 260,
     "roof": "Satteldach",
     "roofPitch": 35,
     "features": [],
-    "description": "Kennung und Unterlagen dieses Konzepts werden geprüft.",
-    "price": null,
-    "priceNote": "Haus Wittenburg und Haus Rehna haben dieselbe Kennung und denselben Preis.",
-    "pdfName": null,
-    "pdfUrl": null,
+    "description": "DH 260 / 35",
+    "price": 569400,
+    "priceNote": "",
+    "pdfName": "Hauskonzept-DH-260-35-SD.pdf",
+    "pdfUrl": "/bauteam/concepts/dh-260-35-sd.pdf",
     "image": "/generated/houses/dh-260-35-sd/cover.webp",
-    "conceptFacts": []
+    "conceptFacts": [
+      "Doppelhaus",
+      "Individuelle Grundrissplanung",
+      "Wohnfläche 2x ca. 130 m²",
+      "Satteldach 35°",
+      "Haus auf Bodenplatte",
+      "Ausstattung gemäß Bauleistungsbeschreibung"
+    ]
   },
   {
     "slug": "dh-280-25-wd",
@@ -387,7 +394,7 @@
     "price": 613200,
     "priceNote": "",
     "pdfName": "Hauskonzept-DH-280-25-WD.pdf",
-    "pdfUrl": "/generated/houses/dh-280-25-wd/concept.pdf",
+    "pdfUrl": "/bauteam/concepts/dh-280-25-wd.pdf",
     "image": "/generated/houses/dh-280-25-wd/cover.webp",
     "conceptFacts": [
       "Doppelhaus",
@@ -430,7 +437,7 @@
     "price": 284700,
     "priceNote": "",
     "pdfName": "Hauskonzept-EFH-130-45-SD-E-2026.pdf",
-    "pdfUrl": "/generated/houses/efh-130-45-sd-e/concept.pdf",
+    "pdfUrl": "/bauteam/concepts/efh-130-45-sd-e.pdf",
     "image": "/generated/houses/efh-130-45-sd-e/cover.webp",
     "conceptFacts": [
       "Einfamilienhaus",
@@ -456,7 +463,7 @@
     "price": 311328,
     "priceNote": "",
     "pdfName": "Hauskonzept-EFH-140-35-SD-ZG-2026.pdf",
-    "pdfUrl": "/generated/houses/efh-140-35-sd-zg/concept.pdf",
+    "pdfUrl": "/bauteam/concepts/efh-140-35-sd-zg.pdf",
     "image": "/generated/houses/efh-140-35-sd-zg/cover.webp",
     "conceptFacts": [
       "Einfamilienhaus",
@@ -482,7 +489,7 @@
     "price": 306600,
     "priceNote": "",
     "pdfName": "Hauskonzept-EFH-140-45-SD-E-2026.pdf",
-    "pdfUrl": "/generated/houses/efh-140-45-sd-e/concept.pdf",
+    "pdfUrl": "/bauteam/concepts/efh-140-45-sd-e.pdf",
     "image": "/generated/houses/efh-140-45-sd-e/cover.webp",
     "conceptFacts": [
       "Einfamilienhaus",
@@ -506,7 +513,7 @@
     "price": 328500,
     "priceNote": "",
     "pdfName": "Hauskonzept-EFH-150-35-SD-2026.pdf",
-    "pdfUrl": "/generated/houses/efh-150-35-sd/concept.pdf",
+    "pdfUrl": "/bauteam/concepts/efh-150-35-sd.pdf",
     "image": "/generated/houses/efh-150-35-sd/cover.webp",
     "conceptFacts": [
       "Einfamilienhaus",
@@ -532,7 +539,7 @@
     "price": 338400,
     "priceNote": "",
     "pdfName": "Hauskonzept-EFH-150-35-SD-E-2026.pdf",
-    "pdfUrl": "/generated/houses/efh-150-35-sd-e/concept.pdf",
+    "pdfUrl": "/bauteam/concepts/efh-150-35-sd-e.pdf",
     "image": "/generated/houses/efh-150-35-sd-e/cover.webp",
     "conceptFacts": [
       "Einfamilienhaus",
@@ -546,7 +553,7 @@
   {
     "slug": "efh-150-45-sd-zg",
     "code": "EFH-150-45-SD-ZG",
-    "name": "Konzept EFH-150-45-SD-ZG",
+    "name": "Haus Zülow",
     "category": "Einfamilienhaus",
     "area": 150,
     "roof": "Satteldach",
@@ -554,9 +561,9 @@
     "features": [
       "Zwerchgiebel"
     ],
-    "description": "Kennung und Unterlagen dieses Konzepts werden geprüft.",
-    "price": null,
-    "priceNote": "Kein passender Eintrag in der Preisliste; PDF nennt unplausible 1540 m².",
+    "description": "EFH 150 mit Zwerchgiebel und Satteldach 45°",
+    "price": 350400,
+    "priceNote": "Hauskonzept-PDF nennt eine unplausible Wohnfläche; PDF-Versand bis zur Korrektur gesperrt.",
     "pdfName": null,
     "pdfUrl": null,
     "image": "/generated/houses/efh-150-45-sd-zg/cover.webp",
@@ -577,7 +584,7 @@
     "price": 350400,
     "priceNote": "",
     "pdfName": "Hauskonzept-EFH-160-35-SD-E-2026.pdf",
-    "pdfUrl": "/generated/houses/efh-160-35-sd-e/concept.pdf",
+    "pdfUrl": "/bauteam/concepts/efh-160-35-sd-e.pdf",
     "image": "/generated/houses/efh-160-35-sd-e/cover.webp",
     "conceptFacts": [
       "Einfamilienhaus",
@@ -601,7 +608,7 @@
     "price": 372300,
     "priceNote": "",
     "pdfName": "Hauskonzept-EFH-170-35-SD.pdf",
-    "pdfUrl": "/generated/houses/efh-170-35-sd/concept.pdf",
+    "pdfUrl": "/bauteam/concepts/efh-170-35-sd.pdf",
     "image": "/generated/houses/efh-170-35-sd/cover.webp",
     "conceptFacts": [
       "Einfamilienhaus",
@@ -615,7 +622,7 @@
   {
     "slug": "efh-170-42-sd-zg-e-l",
     "code": "EFH-170-42-SD-ZG-E-L",
-    "name": "Haus Gadebusch",
+    "name": "Haus Krembz",
     "category": "Einfamilienhaus",
     "area": 172,
     "roof": "Satteldach",
@@ -629,7 +636,7 @@
     "price": 411188,
     "priceNote": "",
     "pdfName": "Hauskonzept-EFH-170-42-SD-ZG-E-L-2026.pdf",
-    "pdfUrl": "/generated/houses/efh-170-42-sd-zg-e-l/concept.pdf",
+    "pdfUrl": "/bauteam/concepts/efh-170-42-sd-zg-e-l.pdf",
     "image": "/generated/houses/efh-170-42-sd-zg-e-l/cover.webp",
     "conceptFacts": [
       "Einfamilienhaus",
@@ -655,7 +662,7 @@
     "price": 381060,
     "priceNote": "",
     "pdfName": "Hauskonzept-EFH-175-44-SD-E-2026.pdf",
-    "pdfUrl": "/generated/houses/efh-175-44-sd-e/concept.pdf",
+    "pdfUrl": "/bauteam/concepts/efh-175-44-sd-e.pdf",
     "image": "/generated/houses/efh-175-44-sd-e/cover.webp",
     "conceptFacts": [
       "Einfamilienhaus",
@@ -669,7 +676,7 @@
   {
     "slug": "efh-180-45-sd-fewo",
     "code": "EFH-180-45-SD-FeWo",
-    "name": "Haus Boltenhagen",
+    "name": "Haus Crivitz",
     "category": "Einfamilienhaus",
     "area": 178,
     "roof": "Satteldach",
@@ -681,7 +688,7 @@
     "price": 389820,
     "priceNote": "",
     "pdfName": "Hauskonzept-EFH-180-45-SD-FeWo.pdf",
-    "pdfUrl": "/generated/houses/efh-180-45-sd-fewo/concept.pdf",
+    "pdfUrl": "/bauteam/concepts/efh-180-45-sd-fewo.pdf",
     "image": "/generated/houses/efh-180-45-sd-fewo/cover.webp",
     "conceptFacts": [
       "Ferienhaus mit 2 FeWo",
@@ -707,7 +714,7 @@
     "price": 420897,
     "priceNote": "",
     "pdfName": "Hauskonzept-EFH-ELW-185-22-SD.pdf",
-    "pdfUrl": "/generated/houses/efh-elw-185-22-sd/concept.pdf",
+    "pdfUrl": "/bauteam/concepts/efh-elw-185-22-sd.pdf",
     "image": "/generated/houses/efh-elw-185-22-sd/cover.webp",
     "conceptFacts": [
       "Zweiparteienhaus",
@@ -734,7 +741,7 @@
     "price": 474165,
     "priceNote": "",
     "pdfName": "Hauskonzept-EFH-Studio-205-45-SD-ZG.pdf",
-    "pdfUrl": "/generated/houses/efh-studio-205-45-sd-zg/concept.pdf",
+    "pdfUrl": "/bauteam/concepts/efh-studio-205-45-sd-zg.pdf",
     "image": "/generated/houses/efh-studio-205-45-sd-zg/cover.webp",
     "conceptFacts": [
       "Einfamilienhaus",
@@ -758,7 +765,7 @@
     "price": 479850,
     "priceNote": "",
     "pdfName": "Hauskonzept-FH-210-PD-2026.pdf",
-    "pdfUrl": "/generated/houses/fh-210-pd-2026/concept.pdf",
+    "pdfUrl": "/bauteam/concepts/fh-210-pd-2026.pdf",
     "image": "/generated/houses/fh-210-pd-2026/cover.webp",
     "conceptFacts": [
       "Apartmenthaus mit 3 Studios / FeWos",
@@ -772,36 +779,43 @@
   {
     "slug": "villa-140-25-sd",
     "code": "VILLA-140-25-SD",
-    "name": "Konzept VILLA-140-25-SD",
+    "name": "Haus Gottesgabe",
     "category": "Villa",
     "area": 140,
-    "roof": "Satteldach",
-    "roofPitch": 25,
+    "roof": "Dachform nicht bestätigt",
+    "roofPitch": null,
     "features": [],
-    "description": "Kennung und Unterlagen dieses Konzepts werden geprüft.",
-    "price": null,
-    "priceNote": "Haus Gottesgabe nennt keine Dachform; es gibt zwei Villa-140-Konzepte.",
+    "description": "Villa 140",
+    "price": 306600,
+    "priceNote": "Haus Gottesgabe nennt keine Dachform; Zuordnung zum Satteldach-Konzept noch zu bestätigen. PDF-Versand gesperrt.",
     "pdfName": null,
     "pdfUrl": null,
-    "image": "/generated/houses/villa-140-25-sd/cover.webp",
+    "image": "/images/concept-pending.svg",
     "conceptFacts": []
   },
   {
     "slug": "villa-140-25-wd",
     "code": "VILLA-140-25-WD",
-    "name": "Konzept VILLA-140-25-WD",
+    "name": "Haus Demen",
     "category": "Villa",
     "area": 140,
     "roof": "Walmdach",
     "roofPitch": 25,
     "features": [],
-    "description": "Kennung und Unterlagen dieses Konzepts werden geprüft.",
-    "price": null,
-    "priceNote": "Haus Gottesgabe nennt keine Dachform; es gibt zwei Villa-140-Konzepte.",
-    "pdfName": null,
-    "pdfUrl": null,
+    "description": "Villa 140",
+    "price": 321580,
+    "priceNote": "",
+    "pdfName": "Hauskonzept-VILLA-140-25-WD.pdf",
+    "pdfUrl": "/bauteam/concepts/villa-140-25-wd.pdf",
     "image": "/generated/houses/villa-140-25-wd/cover.webp",
-    "conceptFacts": []
+    "conceptFacts": [
+      "Einfamilienhaus",
+      "Individuelle Grundrissplanung",
+      "Wohnfläche ca. 140 m²",
+      "Walmdach 25°",
+      "Haus auf Bodenplatte",
+      "Ausstattung gemäß Bauleistungsbeschreibung"
+    ]
   },
   {
     "slug": "villa-165-25-wd",
@@ -816,7 +830,7 @@
     "price": 361350,
     "priceNote": "",
     "pdfName": "Hauskonzept-VILLA-165-25-WD.pdf",
-    "pdfUrl": "/generated/houses/villa-165-25-wd/concept.pdf",
+    "pdfUrl": "/bauteam/concepts/villa-165-25-wd.pdf",
     "image": "/generated/houses/villa-165-25-wd/cover.webp",
     "conceptFacts": [
       "Einfamilienhaus",
@@ -842,7 +856,7 @@
     "price": 404250,
     "priceNote": "",
     "pdfName": "Hauskonzept-VILLA-165-25-WD-Hanglage.pdf",
-    "pdfUrl": "/generated/houses/villa-165-25-wd-hanglage/concept.pdf",
+    "pdfUrl": "/bauteam/concepts/villa-165-25-wd-hanglage.pdf",
     "image": "/generated/houses/villa-165-25-wd-hanglage/cover.webp",
     "conceptFacts": [
       "Einfamilienhaus",
@@ -866,7 +880,7 @@
     "price": 378870,
     "priceNote": "",
     "pdfName": "Hauskonzept-VILLA-175-25-WD.pdf",
-    "pdfUrl": "/generated/houses/villa-175-25-wd/concept.pdf",
+    "pdfUrl": "/bauteam/concepts/villa-175-25-wd.pdf",
     "image": "/generated/houses/villa-175-25-wd/cover.webp",
     "conceptFacts": [
       "Einfamilienhaus",
@@ -892,9 +906,9 @@
     ],
     "description": "Villa 210 mit integrierter Garage",
     "price": 499320,
-    "priceNote": "",
+    "priceNote": "Wohnfläche ca. 210 m² zuzüglich ca. 18 m² Garage; der Listenpreis bezieht sich auf ca. 228 m² Gesamtfläche.",
     "pdfName": "Hauskonzept-VILLA-210-25-WD-Ga-E-B.pdf",
-    "pdfUrl": "/generated/houses/villa-210-25-wd-ga-e-b/concept.pdf",
+    "pdfUrl": "/bauteam/concepts/villa-210-25-wd-ga-e-b.pdf",
     "image": "/generated/houses/villa-210-25-wd-ga-e-b/cover.webp",
     "conceptFacts": [
       "Einfamilienhaus",
@@ -909,21 +923,21 @@
     "slug": "villa-220-25-wd-anbau",
     "code": "VILLA-220-25-WD-Anbau",
     "name": "Haus Zierow",
-    "category": "Villa",
+    "category": "Zweifamilienhaus",
     "area": 220,
     "roof": "Walmdach",
     "roofPitch": 25,
     "features": [
-      "Anbau"
+      "Anbau",
+      "Einliegerwohnung"
     ],
     "description": "Villa 220 mit Anbau /ELW",
     "price": 481800,
     "priceNote": "",
     "pdfName": "Hauskonzept-VILLA-220-25-WD-Anbau.pdf",
-    "pdfUrl": "/generated/houses/villa-220-25-wd-anbau/concept.pdf",
+    "pdfUrl": "/bauteam/concepts/villa-220-25-wd-anbau.pdf",
     "image": "/generated/houses/villa-220-25-wd-anbau/cover.webp",
     "conceptFacts": [
-      "Einfamilienhaus",
       "Individuelle Grundrissplanung",
       "Wohnfläche ca. 220 m²",
       "Walmdach 25° / 12°",
@@ -944,7 +958,7 @@
     "price": 569400,
     "priceNote": "",
     "pdfName": "Hauskonzept-ZFH-260-40-SD.pdf",
-    "pdfUrl": "/generated/houses/zfh-260-40-sd/concept.pdf",
+    "pdfUrl": "/bauteam/concepts/zfh-260-40-sd.pdf",
     "image": "/generated/houses/zfh-260-40-sd/cover.webp",
     "conceptFacts": [
       "Zweifamilienhaus",
@@ -971,7 +985,7 @@
     "price": 468000,
     "priceNote": "",
     "pdfName": "Hauskonzept-ZFH-Villa-200-25-WD-E-B.pdf",
-    "pdfUrl": "/generated/houses/zfh-villa-200-25-wd-e-b/concept.pdf",
+    "pdfUrl": "/bauteam/concepts/zfh-villa-200-25-wd-e-b.pdf",
     "image": "/generated/houses/zfh-villa-200-25-wd-e-b/cover.webp",
     "conceptFacts": [
       "Zweifamilienhaus",
@@ -995,7 +1009,7 @@
     "price": 569400,
     "priceNote": "",
     "pdfName": "Hauskonzept-ZFH-Villa-260-25-WD.pdf",
-    "pdfUrl": "/generated/houses/zfh-villa-260-25-wd/concept.pdf",
+    "pdfUrl": "/bauteam/concepts/zfh-villa-260-25-wd.pdf",
     "image": "/generated/houses/zfh-villa-260-25-wd/cover.webp",
     "conceptFacts": [
       "Zweifamilienhaus",
@@ -1019,7 +1033,7 @@
     "price": 624150,
     "priceNote": "",
     "pdfName": "Hauskonzept-ZFH-Villa-285-25-WD.pdf",
-    "pdfUrl": "/generated/houses/zfh-villa-285-25-wd/concept.pdf",
+    "pdfUrl": "/bauteam/concepts/zfh-villa-285-25-wd.pdf",
     "image": "/generated/houses/zfh-villa-285-25-wd/cover.webp",
     "conceptFacts": [
       "Zweifamilienhaus",
@@ -1029,5 +1043,22 @@
       "Haus auf Bodenplatte",
       "Ausstattung gemäß Bauleistungsbeschreibung"
     ]
+  },
+  {
+    "slug": "dh-280-5-fd",
+    "code": "DH-280-5-FD",
+    "name": "Haus Ventschow",
+    "category": "Doppelhaus",
+    "area": 280,
+    "roof": "Flachdach",
+    "roofPitch": 5,
+    "features": [],
+    "description": "DH 280 mit Flachdach 5°",
+    "price": 613200,
+    "priceNote": "Für dieses Haus wurde kein Konzeptordner geliefert; PDF-Versand nicht verfügbar.",
+    "pdfName": null,
+    "image": "/images/concept-pending.svg",
+    "conceptFacts": [],
+    "pdfUrl": null
   }
 ]
