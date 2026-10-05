@@ -81,6 +81,7 @@
   document.addEventListener("visibilitychange",scheduleIntro);
   window.visualViewport?.addEventListener("resize",size);
   window.visualViewport?.addEventListener("scroll",size);
+  frame.addEventListener("load",function(){introReady=true;scheduleIntro();});
   function mount(){frame.src=src.toString();document.body.appendChild(frame);size();}
   if(document.body) mount(); else document.addEventListener("DOMContentLoaded",mount,{once:true});
 })();
