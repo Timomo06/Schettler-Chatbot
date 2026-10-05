@@ -20,8 +20,7 @@
   frame.referrerPolicy = "strict-origin-when-cross-origin";
   frame.style.cssText = "position:fixed;right:8px;bottom:8px;width:190px;height:190px;border:0;background:transparent;z-index:2147483000;color-scheme:light;";
   let width=190, height=190;
-  const introEnabled = (tenant === "profcar" || tenant === "r-drive") &&
-    !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const introEnabled = tenant === "profcar" || tenant === "r-drive";
   const introKey = "bt-chat-intro-v1:" + host;
   let introReady = false;
   let introDone = false;
