@@ -209,7 +209,8 @@
       "Garage"
     ],
     "description": "Bungalow 155 mit Freisitz",
-    "price": 339450,
+    "price": null,
+    "priceOnRequest": true,
     "priceNote": "",
     "pdfName": "Hauskonzept-BU-155-FD-FS-Ga.pdf",
     "pdfUrl": "/generated/houses/bu-155-fd-fs-ga/concept.pdf",
