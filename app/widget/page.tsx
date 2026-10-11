@@ -16824,6 +16824,7 @@ export default function WidgetPage() {
     null,
   );
   const msgsRef = useRef<Msg[]>([]);
+  const analyticsSessionIdRef = useRef<string | null>(null);
   const loadingRef = useRef(false);
 
   useEffect(() => {
@@ -18051,6 +18052,7 @@ export default function WidgetPage() {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             tenant: activeTenantId,
+            sessionId: analyticsSessionIdRef.current ?? (analyticsSessionIdRef.current = crypto.randomUUID()),
             voiceMode: options.fromVoice === true,
             messages: next.map(({ role, content }) => ({ role, content })),
           }),

@@ -174,13 +174,13 @@ async function logChat(params: {
   if (error) console.error("SUPABASE INSERT ERROR:", error);
 }
 
-function queueChatLog(params: {
+async function queueChatLog(params: {
   tenantId: string;
   sessionId: string;
   userMessage: string;
   assistantMessage: string;
 }) {
-  void logChat(params).catch((error) => {
+  await logChat(params).catch((error) => {
     console.error("SUPABASE INSERT ERROR:", error);
   });
 }
@@ -600,7 +600,7 @@ export async function POST(req: NextRequest) {
             "Der Termin konnte gerade technisch nicht eingetragen werden. Bitte versuche es noch einmal oder kontaktiere uns direkt. ⚠️";
         }
 
-        queueChatLog({
+        await queueChatLog({
           tenantId: tenant.id,
           sessionId,
           userMessage: lastUserMessage,
@@ -647,7 +647,7 @@ export async function POST(req: NextRequest) {
         }
 
         if (reply) {
-          queueChatLog({
+          await queueChatLog({
             tenantId: tenant.id,
             sessionId,
             userMessage: lastUserMessage,
@@ -828,7 +828,7 @@ Verbindlicher Funktionsumfang R-DRIVE:
 
     const cleanReply = stripMarkdown(reply);
 
-    queueChatLog({
+    await queueChatLog({
       tenantId: tenant.id,
       sessionId,
       userMessage: lastUserMessage,
