@@ -19,7 +19,7 @@ export async function POST(request: NextRequest) {
     if (Date.now() - (recent.get(key) || 0) < 5 * 60_000) return NextResponse.json({ error: "Die Anfrage wurde bereits gesendet. Bitte prüfen Sie Ihr Postfach." }, { status: 429 });
     const apiKey = process.env.RESEND_API_KEY;
     const from = process.env.BAUTEAM_EMAIL_FROM;
-    const lothar = process.env.BAUTEAM_LOTHAR_EMAIL || "ruthe@bauteam-praktikus.de";
+    const lothar = process.env.BAUTEAM_LOTHAR_EMAIL || "ruthe@praktikus-bauteam.de";
     if (!apiKey || !from) return NextResponse.json({ error: "Der PDF-Versand wird gerade eingerichtet. Bitte kontaktieren Sie unseren Verkäufer direkt." }, { status: 503 });
     const pdfResponse = await fetch(new URL(`/bauteam/concepts/${house.slug}.pdf`, request.url));
     if (!pdfResponse.ok) throw new Error(`Hauskonzept fehlt: ${house.slug}`);

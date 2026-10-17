@@ -23,7 +23,9 @@
       "Walmdach 25°",
       "Haus auf Bodenplatte",
       "Ausstattung gemäß Bauleistungsbeschreibung"
-    ]
+    ],
+    "imageCaption": "Beispielansicht · individuell anpassbar",
+    "conceptNote": ""
   },
   {
     "slug": "bu-120-sd",
@@ -47,7 +49,9 @@
       "Satteldach 25°",
       "Haus auf Bodenplatte",
       "Ausstattung gemäß Bauleistungsbeschreibung"
-    ]
+    ],
+    "imageCaption": "Beispielansicht · individuell anpassbar",
+    "conceptNote": ""
   },
   {
     "slug": "bu-120-wd-l-fs",
@@ -73,7 +77,9 @@
       "Walmdach 25°",
       "Haus auf Bodenplatte",
       "Ausstattung gemäß Bauleistungsbeschreibung"
-    ]
+    ],
+    "imageCaption": "Beispielansicht · individuell anpassbar",
+    "conceptNote": ""
   },
   {
     "slug": "bu-130-sd-fs",
@@ -99,24 +105,28 @@
       "Satteldach 25°",
       "Haus auf Bodenplatte",
       "Ausstattung gemäß Bauleistungsbeschreibung"
-    ]
+    ],
+    "imageCaption": "Beispielansicht · individuell anpassbar",
+    "conceptNote": ""
   },
   {
     "slug": "bu-130-sd-l",
     "code": "BU-130-SD-L",
-    "name": "Konzept BU-130-SD-L",
+    "name": "Haus Perlin",
     "category": "Bungalow",
     "area": 130,
-    "roof": "Satteldach",
-    "roofPitch": 25,
+    "roof": "Dachform nicht bestätigt",
+    "roofPitch": null,
     "features": [],
-    "description": "Kennung und Unterlagen dieses Konzepts werden geprüft.",
-    "price": null,
-    "priceNote": "Ordner nennt 130 m², das PDF beschreibt 150 m²; Haus Perlin nicht sicher zuordenbar.",
+    "description": "Ein Bungalow mit 130 m² laut Preisliste – als Ausgangspunkt für Ihr Zuhause auf einer Ebene. Fassade, Fenster, Grundriss und Ausstattung planen wir nach Ihren Wünschen.",
+    "price": 284700,
+    "priceNote": "Die Preisliste nennt 130 m², das Konzept-PDF 150 m². PDF-Versand bis zur Klärung gesperrt.",
     "pdfName": null,
     "pdfUrl": null,
     "image": "/generated/houses/bu-130-sd-l/cover.webp",
-    "conceptFacts": []
+    "conceptFacts": [],
+    "imageCaption": "Beispiel aus dem zugeordneten Bungalow-Konzept · individuell anpassbar",
+    "conceptNote": "Die Preisliste nennt 130 m², das Konzept-PDF 150 m². Lothar klärt die konkrete Ausführung mit Ihnen; das PDF bleibt bis dahin gesperrt."
   },
   {
     "slug": "bu-130-wd-l-fs",
@@ -142,7 +152,9 @@
       "Walmdach 25°",
       "Haus auf Bodenplatte",
       "Ausstattung gemäß Bauleistungsbeschreibung"
-    ]
+    ],
+    "imageCaption": "Beispielansicht · individuell anpassbar",
+    "conceptNote": ""
   },
   {
     "slug": "bu-145-wd-l-fs",
@@ -168,7 +180,9 @@
       "Walmdach 25°",
       "Haus auf Bodenplatte",
       "Ausstattung gemäß Bauleistungsbeschreibung"
-    ]
+    ],
+    "imageCaption": "Beispielansicht · individuell anpassbar",
+    "conceptNote": ""
   },
   {
     "slug": "bu-150-sd-fs",
@@ -194,7 +208,9 @@
       "Satteldach 25°",
       "Haus auf Bodenplatte",
       "Ausstattung gemäß Bauleistungsbeschreibung"
-    ]
+    ],
+    "imageCaption": "Beispielansicht · individuell anpassbar",
+    "conceptNote": ""
   },
   {
     "slug": "bu-155-fd-fs-ga",
@@ -222,7 +238,9 @@
       "Flachdach mit Attika",
       "Haus auf Bodenplatte",
       "Ausstattung gemäß Bauleistungsbeschreibung"
-    ]
+    ],
+    "imageCaption": "Beispielansicht · individuell anpassbar",
+    "conceptNote": ""
   },
   {
     "slug": "bu-80-sd",
@@ -246,7 +264,9 @@
       "Satteldach 35°",
       "Haus auf Bodenplatte",
       "Ausstattung gemäß Bauleistungsbeschreibung"
-    ]
+    ],
+    "imageCaption": "Beispielansicht · individuell anpassbar",
+    "conceptNote": ""
   },
   {
     "slug": "bu-duo-150-wd",
@@ -272,7 +292,9 @@
       "Walmdach 25°",
       "Haus auf Bodenplatte",
       "Ausstattung gemäß Bauleistungsbeschreibung"
-    ]
+    ],
+    "imageCaption": "Beispielansicht · individuell anpassbar",
+    "conceptNote": ""
   },
   {
     "slug": "bu-elw-190-25-sd",
@@ -298,7 +320,9 @@
       "Satteldach 25°",
       "Haus auf Bodenplatte",
       "Ausstattung gemäß Bauleistungsbeschreibung"
-    ]
+    ],
+    "imageCaption": "Beispielansicht · individuell anpassbar",
+    "conceptNote": ""
   },
   {
     "slug": "dh-250-25-sd",
@@ -315,7 +339,9 @@
     "pdfName": null,
     "pdfUrl": null,
     "image": "/generated/houses/dh-250-25-sd/cover.webp",
-    "conceptFacts": []
+    "conceptFacts": [],
+    "imageCaption": "Beispielansicht · individuell anpassbar",
+    "conceptNote": ""
   },
   {
     "slug": "dh-250-35-sd",
@@ -339,7 +365,9 @@
       "Satteldach 35°",
       "Haus auf Bodenplatte",
       "Ausstattung gemäß Bauleistungsbeschreibung"
-    ]
+    ],
+    "imageCaption": "Beispielansicht · individuell anpassbar",
+    "conceptNote": ""
   },
   {
     "slug": "dh-250-45-sd",
@@ -356,7 +384,9 @@
     "pdfName": null,
     "pdfUrl": null,
     "image": "/generated/houses/dh-250-45-sd/cover.webp",
-    "conceptFacts": []
+    "conceptFacts": [],
+    "imageCaption": "Beispielansicht · individuell anpassbar",
+    "conceptNote": ""
   },
   {
     "slug": "dh-260-35-sd",
@@ -373,7 +403,9 @@
     "pdfName": null,
     "pdfUrl": null,
     "image": "/generated/houses/dh-260-35-sd/cover.webp",
-    "conceptFacts": []
+    "conceptFacts": [],
+    "imageCaption": "Beispielansicht · individuell anpassbar",
+    "conceptNote": ""
   },
   {
     "slug": "dh-280-25-wd",
@@ -397,7 +429,9 @@
       "Walmdach 25°",
       "Haus auf Bodenplatte",
       "Ausstattung gemäß Bauleistungsbeschreibung"
-    ]
+    ],
+    "imageCaption": "Beispielansicht · individuell anpassbar",
+    "conceptNote": ""
   },
   {
     "slug": "dh-350-35-sd",
@@ -414,7 +448,9 @@
     "pdfName": null,
     "pdfUrl": null,
     "image": "/generated/houses/dh-350-35-sd/cover.webp",
-    "conceptFacts": []
+    "conceptFacts": [],
+    "imageCaption": "Beispielansicht · individuell anpassbar",
+    "conceptNote": ""
   },
   {
     "slug": "efh-130-45-sd-e",
@@ -440,7 +476,9 @@
       "Satteldach 45°",
       "Haus auf Bodenplatte",
       "Ausstattung gemäß Bauleistungsbeschreibung"
-    ]
+    ],
+    "imageCaption": "Beispielansicht · individuell anpassbar",
+    "conceptNote": ""
   },
   {
     "slug": "efh-140-35-sd-zg",
@@ -466,7 +504,9 @@
       "Satteldach 35°",
       "Haus auf Bodenplatte",
       "Ausstattung gemäß Bauleistungsbeschreibung"
-    ]
+    ],
+    "imageCaption": "Beispielansicht · individuell anpassbar",
+    "conceptNote": ""
   },
   {
     "slug": "efh-140-45-sd-e",
@@ -492,7 +532,9 @@
       "Satteldach 45°",
       "Haus auf Bodenplatte",
       "Ausstattung gemäß Bauleistungsbeschreibung"
-    ]
+    ],
+    "imageCaption": "Beispielansicht · individuell anpassbar",
+    "conceptNote": ""
   },
   {
     "slug": "efh-150-35-sd",
@@ -516,7 +558,9 @@
       "Satteldach 35°",
       "Haus auf Bodenplatte",
       "Ausstattung gemäß Bauleistungsbeschreibung"
-    ]
+    ],
+    "imageCaption": "Beispielansicht · individuell anpassbar",
+    "conceptNote": ""
   },
   {
     "slug": "efh-150-35-sd-e",
@@ -542,7 +586,9 @@
       "Satteldach 35°",
       "Haus auf Bodenplatte",
       "Ausstattung gemäß Bauleistungsbeschreibung"
-    ]
+    ],
+    "imageCaption": "Beispielansicht · individuell anpassbar",
+    "conceptNote": ""
   },
   {
     "slug": "efh-150-45-sd-zg",
@@ -561,7 +607,9 @@
     "pdfName": null,
     "pdfUrl": null,
     "image": "/generated/houses/efh-150-45-sd-zg/cover.webp",
-    "conceptFacts": []
+    "conceptFacts": [],
+    "imageCaption": "Beispielansicht · individuell anpassbar",
+    "conceptNote": ""
   },
   {
     "slug": "efh-160-35-sd-e",
@@ -587,7 +635,9 @@
       "Satteldach 35°",
       "Haus auf Bodenplatte",
       "Ausstattung gemäß Bauleistungsbeschreibung"
-    ]
+    ],
+    "imageCaption": "Beispielansicht · individuell anpassbar",
+    "conceptNote": ""
   },
   {
     "slug": "efh-170-35-sd",
@@ -611,7 +661,9 @@
       "Satteldach 35°",
       "Haus auf Bodenplatte",
       "Ausstattung gemäß Bauleistungsbeschreibung"
-    ]
+    ],
+    "imageCaption": "Beispielansicht · individuell anpassbar",
+    "conceptNote": ""
   },
   {
     "slug": "efh-170-42-sd-zg-e-l",
@@ -639,7 +691,9 @@
       "Satteldach 42°",
       "Haus auf Bodenplatte",
       "Ausstattung gemäß Bauleistungsbeschreibung"
-    ]
+    ],
+    "imageCaption": "Beispielansicht · individuell anpassbar",
+    "conceptNote": ""
   },
   {
     "slug": "efh-175-44-sd-e",
@@ -665,7 +719,9 @@
       "Satteldach 45°",
       "Haus auf Bodenplatte",
       "Ausstattung gemäß Bauleistungsbeschreibung"
-    ]
+    ],
+    "imageCaption": "Beispielansicht · individuell anpassbar",
+    "conceptNote": ""
   },
   {
     "slug": "efh-180-45-sd-fewo",
@@ -691,7 +747,9 @@
       "Satteldach 45°",
       "Haus auf Bodenplatte",
       "Ausstattung gemäß Bauleistungsbeschreibung"
-    ]
+    ],
+    "imageCaption": "Beispielansicht · individuell anpassbar",
+    "conceptNote": ""
   },
   {
     "slug": "efh-elw-185-22-sd",
@@ -717,7 +775,9 @@
       "Satteldach 22°",
       "Haus auf Bodenplatte",
       "Ausstattung gemäß Bauleistungsbeschreibung"
-    ]
+    ],
+    "imageCaption": "Beispielansicht · individuell anpassbar",
+    "conceptNote": ""
   },
   {
     "slug": "efh-studio-205-45-sd-zg",
@@ -744,7 +804,9 @@
       "Satteldach 45°",
       "Haus auf Bodenplatte",
       "Ausstattung gemäß Bauleistungsbeschreibung"
-    ]
+    ],
+    "imageCaption": "Beispielansicht · individuell anpassbar",
+    "conceptNote": ""
   },
   {
     "slug": "fh-210-pd-2026",
@@ -768,24 +830,28 @@
       "Pultdach 5°",
       "Haus auf Bodenplatte",
       "Ausstattung gemäß Bauleistungsbeschreibung"
-    ]
+    ],
+    "imageCaption": "Beispielansicht · individuell anpassbar",
+    "conceptNote": ""
   },
   {
     "slug": "villa-140-25-sd",
     "code": "VILLA-140-25-SD",
-    "name": "Konzept VILLA-140-25-SD",
+    "name": "Haus Gottesgabe",
     "category": "Villa",
     "area": 140,
-    "roof": "Satteldach",
-    "roofPitch": 25,
+    "roof": "Dachform nicht bestätigt",
+    "roofPitch": null,
     "features": [],
-    "description": "Kennung und Unterlagen dieses Konzepts werden geprüft.",
-    "price": null,
-    "priceNote": "Haus Gottesgabe nennt keine Dachform; es gibt zwei Villa-140-Konzepte.",
+    "description": "Eine Villa mit 140 m² laut Preisliste und Raum für Ihre eigenen Ideen. Das Bild zeigt eine mögliche Gestaltung mit Satteldach; Dachform, Fassade und Grundriss stimmen wir persönlich mit Ihnen ab.",
+    "price": 306600,
+    "priceNote": "Haus Gottesgabe nennt keine Dachform; Zuordnung zum Satteldach-Konzept noch zu bestätigen. PDF-Versand gesperrt.",
     "pdfName": null,
     "pdfUrl": null,
     "image": "/generated/houses/villa-140-25-sd/cover.webp",
-    "conceptFacts": []
+    "conceptFacts": [],
+    "imageCaption": "Gestaltungsbeispiel mit Satteldach · Ausführung nach Vereinbarung",
+    "conceptNote": "Für die Villa mit 140 m² liegen zwei Dachvarianten vor. Die verbindliche Zuordnung und Ausführung klärt Lothar mit Ihnen; das PDF bleibt bis dahin gesperrt."
   },
   {
     "slug": "villa-140-25-wd",
@@ -802,7 +868,9 @@
     "pdfName": null,
     "pdfUrl": null,
     "image": "/generated/houses/villa-140-25-wd/cover.webp",
-    "conceptFacts": []
+    "conceptFacts": [],
+    "imageCaption": "Beispielansicht · individuell anpassbar",
+    "conceptNote": ""
   },
   {
     "slug": "villa-165-25-wd",
@@ -826,7 +894,9 @@
       "Walmdach 25°",
       "Haus auf Bodenplatte",
       "Ausstattung gemäß Bauleistungsbeschreibung"
-    ]
+    ],
+    "imageCaption": "Beispielansicht · individuell anpassbar",
+    "conceptNote": ""
   },
   {
     "slug": "villa-165-25-wd-hanglage",
@@ -852,7 +922,9 @@
       "Walmdach 25°",
       "Haus auf Bodenplatte / Teilkeller",
       "Ausstattung gemäß Bauleistungsbeschreibung"
-    ]
+    ],
+    "imageCaption": "Beispielansicht · individuell anpassbar",
+    "conceptNote": ""
   },
   {
     "slug": "villa-175-25-wd",
@@ -876,7 +948,9 @@
       "Walmdach 25°",
       "Haus auf Bodenplatte",
       "Ausstattung gemäß Bauleistungsbeschreibung"
-    ]
+    ],
+    "imageCaption": "Beispielansicht · individuell anpassbar",
+    "conceptNote": ""
   },
   {
     "slug": "villa-210-25-wd-ga-e-b",
@@ -904,7 +978,9 @@
       "Walmdach 25°",
       "Haus auf Bodenplatte",
       "Ausstattung gemäß Bauleistungsbeschreibung"
-    ]
+    ],
+    "imageCaption": "Beispielansicht · individuell anpassbar",
+    "conceptNote": ""
   },
   {
     "slug": "villa-220-25-wd-anbau",
@@ -930,7 +1006,9 @@
       "Walmdach 25° / 12°",
       "Haus auf Bodenplatte",
       "Ausstattung gemäß Bauleistungsbeschreibung"
-    ]
+    ],
+    "imageCaption": "Beispielansicht · individuell anpassbar",
+    "conceptNote": ""
   },
   {
     "slug": "zfh-260-40-sd",
@@ -954,7 +1032,9 @@
       "Satteldach 40°",
       "Haus auf Bodenplatte",
       "Ausstattung gemäß Bauleistungsbeschreibung"
-    ]
+    ],
+    "imageCaption": "Beispielansicht · individuell anpassbar",
+    "conceptNote": ""
   },
   {
     "slug": "zfh-villa-200-25-wd-e-b",
@@ -981,7 +1061,9 @@
       "Walmdach 25°",
       "Haus auf Bodenplatte",
       "Ausstattung gemäß Bauleistungsbeschreibung"
-    ]
+    ],
+    "imageCaption": "Beispielansicht · individuell anpassbar",
+    "conceptNote": ""
   },
   {
     "slug": "zfh-villa-260-25-wd",
@@ -1005,7 +1087,9 @@
       "Walmdach 25°",
       "Haus auf Bodenplatte",
       "Ausstattung gemäß Bauleistungsbeschreibung"
-    ]
+    ],
+    "imageCaption": "Beispielansicht · individuell anpassbar",
+    "conceptNote": ""
   },
   {
     "slug": "zfh-villa-285-25-wd",
@@ -1029,6 +1113,27 @@
       "Walmdach 25°",
       "Haus auf Bodenplatte",
       "Ausstattung gemäß Bauleistungsbeschreibung"
-    ]
+    ],
+    "imageCaption": "Beispielansicht · individuell anpassbar",
+    "conceptNote": ""
+  },
+  {
+    "slug": "dh-280-5-fd",
+    "code": "DH-280-5-FD",
+    "name": "Haus Ventschow",
+    "category": "Doppelhaus",
+    "area": 280,
+    "roof": "Flachdach",
+    "roofPitch": 5,
+    "features": [],
+    "description": "Ein Doppelhaus mit insgesamt 280 m² und zwei Einheiten mit jeweils ca. 140 m². Für Haus Ventschow ist ein Flachdach mit 5° vorgesehen. Grundrisse und Ausstattung stimmen wir auf beide Haushalte ab.",
+    "price": 613200,
+    "priceNote": "Für dieses Haus wurde kein Konzeptordner geliefert; PDF-Versand nicht verfügbar.",
+    "pdfName": null,
+    "pdfUrl": null,
+    "image": "/generated/houses/dh-250-35-sd/cover.webp",
+    "conceptFacts": [],
+    "imageCaption": "Beispiel eines anderen Doppelhauses · Ventschow ist mit Flachdach geplant",
+    "conceptNote": "Das Bild zeigt ein anderes Doppelhaus als Gestaltungsbeispiel, nicht die Ausführung von Haus Ventschow. Eigene Konzeptbilder und ein PDF liegen dafür noch nicht vor."
   }
 ]
