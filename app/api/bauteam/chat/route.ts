@@ -7,7 +7,7 @@ export const runtime = "nodejs";
 type Message = { role: "user" | "assistant"; content: string };
 type House = (typeof houses)[number];
 const offerBasis = "Brutto-Ab-Preise vom 30. September 2026 für Putzfassade und Ausführung ohne Keller. Enthalten: Herstellungskosten Haus, Erdarbeiten bis 30 cm ohne Baustraße, Schmutzwasserleitung unterhalb der Sohlplatte, Statik, Bauantrag, Wärmeschutznachweis, Bodengutachten, Vermessung mit Lageplan. Grundstück und individuelle Änderungen müssen persönlich geprüft werden.";
-const sales = "Unser Verkäufer Lothar Hans Ruthe, Telefon +49 151 15624073, E-Mail ruthe@praktikus-bauteam.de.";
+const sales = "Unser Verkäufer Lothar Hans Ruthe, Telefon 0151 156 240 73, E-Mail ruthe@praktikus-bauteam.de.";
 
 export async function POST(request: NextRequest) {
   try {
